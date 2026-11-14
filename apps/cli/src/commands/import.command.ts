@@ -1,11 +1,13 @@
 import { existsSync, readFileSync } from "node:fs";
-import type { CreateSourceInput } from "@runeley/shared";
+import { type CreateSourceInput, ok, type Result } from "@runeley/shared";
 import { parseClientConfig } from "@runeley/shared/importers";
-import { cliEnv } from "@/config";
 import { CLIENT_CONFIG_FILES } from "@/constants/clients.constants";
+import { resolveConnection } from "@/services/config.service";
 import { pushSources } from "@/services/runeley-api.service";
 
-export const importCommand = async () => {
+export const importCommand = async (): Promise<Result<null>> => {
+  const connection = resolveConnection();
+  if (connection.error) return connection;
   const byName = new Map<string, CreateSourceInput>();
   for (const [client, file] of Object.entries(CLIENT_CONFIG_FILES)) {
     if (!existsSync(file)) continue;
@@ -18,13 +20,10 @@ export const importCommand = async () => {
     for (const source of found) if (!byName.has(source.name)) byName.set(source.name, source);
   }
 
-  const { data, error } = await pushSources([...byName.values()]);
-  if (error) {
-    console.error(`Falhou: ${error.message}`);
-    process.exitCode = 1;
-    return;
-  }
-  console.log(`Importadas ${data.imported.length}: ${data.imported.join(", ")}`);
-  for (const { name, reason } of data.skipped) console.log(`  pulada ${name}: ${reason}`);
-  console.log(`Abra ${cliEnv.RUNELEY_URL} e faça login nas que ficaram "precisa reconectar".`);
+  const imported = await pushSources(connection.data, [...byName.values()]);
+  if (imported.error) return imported;
+  console.log(`Importadas ${imported.data.imported.length}: ${imported.data.imported.join(", ")}`);
+  for (const { name, reason } of imported.data.skipped) console.log(`  pulada ${name}: ${reason}`);
+  console.log(`Abra ${connection.data.url} e faça login nas que ficaram "precisa reconectar".`);
+  return ok(null);
 };

@@ -58,6 +58,11 @@ export const auth = betterAuth({
   },
   plugins: [
     organization({ ac: accessControl, roles: organizationRoles }),
-    apiKey({ defaultPrefix: API_KEY_PREFIX, references: "organization", rateLimit: { enabled: false } }),
+    apiKey({
+      defaultPrefix: API_KEY_PREFIX,
+      references: "organization",
+      maximumNameLength: 64,
+      rateLimit: { enabled: false },
+    }),
   ],
 });

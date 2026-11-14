@@ -22,5 +22,11 @@ export const ERROR_CATALOG = {
   EXECUTE_FAILED: { status: 422, message: "O código falhou." },
   STORAGE_FAILED: { status: 500, message: "Falha ao ler ou gravar no banco." },
   INTERNAL: { status: 500, message: "Erro inesperado no servidor." },
+  CLI_AUTH_NOT_FOUND: {
+    status: 404,
+    message: "Esse código expirou ou já foi usado. Rode runeley login de novo no terminal.",
+  },
+  CLI_AUTH_RATE_LIMITED: { status: 429, message: "Muitos pedidos de login deste endereço. Espere um minuto." },
+  API_KEY_REQUIRED: { status: 401, message: "Essa ação só vale para uma chave de API." },
   UPSTREAM_FAILED: { status: 502, message: "O servidor do runeley respondeu com erro." },
 } as const satisfies Record<string, { status: number; message: string }>;

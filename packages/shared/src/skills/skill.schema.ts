@@ -41,6 +41,10 @@ export const updateSkillSchema = z
 
 export const listSkillsSchema = paginationSchema.extend({
   query: z.string().trim().max(200).optional(),
+  enabled: z
+    .enum(["true", "false"])
+    .transform((value) => value === "true")
+    .optional(),
 });
 
 export const importSkillsSchema = z.object({

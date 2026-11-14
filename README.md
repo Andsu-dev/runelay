@@ -11,6 +11,8 @@
   <img alt="SQLite" src="https://img.shields.io/badge/db-sqlite-0f80cc?style=flat-square&logo=sqlite&logoColor=white" />
 </p>
 
+<p align="center"><a href="https://bot.runelay.com">bot.runelay.com</a></p>
+
 <p align="center">
   Connect Linear, GitHub and Notion <b>once</b>. Bring the skills and memories you already have.<br />
   Claude Code, Codex, Cursor, Antigravity and Grok all see the same tools and the same context, from <b>your</b> server.
@@ -197,27 +199,32 @@ headers = { Authorization = "Bearer rnl_..." }
 { "mcpServers": { "runeley": { "url": "https://runeley.example.com/v1/mcp", "headers": { "Authorization": "Bearer rnl_..." } } } }
 ```
 
-**All of them at once** (run on your computer, inside a clone of this repo, with [Bun](https://bun.sh)):
-
-```sh
-bun install
-RUNELEY_URL=https://runeley.example.com RUNELEY_API_KEY=rnl_... bun run install-clients
-```
+**All of them at once** with the CLI (see below): `runeley login`, then `runeley connect`.
 
 ## 📥 Bring your context
 
-The CLI runs on your computer, because that is where your agents keep their files.
+The `runeley` CLI runs on your computer, because that is where your agents keep their files. Install it, log in through the browser, done: no env vars, no keys to copy.
 
 ```sh
-export RUNELEY_URL=https://runeley.example.com
-export RUNELEY_API_KEY=rnl_...
+curl -fsSL https://github.com/Andsu-dev/runeley/releases/latest/download/install-cli.sh | sh
 
-bun run import            # MCP servers from Claude, Codex, Grok and Cursor configs become connections
-bun run import-context    # memories, skills and global instructions from every installed agent
-bun run sync-context      # writes a short brief into CLAUDE.md and AGENTS.md
+runeley login      # finds your server, opens the browser, saves this computer's key
+runeley status     # server, organization and what is stored in it
+runeley push       # memories, skills and global instructions from every installed agent
+runeley pull       # brief into CLAUDE.md and AGENTS.md, new skills into ~/.claude/skills
+runeley sync       # push, then pull
+runeley connect    # registers the runeley MCP in Claude Code, Codex, Cursor and Grok
+runeley import     # MCP servers from Claude, Codex, Grok and Cursor configs become connections
+runeley logout     # revokes this computer's key and clears the config
 ```
 
-`import-context` reads:
+`runeley login` looks for `PUBLIC_URL` in `~/runeley/.env` (what the installer writes), then for `http://localhost:4312`, and asks before using what it found. You can also pass the address: `runeley login https://runeley.example.com`. The browser shows a code: check it matches the terminal and approve. The key shows up in the panel as `CLI <device>` and is saved in `~/.config/runeley/config.json` (mode 600, `XDG_CONFIG_HOME` respected).
+
+The installer puts the binary in `~/.runeley/bin` (change it with `RUNELEY_INSTALL_DIR`, pin a release with `RUNELEY_VERSION=v0.2.0`) and adds it to your shell `PATH`.
+
+**CI / env vars.** `RUNELEY_URL` and `RUNELEY_API_KEY` override the saved config, so a pipeline can run `runeley push` with a key created in the panel. Inside a clone of this repo, `bun run import-context`, `sync-context`, `install-clients` and `import` still work and map to `push`, `pull`, `connect` and `import`.
+
+`runeley push` reads:
 
 | Agent | Skills | Memory and instructions |
 |---|---|---|
@@ -231,7 +238,9 @@ bun run sync-context      # writes a short brief into CLAUDE.md and AGENTS.md
 
 Duplicates are merged (first one wins). Memories listed under `## Regras de ouro` in a `MEMORY.md`, and global instruction files, come in pinned.
 
-`sync-context` only touches the block between `<!-- runeley:start -->` and `<!-- runeley:end -->`. Everything else in your files stays as it is. The brief tells agents to save new facts with `write_memory`, so memory flows back to runeley instead of local files.
+`runeley pull` only touches the block between `<!-- runeley:start -->` and `<!-- runeley:end -->`. Everything else in your files stays as it is. The brief tells agents to save new facts with `write_memory`, so memory flows back to runeley instead of local files.
+
+Enabled skills you do not have in any agent folder are written to `~/.claude/skills/<slug>/` with a `.runeley` marker. Later pulls update only marked folders and `push` skips them. A folder without the marker is yours and is never overwritten.
 
 ## 📖 Reference
 
@@ -261,6 +270,9 @@ Everything the panel does goes through a versioned JSON API. Every response is `
 | GET | `/v1/me` | session |
 | GET, POST | `/v1/organizations`, `POST /v1/organizations/active` | session |
 | GET, POST | `/v1/api-keys`, `DELETE /v1/api-keys/:id`, `GET /v1/api-keys/:id/secret` | session |
+| POST, GET | `/v1/cli/auth`, `/v1/cli/auth/:pollToken` (browser login for the CLI) | public, rate limited |
+| GET, POST | `/v1/cli/auth/requests/:code`, `/v1/cli/auth/approve` | session |
+| GET, DELETE | `/v1/cli/status`, `/v1/cli/key` (revokes the calling key) | API key (status also session) |
 | GET, POST | `/v1/sources`, `/v1/sources/summary`, `/v1/sources/import` | session or API key |
 | GET, PATCH, DELETE | `/v1/sources/:name`, `POST /v1/sources/:name/test`, `POST /v1/sources/:name/oauth` | session or API key |
 | GET, POST | `/v1/catalog`, `/v1/catalog/install` | session or API key |
@@ -330,7 +342,7 @@ bun run dev                   # API on :4312, panel on :5173 (Vite proxies /v1)
 apps/
   api/      Hono + better-auth + SQLite. Feature modules in src/modules/<feature>/{routes,services,repositories,...}
   web/      React + Vite + TanStack Router/Query + Tailwind + motion
-  cli/      import, import-context, sync-context, install-clients
+  cli/      the runeley CLI: login, status, push, pull, sync, connect, import, logout
 packages/
   shared/   zod schemas, types and the { data, error } Result used by every app
 ```
@@ -339,6 +351,7 @@ packages/
 |---|---|
 | `bun run dev` | API and panel with hot reload |
 | `bun run build` | Builds the panel (served by the API in production) |
+| `bun run build:cli` | Compiles the CLI for macOS and Linux into `dist/cli/` |
 | `bun run typecheck` | `tsc` in every package |
 | `bun run check` | Biome format and lint |
 | `bun run seed` | Demo data for local development |
@@ -355,5 +368,5 @@ packages/
 <br />
 
 <p align="center">
-  MIT · made by <a href="https://x.com/andersonbrdev"><b>@andersonbrdev</b></a>. Follow the build on X.
+  MIT · made by <a href="https://x.com/andersonbrdev"><b>@andersonbrdev</b></a> · <a href="https://bot.runelay.com">bot.runelay.com</a>. Follow the build on X.
 </p>

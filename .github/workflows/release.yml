@@ -52,15 +52,31 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  release:
-    needs: image
+  cli:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run build:cli
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cli
+          path: dist/cli/
+
+  release:
+    needs: [image, cli]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: cli
+          path: dist/cli
       - name: Publish release assets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           sed "s#ghcr.io/andsu-dev/runeley#ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/runeley#" deploy/compose.yaml > compose.yaml
-          gh release create "$GITHUB_REF_NAME" deploy/install.sh compose.yaml \
+          gh release create "$GITHUB_REF_NAME" deploy/install.sh deploy/install-cli.sh compose.yaml dist/cli/runeley-* \
             --title "$GITHUB_REF_NAME" --notes-file CHANGELOG.md --verify-tag

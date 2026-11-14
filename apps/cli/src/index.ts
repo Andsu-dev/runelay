@@ -1,15 +1,29 @@
-import { importCommand } from "@/commands/import.command";
-import { importContextCommand } from "@/commands/import-context.command";
-import { installClientsCommand } from "@/commands/install-clients.command";
-import { syncContextCommand } from "@/commands/sync-context.command";
+import type { Result } from "@runeley/shared";
+import packageJson from "../package.json";
 
-const commands: Record<string, () => unknown> = {
-  import: importCommand,
-  "install-clients": installClientsCommand,
-  "import-context": importContextCommand,
-  "sync-context": syncContextCommand,
+const run = async () => {
+  const [name = "help", argument] = process.argv.slice(2);
+  if (name === "--version" || name === "-v" || name === "version") {
+    console.log(packageJson.version);
+    return;
+  }
+  const { HELP_TEXT } = await import("@/constants/cli.constants");
+  const { red } = await import("@/lib/terminal");
+  const { COMMANDS } = await import("@/constants/commands.constants");
+  const command = COMMANDS[name];
+  if (!command) {
+    console.log(HELP_TEXT);
+    if (!["help", "--help", "-h"].includes(name)) process.exitCode = 1;
+    return;
+  }
+  const result: Result<null> = await command(argument);
+  if (result.error) {
+    console.error(red(result.error.message));
+    process.exitCode = 1;
+  }
 };
 
-const run = commands[process.argv[2] ?? ""];
-if (run) await run();
-else console.log("uso: runeley import | install-clients | import-context | sync-context");
+await run().catch((error: unknown) => {
+  console.error(error instanceof Error ? error.message : String(error));
+  process.exitCode = 1;
+});

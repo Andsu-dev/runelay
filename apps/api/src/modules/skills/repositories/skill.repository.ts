@@ -44,14 +44,19 @@ const replaceFiles = (organizationId: string, slug: string, files: SkillFileInpu
 
 export const listSkills = (
   organizationId: string,
-  { query, cursor, limit }: ListSkillsInput,
+  { query, enabled, cursor, limit }: ListSkillsInput,
 ): Result<Page<SkillListItemView>> => {
   const match = query ? toFtsQuery(query, "AND") : null;
   const params: SQLQueryBindings[] = match ? [organizationId, match] : [organizationId];
   const from = match
     ? "skills s JOIN skills_fts ON skills_fts.organization_id = s.organization_id AND skills_fts.slug = s.slug"
     : "skills s";
-  const where = match ? "s.organization_id = ? AND skills_fts MATCH ?" : "s.organization_id = ?";
+  const conditions = match ? ["s.organization_id = ?", "skills_fts MATCH ?"] : ["s.organization_id = ?"];
+  if (enabled !== undefined) {
+    conditions.push("s.enabled = ?");
+    params.push(enabled ? 1 : 0);
+  }
+  const where = conditions.join(" AND ");
   const order = match ? "bm25(skills_fts, 4, 6, 3, 1)" : "s.name";
   return attemptSync(() => {
     const total =

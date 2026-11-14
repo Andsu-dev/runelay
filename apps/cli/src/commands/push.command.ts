@@ -1,5 +1,5 @@
-import type { CreateMemoryInput, CreateSkillInput } from "@runeley/shared";
-import { cliEnv } from "@/config";
+import { type CreateMemoryInput, type CreateSkillInput, ok, type Result } from "@runeley/shared";
+import { cliEnv } from "@/config/env";
 import {
   CLAUDE_PROJECTS_DIR,
   CURRENT_PROJECT_MEMORY_DIR,
@@ -10,6 +10,8 @@ import {
   SKILL_SOURCES,
 } from "@/constants/context.constants";
 import { chunk } from "@/lib/chunk";
+import { bold, red } from "@/lib/terminal";
+import { resolveConnection } from "@/services/config.service";
 import { listMemoryDirectories, readInstructions, readMemories, readSkills } from "@/services/context-reader.service";
 import { pushMemories, pushSkills } from "@/services/runeley-api.service";
 
@@ -64,13 +66,13 @@ const pushInBatches = async <T>(
   label: string,
   items: T[],
   size: number,
-  push: (batch: T[]) => ReturnType<typeof pushMemories>,
+  push: (batch: T[]) => Promise<Result<{ imported: number }>>,
 ) => {
   let imported = 0;
   for (const batch of chunk(items, size)) {
     const { data, error } = await push(batch);
     if (error) {
-      console.error(`${label} falharam: ${error.message}`);
+      console.error(red(`${label} falharam: ${error.message}`));
       process.exitCode = 1;
       return null;
     }
@@ -79,16 +81,23 @@ const pushInBatches = async <T>(
   return imported;
 };
 
-export const importContextCommand = async () => {
-  console.log("Lendo os agentes instalados:");
+export const pushCommand = async (): Promise<Result<null>> => {
+  const connection = resolveConnection();
+  if (connection.error) return connection;
+  console.log(bold("Lendo os agentes instalados:"));
   const memories = collectMemories();
   const skills = collectSkills();
   const pinned = memories.filter((memory) => memory.pinned).length;
   console.log(`\nTotal: ${memories.length} memórias (${pinned} fixadas) e ${skills.length} habilidades.`);
 
-  const importedMemories = await pushInBatches("Memórias", memories, MEMORY_BATCH_SIZE, pushMemories);
-  if (importedMemories === null) return;
-  const importedSkills = await pushInBatches("Habilidades", skills, SKILL_BATCH_SIZE, pushSkills);
-  if (importedSkills === null) return;
-  console.log(`Importadas ${importedMemories} memórias e ${importedSkills} habilidades.`);
+  const importedMemories = await pushInBatches("Memórias", memories, MEMORY_BATCH_SIZE, (batch) =>
+    pushMemories(connection.data, batch),
+  );
+  if (importedMemories === null) return ok(null);
+  const importedSkills = await pushInBatches("Habilidades", skills, SKILL_BATCH_SIZE, (batch) =>
+    pushSkills(connection.data, batch),
+  );
+  if (importedSkills === null) return ok(null);
+  console.log(`Enviadas ${importedMemories} memórias e ${importedSkills} habilidades.`);
+  return ok(null);
 };

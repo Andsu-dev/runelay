@@ -7,6 +7,7 @@ import {
   type SkillFileInput,
   skillSlugSchema,
 } from "@runeley/shared";
+import { SKILL_MARKER_FILE } from "@/constants/cli.constants";
 import {
   BINARY_EXTENSIONS,
   CONTEXT_END_MARKER,
@@ -89,7 +90,7 @@ export const readSkills = (directory: string): CreateSkillInput[] => {
   return readdirSync(directory).flatMap((name) => {
     const root = join(directory, name);
     const entry = join(root, SKILL_ENTRY_FILE);
-    if (name.startsWith(".") || !existsSync(entry)) return [];
+    if (name.startsWith(".") || !existsSync(entry) || existsSync(join(root, SKILL_MARKER_FILE))) return [];
     const slug = skillSlugSchema.safeParse(toSlug(name));
     if (!slug.success) return [];
     const { meta, body } = splitFrontmatter(readFileSync(entry, "utf8"));
@@ -105,6 +106,22 @@ export const readSkills = (directory: string): CreateSkillInput[] => {
     ];
   });
 };
+
+export const listLocalSkillSlugs = (directories: string[]) =>
+  new Set(
+    directories.flatMap((directory) =>
+      existsSync(directory)
+        ? readdirSync(directory)
+            .filter(
+              (name) =>
+                !name.startsWith(".") &&
+                existsSync(join(directory, name, SKILL_ENTRY_FILE)) &&
+                !existsSync(join(directory, name, SKILL_MARKER_FILE)),
+            )
+            .map(toSlug)
+        : [],
+    ),
+  );
 
 const stripManagedBlock = (content: string) => {
   const start = content.indexOf(CONTEXT_START_MARKER);

@@ -7,11 +7,11 @@
     "runeley": "src/index.ts"
   },
   "scripts": {
-    "import": "bun src/index.ts import",
-    "install-clients": "bun src/index.ts install-clients",
     "typecheck": "tsc --noEmit",
-    "import-context": "bun src/index.ts import-context",
-    "sync-context": "bun src/index.ts sync-context"
+    "import": "bun src/index.ts import",
+    "install-clients": "bun src/index.ts connect",
+    "import-context": "bun src/index.ts push",
+    "sync-context": "bun src/index.ts pull"
   },
   "dependencies": {
     "@runeley/shared": "workspace:*",

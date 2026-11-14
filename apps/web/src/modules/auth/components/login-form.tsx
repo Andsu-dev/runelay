@@ -17,11 +17,15 @@ const FIELD_SURFACE = "h-11 bg-card shadow-xs ring-1 ring-border/70 hover:bg-car
 interface LoginFormProps {
   mode: "signin" | "signup";
   setupToken?: string;
+  redirectTo?: string;
 }
 
 const EASE_OUT = [0.2, 0, 0, 1] as const;
 
-export function LoginForm({ mode, setupToken }: LoginFormProps) {
+const isLocalPath = (path: string | undefined): path is string =>
+  Boolean(path?.startsWith("/") && !path.startsWith("//"));
+
+export function LoginForm({ mode, setupToken, redirectTo }: LoginFormProps) {
   const navigate = useNavigate();
   const router = useRouter();
   const [pending, setPending] = useState(false);
@@ -47,7 +51,8 @@ export function LoginForm({ mode, setupToken }: LoginFormProps) {
     }
     await queryClient.invalidateQueries({ queryKey: meQuery.queryKey });
     await router.invalidate();
-    navigate({ to: "/overview" });
+    if (isLocalPath(redirectTo)) router.history.push(redirectTo);
+    else navigate({ to: "/overview" });
   };
 
   return (
@@ -121,7 +126,7 @@ export function LoginForm({ mode, setupToken }: LoginFormProps) {
         {copy.switchPrompt}{" "}
         <Link
           to="/login"
-          search={{ mode: mode === "signup" ? "signin" : "signup" }}
+          search={{ mode: mode === "signup" ? "signin" : "signup", redirect: redirectTo }}
           replace
           className="font-medium text-foreground underline-offset-4 outline-none transition-colors duration-200 hover:underline focus-visible:underline"
         >

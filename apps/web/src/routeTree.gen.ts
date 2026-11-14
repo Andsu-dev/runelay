@@ -15,6 +15,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppApiKeysRouteImport } from './routes/_app/api-keys'
 import { Route as AppOverviewRouteImport } from './routes/_app/overview'
 import { Route as AppSetupRouteImport } from './routes/_app/setup'
+import { Route as CliAuthorizeRouteImport } from './routes/cli/authorize'
 import { Route as SourcesIndexRouteImport } from './routes/sources/index'
 import { Route as SourcesNameRouteImport } from './routes/sources/$name'
 import { Route as AppConnectorsIndexRouteImport } from './routes/_app/connectors/index'
@@ -52,6 +53,11 @@ const AppSetupRoute = AppSetupRouteImport.update({
   id: '/setup',
   path: '/setup',
   getParentRoute: () => AppRoute,
+} as any)
+const CliAuthorizeRoute = CliAuthorizeRouteImport.update({
+  id: '/cli/authorize',
+  path: '/cli/authorize',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SourcesIndexRoute = SourcesIndexRouteImport.update({
   id: '/sources/',
@@ -100,6 +106,7 @@ export interface FileRoutesByFullPath {
   '/api-keys': typeof AppApiKeysRoute
   '/overview': typeof AppOverviewRoute
   '/setup': typeof AppSetupRoute
+  '/cli/authorize': typeof CliAuthorizeRoute
   '/sources/$name': typeof SourcesNameRoute
   '/sources/': typeof SourcesIndexRoute
   '/connectors/$name': typeof AppConnectorsNameRoute
@@ -115,6 +122,7 @@ export interface FileRoutesByTo {
   '/api-keys': typeof AppApiKeysRoute
   '/overview': typeof AppOverviewRoute
   '/setup': typeof AppSetupRoute
+  '/cli/authorize': typeof CliAuthorizeRoute
   '/sources/$name': typeof SourcesNameRoute
   '/sources': typeof SourcesIndexRoute
   '/connectors/$name': typeof AppConnectorsNameRoute
@@ -132,6 +140,7 @@ export interface FileRoutesById {
   '/_app/api-keys': typeof AppApiKeysRoute
   '/_app/overview': typeof AppOverviewRoute
   '/_app/setup': typeof AppSetupRoute
+  '/cli/authorize': typeof CliAuthorizeRoute
   '/sources/$name': typeof SourcesNameRoute
   '/sources/': typeof SourcesIndexRoute
   '/_app/connectors/$name': typeof AppConnectorsNameRoute
@@ -149,6 +158,7 @@ export interface FileRouteTypes {
     | '/api-keys'
     | '/overview'
     | '/setup'
+    | '/cli/authorize'
     | '/sources/$name'
     | '/sources/'
     | '/connectors/$name'
@@ -164,6 +174,7 @@ export interface FileRouteTypes {
     | '/api-keys'
     | '/overview'
     | '/setup'
+    | '/cli/authorize'
     | '/sources/$name'
     | '/sources'
     | '/connectors/$name'
@@ -180,6 +191,7 @@ export interface FileRouteTypes {
     | '/_app/api-keys'
     | '/_app/overview'
     | '/_app/setup'
+    | '/cli/authorize'
     | '/sources/$name'
     | '/sources/'
     | '/_app/connectors/$name'
@@ -194,6 +206,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
+  CliAuthorizeRoute: typeof CliAuthorizeRoute
   SourcesNameRoute: typeof SourcesNameRoute
   SourcesIndexRoute: typeof SourcesIndexRoute
 }
@@ -241,6 +254,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/setup'
       preLoaderRoute: typeof AppSetupRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/cli/authorize': {
+      id: '/cli/authorize'
+      path: '/cli/authorize'
+      fullPath: '/cli/authorize'
+      preLoaderRoute: typeof CliAuthorizeRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/sources/': {
       id: '/sources/'
@@ -331,6 +351,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
+  CliAuthorizeRoute: CliAuthorizeRoute,
   SourcesNameRoute: SourcesNameRoute,
   SourcesIndexRoute: SourcesIndexRoute,
 }

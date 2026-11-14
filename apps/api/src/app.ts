@@ -6,6 +6,7 @@ import { activityRoutes, onboardingRoutes, toolsRoutes } from "@/modules/activit
 import { apiKeysRoutes } from "@/modules/api-keys/routes/api-keys.routes";
 import { authRoutes } from "@/modules/auth/routes/auth.routes";
 import { catalogRoutes } from "@/modules/catalog/routes/catalog.routes";
+import { cliRoutes } from "@/modules/cli/routes/cli.routes";
 import { contextRoutes } from "@/modules/context/routes/context.routes";
 import { gatewayRoutes } from "@/modules/gateway/routes/gateway.routes";
 import { memoriesRoutes } from "@/modules/memories/routes/memories.routes";
@@ -22,6 +23,7 @@ const v1 = new Hono()
   .route("/sources", sourcesRoutes)
   .route("/catalog", catalogRoutes)
   .route("/api-keys", apiKeysRoutes)
+  .route("/cli", cliRoutes)
   .route("/oauth", oauthRoutes)
   .route("/memories", memoriesRoutes)
   .route("/skills", skillsRoutes)

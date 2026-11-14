@@ -102,4 +102,15 @@ export const MIGRATIONS = [
   )`,
   "CREATE INDEX IF NOT EXISTS audit_events_key_created ON audit_events (api_key_id, created_at)",
   "CREATE INDEX IF NOT EXISTS tool_calls_key_created ON tool_calls (api_key_id, created_at)",
+  `CREATE TABLE IF NOT EXISTS cli_auth_requests (
+    code TEXT PRIMARY KEY,
+    poll_token_hash TEXT NOT NULL UNIQUE,
+    device TEXT NOT NULL,
+    organization_id TEXT,
+    api_key TEXT,
+    status TEXT NOT NULL DEFAULT 'pending',
+    expires_at TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (${SQL_NOW})
+  )`,
+  "CREATE INDEX IF NOT EXISTS cli_auth_requests_expires ON cli_auth_requests (expires_at)",
 ];

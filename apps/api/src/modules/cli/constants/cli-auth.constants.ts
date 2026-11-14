@@ -1,0 +1,15 @@
+export const CLI_AUTH_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+export const CLI_AUTH_CODE_LENGTH = 8;
+
+export const CLI_AUTH_TTL_MS = 10 * 60_000;
+
+export const CLI_AUTH_POLL_INTERVAL_SECONDS = 2;
+
+export const CLI_AUTH_START_LIMIT_PER_MINUTE = 10;
+
+export const CLI_AUTH_CODE_ATTEMPTS = 3;
+
+export const CLI_KEY_NAME_PREFIX = "CLI";
+
+export const CLI_KEY_NAME_MAX = 64;

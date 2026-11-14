@@ -1,4 +1,4 @@
-import { cliEnv } from "@/config";
+import { cliEnv } from "@/config/env";
 import type { AgentDirectory, InstructionFile } from "@/types/context.types";
 
 const HOME = cliEnv.RUNELEY_HOME;

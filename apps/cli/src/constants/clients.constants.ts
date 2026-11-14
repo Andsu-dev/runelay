@@ -1,6 +1,6 @@
-import { homedir } from "node:os";
+import { cliEnv } from "@/config/env";
 
-const home = homedir();
+const home = cliEnv.RUNELEY_HOME;
 
 export const CLIENT_CONFIG_FILES = {
   claude: `${home}/.claude.json`,
@@ -10,3 +10,5 @@ export const CLIENT_CONFIG_FILES = {
 } as const;
 
 export const TOML_HEADER_KEYS = { codex: "http_headers", grok: "headers" } as const;
+
+export const TOML_RUNELEY_HEADER = "[mcp_servers.runeley]";
