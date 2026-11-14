@@ -10,7 +10,7 @@ export const UPDATE_COMMAND = "cd ~/runelay && docker compose pull && docker com
 export const versionQuery = queryOptions({
   queryKey: ["system", "version"],
   queryFn: () => api.get<VersionView>("/system/version"),
-  staleTime: 60 * 60 * 1000,
+  staleTime: 10 * 60 * 1000,
 });
 
 export const startUpdate = () => api.post<{ started: true }>("/system/update");
