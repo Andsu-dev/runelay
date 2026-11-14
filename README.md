@@ -1,83 +1,77 @@
-<p align="center">
-  <img src=".github/assets/logo.svg" width="112" alt="runeley" />
-</p>
-
-<h1 align="center">runeley</h1>
-
-<p align="center"><b>One MCP endpoint for every account, skill and memory your agents use.</b></p>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/banner-dark.svg" />
+  <img src=".github/assets/banner-light.svg" alt="runeley: all your agents, one brain" width="100%" />
+</picture>
 
 <p align="center">
-  <img alt="license" src="https://img.shields.io/badge/license-MIT-111111" />
-  <img alt="version" src="https://img.shields.io/badge/version-0.1.0-111111" />
-  <img alt="self-hosted" src="https://img.shields.io/badge/self--hosted-docker-111111" />
-  <img alt="mcp" src="https://img.shields.io/badge/protocol-MCP-111111" />
-  <img alt="runtime" src="https://img.shields.io/badge/runtime-bun-111111" />
+  <img alt="MIT" src="https://img.shields.io/badge/license-MIT-f0a050?style=flat-square" />
+  <img alt="self-hosted" src="https://img.shields.io/badge/self--hosted-docker-2496ED?style=flat-square&logo=docker&logoColor=white" />
+  <img alt="MCP" src="https://img.shields.io/badge/protocol-MCP-7c5cff?style=flat-square" />
+  <img alt="Bun" src="https://img.shields.io/badge/runtime-bun-fbf0df?style=flat-square&logo=bun&logoColor=black" />
+  <img alt="SQLite" src="https://img.shields.io/badge/db-sqlite-0f80cc?style=flat-square&logo=sqlite&logoColor=white" />
 </p>
 
 <p align="center">
-  Connect Linear, GitHub, Notion and friends once. Bring the memories and skills you already have.<br />
-  Claude Code, Codex, Cursor and Grok all see the same tools and the same context, from your own server.
+  Connect Linear, GitHub and Notion <b>once</b>. Bring the skills and memories you already have.<br />
+  Claude Code, Codex, Cursor, Antigravity and Grok all see the same tools and the same context, from <b>your</b> server.
 </p>
 
----
+<p align="center">
+  <a href="#-quick-start"><b>Quick start</b></a> ·
+  <a href="#-connect-your-agents"><b>Connect agents</b></a> ·
+  <a href="#-reference"><b>Reference</b></a> ·
+  <a href="https://x.com/andersonbrdev"><b>Follow the build</b></a>
+</p>
 
-## The whole idea
+<br />
 
-Every agent keeps its own little world: Claude Code has its MCP servers, OAuth logins, skills and memory; Codex has another config file; Cursor another; Grok another. Log into Linear four times, copy the same skill to four folders, and watch each agent forget what the other learned.
+## ✨ Why
 
-runeley puts all of that behind **one MCP endpoint** that you host:
+Every agent lives on its own island. You log into Linear four times, copy the same skill to four folders, and teach Claude a rule that Codex never hears about.
 
-- **Connections**: remote MCP servers (with OAuth), local stdio servers and OpenAPI specs, logged in once and encrypted at rest.
-- **Skills**: your `SKILL.md` folders, searchable and served on demand.
-- **Memory**: notes linked with `[[slug]]`, with versions and health checks. What one agent learns, every agent can read.
-- **Organizations**: each org has its own connections, skills, memory and API keys. Give every agent its own key and revoke one without touching the others.
+runeley is the bridge: **one MCP endpoint, on your server**, in front of every account, skill and memory. It runs no model. Your agent thinks; runeley is where it finds tools and context.
 
-It is a gateway, not an agent: runeley runs no model. Your agent does the thinking; runeley is where it reaches your tools and context.
-
-## Features
-
-|  |  |
-|---|---|
-| **MCP gateway** | `POST /v1/mcp` with an API key. Search tools across every connection, call one, or chain many in a single `execute`. |
-| **Connector catalog** | ~25 curated remote MCP servers (Linear, GitHub, Notion, Figma, Vercel, Supabase, Sentry, Stripe…) installed in one click with OAuth. |
-| **Any MCP or API** | Remote MCP by URL, local MCP by command, or any OpenAPI spec turned into tools. |
-| **Skills and memory** | Full-text search, `[[links]]`, backlinks, versions, stale and broken-link reports. |
-| **Context routing** | Agents get a short brief (pinned rules + index) and fetch the rest on demand through MCP. |
-| **Import everything** | One command reads memories, skills and global instructions from Claude Code, Codex, Cursor, Grok, Gemini and OpenCode. |
-| **One key per agent** | API keys per organization, stored hashed for auth and encrypted for recovery by the owner. |
-| **Self-hosted** | One container, SQLite, no external services besides the accounts you connect. |
-
-## How it works
-
-```
- Claude Code ─┐                       ┌─ Linear, GitHub, Notion (remote MCP + OAuth)
- Codex ───────┤   Authorization:      ├─ local MCP servers (stdio)
- Cursor ──────┼── Bearer rnl_…  ──▶ runeley ──┼─ any OpenAPI spec
- Grok ────────┘   POST /v1/mcp        ├─ skills (SKILL.md + files)
-                                      └─ memory ([[linked]] notes)
+```mermaid
+flowchart LR
+  subgraph A[" Your agents "]
+    CC[Claude Code]
+    CX[Codex]
+    CU[Cursor]
+    GK[Grok]
+  end
+  R((runeley))
+  subgraph B[" Your stuff "]
+    AC[Linear · GitHub · Notion · any OpenAPI]
+    SK[Skills]
+    ME[Memory]
+  end
+  CC & CX & CU & GK -- "Bearer rnl_…" --> R
+  R --> AC & SK & ME
+  classDef hub fill:#f0a050,stroke:#f0a050,color:#111,font-weight:bold
+  class R hub
 ```
 
-The MCP server exposes nine tools:
+## 🧩 What you get
 
-| Tool | What it does |
+| | |
 |---|---|
-| `list_connections` | Every connection with status and tool count. |
-| `search_tools` | Search tools across all connections (`source.tool`). |
-| `call_tool` | Call one tool with arguments. |
-| `execute` | Run JavaScript that chains tools inside a WebAssembly sandbox: `await tools.linear.list_issues({...})`. |
-| `search_context` | Full-text search across memories and skills. |
-| `read_memory` / `write_memory` | Read a memory, or create and update one (versioned). |
-| `read_skill` / `read_skill_file` | Read a skill and its files. |
+| 🔌 **Connect once** | ~25 curated MCP servers with one-click OAuth, plus any remote MCP, local MCP or OpenAPI spec. |
+| 🧠 **Shared memory** | Notes linked with `[[slug]]`, versioned, with health checks. What one agent learns, all of them know. |
+| 📚 **Skills that travel** | Your `SKILL.md` folders, searchable and served on demand. |
+| 📥 **Import in one go** | Memories, skills and instructions from Claude Code, Codex, Cursor, Grok, Gemini and OpenCode. |
+| 🔑 **One key per agent** | Revoke one without touching the others. Every call audited. |
+| 🏠 **Yours** | One container, SQLite, no third-party services. MIT. |
 
-## Install
-
-One line, on any machine with Docker:
+## 🚀 Quick start
 
 ```sh
 curl -fsSL https://github.com/Andsu-dev/runeley/releases/latest/download/install.sh | sh
 ```
 
-The script creates `~/runeley`, writes a `.env` with a fresh `RUNELEY_SECRET`, pulls `ghcr.io/andsu-dev/runeley` and starts it on `127.0.0.1:4312`. Open it, create your account (the first one becomes the owner) and follow **Acesso → Configurar agentes**.
+That is it. The script creates `~/runeley`, writes a `.env` with a fresh `RUNELEY_SECRET`, pulls the image and starts it on `127.0.0.1:4312`. Open the link it prints, create your account and follow **Acesso → Configurar agentes**.
+
+<details>
+<summary><b>Installer options</b></summary>
 
 Options go in front of `sh`:
 
@@ -88,7 +82,10 @@ curl -fsSL https://github.com/Andsu-dev/runeley/releases/latest/download/install
 
 **Update**: `cd ~/runeley && docker compose pull && docker compose up -d`
 
-### Docker Compose by hand
+</details>
+
+<details>
+<summary><b>Docker Compose by hand</b></summary>
 
 ```yaml
 services:
@@ -108,7 +105,10 @@ RUNELEY_SECRET=$(openssl rand -hex 32)      # encrypts connections and API keys;
 ALLOW_SIGNUP=false                          # first signup becomes the owner, then signups close
 ```
 
-### Build from source
+</details>
+
+<details>
+<summary><b>Build from source</b></summary>
 
 ```sh
 git clone https://github.com/Andsu-dev/runeley.git && cd runeley
@@ -118,7 +118,10 @@ docker compose up -d --build
 
 > `bun run dev` is only for working on runeley itself. To run it, use the image.
 
-### HTTPS in front
+</details>
+
+<details>
+<summary><b>HTTPS (Caddy or Cloudflare Tunnel)</b></summary>
 
 **Caddy**
 
@@ -139,7 +142,10 @@ ingress:
 
 OAuth callbacks go to `PUBLIC_URL/v1/oauth/callback`, so `PUBLIC_URL` must be the public address.
 
-### Configuration
+</details>
+
+<details>
+<summary><b>Environment variables</b></summary>
 
 | Variable | Default | Description |
 |---|---|---|
@@ -155,7 +161,9 @@ OAuth callbacks go to `PUBLIC_URL/v1/oauth/callback`, so `PUBLIC_URL` must be th
 | `RUNELEY_DATA` | `/data` in Docker | Where the SQLite database lives. |
 | `PORT` / `HOST` | `4312` / `0.0.0.0` in Docker | Where the server listens. |
 
-## Connect your agents
+</details>
+
+## 🤖 Connect your agents
 
 1. In the panel, open **Acesso → Configurar agentes**. The guide walks you through connecting accounts, creating a key and wiring each client.
 2. Or paste the config yourself (replace the URL and key):
@@ -196,7 +204,7 @@ bun install
 RUNELEY_URL=https://runeley.example.com RUNELEY_API_KEY=rnl_... bun run install-clients
 ```
 
-## Bring your context
+## 📥 Bring your context
 
 The CLI runs on your computer, because that is where your agents keep their files.
 
@@ -225,7 +233,25 @@ Duplicates are merged (first one wins). Memories listed under `## Regras de ouro
 
 `sync-context` only touches the block between `<!-- runeley:start -->` and `<!-- runeley:end -->`. Everything else in your files stays as it is. The brief tells agents to save new facts with `write_memory`, so memory flows back to runeley instead of local files.
 
-## REST API
+## 📖 Reference
+
+<details>
+<summary><b>MCP tools</b></summary>
+
+| Tool | What it does |
+|---|---|
+| `list_connections` | Every connection with status and tool count. |
+| `search_tools` | Search tools across all connections (`source.tool`). |
+| `call_tool` | Call one tool with arguments. |
+| `execute` | Run JavaScript that chains tools inside a WebAssembly sandbox: `await tools.linear.list_issues({...})`. |
+| `search_context` | Full-text search across memories and skills. |
+| `read_memory` / `write_memory` | Read a memory, or create and update one (versioned). |
+| `read_skill` / `read_skill_file` | Read a skill and its files. |
+
+</details>
+
+<details>
+<summary><b>REST API</b></summary>
 
 Everything the panel does goes through a versioned JSON API. Every response is `{ data, error }`.
 
@@ -244,7 +270,10 @@ Everything the panel does goes through a versioned JSON API. Every response is `
 | GET | `/v1/activity/summary`, `/v1/onboarding`, `/v1/tools` | session or API key |
 | `*` | `/v1/mcp` | API key |
 
-## Security
+</details>
+
+<details>
+<summary><b>🔒 Security</b></summary>
 
 runeley holds credentials for every account you connect, so it is locked down by default.
 
@@ -274,7 +303,10 @@ runeley holds credentials for every account you connect, so it is locked down by
 
 **Container.** The image starts as root only to fix the ownership of `/data`, then drops to the unprivileged `node` user. The application code stays read-only for that user. Keep the `127.0.0.1` binding (the default) and put HTTPS in front.
 
-## Operations
+</details>
+
+<details>
+<summary><b>Operations: backup, update, health</b></summary>
 
 **Backup**: copy the `data/` folder (the SQLite database) and keep `RUNELEY_SECRET` somewhere safe. Both are needed to restore.
 
@@ -282,7 +314,10 @@ runeley holds credentials for every account you connect, so it is locked down by
 
 **Health**: `GET /health` returns `ok`. The container has a healthcheck.
 
-## Development
+</details>
+
+<details>
+<summary><b>Development</b></summary>
 
 ```sh
 bun install
@@ -308,13 +343,17 @@ packages/
 | `bun run check` | Biome format and lint |
 | `bun run seed` | Demo data for local development |
 
-## Roadmap
+</details>
+
+## 🗺️ Roadmap
 
 - Tools page with per-tool approval policies
 - Organization members and invites
 - Activity log per API key
 - Menu bar app for macOS (reconnect alerts)
 
-## License
+<br />
 
-MIT. Made by [@andersonbrdev](https://x.com/andersonbrdev).
+<p align="center">
+  MIT · made by <a href="https://x.com/andersonbrdev"><b>@andersonbrdev</b></a>. Follow the build on X.
+</p>
