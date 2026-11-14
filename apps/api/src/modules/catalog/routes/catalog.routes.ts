@@ -12,5 +12,12 @@ export const catalogRoutes = new Hono<AppEnv>()
     respond(c, listCatalog(c.var.organizationId, c.req.valid("query").query)),
   )
   .post("/install", validate("json", installCatalogSchema), async (c) =>
-    respond(c, await installCatalogItem(c.var.organizationId, c.req.valid("json").id), 201),
+    respond(
+      c,
+      await installCatalogItem(c.var.organizationId, c.req.valid("json").id, {
+        authMethod: c.var.authMethod,
+        role: c.var.role,
+      }),
+      201,
+    ),
   );

@@ -4,11 +4,16 @@ import { APIError } from "better-auth/api";
 import { organization } from "better-auth/plugins/organization";
 import { env } from "@/config/env";
 import { db } from "@/db/connection";
-import { API_KEY_PREFIX, AUTH_BASE_PATH, SIGNUP_CLOSED_MESSAGE } from "@/modules/auth/constants/auth.constants";
+import {
+  API_KEY_PREFIX,
+  AUTH_BASE_PATH,
+  SETUP_TOKEN_REQUIRED_MESSAGE,
+  SIGNUP_CLOSED_MESSAGE,
+} from "@/modules/auth/constants/auth.constants";
 import { accessControl, organizationRoles } from "@/modules/auth/lib/access-control";
+import { isSetupToken, SETUP_TOKEN_HEADER } from "@/modules/auth/lib/setup-token";
 import { ensurePersonalOrganization } from "@/modules/auth/repositories/membership.repository";
-
-const countUsers = () => db.query<{ total: number }, []>(`SELECT COUNT(*) AS total FROM "user"`).get()?.total ?? 0;
+import { countUsers } from "@/modules/auth/repositories/user.repository";
 
 export const auth = betterAuth({
   appName: "runeley.bot",
@@ -25,8 +30,12 @@ export const auth = betterAuth({
   databaseHooks: {
     user: {
       create: {
-        before: async (user) => {
-          if (env.ALLOW_SIGNUP || countUsers() === 0) return { data: user };
+        before: async (user, context) => {
+          if (countUsers() === 0) {
+            if (isSetupToken(context?.headers?.get(SETUP_TOKEN_HEADER))) return { data: user };
+            throw new APIError("FORBIDDEN", { message: SETUP_TOKEN_REQUIRED_MESSAGE });
+          }
+          if (env.ALLOW_SIGNUP) return { data: user };
           throw new APIError("FORBIDDEN", { message: SIGNUP_CLOSED_MESSAGE });
         },
         after: async (user) => {

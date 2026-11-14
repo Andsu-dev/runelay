@@ -64,7 +64,7 @@ The MCP server exposes nine tools:
 | `list_connections` | Every connection with status and tool count. |
 | `search_tools` | Search tools across all connections (`source.tool`). |
 | `call_tool` | Call one tool with arguments. |
-| `execute` | Run JavaScript that chains tools: `await tools.linear.list_issues({...})`. Each call returns `{ data, error }`. |
+| `execute` | Run JavaScript that chains tools (off by default, see Security). |
 | `search_context` | Full-text search across memories and skills. |
 | `read_memory` / `write_memory` | Read a memory, or create and update one (versioned). |
 | `read_skill` / `read_skill_file` | Read a skill and its files. |
@@ -145,7 +145,11 @@ OAuth callbacks go to `PUBLIC_URL/v1/oauth/callback`, so `PUBLIC_URL` must be th
 |---|---|---|
 | `PUBLIC_URL` | `http://localhost:4312` | Public URL of the panel and API. Used for OAuth callbacks and cookies. |
 | `RUNELEY_SECRET` | required, 32+ chars | Encrypts connection configs, OAuth tokens and recoverable API keys. Losing it means reconnecting everything. |
+| `RUNELEY_SETUP_TOKEN` | generated | One-time token required to create the first account. |
 | `ALLOW_SIGNUP` | `false` | Keep signups open after the first account. |
+| `RUNELEY_ENABLE_EXECUTE` | `false` | Enables the `execute` tool. See Security. |
+| `RUNELEY_ENABLE_STDIO` | `false` | Enables local MCP servers by command. See Security. |
+| `RUNELEY_ALLOW_PRIVATE_URLS` | `false` | Allows connections to private network addresses. |
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | empty | Enables "Sign in with GitHub" on the panel. |
 | `RUNELEY_DATA` | `/data` in Docker | Where the SQLite database lives. |
 | `PORT` / `HOST` | `4312` / `0.0.0.0` in Docker | Where the server listens. |
@@ -241,11 +245,27 @@ Everything the panel does goes through a versioned JSON API. Every response is `
 
 ## Security
 
+runeley holds credentials for every account you connect, so it is locked down by default.
+
+**First access.** While no account exists, signing up needs a one-time setup token. The installer generates it and prints the link (`/login?mode=signup&token=…`). Without `RUNELEY_SETUP_TOKEN` in `.env`, the server makes one at startup and prints the link in `docker compose logs`. After the first account, signups close (unless `ALLOW_SIGNUP=true`).
+
+**Credentials.**
 - Connection configs, OAuth tokens and recoverable API keys are encrypted with AES-256-GCM using `RUNELEY_SECRET`.
-- Agents never see credentials: runeley attaches them when it calls the upstream server.
-- API keys are scoped to one organization. Revealing a key needs a panel session, never an API key.
-- After the first account, signups are closed unless `ALLOW_SIGNUP=true`.
-- `execute` runs agent-written JavaScript in a `node:vm` context with a timeout. That is isolation for convenience, not a security sandbox: only give keys to agents you trust.
+- Agents never receive credentials: requests made with an API key, and the `list_connections` tool, see headers and env values as `••••••`.
+- Importing a client config through the API never expands `${VARS}` from the server environment.
+- API keys belong to one organization. Revealing a key needs a panel session, never an API key.
+
+**Dangerous capabilities are off by default.**
+
+| Variable | Default | What it unlocks |
+|---|---|---|
+| `RUNELEY_ENABLE_EXECUTE` | `false` | The `execute` tool. It runs agent-written JavaScript in `node:vm`, which is **not** a security sandbox. Anyone with an API key, or an agent tricked by prompt injection, could run code on the server. Turn it on only for a single-user instance you fully trust. |
+| `RUNELEY_ENABLE_STDIO` | `false` | Local MCP servers (`command`). Even when on, only an owner or admin in the panel can create them, and the process gets a minimal environment (no server secrets). |
+| `RUNELEY_ALLOW_PRIVATE_URLS` | `false` | Connections to private, loopback, link-local and tailnet addresses (SSRF protection: cloud metadata, other services on the host). |
+
+**Prompt injection.** Tool results come from third parties (an issue, a page, an email). runeley limits what a manipulated agent can do: it cannot read credentials, cannot pin memories (pinned memories go into every agent's instructions, so only the panel can pin) and cannot run code unless you enabled `execute`. It can still write unpinned memories and call the tools you connected, so review memory health from time to time.
+
+**Not covered yet.** No per-key rate limit on `/v1/mcp`, no audit log per key, and the container runs as root. Put runeley behind HTTPS and keep `127.0.0.1` binding (the default) so only your proxy reaches it.
 
 ## Operations
 

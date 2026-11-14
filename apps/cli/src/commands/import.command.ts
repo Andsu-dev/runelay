@@ -25,5 +25,6 @@ export const importCommand = async () => {
     return;
   }
   console.log(`Importadas ${data.imported.length}: ${data.imported.join(", ")}`);
+  for (const { name, reason } of data.skipped) console.log(`  pulada ${name}: ${reason}`);
   console.log(`Abra ${cliEnv.RUNELEY_URL} e faça login nas que ficaram "precisa reconectar".`);
 };

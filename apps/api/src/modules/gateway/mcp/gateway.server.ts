@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { contextSearchSchema, memorySlugSchema, memoryTypeSchema, skillSlugSchema } from "@runeley/shared";
+import { contextSearchSchema, memorySlugSchema, memoryTypeSchema, ok, skillSlugSchema } from "@runeley/shared";
 import { z } from "zod";
+import { env } from "@/config/env";
 import { findTool } from "@/modules/connectors/services/connection.service";
 import { pinnedInstructions, searchContext } from "@/modules/context/services/context.service";
 import { GATEWAY_INFO, GATEWAY_INSTRUCTIONS, TOOL_DESCRIPTIONS } from "@/modules/gateway/constants/gateway.constants";
@@ -12,6 +13,7 @@ import type { GatewayCaller } from "@/modules/gateway/types/gateway.types";
 import { findMemory, writeMemory } from "@/modules/memories/services/memory.service";
 import { findSkill, findSkillFile } from "@/modules/skills/services/skill.service";
 import { listSourceViews } from "@/modules/sources/services/source.service";
+import { redactView } from "@/modules/sources/utils/redact-config";
 
 export const createGatewayServer = (caller: GatewayCaller) => {
   const { organizationId } = caller;
@@ -22,7 +24,10 @@ export const createGatewayServer = (caller: GatewayCaller) => {
   server.registerTool(
     "list_connections",
     { description: TOOL_DESCRIPTIONS.listConnections, inputSchema: {} },
-    async () => toToolResponse(listSourceViews(organizationId)),
+    async () => {
+      const views = listSourceViews(organizationId);
+      return toToolResponse(views.error ? views : ok(views.data.map(redactView)));
+    },
   );
 
   server.registerTool(
@@ -51,11 +56,13 @@ export const createGatewayServer = (caller: GatewayCaller) => {
     },
   );
 
-  server.registerTool(
-    "execute",
-    { description: TOOL_DESCRIPTIONS.execute, inputSchema: { code: z.string() } },
-    async ({ code }) => toToolResponse(await runCode(caller, code)),
-  );
+  if (env.RUNELEY_ENABLE_EXECUTE) {
+    server.registerTool(
+      "execute",
+      { description: TOOL_DESCRIPTIONS.execute, inputSchema: { code: z.string() } },
+      async ({ code }) => toToolResponse(await runCode(caller, code)),
+    );
+  }
 
   server.registerTool(
     "search_context",
@@ -79,7 +86,6 @@ export const createGatewayServer = (caller: GatewayCaller) => {
         name: z.string().trim().min(1).max(200).optional(),
         description: z.string().trim().max(400).optional(),
         type: memoryTypeSchema.optional(),
-        pinned: z.boolean().optional(),
       },
     },
     async (input) => toToolResponse(writeMemory(organizationId, input)),

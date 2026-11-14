@@ -71,7 +71,7 @@ export const connectStdio = async ({ name }: SourceKey, config: StdioConfig): Pr
   const transport = new StdioClientTransport({
     command: config.command,
     args: config.args,
-    env: { ...(process.env as Record<string, string>), ...config.env },
+    env: { PATH: process.env.PATH ?? "/usr/local/bin:/usr/bin:/bin", HOME: process.env.HOME ?? "/tmp", ...config.env },
     stderr: "ignore",
   });
   const connected = await attempt(() => client.connect(transport), "CONNECTION_FAILED");

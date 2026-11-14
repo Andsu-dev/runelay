@@ -17,21 +17,35 @@ import {
   upsertSource,
   upsertSources,
 } from "@/modules/sources/repositories/source.repository";
+import { checkSourcePolicy } from "@/modules/sources/services/source-policy.service";
 import type { SourceKey } from "@/modules/sources/types/source.types";
+import type { SourceActor } from "@/modules/sources/types/source-policy.types";
 
 export { findSourceView, listSourceViews, summarizeSources } from "@/modules/sources/repositories/source.repository";
 
-export const createSource = async (organizationId: string, input: CreateSourceInput): Promise<Result<SourceView>> => {
+export const createSource = async (
+  organizationId: string,
+  input: CreateSourceInput,
+  actor: SourceActor,
+): Promise<Result<SourceView>> => {
+  const allowed = await checkSourcePolicy(input.config, actor);
+  if (allowed.error) return allowed;
   const saved = upsertSource(organizationId, input);
   if (saved.error) return saved;
   await connectSource({ organizationId, name: input.name });
   return findSourceView({ organizationId, name: input.name });
 };
 
-export const updateSource = async (key: SourceKey, input: UpdateSourceInput): Promise<Result<SourceView>> => {
+export const updateSource = async (
+  key: SourceKey,
+  input: UpdateSourceInput,
+  actor: SourceActor,
+): Promise<Result<SourceView>> => {
   const current = findSource(key);
   if (current.error) return current;
   if (input.config) {
+    const allowed = await checkSourcePolicy(input.config, actor);
+    if (allowed.error) return allowed;
     const saved = upsertSource(key.organizationId, { name: key.name, config: input.config });
     if (saved.error) return saved;
   }
@@ -56,11 +70,21 @@ export const removeSource = async (key: SourceKey): Promise<Result<null>> => {
   return deleteSource(key);
 };
 
-export const importSources = async (organizationId: string, input: ImportSourcesInput): Promise<Result<ImportView>> => {
-  const parsed = "config" in input ? parseClientConfig(input.config, process.env) : ok(input.sources);
+export const importSources = async (
+  organizationId: string,
+  input: ImportSourcesInput,
+  actor: SourceActor,
+): Promise<Result<ImportView>> => {
+  const parsed = "config" in input ? parseClientConfig(input.config, {}) : ok(input.sources);
   if (parsed.error) return parsed;
-  const saved = upsertSources(organizationId, parsed.data);
+  const checks = await Promise.all(parsed.data.map((source) => checkSourcePolicy(source.config, actor)));
+  const allowed = parsed.data.filter((_, index) => !checks[index]?.error);
+  const skipped = parsed.data.flatMap((source, index) => {
+    const reason = checks[index]?.error?.message;
+    return reason ? [{ name: source.name, reason }] : [];
+  });
+  const saved = upsertSources(organizationId, allowed);
   if (saved.error) return saved;
-  await Promise.all(parsed.data.map((source) => connectSource({ organizationId, name: source.name })));
-  return ok({ imported: parsed.data.map((source) => source.name) });
+  await Promise.all(allowed.map((source) => connectSource({ organizationId, name: source.name })));
+  return ok({ imported: allowed.map((source) => source.name), skipped });
 };

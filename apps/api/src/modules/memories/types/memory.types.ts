@@ -19,4 +19,4 @@ export interface MemoryContent {
 }
 
 export type MemoryWriteInput = Pick<CreateMemoryInput, "slug" | "body"> &
-  Partial<Pick<CreateMemoryInput, "name" | "description" | "type" | "pinned">>;
+  Partial<Pick<CreateMemoryInput, "name" | "description" | "type">>;

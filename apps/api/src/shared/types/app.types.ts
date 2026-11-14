@@ -1,4 +1,4 @@
-import type { AuthUser } from "@runeley/shared";
+import type { AuthUser, OrganizationRole } from "@runeley/shared";
 import type { AuthMethod } from "@/modules/auth/types/auth.types";
 
 export interface AppEnv {
@@ -7,6 +7,7 @@ export interface AppEnv {
     userId: string | null;
     apiKeyId: string | null;
     authMethod: AuthMethod;
+    role: OrganizationRole | null;
   };
 }
 
@@ -23,5 +24,6 @@ export interface SessionEnv {
     organizationId: string;
     apiKeyId: null;
     authMethod: "session";
+    role: OrganizationRole | null;
   };
 }

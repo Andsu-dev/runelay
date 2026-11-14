@@ -17,7 +17,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
 
   const run = useMutation({
     mutationFn: () => importSources({ config }),
-    onSuccess: ({ imported }) => {
+    onSuccess: ({ imported, skipped }) => {
       queryClient.invalidateQueries({ queryKey: sourcesQuery.queryKey });
       queryClient.invalidateQueries({ queryKey: ["catalog"] });
       queryClient.invalidateQueries({ queryKey: ["onboarding"] });
@@ -25,6 +25,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
         imported.length ? `${imported.length} conexões importadas.` : "Nada para importar nesse arquivo.",
         imported.length ? "success" : "info",
       );
+      for (const { name, reason } of skipped) toast(`${name} ficou de fora: ${reason}`, "info", 6000);
       setConfig("");
       onOpenChange(false);
     },

@@ -9,3 +9,6 @@ export const PERSONAL_ORGANIZATION_NAME = "Pessoal";
 export const PERSONAL_SLUG_FALLBACK = "pessoal";
 
 export const API_KEY_ACTIONS = ["create", "read", "update", "delete"] as const;
+
+export const SETUP_TOKEN_REQUIRED_MESSAGE =
+  "Para criar a primeira conta, use o link de primeiro acesso que aparece no log do servidor ou no fim da instalação.";

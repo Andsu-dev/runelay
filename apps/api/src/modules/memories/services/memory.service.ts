@@ -43,7 +43,7 @@ export const writeMemory = (organizationId: string, { slug, ...fields }: MemoryW
     description: fields.description ?? "",
     type: fields.type ?? "project",
     body: fields.body,
-    pinned: fields.pinned ?? false,
+    pinned: false,
   });
 };
 

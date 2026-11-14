@@ -26,14 +26,16 @@ fi
 curl -fsSL "$COMPOSE_URL" -o compose.yaml || fail "Não consegui baixar o compose.yaml de $COMPOSE_URL"
 
 if [ ! -f .env ]; then
-  if command -v openssl >/dev/null 2>&1; then
-    SECRET="$(openssl rand -hex 32)"
-  else
-    SECRET="$(head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \n')"
-  fi
+  random_hex() {
+    if command -v openssl >/dev/null 2>&1; then openssl rand -hex "$1"
+    else head -c "$1" /dev/urandom | od -An -tx1 | tr -d ' \n'; fi
+  }
+  SECRET="$(random_hex 32)"
+  SETUP_TOKEN="$(random_hex 18)"
   cat > .env <<ENV
 PUBLIC_URL=$PUBLIC_URL
 RUNELEY_SECRET=$SECRET
+RUNELEY_SETUP_TOKEN=$SETUP_TOKEN
 ALLOW_SIGNUP=false
 RUNELEY_VERSION=$VERSION
 RUNELEY_PORT=$PORT
@@ -48,6 +50,12 @@ docker compose pull
 docker compose up -d
 
 say ""
+SETUP_TOKEN="$(grep '^RUNELEY_SETUP_TOKEN=' .env | cut -d= -f2-)"
 say "runeley está no ar em $PUBLIC_URL"
-say "Abra no navegador e crie sua conta: a primeira vira a dona."
+if [ -n "$SETUP_TOKEN" ]; then
+  say "Crie a conta dona por este link (só ele funciona no primeiro acesso):"
+  say "$PUBLIC_URL/login?mode=signup&token=$SETUP_TOKEN"
+else
+  say "O link de primeiro acesso aparece em: cd $INSTALL_DIR && docker compose logs runeley"
+fi
 say "Atualizar: cd $INSTALL_DIR && docker compose pull && docker compose up -d"

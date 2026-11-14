@@ -2,6 +2,7 @@ export * from "./activity/activity.schema";
 export type * from "./activity/activity.types";
 export * from "./api-keys/api-key.schema";
 export type * from "./api-keys/api-key.types";
+export * from "./auth/auth.constants";
 export type * from "./auth/auth.types";
 export * from "./catalog/catalog.schema";
 export type * from "./catalog/catalog.types";

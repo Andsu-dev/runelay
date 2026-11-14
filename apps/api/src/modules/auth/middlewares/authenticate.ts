@@ -1,4 +1,5 @@
 import { createMiddleware } from "hono/factory";
+import { findMembershipRole } from "@/modules/auth/repositories/membership.repository";
 import { activeOrganizationOf, hasBearer, principalFromApiKey, sessionOf } from "@/modules/auth/services/auth.service";
 import { respondError } from "@/shared/http";
 import type { AccountEnv, AppEnv, SessionEnv } from "@/shared/types/app.types";
@@ -23,6 +24,7 @@ export const requireSession = createMiddleware<SessionEnv>(async (c, next) => {
   c.set("organizationId", organization.data);
   c.set("apiKeyId", null);
   c.set("authMethod", "session");
+  c.set("role", findMembershipRole(session.user.id, organization.data).data ?? null);
   await next();
 });
 
@@ -33,6 +35,7 @@ export const requireOrganization = createMiddleware<AppEnv>(async (c, next) => {
     c.set("userId", null);
     c.set("apiKeyId", principal.apiKeyId);
     c.set("authMethod", "api_key");
+    c.set("role", null);
     return next();
   }
   const session = hasBearer(c.req.raw.headers) ? null : await sessionOf(c.req.raw.headers);
@@ -43,5 +46,6 @@ export const requireOrganization = createMiddleware<AppEnv>(async (c, next) => {
   c.set("userId", session.user.id);
   c.set("apiKeyId", null);
   c.set("authMethod", "session");
+  c.set("role", findMembershipRole(session.user.id, organization.data).data ?? null);
   await next();
 });

@@ -2,6 +2,7 @@ import { type CatalogView, fail, ok, type Result, type SourceView } from "@runel
 import { CATALOG } from "@/modules/catalog/constants/catalog.constants";
 import { listInstalledByUrlHash } from "@/modules/sources/repositories/source.repository";
 import { createSource } from "@/modules/sources/services/source.service";
+import type { SourceActor } from "@/modules/sources/types/source-policy.types";
 import { hashUrl } from "@/modules/sources/utils/url-hash";
 
 const normalize = (text: string) => text.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
@@ -39,8 +40,12 @@ export const listCatalog = (organizationId: string, query?: string): Result<Cata
   });
 };
 
-export const installCatalogItem = async (organizationId: string, id: string): Promise<Result<SourceView>> => {
+export const installCatalogItem = async (
+  organizationId: string,
+  id: string,
+  actor: SourceActor,
+): Promise<Result<SourceView>> => {
   const item = CATALOG.flatMap((section) => section.items).find((candidate) => candidate.id === id);
   if (!item) return fail("CATALOG_ITEM_NOT_FOUND");
-  return createSource(organizationId, { name: item.id, config: { kind: "mcp", url: item.url, headers: {} } });
+  return createSource(organizationId, { name: item.id, config: { kind: "mcp", url: item.url, headers: {} } }, actor);
 };

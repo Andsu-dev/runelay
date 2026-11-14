@@ -36,8 +36,14 @@ export interface OAuthStartView {
   authorizationUrl: string | null;
 }
 
+export interface SkippedSourceView {
+  name: string;
+  reason: string;
+}
+
 export interface ImportView {
   imported: string[];
+  skipped: SkippedSourceView[];
 }
 
 export interface SourcesSummaryView {

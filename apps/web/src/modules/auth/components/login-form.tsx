@@ -1,3 +1,4 @@
+import { SETUP_TOKEN_HEADER } from "@runeley/shared";
 import { Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { type FormEvent, useState } from "react";
@@ -11,13 +12,16 @@ import { toast } from "@/lib/toast";
 import { meQuery } from "@/modules/auth/api/session.api";
 import { LOGIN_COPY } from "@/modules/auth/constants/login.constants";
 
+const FIELD_SURFACE = "h-11 bg-card shadow-xs ring-1 ring-border/70 hover:bg-card dark:bg-card dark:hover:bg-card";
+
 interface LoginFormProps {
   mode: "signin" | "signup";
+  setupToken?: string;
 }
 
 const EASE_OUT = [0.2, 0, 0, 1] as const;
 
-export function LoginForm({ mode }: LoginFormProps) {
+export function LoginForm({ mode, setupToken }: LoginFormProps) {
   const navigate = useNavigate();
   const router = useRouter();
   const [pending, setPending] = useState(false);
@@ -31,7 +35,10 @@ export function LoginForm({ mode }: LoginFormProps) {
     setPending(true);
     const { error } =
       mode === "signup"
-        ? await authClient.signUp.email({ name: String(form.get("name")), email, password })
+        ? await authClient.signUp.email(
+            { name: String(form.get("name")), email, password },
+            { headers: setupToken ? { [SETUP_TOKEN_HEADER]: setupToken } : {} },
+          )
         : await authClient.signIn.email({ email, password });
     setPending(false);
     if (error) {
@@ -72,7 +79,7 @@ export function LoginForm({ mode }: LoginFormProps) {
         </div>
       </div>
 
-      <div className="flex flex-col rounded-xl bg-card p-5 shadow-sm">
+      <div className="flex flex-col">
         <AnimatePresence initial={false}>
           {mode === "signup" && (
             <motion.div
@@ -84,17 +91,18 @@ export function LoginForm({ mode }: LoginFormProps) {
               className="-m-1 overflow-hidden p-1"
             >
               <Field label="Nome" className="pb-3">
-                <Input name="name" required autoComplete="name" />
+                <Input className={FIELD_SURFACE} name="name" required autoComplete="name" />
               </Field>
             </motion.div>
           )}
         </AnimatePresence>
         <div className="flex flex-col gap-3">
           <Field label="E-mail">
-            <Input name="email" type="email" required autoComplete="email" />
+            <Input className={FIELD_SURFACE} name="email" type="email" required autoComplete="email" />
           </Field>
           <Field label="Senha" hint={mode === "signup" ? "Pelo menos 8 caracteres." : undefined}>
             <Input
+              className={FIELD_SURFACE}
               name="password"
               type="password"
               required
@@ -115,7 +123,7 @@ export function LoginForm({ mode }: LoginFormProps) {
           to="/login"
           search={{ mode: mode === "signup" ? "signin" : "signup" }}
           replace
-          className="font-medium text-foreground underline-offset-4 transition-colors duration-200 hover:underline"
+          className="font-medium text-foreground underline-offset-4 outline-none transition-colors duration-200 hover:underline focus-visible:underline"
         >
           {copy.switch}
         </Link>
