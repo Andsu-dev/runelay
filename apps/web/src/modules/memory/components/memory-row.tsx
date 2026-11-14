@@ -2,6 +2,7 @@ import { ArrowLeft02Icon, ArrowRight01Icon, PinIcon } from "@hugeicons/core-free
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { MemoryListItemView } from "@runelay/shared";
 import { Link } from "@tanstack/react-router";
+import { MaskedName } from "@/components/ui/display/masked-name";
 import { formatDate } from "@/lib/format";
 import { MemoryTypePill } from "./memory-type-pill";
 
@@ -21,10 +22,12 @@ export function MemoryRow({ memory }: MemoryRowProps) {
           {memory.pinned && (
             <HugeiconsIcon icon={PinIcon} size={13} strokeWidth={1.8} className="shrink-0 text-muted-foreground" />
           )}
-          <span className="truncate text-[13px] font-semibold">{memory.name}</span>
+          <MaskedName value={memory.name} className="text-[13px] font-semibold" />
           <MemoryTypePill type={memory.type} />
         </span>
-        <span className="line-clamp-1 text-[12px] text-muted-foreground">{memory.description || memory.slug}</span>
+        <span className="line-clamp-1 text-[12px] text-muted-foreground">
+          {memory.description || <MaskedName value={memory.slug} />}
+        </span>
       </div>
       <div className="flex shrink-0 items-center gap-3 text-[12px] text-muted-foreground tabular-nums">
         <span className="flex items-center gap-1" title="Links para outras memórias">

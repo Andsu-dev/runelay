@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
+import { HideNamesToggle } from "@/components/ui/action/hide-names-toggle";
 import { PageHeader } from "@/components/ui/display/page-header";
 import { SearchField } from "@/components/ui/form/search-field";
 import { SkillList } from "@/modules/skills/components/skill-list";
@@ -16,7 +17,7 @@ function SkillsPage() {
 
   return (
     <section className="flex flex-col gap-5">
-      <PageHeader title="Habilidades" description={<SkillsTotal query={query} />} />
+      <PageHeader title="Habilidades" description={<SkillsTotal query={query} />} actions={<HideNamesToggle />} />
       <SearchField
         value={query}
         placeholder="Buscar habilidades"

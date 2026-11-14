@@ -4,6 +4,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
 import { Button } from "@/components/ui/action/button";
+import { HideNamesToggle } from "@/components/ui/action/hide-names-toggle";
 import { PageHeader } from "@/components/ui/display/page-header";
 import { SearchField } from "@/components/ui/form/search-field";
 import type { MemoryListFilter } from "@/modules/memory/api/memories.api";
@@ -37,10 +38,13 @@ function MemoryPage() {
         title={MEMORY_FILTER_TITLE[filter]}
         description={<MemoryTotal filter={listFilter} />}
         actions={
-          <Button size="sm" onClick={() => setCreating(true)}>
-            <HugeiconsIcon icon={Add01Icon} strokeWidth={1.8} />
-            Nova memória
-          </Button>
+          <div className="flex items-center gap-2">
+            <HideNamesToggle />
+            <Button size="sm" onClick={() => setCreating(true)}>
+              <HugeiconsIcon icon={Add01Icon} strokeWidth={1.8} />
+              Nova memória
+            </Button>
+          </div>
         }
       />
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
