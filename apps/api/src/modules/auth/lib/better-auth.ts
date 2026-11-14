@@ -23,10 +23,12 @@ export const auth = betterAuth({
   database: db,
   trustedOrigins: [env.PUBLIC_URL],
   emailAndPassword: { enabled: true },
-  socialProviders:
-    env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET
-      ? { github: { clientId: env.GITHUB_CLIENT_ID, clientSecret: env.GITHUB_CLIENT_SECRET } }
-      : {},
+  socialProviders: {
+    ...(env.GITHUB_CLIENT_ID &&
+      env.GITHUB_CLIENT_SECRET && {
+        github: { clientId: env.GITHUB_CLIENT_ID, clientSecret: env.GITHUB_CLIENT_SECRET },
+      }),
+  },
   databaseHooks: {
     user: {
       create: {

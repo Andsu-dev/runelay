@@ -119,6 +119,7 @@ export const runInSandbox = async (
   });
 
   let wallTimer: ReturnType<typeof setTimeout> | undefined;
+  const hostHandles: QuickJSHandle[] = [];
   try {
     const callHandle = context.newFunction("call", (sourceHandle, nameHandle, argsHandle) => {
       const source = context.getString(sourceHandle);
@@ -155,13 +156,14 @@ export const runInSandbox = async (
     });
 
     const failedHandle = context.newFunction("failed", (messageHandle) => failWith(context.getString(messageHandle)));
+    hostHandles.push(callHandle, logHandle, doneHandle, failedHandle);
 
     const manifest = Object.fromEntries(
       Object.entries(tools).map(([source, entries]) => [source, Object.keys(entries)]),
     );
     const manifestHandle = context.newString(JSON.stringify(manifest));
 
-    const hostHandles = [callHandle, logHandle, doneHandle, failedHandle, manifestHandle];
+    hostHandles.push(manifestHandle);
     runSlice(() => {
       invoke(SANDBOX_PRELUDE, [callHandle, logHandle, manifestHandle]);
       if (finished) return;
@@ -182,6 +184,7 @@ export const runInSandbox = async (
   } finally {
     finished = true;
     clearTimeout(wallTimer);
+    for (const handle of hostHandles) if (handle.alive) handle.dispose();
     for (const deferred of pending) deferred.dispose();
     pending.clear();
     if (context.alive) context.dispose();

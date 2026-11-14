@@ -159,6 +159,39 @@ describe("runInSandbox", () => {
     expect(result.error?.message).toContain("execute passou de 0.2s");
   });
 
+  test("describes a thrown primitive and a message-only object", async () => {
+    const primitive = await run("}); throw 42; (() => {");
+    expect(primitive.error).toMatchObject({ code: "EXECUTE_FAILED", message: "42" });
+    const object = await run("}); throw { message: 'plain' }; (() => {");
+    expect(object.error?.message).toBe("Error: plain");
+  });
+
+  test("returns a host failure inside a slice as EXECUTE_FAILED", async () => {
+    const code = {
+      toString: () => {
+        throw new Error("host boom");
+      },
+    } as unknown as string;
+    const result = await runInSandbox(code, tools, limits);
+    expect(result.error).toMatchObject({ code: "EXECUTE_FAILED", message: "host boom" });
+  });
+
+  test("returns a host failure outside a slice as EXECUTE_FAILED", async () => {
+    const broken = { broken: null } as unknown as ToolNamespace;
+    const result = await runInSandbox("return 1;", broken, limits);
+    expect(result.error?.code).toBe("EXECUTE_FAILED");
+  });
+
+  test("reports a missing tool and a tool result that is not JSON", async () => {
+    const odd: ToolNamespace = { odd: { bigint: async () => ok(1n) } };
+    Object.defineProperty(odd.odd, "gone", { enumerable: true, get: () => undefined });
+    const result = await runInSandbox("return [await tools.odd.gone(), await tools.odd.bigint()];", odd, limits);
+    expect(result.data?.result).toMatchObject([
+      { error: { code: "TOOL_NOT_FOUND", message: "a tool odd.gone não existe" } },
+      { error: { code: "TOOL_FAILED", message: "a resposta da tool não é JSON" } },
+    ]);
+  });
+
   test("measures one run", async () => {
     await run("return 1;");
     const runs = 20;

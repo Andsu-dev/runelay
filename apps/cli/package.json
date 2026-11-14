@@ -11,7 +11,8 @@
     "import": "bun src/index.ts import",
     "install-clients": "bun src/index.ts connect",
     "import-context": "bun src/index.ts push",
-    "sync-context": "bun src/index.ts pull"
+    "sync-context": "bun src/index.ts pull",
+    "test": "bun test"
   },
   "dependencies": {
     "@runelay/shared": "workspace:*",

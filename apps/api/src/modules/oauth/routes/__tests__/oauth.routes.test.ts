@@ -1,0 +1,107 @@
+import { afterAll, beforeAll, expect, test } from "bun:test";
+import type { OAuthStartView } from "@runelay/shared";
+import { createOAuthProvider } from "@/modules/oauth/providers/oauth-client.provider";
+import { completeLogin } from "@/modules/oauth/services/oauth.service";
+import { findSource, findSourceView } from "@/modules/sources/repositories/source.repository";
+import { body, call, createApiKey, signUp, type TestAccount } from "../../../../../test/helpers";
+import { type FakeMcpServer, GOOD_CODE, INLINE_SPEC, startFakeMcp, withEnv } from "../../../../../test/sources-helpers";
+
+let account: TestAccount;
+let server: FakeMcpServer;
+let restore: () => void;
+
+beforeAll(async () => {
+  restore = withEnv("RUNELAY_ALLOW_PRIVATE_URLS", true);
+  account = await signUp("OAuth Owner");
+  server = startFakeMcp({ requireToken: true });
+  await call("/v1/sources", {
+    method: "POST",
+    cookie: account.cookie,
+    json: { name: "guarded", config: { kind: "mcp", url: server.mcpUrl } },
+  });
+  await call("/v1/sources", {
+    method: "POST",
+    cookie: account.cookie,
+    json: { name: "spec", config: { kind: "openapi", spec: INLINE_SPEC } },
+  });
+});
+
+afterAll(() => {
+  restore();
+  server.stop();
+});
+
+const key = () => ({ organizationId: account.organizationId, name: "guarded" });
+
+const callback = (query: string, auth: { cookie?: string; bearer?: string } = {}) =>
+  call(`/v1/oauth/callback?${query}`, auth.bearer ? auth : { cookie: account.cookie });
+
+test("callback requires a session", async () => {
+  const apiKey = await createApiKey(account, "oauth");
+  const response = await callback("state=guarded&code=x", { bearer: apiKey.key });
+  expect(response.status).toBe(401);
+});
+
+test("callback without a code redirects with the provider error", async () => {
+  const described = await callback("state=guarded&error=access_denied&error_description=Negado");
+  expect(described.status).toBe(302);
+  expect(described.headers.get("location")).toBe("/connectors/guarded?oauth_error=Negado");
+  const plain = await callback("state=guarded&error=access_denied");
+  expect(plain.headers.get("location")).toBe("/connectors/guarded?oauth_error=access_denied");
+  const bare = await callback("");
+  expect(bare.headers.get("location")).toBe("/connectors/?oauth_error=sem+code");
+});
+
+test("callback before login started reports the missing client", async () => {
+  const response = await callback("state=guarded&code=early");
+  expect(response.headers.get("location")).toStartWith("/connectors/guarded?oauth_error=");
+});
+
+test("start returns the authorization url with state and pkce", async () => {
+  const response = await call("/v1/sources/guarded/oauth", { method: "POST", cookie: account.cookie });
+  const { data } = await body<OAuthStartView>(response);
+  const url = new URL(data.authorizationUrl ?? "");
+  expect(url.origin + url.pathname).toBe(`${server.base}/authorize`);
+  expect(url.searchParams.get("state")).toBe("guarded");
+  expect(url.searchParams.get("client_id")).toBe("fake-client");
+  expect(url.searchParams.get("code_challenge")).toBeTruthy();
+});
+
+test("callback with a rejected code redirects with the error", async () => {
+  const response = await callback("state=guarded&code=wrong");
+  expect(response.headers.get("location")).toStartWith("/connectors/guarded?oauth_error=");
+  expect(findSource(key()).data?.oauth.tokens).toBeUndefined();
+});
+
+test("callback with a valid code stores tokens and connects", async () => {
+  await call("/v1/sources/guarded/oauth", { method: "POST", cookie: account.cookie });
+  const response = await callback(`state=guarded&code=${GOOD_CODE}`);
+  expect(response.headers.get("location")).toBe("/connectors/guarded");
+  const view = findSourceView(key());
+  expect(view.data?.status).toBe("ok");
+  expect(view.data?.connectedAt).toBeTruthy();
+  expect(findSource(key()).data?.oauth.tokens?.access_token).toBeTruthy();
+});
+
+test("complete login refuses non mcp sources", async () => {
+  const result = await completeLogin({ organizationId: account.organizationId, name: "spec" }, GOOD_CODE);
+  expect(result.error?.code).toBe("OAUTH_UNSUPPORTED");
+});
+
+test("provider clears credentials by scope and reads defaults", async () => {
+  const provider = createOAuthProvider(key());
+  expect(provider.state?.()).toBe("guarded");
+  await provider.saveCodeVerifier("verifier");
+  expect(await provider.codeVerifier()).toBe("verifier");
+  for (const scope of ["verifier", "tokens", "client", "discovery", "all"] as const) {
+    await provider.invalidateCredentials?.(scope);
+  }
+  const oauth = findSource(key()).data?.oauth;
+  expect(oauth?.client).toBeUndefined();
+  expect(oauth?.tokens).toBeUndefined();
+  expect(await provider.codeVerifier()).toBe("");
+  expect(provider.redirectToAuthorization(new URL("http://example.com"))).toBeUndefined();
+  const missing = createOAuthProvider({ organizationId: account.organizationId, name: "nope" });
+  expect(await missing.clientInformation()).toBeUndefined();
+  expect(await missing.tokens()).toBeUndefined();
+});
