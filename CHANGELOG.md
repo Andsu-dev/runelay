@@ -2,16 +2,56 @@
 
 ## v0.1.0
 
-First public version.
+First public version of runelay: one MCP endpoint for every account, skill and memory your agents use. Open source and self-hosted.
 
-- MCP gateway at `/v1/mcp`: `list_connections`, `search_tools`, `call_tool`, `execute`, `search_context`, `read_memory`, `write_memory`, `read_skill`, `read_skill_file`.
-- Connections: remote MCP with OAuth, local MCP (stdio) and OpenAPI specs, encrypted at rest.
-- Catalog with ~25 curated MCP servers, installed in one click.
-- Organizations with their own connections, skills, memory and API keys (better-auth).
-- Skills and memory with full-text search, `[[links]]`, versions and health checks.
-- Context routing: short brief synced into `CLAUDE.md` and `AGENTS.md`, the rest on demand through MCP.
-- CLI: `import`, `import-context` (Claude Code, Codex, Cursor, Grok, Gemini, OpenCode), `sync-context`, `install-clients`.
-- Panel: overview, connectors, skills, memory, API keys and a guided setup.
-- One-line install: `curl -fsSL https://github.com/Andsu-dev/runelay/releases/latest/download/install.sh | sh`.
-- Secure by default: setup token for the first account, `execute` and local commands off, private URLs blocked, credentials hidden from agents, agents cannot pin memories.
-- Docker image on `ghcr.io/andsu-dev/runelay` for `linux/amd64` and `linux/arm64`.
+### Install
+
+```sh
+# server, on any machine with Docker
+curl -fsSL https://github.com/Andsu-dev/runelay/releases/latest/download/install.sh | sh
+
+# CLI, on your computer
+curl -fsSL https://github.com/Andsu-dev/runelay/releases/latest/download/install-cli.sh | sh
+runelay migrate
+```
+
+### Gateway
+
+- MCP endpoint at `/v1/mcp` with nine tools: `list_connections`, `search_tools`, `call_tool`, `execute`, `search_context`, `read_memory`, `write_memory`, `read_skill`, `read_skill_file`.
+- `execute` chains tools in JavaScript inside a QuickJS WebAssembly sandbox: fresh per run, no filesystem, network, process or timers, 32 MB of memory and CPU and wall-clock limits.
+- Connections: remote MCP with OAuth (dynamic client registration and PKCE), local MCP by command, and OpenAPI specs turned into tools.
+- Catalog with ~25 curated MCP servers (Linear, GitHub, Notion, Figma, Vercel, Supabase, Sentry, Stripe and more), installed in one click.
+
+### Context
+
+- Skills (`SKILL.md` with files) and memory (`[[linked]]` notes) per organization, with full-text search, versions, backlinks and a health report (stale, broken links, isolated).
+- Context routing: a short brief (pinned rules and an index) synced into `CLAUDE.md` and `AGENTS.md`, the rest fetched on demand through MCP. Agents write new facts back with `write_memory`.
+
+### CLI
+
+- `runelay login` finds your server (`~/runelay/.env` or `localhost:4312`) or asks for the URL, then authorizes in the browser with a code. No keys to paste.
+- `runelay migrate` brings MCP servers, memories, skills and instructions from Claude Code, Codex, Cursor, Grok, Gemini and OpenCode in one command. Accounts already logged in on the machine (Grok, Codex and Claude Code credentials) arrive connected; the rest go to a reconnect queue in the panel.
+- `status`, `push`, `pull` (brief plus skills materialized into each agent's folder), `sync`, `connect` (registers runelay in every client), `import` and `logout`.
+- Single binaries for macOS (arm64, x64) and Linux (x64, arm64).
+
+### Panel
+
+- Organizations with their own connections, skills, memory and API keys.
+- Overview with call metrics, connectors catalog and installed list, skills, memory, API keys with a per-key activity timeline, guided setup with a progress timeline, and a reconnect queue that walks through every pending login.
+- Monochrome interface with light and dark themes, motion and optional 8-bit sound feedback.
+
+### Security
+
+- First account requires a one-time setup token (printed by the installer and in the server log); signups close afterwards.
+- Connection configs, OAuth tokens and recoverable API keys encrypted with AES-256-GCM.
+- Agents never see credentials: API key requests and `list_connections` get headers and env values hidden.
+- Agents cannot pin memories, so a prompt-injected agent cannot plant instructions for every other agent.
+- Local commands are off by default (`RUNELAY_ENABLE_STDIO`) and, when on, only owners and admins can create them, with a minimal environment.
+- Private, loopback, link-local and tailnet addresses blocked on every outgoing request and redirect (SSRF and DNS rebinding).
+- Rate limit per API key and an audit log of every request a key makes.
+- Docker image runs as an unprivileged user with read-only application code.
+
+### Distribution
+
+- Docker image `ghcr.io/andsu-dev/runelay` for `linux/amd64` and `linux/arm64`.
+- `install.sh` for the server and `install-cli.sh` for the CLI attached to every release.
