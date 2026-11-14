@@ -56,6 +56,7 @@ describe("version", () => {
       releaseUrl: "https://github.com/Andsu-dev/runelay/releases/tag/v99.0.0",
       updateAvailable: true,
       canUpdate: true,
+      desktop: false,
     });
     expect(spy).toHaveBeenCalledTimes(1);
   });
@@ -84,6 +85,13 @@ describe("version", () => {
     const offline = await body<VersionView>(await call("/v1/system/version", { cookie: owner.cookie }));
     expect([failed.data.latest, untagged.data.latest, offline.data.latest]).toEqual([null, null, null]);
     expect(offline.data.updateAvailable).toBe(false);
+  });
+
+  test("tells the desktop app apart", async () => {
+    restores.push(withEnv("RUNELAY_DESKTOP", true));
+    release("v99.0.0");
+    const { data } = await body<VersionView>(await call("/v1/system/version", { cookie: owner.cookie }));
+    expect(data.desktop).toBe(true);
   });
 
   test("rejects API keys", async () => {

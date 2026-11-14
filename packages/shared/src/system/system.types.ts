@@ -5,4 +5,5 @@ export interface VersionView {
   releaseUrl: string | null;
   updateAvailable: boolean;
   canUpdate: boolean;
+  desktop: boolean;
 }

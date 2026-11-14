@@ -6,7 +6,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/action/button";
 import { Popover } from "@/components/ui/overlay/popover";
 import { toast } from "@/lib/toast";
-import { startUpdate, UPDATE_COMMAND, versionQuery, waitForVersionChange } from "@/modules/system/api/system.api";
+import {
+  DESKTOP_DOWNLOAD_URL,
+  startUpdate,
+  UPDATE_COMMAND,
+  versionQuery,
+  waitForVersionChange,
+} from "@/modules/system/api/system.api";
 import { ReleaseNotes } from "@/modules/system/components/release-notes";
 
 export function UpdateButton() {
@@ -91,17 +97,25 @@ export function UpdateButton() {
           </a>
         )}
         <p className="text-[12px] text-muted-foreground">
-          {data.canUpdate
-            ? "O servidor baixa a versão nova e reinicia em menos de um minuto. A página recarrega sozinha."
-            : "Este servidor não atualiza pelo painel. Rode o comando no servidor."}
+          {data.desktop
+            ? "Baixe o app novo e arraste para Aplicativos. Seus dados ficam."
+            : data.canUpdate
+              ? "O servidor baixa a versão nova e reinicia em menos de um minuto. A página recarrega sozinha."
+              : "Este servidor não atualiza pelo painel. Rode o comando no servidor."}
         </p>
         <div className="flex justify-end gap-2">
           <Button variant="ghost" size="sm" onClick={() => setOpen(false)}>
             Agora não
           </Button>
-          <Button size="sm" cue="tap" onClick={data.canUpdate ? update : copyCommand}>
-            {data.canUpdate ? "Atualizar" : "Copiar comando"}
-          </Button>
+          {data.desktop ? (
+            <Button size="sm" cue="tap" onClick={() => window.open(DESKTOP_DOWNLOAD_URL, "_blank")}>
+              Baixar
+            </Button>
+          ) : (
+            <Button size="sm" cue="tap" onClick={data.canUpdate ? update : copyCommand}>
+              {data.canUpdate ? "Atualizar" : "Copiar comando"}
+            </Button>
+          )}
         </div>
       </div>
     </Popover>

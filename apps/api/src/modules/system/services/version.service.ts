@@ -67,6 +67,7 @@ export const describeVersion = async (role: OrganizationRole | null): Promise<Re
     releaseUrl: release?.url ?? null,
     updateAvailable: release !== null && isNewerVersion(release.version, GATEWAY_INFO.version),
     canUpdate: updaterConfigured() && canManageUpdates(role),
+    desktop: env.RUNELAY_DESKTOP,
   });
 };
 
