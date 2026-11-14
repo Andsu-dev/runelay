@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.2.2
+
+- A small gap between the rail and the page when the side panel is collapsed.
+- New releases show up in the panel within 10 minutes instead of an hour.
+
 ## v0.2.1
 
 - Connectors that sign in with a token (GitHub) ask for it in a dialog, on install and on the installed card, instead of opening a browser login that cannot work.
