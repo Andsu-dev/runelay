@@ -33,6 +33,12 @@
         "zod": "^4.6.7",
       },
     },
+    "apps/lp": {
+      "name": "@runeley/lp",
+      "devDependencies": {
+        "vite": "^8.2.1",
+      },
+    },
     "apps/web": {
       "name": "@runeley/web",
       "dependencies": {
@@ -344,6 +350,8 @@
     "@runeley/api": ["@runeley/api@workspace:apps/api"],
 
     "@runeley/cli": ["@runeley/cli@workspace:apps/cli"],
+
+    "@runeley/lp": ["@runeley/lp@workspace:apps/lp"],
 
     "@runeley/shared": ["@runeley/shared@workspace:packages/shared"],
 
