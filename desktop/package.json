@@ -1,0 +1,108 @@
+{
+  "name": "runelay-desktop",
+  "productName": "runelay",
+  "version": "0.3.0",
+  "description": "One MCP endpoint for every account, skill and memory your agents use.",
+  "author": "Anderson Medeiros",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "server": "node scripts/build-server.js",
+    "start": "npm run server && electron .",
+    "dist:mac": "npm run server -- --all --platform=darwin && electron-builder --mac --arm64 --x64 --publish never",
+    "dist:linux": "npm run server -- --all --platform=linux && electron-builder --linux --arm64 --x64 --publish never",
+    "dist:win": "npm run server -- --all --platform=win32 && electron-builder --win --x64 --publish never"
+  },
+  "devDependencies": {
+    "electron": "^39.2.4",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.runelay.desktop",
+    "productName": "runelay",
+    "artifactName": "runelay-${os}-${arch}.${ext}",
+    "files": [
+      "main.js",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "icon": "build/icon.png",
+      "target": [
+        "dmg"
+      ],
+      "identity": "-",
+      "hardenedRuntime": false,
+      "extraResources": [
+        {
+          "from": "resources/${arch}/runelay-server",
+          "to": "runelay-server"
+        },
+        {
+          "from": "../apps/web/dist",
+          "to": "web"
+        }
+      ]
+    },
+    "dmg": {
+      "title": "runelay",
+      "background": "build/background.png",
+      "iconSize": 100,
+      "window": {
+        "width": 540,
+        "height": 380
+      },
+      "contents": [
+        {
+          "x": 150,
+          "y": 190
+        },
+        {
+          "x": 390,
+          "y": 190,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "linux": {
+      "category": "Development",
+      "icon": "build/icon.png",
+      "target": [
+        "AppImage"
+      ],
+      "extraResources": [
+        {
+          "from": "resources/${arch}/runelay-server",
+          "to": "runelay-server"
+        },
+        {
+          "from": "../apps/web/dist",
+          "to": "web"
+        }
+      ]
+    },
+    "win": {
+      "icon": "build/icon.png",
+      "target": [
+        "nsis"
+      ],
+      "extraResources": [
+        {
+          "from": "resources/${arch}/runelay-server.exe",
+          "to": "runelay-server.exe"
+        },
+        {
+          "from": "../apps/web/dist",
+          "to": "web"
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false
+    }
+  }
+}

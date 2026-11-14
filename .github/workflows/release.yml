@@ -64,8 +64,40 @@ jobs:
           name: cli
           path: dist/cli/
 
+  desktop:
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            target: mac
+          - os: ubuntu-latest
+            target: linux
+          - os: windows-latest
+            target: win
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: bun install --frozen-lockfile
+      - run: npm ci
+        working-directory: desktop
+      - run: npm run dist:${{ matrix.target }}
+        working-directory: desktop
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: desktop-${{ matrix.target }}
+          path: |
+            desktop/dist/*.dmg
+            desktop/dist/*.AppImage
+            desktop/dist/*.exe
+
   release:
-    needs: [image, cli]
+    needs: [image, cli, desktop]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -73,11 +105,16 @@ jobs:
         with:
           name: cli
           path: dist/cli
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: desktop-*
+          path: dist/desktop
+          merge-multiple: true
       - name: Publish release assets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           sed "s#ghcr.io/andsu-dev/runelay#ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/runelay#" deploy/compose.yaml > compose.yaml
           awk -v tag="## $GITHUB_REF_NAME" '$0 == tag {found=1; next} /^## / && found {exit} found' CHANGELOG.md > release-notes.md
-          gh release create "$GITHUB_REF_NAME" deploy/install.sh deploy/install-cli.sh compose.yaml dist/cli/runelay-* \
+          gh release create "$GITHUB_REF_NAME" deploy/install.sh deploy/install-cli.sh compose.yaml dist/cli/runelay-* dist/desktop/* \
             --title "runelay $GITHUB_REF_NAME" --notes-file release-notes.md --verify-tag

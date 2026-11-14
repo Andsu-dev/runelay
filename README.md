@@ -72,6 +72,12 @@ curl -fsSL bot.runelay.com/install | sh
 
 That is it. The script creates `~/runelay`, writes a `.env` with a fresh `RUNELAY_SECRET`, pulls the image and starts it on `127.0.0.1:4312`. Open the link it prints, create your account and follow **Acesso → Configurar agentes**.
 
+### Or the desktop app
+
+No Docker needed: grab runelay for [Mac (Apple silicon)](https://bot.runelay.com/download/mac), [Mac (Intel)](https://bot.runelay.com/download/mac-intel), [Windows](https://bot.runelay.com/download/windows) or [Linux](https://bot.runelay.com/download/linux) (AppImage, also for [arm64](https://bot.runelay.com/download/linux-arm)). The app runs the same server on `127.0.0.1:4312`, so the CLI and your agents find it on their own. Data lives in the app folder (`~/Library/Application Support/runelay` on Mac); the secret is kept in the system keychain when one is available.
+
+The builds are not signed yet. On Mac, right-click the app and choose **Open** the first time. On Windows, choose **More info → Run anyway**. Keep the app running while your agents use it; quitting it stops the server.
+
 ### Migrate in one command
 
 On the computer where your agents live:
