@@ -1,0 +1,13 @@
+{
+  "name": "@runeley/lp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5174",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "vite": "^8.2.1"
+  }
+}

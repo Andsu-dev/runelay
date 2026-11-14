@@ -6,7 +6,7 @@ interface CommandBlockProps {
   label?: string;
 }
 
-const MASK = "x7Kq2mPz9LwR4vTn";
+const MASK = "*".repeat(16);
 
 const segmentsOf = (value: string, secret: string | null | undefined) => {
   if (!secret) return [{ key: "all", text: value, masked: false }];
@@ -29,7 +29,7 @@ export function CommandBlock({ value, secret, label = "Copiar comando" }: Comman
             {segment.masked && secret && (
               <span>
                 {secret.slice(0, 4)}
-                <span aria-hidden className="select-none blur-[3px]">
+                <span aria-hidden className="select-none tracking-[0.08em] text-muted-foreground">
                   {MASK}
                 </span>
                 <span className="sr-only">chave oculta</span>

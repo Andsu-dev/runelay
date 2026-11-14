@@ -8,6 +8,7 @@
 
 <p align="center">
   <img alt="license" src="https://img.shields.io/badge/license-MIT-111111" />
+  <img alt="version" src="https://img.shields.io/badge/version-0.1.0-111111" />
   <img alt="self-hosted" src="https://img.shields.io/badge/self--hosted-docker-111111" />
   <img alt="mcp" src="https://img.shields.io/badge/protocol-MCP-111111" />
   <img alt="runtime" src="https://img.shields.io/badge/runtime-bun-111111" />
@@ -68,17 +69,38 @@ The MCP server exposes nine tools:
 | `read_memory` / `write_memory` | Read a memory, or create and update one (versioned). |
 | `read_skill` / `read_skill_file` | Read a skill and its files. |
 
-## Quick start (Docker)
+## Install
 
-You need Docker and a domain or tunnel with HTTPS if agents outside your machine will use it.
+One line, on any machine with Docker:
 
 ```sh
-git clone https://github.com/Andsu-dev/runeley.git
-cd runeley
-cp .env.example .env
+curl -fsSL https://github.com/Andsu-dev/runeley/releases/latest/download/install.sh | sh
 ```
 
-Edit `.env`:
+The script creates `~/runeley`, writes a `.env` with a fresh `RUNELEY_SECRET`, pulls `ghcr.io/andsu-dev/runeley` and starts it on `127.0.0.1:4312`. Open it, create your account (the first one becomes the owner) and follow **Acesso → Configurar agentes**.
+
+Options go in front of `sh`:
+
+```sh
+curl -fsSL https://github.com/Andsu-dev/runeley/releases/latest/download/install.sh \
+  | PUBLIC_URL=https://runeley.example.com RUNELEY_DIR=/opt/runeley RUNELEY_VERSION=v0.1.0 sh
+```
+
+**Update**: `cd ~/runeley && docker compose pull && docker compose up -d`
+
+### Docker Compose by hand
+
+```yaml
+services:
+  runeley:
+    image: ghcr.io/andsu-dev/runeley:latest
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "127.0.0.1:4312:4312"
+    volumes:
+      - ./data:/data
+```
 
 ```sh
 PUBLIC_URL=https://runeley.example.com     # the URL people and agents use
@@ -86,15 +108,15 @@ RUNELEY_SECRET=$(openssl rand -hex 32)      # encrypts connections and API keys;
 ALLOW_SIGNUP=false                          # first signup becomes the owner, then signups close
 ```
 
-Start it:
+### Build from source
 
 ```sh
+git clone https://github.com/Andsu-dev/runeley.git && cd runeley
+cp .env.example .env    # set PUBLIC_URL and RUNELEY_SECRET
 docker compose up -d --build
 ```
 
-runeley listens on `127.0.0.1:4312`. Put HTTPS in front of it (examples below), open `PUBLIC_URL` and create your account. The first account becomes the owner of a personal organization.
-
-> `bun run dev` is only for working on runeley itself. To run it, use Docker.
+> `bun run dev` is only for working on runeley itself. To run it, use the image.
 
 ### HTTPS in front
 
@@ -229,14 +251,7 @@ Everything the panel does goes through a versioned JSON API. Every response is `
 
 **Backup**: copy the `data/` folder (the SQLite database) and keep `RUNELEY_SECRET` somewhere safe. Both are needed to restore.
 
-**Update**:
-
-```sh
-git pull
-docker compose up -d --build
-```
-
-Migrations run on startup.
+**Update**: `docker compose pull && docker compose up -d` (or `git pull && docker compose up -d --build` from source). Migrations run on startup.
 
 **Health**: `GET /health` returns `ok`. The container has a healthcheck.
 

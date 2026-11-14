@@ -1,0 +1,140 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Caveat:wght@500;600&display=swap");
+
+:root {
+  --background: oklch(0.995 0 0);
+  --foreground: oklch(0.17 0.003 260);
+  --muted: oklch(0.955 0.001 260);
+  --muted-foreground: oklch(0.52 0.006 260);
+  --ink: oklch(0.55 0.16 260);
+  --button-top: oklch(0.34 0.004 260);
+  --button-bottom: oklch(0.16 0.003 260);
+  --button-edge: oklch(0.1 0.002 260);
+  --button-highlight: oklch(1 0 0 / 0.24);
+  --button-glow: oklch(0.17 0.003 260 / 0.28);
+  --primary-foreground: oklch(0.99 0 0);
+  --radius: 0.625rem;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: oklch(0.155 0.002 260);
+    --foreground: oklch(0.97 0.001 260);
+    --muted: oklch(0.21 0.003 260);
+    --muted-foreground: oklch(0.66 0.008 260);
+    --ink: oklch(0.75 0.12 260);
+    --button-top: oklch(1 0 0);
+    --button-bottom: oklch(0.84 0.004 260);
+    --button-edge: oklch(1 0 0 / 0.55);
+    --button-highlight: oklch(1 0 0 / 0.95);
+    --button-glow: oklch(1 0 0 / 0.16);
+    --primary-foreground: oklch(0.155 0.002 260);
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "cv01", "cv02", "cv11", "ss03";
+  letter-spacing: -0.006em;
+  line-height: 1.65;
+  overflow-x: clip;
+}
+
+::selection { background: var(--foreground); color: var(--background); }
+
+.page {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 96px 16px 64px;
+  font-size: 16px;
+}
+
+.icon { border-radius: 14px; display: block; margin-bottom: 20px; }
+
+h1 { font-size: 44px; line-height: 1.1; letter-spacing: -0.03em; margin: 0 0 12px; font-weight: 700; }
+h2 { font-size: 20px; letter-spacing: -0.015em; margin: 48px 0 8px; font-weight: 600; }
+p { margin: 8px 0; }
+.lead { font-size: 18px; color: var(--muted-foreground); max-width: 34em; }
+.lead em { font-family: "Caveat", cursive; font-style: normal; font-size: 1.35em; color: var(--ink); }
+
+.meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0 28px; }
+.meta span { font-size: 12px; padding: 2px 8px; border-radius: 6px; background: var(--muted); color: var(--muted-foreground); }
+
+.actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+
+.button-solid {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 38px; padding: 0 16px; border-radius: var(--radius);
+  font-size: 14px; font-weight: 500; text-decoration: none;
+  color: var(--primary-foreground);
+  background-image: linear-gradient(to bottom, var(--button-top), var(--button-bottom));
+  box-shadow: inset 0 1px 0 var(--button-highlight), 0 0 0 1px var(--button-edge), 0 1px 2px oklch(0 0 0 / 0.18), 0 8px 20px -8px var(--button-glow);
+  transition: filter 0.2s, transform 0.15s;
+}
+.button-solid:hover { filter: brightness(1.06); }
+.button-solid:active { transform: scale(0.97); }
+
+.note { font-family: "Caveat", cursive; font-size: 22px; color: var(--ink); line-height: 1.1; }
+.arrow-note { display: inline-flex; align-items: center; gap: 4px; transform: rotate(-3deg); }
+.side-note { transform: rotate(-1deg); margin-top: 4px; }
+.side-note code { font-size: 14px; }
+
+hr { border: 0; height: 1px; background: var(--muted); margin: 48px 0 0; }
+
+.mark { position: relative; display: inline-block; }
+
+.scribble { position: absolute; overflow: visible; pointer-events: none; }
+.scribble path {
+  fill: none; stroke: var(--ink); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  animation: draw 0.9s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+.underline { left: -2%; bottom: -6px; width: 104%; height: 14px; }
+.underline path { animation-delay: 0.3s; stroke-width: 3; }
+.circle { left: -14px; top: -10px; width: calc(100% + 28px); height: calc(100% + 20px); }
+.circle path { animation-delay: 0.6s; stroke-width: 2; }
+.arrow { position: static; width: 52px; height: 26px; }
+.arrow path { animation-delay: 0.8s; stroke-width: 2; }
+
+@keyframes draw { to { stroke-dashoffset: 0; } }
+
+.callout { display: flex; gap: 12px; padding: 14px 16px; border-radius: var(--radius); background: var(--muted); margin: 16px 0; }
+.callout p { margin: 0; }
+.callout-icon { font-size: 18px; line-height: 1.5; }
+
+.todo { list-style: none; padding: 0; margin: 12px 0; display: grid; gap: 10px; }
+.todo li { display: flex; gap: 12px; align-items: flex-start; }
+.check { flex: none; width: 18px; height: 18px; margin-top: 4px; border-radius: 4px; background: var(--foreground); position: relative; }
+.check::after { content: ""; position: absolute; left: 6px; top: 2px; width: 4px; height: 9px; border: solid var(--background); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+
+code { font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace; font-size: 0.88em; background: var(--muted); padding: 1px 5px; border-radius: 4px; }
+pre { background: var(--muted); border-radius: var(--radius); padding: 16px; overflow-x: auto; margin: 12px 0 0; }
+pre code { background: none; padding: 0; font-size: 13.5px; line-height: 1.7; }
+
+details { margin: 4px 0; }
+details:first-of-type { margin-top: 40px; }
+summary { cursor: pointer; font-weight: 500; list-style: none; padding: 6px 0; display: flex; gap: 8px; align-items: center; }
+summary::-webkit-details-marker { display: none; }
+summary::before { content: "▸"; color: var(--muted-foreground); transition: transform 0.2s; display: inline-block; }
+details[open] summary::before { transform: rotate(90deg); }
+details p { margin: 0 0 8px 20px; color: var(--muted-foreground); }
+
+footer { margin-top: 72px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--muted-foreground); }
+footer span { font-family: "Caveat", cursive; font-size: 19px; color: var(--ink); }
+footer a { color: inherit; }
+
+a:focus-visible { outline: 1.5px solid color-mix(in oklch, var(--foreground) 28%, transparent); outline-offset: 2px; border-radius: 4px; }
+
+@media (max-width: 520px) {
+  .page { padding-top: 56px; }
+  h1 { font-size: 36px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scribble path { animation: none; stroke-dashoffset: 0; }
+}
