@@ -13,6 +13,7 @@ import { RouteTransition } from "./route-transition";
 import { SidePanel } from "./side-panel";
 
 const PANEL_WIDTH = 248;
+const COLLAPSED_GAP = 8;
 const COLLAPSED_KEY = "runelay-panel-collapsed";
 
 export function AppShell() {
@@ -48,7 +49,7 @@ export function AppShell() {
 
       <motion.aside
         initial={false}
-        animate={{ width: collapsed ? 0 : PANEL_WIDTH, opacity: collapsed ? 0 : 1 }}
+        animate={{ width: collapsed ? COLLAPSED_GAP : PANEL_WIDTH, opacity: collapsed ? 0 : 1 }}
         transition={UI_SPRING}
         aria-hidden={collapsed || undefined}
         inert={collapsed || undefined}
