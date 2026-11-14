@@ -228,6 +228,7 @@ details[data-state="open"] .chevron { transform: rotate(180deg); }
 .steps h3 { margin: 3px 0 2px; font-size: 16px; font-weight: 600; letter-spacing: -0.015em; }
 .steps p { margin: 0; color: var(--muted-foreground); font-size: 15px; }
 .steps .after { margin-top: 8px; font-size: 13.5px; }
+.steps .after a { color: var(--foreground); text-underline-offset: 3px; }
 .cmd {
   display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 8px 8px 8px 14px; border-radius: 10px;
   background: oklch(0.13 0.003 260); color: oklch(0.92 0.003 260); box-shadow: 0 0 0 1px oklch(1 0 0 / 0.06);
@@ -240,6 +241,51 @@ details[data-state="open"] .chevron { transform: rotate(180deg); }
   .button-dashed, .cta .button-solid { width: 100%; justify-content: center; }
   .prompt-head { flex-wrap: wrap; }
 }
+
+.download-meta { margin-top: 14px; font-size: 13px; color: var(--muted-foreground); }
+.setup .note a { text-underline-offset: 3px; }
+
+.download-link { margin-top: 14px; }
+.download-link a { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--muted-foreground); text-decoration: none; transition: color 0.2s; }
+.download-link a:hover { color: var(--foreground); }
+
+.downloads { margin-top: 48px; }
+.platforms { list-style: none; margin: 0; padding: 0; text-align: left; border-radius: 16px; background: var(--muted); }
+.platform + .platform { box-shadow: inset 0 1px 0 color-mix(in oklch, var(--foreground) 8%, transparent); }
+.platform-row { display: flex; align-items: center; gap: 12px; padding: 16px 16px 16px 20px; }
+.platform-icon { flex: none; display: grid; place-items: center; width: 24px; height: 24px; }
+.platform-icon svg { width: 22px; height: 22px; }
+.platform-name { font-size: 16px; font-weight: 600; letter-spacing: -0.015em; }
+.platform-meta { flex: 1; min-width: 0; font-size: 14px; color: var(--muted-foreground); }
+.platform-actions { display: flex; gap: 8px; flex: none; }
+.info-tip {
+  position: relative; display: inline-grid; place-items: center; width: 22px; height: 22px; margin-left: 6px; vertical-align: -5px;
+  padding: 0; border: 0; border-radius: 50%; background: none; color: var(--muted-foreground); cursor: help;
+  transition: color 0.2s, background 0.2s;
+}
+.info-tip:hover, .info-tip:focus-visible { color: var(--foreground); background: color-mix(in oklch, var(--foreground) 8%, transparent); }
+.info-tip::after {
+  content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 8px); z-index: 5; width: max-content; max-width: 280px;
+  padding: 8px 10px; border-radius: 8px; font-size: 12.5px; line-height: 1.45; text-align: left; white-space: normal;
+  color: var(--background); background: var(--foreground); box-shadow: 0 8px 24px -8px oklch(0 0 0 / 0.4);
+  opacity: 0; pointer-events: none; transform: translate(-50%, 4px); transition: opacity 0.18s, transform 0.18s var(--ease-out);
+}
+.info-tip:hover::after, .info-tip:focus-visible::after, .info-tip:focus::after { opacity: 1; transform: translate(-50%, 0); }
+.download-button {
+  display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border-radius: 10px;
+  font-size: 14px; font-weight: 500; color: var(--foreground); text-decoration: none; white-space: nowrap;
+  background: color-mix(in oklch, var(--foreground) 7%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in oklch, var(--foreground) 6%, transparent);
+  transition: background 0.2s, transform 0.15s var(--ease-out);
+}
+.download-button:hover { background: color-mix(in oklch, var(--foreground) 12%, transparent); }
+.download-button:active { transform: scale(0.97); }
+
+@media (max-width: 560px) {
+  .platform-row { flex-wrap: wrap; }
+  .platform-meta { flex-basis: calc(100% - 36px); order: 3; margin-left: 36px; margin-top: -10px; }
+  .platform-actions { order: 4; width: 100%; margin-left: 36px; }
+  }
 
 .footer { max-width: 640px; margin: 0 auto; padding: 32px 16px 48px; display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 13px; color: var(--muted-foreground); }
 .lang { display: flex; gap: 4px; padding: 3px; border-radius: 999px; background: var(--muted); }

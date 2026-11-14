@@ -4,3 +4,8 @@
 /cli https://github.com/Andsu-dev/runelay/releases/latest/download/install-cli.sh 302
 /install-cli.sh https://github.com/Andsu-dev/runelay/releases/latest/download/install-cli.sh 302
 /releases https://github.com/Andsu-dev/runelay/releases 302
+/download/mac https://github.com/Andsu-dev/runelay/releases/latest/download/runelay-mac-arm64.dmg 302
+/download/mac-intel https://github.com/Andsu-dev/runelay/releases/latest/download/runelay-mac-x64.dmg 302
+/download/windows https://github.com/Andsu-dev/runelay/releases/latest/download/runelay-win-x64.exe 302
+/download/linux https://github.com/Andsu-dev/runelay/releases/latest/download/runelay-linux-x86_64.AppImage 302
+/download/linux-arm https://github.com/Andsu-dev/runelay/releases/latest/download/runelay-linux-arm64.AppImage 302

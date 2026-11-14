@@ -56,3 +56,14 @@ for (const button of document.querySelectorAll("[data-copy], [data-copy-from]"))
     }, 1600);
   });
 }
+
+const versionSlots = document.querySelectorAll("[data-version]");
+if (versionSlots.length) {
+  fetch("https://api.github.com/repos/Andsu-dev/runelay/releases/latest")
+    .then((response) => (response.ok ? response.json() : null))
+    .then((release) => {
+      if (!release?.tag_name) return;
+      for (const slot of versionSlots) slot.textContent = ` · ${release.tag_name.replace(/^v/, "")}`;
+    })
+    .catch(() => null);
+}
