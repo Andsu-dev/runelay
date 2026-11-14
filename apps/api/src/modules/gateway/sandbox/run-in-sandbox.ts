@@ -1,6 +1,8 @@
+import wasmPath from "@jitl/quickjs-wasmfile-release-sync/wasm" with { type: "file" };
 import { attempt, attemptSync, errorMessage, fail, ok, type Result } from "@runelay/shared";
 import {
   newQuickJSWASMModule,
+  newVariant,
   type QuickJSDeferredPromise,
   type QuickJSHandle,
   RELEASE_SYNC,
@@ -14,6 +16,15 @@ import {
 } from "@/modules/gateway/constants/sandbox.constants";
 import type { ExecuteOutput, ToolNamespace } from "@/modules/gateway/types/gateway.types";
 import type { SandboxLimits, SandboxStop } from "@/modules/gateway/types/sandbox.types";
+
+let quickjsModule: Promise<WebAssembly.Module> | undefined;
+
+const compileQuickJS = () => {
+  quickjsModule ??= Bun.file(wasmPath)
+    .arrayBuffer()
+    .then((bytes) => WebAssembly.compile(bytes));
+  return quickjsModule;
+};
 
 const parseToolArgs = (text: string): ToolArgs | null => {
   const parsed = attemptSync(() => JSON.parse(text) as unknown, "INVALID_INPUT");
@@ -46,7 +57,7 @@ export const runInSandbox = async (
   tools: ToolNamespace,
   limits: SandboxLimits,
 ): Promise<Result<ExecuteOutput>> => {
-  const quickjs = await newQuickJSWASMModule(RELEASE_SYNC);
+  const quickjs = await newQuickJSWASMModule(newVariant(RELEASE_SYNC, { wasmModule: compileQuickJS }));
   const runtime = quickjs.newRuntime();
   const context = runtime.newContext();
   const startedAt = performance.now();
