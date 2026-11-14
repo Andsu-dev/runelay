@@ -176,6 +176,12 @@ describe("runInSandbox", () => {
     expect(result.error).toMatchObject({ code: "EXECUTE_FAILED", message: "host boom" });
   });
 
+  test("returns a host failure outside a slice as EXECUTE_FAILED", async () => {
+    const broken = { broken: null } as unknown as ToolNamespace;
+    const result = await runInSandbox("return 1;", broken, limits);
+    expect(result.error?.code).toBe("EXECUTE_FAILED");
+  });
+
   test("reports a missing tool and a tool result that is not JSON", async () => {
     const odd: ToolNamespace = { odd: { bigint: async () => ok(1n) } };
     Object.defineProperty(odd.odd, "gone", { enumerable: true, get: () => undefined });
