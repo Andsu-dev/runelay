@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.3.0
+
+### Desktop app
+
+- runelay as a desktop app for Mac (Apple silicon and Intel), Windows and Linux (AppImage, x64 and arm64). It runs the whole server on `127.0.0.1:4312`, no Docker needed, and opens the first-account screen on its own.
+- The secret lives in the system keychain (Keychain, DPAPI or the Linux keyring) when one is available. Links to other sites open in the browser.
+- Local MCP servers by command are on in the app, since it runs on your own machine.
+- In the app, the update button opens the download page instead of the Docker command.
+
+### Server
+
+- The server compiles to a single binary with the QuickJS sandbox embedded, so `execute` works outside Docker too.
+
+### Site
+
+- `bot.runelay.com/download` lists every platform with its download buttons and the latest version.
+
 ## v0.2.2
 
 - A small gap between the rail and the page when the side panel is collapsed.
