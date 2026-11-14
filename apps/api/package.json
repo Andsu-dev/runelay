@@ -1,0 +1,21 @@
+{
+  "name": "@runeley/api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch --env-file=../../.env src/index.ts",
+    "start": "bun src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "seed": "bun --env-file=../../.env src/scripts/seed.ts"
+  },
+  "dependencies": {
+    "@better-auth/api-key": "1.7.25",
+    "@hono/bun": "^1.0.1",
+    "@hono/zod-validator": "^0.7.6",
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "@runeley/shared": "workspace:*",
+    "better-auth": "1.7.25",
+    "hono": "^4.10.7",
+    "zod": "^4.6.7"
+  }
+}

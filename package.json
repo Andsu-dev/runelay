@@ -1,0 +1,29 @@
+{
+  "name": "runeley",
+  "devDependencies": {
+    "@biomejs/biome": "2.6.7",
+    "@types/bun": "latest",
+    "typescript": "^5.9.3"
+  },
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "bun --filter @runeley/api --filter @runeley/web dev",
+    "start": "bun --filter @runeley/api start",
+    "import": "bun --filter @runeley/cli import",
+    "install-clients": "bun --filter @runeley/cli install-clients",
+    "import-context": "bun --filter @runeley/cli import-context",
+    "sync-context": "bun --filter @runeley/cli sync-context",
+    "seed": "bun --filter @runeley/api seed",
+    "check": "biome check --write .",
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "typecheck": "bun --filter '*' typecheck",
+    "build": "bun --filter @runeley/web build"
+  },
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
+}

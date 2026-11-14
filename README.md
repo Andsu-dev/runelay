@@ -1,0 +1,278 @@
+<p align="center">
+  <img src=".github/assets/logo.svg" width="112" alt="runeley" />
+</p>
+
+<h1 align="center">runeley</h1>
+
+<p align="center"><b>One MCP endpoint for every account, skill and memory your agents use.</b></p>
+
+<p align="center">
+  <img alt="license" src="https://img.shields.io/badge/license-MIT-111111" />
+  <img alt="self-hosted" src="https://img.shields.io/badge/self--hosted-docker-111111" />
+  <img alt="mcp" src="https://img.shields.io/badge/protocol-MCP-111111" />
+  <img alt="runtime" src="https://img.shields.io/badge/runtime-bun-111111" />
+</p>
+
+<p align="center">
+  Connect Linear, GitHub, Notion and friends once. Bring the memories and skills you already have.<br />
+  Claude Code, Codex, Cursor and Grok all see the same tools and the same context, from your own server.
+</p>
+
+---
+
+## The whole idea
+
+Every agent keeps its own little world: Claude Code has its MCP servers, OAuth logins, skills and memory; Codex has another config file; Cursor another; Grok another. Log into Linear four times, copy the same skill to four folders, and watch each agent forget what the other learned.
+
+runeley puts all of that behind **one MCP endpoint** that you host:
+
+- **Connections**: remote MCP servers (with OAuth), local stdio servers and OpenAPI specs, logged in once and encrypted at rest.
+- **Skills**: your `SKILL.md` folders, searchable and served on demand.
+- **Memory**: notes linked with `[[slug]]`, with versions and health checks. What one agent learns, every agent can read.
+- **Organizations**: each org has its own connections, skills, memory and API keys. Give every agent its own key and revoke one without touching the others.
+
+It is a gateway, not an agent: runeley runs no model. Your agent does the thinking; runeley is where it reaches your tools and context.
+
+## Features
+
+|  |  |
+|---|---|
+| **MCP gateway** | `POST /v1/mcp` with an API key. Search tools across every connection, call one, or chain many in a single `execute`. |
+| **Connector catalog** | ~25 curated remote MCP servers (Linear, GitHub, Notion, Figma, Vercel, Supabase, Sentry, Stripe…) installed in one click with OAuth. |
+| **Any MCP or API** | Remote MCP by URL, local MCP by command, or any OpenAPI spec turned into tools. |
+| **Skills and memory** | Full-text search, `[[links]]`, backlinks, versions, stale and broken-link reports. |
+| **Context routing** | Agents get a short brief (pinned rules + index) and fetch the rest on demand through MCP. |
+| **Import everything** | One command reads memories, skills and global instructions from Claude Code, Codex, Cursor, Grok, Gemini and OpenCode. |
+| **One key per agent** | API keys per organization, stored hashed for auth and encrypted for recovery by the owner. |
+| **Self-hosted** | One container, SQLite, no external services besides the accounts you connect. |
+
+## How it works
+
+```
+ Claude Code ─┐                       ┌─ Linear, GitHub, Notion (remote MCP + OAuth)
+ Codex ───────┤   Authorization:      ├─ local MCP servers (stdio)
+ Cursor ──────┼── Bearer rnl_…  ──▶ runeley ──┼─ any OpenAPI spec
+ Grok ────────┘   POST /v1/mcp        ├─ skills (SKILL.md + files)
+                                      └─ memory ([[linked]] notes)
+```
+
+The MCP server exposes nine tools:
+
+| Tool | What it does |
+|---|---|
+| `list_connections` | Every connection with status and tool count. |
+| `search_tools` | Search tools across all connections (`source.tool`). |
+| `call_tool` | Call one tool with arguments. |
+| `execute` | Run JavaScript that chains tools: `await tools.linear.list_issues({...})`. Each call returns `{ data, error }`. |
+| `search_context` | Full-text search across memories and skills. |
+| `read_memory` / `write_memory` | Read a memory, or create and update one (versioned). |
+| `read_skill` / `read_skill_file` | Read a skill and its files. |
+
+## Quick start (Docker)
+
+You need Docker and a domain or tunnel with HTTPS if agents outside your machine will use it.
+
+```sh
+git clone https://github.com/Andsu-dev/runeley.git
+cd runeley
+cp .env.example .env
+```
+
+Edit `.env`:
+
+```sh
+PUBLIC_URL=https://runeley.example.com     # the URL people and agents use
+RUNELEY_SECRET=$(openssl rand -hex 32)      # encrypts connections and API keys; back it up
+ALLOW_SIGNUP=false                          # first signup becomes the owner, then signups close
+```
+
+Start it:
+
+```sh
+docker compose up -d --build
+```
+
+runeley listens on `127.0.0.1:4312`. Put HTTPS in front of it (examples below), open `PUBLIC_URL` and create your account. The first account becomes the owner of a personal organization.
+
+> `bun run dev` is only for working on runeley itself. To run it, use Docker.
+
+### HTTPS in front
+
+**Caddy**
+
+```caddy
+runeley.example.com {
+  reverse_proxy 127.0.0.1:4312
+}
+```
+
+**Cloudflare Tunnel**
+
+```yaml
+ingress:
+  - hostname: runeley.example.com
+    service: http://127.0.0.1:4312
+  - service: http_status:404
+```
+
+OAuth callbacks go to `PUBLIC_URL/v1/oauth/callback`, so `PUBLIC_URL` must be the public address.
+
+### Configuration
+
+| Variable | Default | Description |
+|---|---|---|
+| `PUBLIC_URL` | `http://localhost:4312` | Public URL of the panel and API. Used for OAuth callbacks and cookies. |
+| `RUNELEY_SECRET` | required, 32+ chars | Encrypts connection configs, OAuth tokens and recoverable API keys. Losing it means reconnecting everything. |
+| `ALLOW_SIGNUP` | `false` | Keep signups open after the first account. |
+| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | empty | Enables "Sign in with GitHub" on the panel. |
+| `RUNELEY_DATA` | `/data` in Docker | Where the SQLite database lives. |
+| `PORT` / `HOST` | `4312` / `0.0.0.0` in Docker | Where the server listens. |
+
+## Connect your agents
+
+1. In the panel, open **Acesso → Configurar agentes**. The guide walks you through connecting accounts, creating a key and wiring each client.
+2. Or paste the config yourself (replace the URL and key):
+
+**Claude Code**
+
+```sh
+claude mcp add --scope user --transport http runeley https://runeley.example.com/v1/mcp \
+  --header "Authorization: Bearer rnl_..."
+```
+
+**Codex** (`~/.codex/config.toml`)
+
+```toml
+[mcp_servers.runeley]
+url = "https://runeley.example.com/v1/mcp"
+http_headers = { Authorization = "Bearer rnl_..." }
+```
+
+**Grok** (`~/.grok/config.toml`)
+
+```toml
+[mcp_servers.runeley]
+url = "https://runeley.example.com/v1/mcp"
+headers = { Authorization = "Bearer rnl_..." }
+```
+
+**Cursor** (`~/.cursor/mcp.json`)
+
+```json
+{ "mcpServers": { "runeley": { "url": "https://runeley.example.com/v1/mcp", "headers": { "Authorization": "Bearer rnl_..." } } } }
+```
+
+**All of them at once** (run on your computer, inside a clone of this repo, with [Bun](https://bun.sh)):
+
+```sh
+bun install
+RUNELEY_URL=https://runeley.example.com RUNELEY_API_KEY=rnl_... bun run install-clients
+```
+
+## Bring your context
+
+The CLI runs on your computer, because that is where your agents keep their files.
+
+```sh
+export RUNELEY_URL=https://runeley.example.com
+export RUNELEY_API_KEY=rnl_...
+
+bun run import            # MCP servers from Claude, Codex, Grok and Cursor configs become connections
+bun run import-context    # memories, skills and global instructions from every installed agent
+bun run sync-context      # writes a short brief into CLAUDE.md and AGENTS.md
+```
+
+`import-context` reads:
+
+| Agent | Skills | Memory and instructions |
+|---|---|---|
+| Claude Code | `~/.claude/skills` | `~/.claude/projects/*/memory`, `~/.claude/CLAUDE.md` |
+| Agents (universal) | `~/.agents/skills` | |
+| Codex | `~/.codex/skills` | `~/.codex/memories`, `~/.codex/AGENTS.md` |
+| Cursor | `~/.cursor/skills`, `~/.cursor/skills-cursor` | |
+| Grok | `~/.grok/skills` | `~/.grok/AGENTS.md` |
+| Gemini | `~/.gemini/skills` | `~/.gemini/GEMINI.md` |
+| OpenCode | `~/.config/opencode/skills` | `~/.config/opencode/AGENTS.md` |
+
+Duplicates are merged (first one wins). Memories listed under `## Regras de ouro` in a `MEMORY.md`, and global instruction files, come in pinned.
+
+`sync-context` only touches the block between `<!-- runeley:start -->` and `<!-- runeley:end -->`. Everything else in your files stays as it is. The brief tells agents to save new facts with `write_memory`, so memory flows back to runeley instead of local files.
+
+## REST API
+
+Everything the panel does goes through a versioned JSON API. Every response is `{ data, error }`.
+
+| Method | Route | Auth |
+|---|---|---|
+| `*` | `/v1/auth/*` | better-auth (email and password, GitHub) |
+| GET | `/v1/me` | session |
+| GET, POST | `/v1/organizations`, `POST /v1/organizations/active` | session |
+| GET, POST | `/v1/api-keys`, `DELETE /v1/api-keys/:id`, `GET /v1/api-keys/:id/secret` | session |
+| GET, POST | `/v1/sources`, `/v1/sources/summary`, `/v1/sources/import` | session or API key |
+| GET, PATCH, DELETE | `/v1/sources/:name`, `POST /v1/sources/:name/test`, `POST /v1/sources/:name/oauth` | session or API key |
+| GET, POST | `/v1/catalog`, `/v1/catalog/install` | session or API key |
+| GET, POST, PATCH, DELETE | `/v1/memories`, `/v1/memories/:slug`, `/v1/memories/:slug/versions`, `/v1/memories/health`, `/v1/memories/import` | session or API key |
+| GET, POST, PATCH, DELETE | `/v1/skills`, `/v1/skills/:slug`, `/v1/skills/:slug/files`, `/v1/skills/import` | session or API key |
+| GET | `/v1/context/search`, `/v1/context/brief` | session or API key |
+| GET | `/v1/activity/summary`, `/v1/onboarding`, `/v1/tools` | session or API key |
+| `*` | `/v1/mcp` | API key |
+
+## Security
+
+- Connection configs, OAuth tokens and recoverable API keys are encrypted with AES-256-GCM using `RUNELEY_SECRET`.
+- Agents never see credentials: runeley attaches them when it calls the upstream server.
+- API keys are scoped to one organization. Revealing a key needs a panel session, never an API key.
+- After the first account, signups are closed unless `ALLOW_SIGNUP=true`.
+- `execute` runs agent-written JavaScript in a `node:vm` context with a timeout. That is isolation for convenience, not a security sandbox: only give keys to agents you trust.
+
+## Operations
+
+**Backup**: copy the `data/` folder (the SQLite database) and keep `RUNELEY_SECRET` somewhere safe. Both are needed to restore.
+
+**Update**:
+
+```sh
+git pull
+docker compose up -d --build
+```
+
+Migrations run on startup.
+
+**Health**: `GET /health` returns `ok`. The container has a healthcheck.
+
+## Development
+
+```sh
+bun install
+cp .env.example .env          # PUBLIC_URL=http://localhost:5173 for dev
+bun run seed                  # demo user, organization, connections and an API key
+bun run dev                   # API on :4312, panel on :5173 (Vite proxies /v1)
+```
+
+```
+apps/
+  api/      Hono + better-auth + SQLite. Feature modules in src/modules/<feature>/{routes,services,repositories,...}
+  web/      React + Vite + TanStack Router/Query + Tailwind + motion
+  cli/      import, import-context, sync-context, install-clients
+packages/
+  shared/   zod schemas, types and the { data, error } Result used by every app
+```
+
+| Script | |
+|---|---|
+| `bun run dev` | API and panel with hot reload |
+| `bun run build` | Builds the panel (served by the API in production) |
+| `bun run typecheck` | `tsc` in every package |
+| `bun run check` | Biome format and lint |
+| `bun run seed` | Demo data for local development |
+
+## Roadmap
+
+- Tools page with per-tool approval policies
+- Organization members and invites
+- Activity log per API key
+- Menu bar app for macOS (reconnect alerts)
+
+## License
+
+MIT. Made by [@andersonbrdev](https://x.com/andersonbrdev).

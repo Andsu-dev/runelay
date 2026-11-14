@@ -1,0 +1,19 @@
+{
+  "name": "@runeley/cli",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "runeley": "src/index.ts"
+  },
+  "scripts": {
+    "import": "bun src/index.ts import",
+    "install-clients": "bun src/index.ts install-clients",
+    "typecheck": "tsc --noEmit",
+    "import-context": "bun src/index.ts import-context",
+    "sync-context": "bun src/index.ts sync-context"
+  },
+  "dependencies": {
+    "@runeley/shared": "workspace:*",
+    "zod": "^4.6.7"
+  }
+}

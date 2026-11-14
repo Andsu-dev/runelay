@@ -1,0 +1,15 @@
+{
+  "name": "@runeley/shared",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./importers": "./src/importers/parse-client-config.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  }
+}

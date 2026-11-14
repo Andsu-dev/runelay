@@ -1,0 +1,37 @@
+export const CLIENT_SNIPPETS = [
+  {
+    client: "Claude Code",
+    logo: { light: "/logos/claude-ai-icon.svg", dark: "/logos/claude-ai-icon.svg" },
+    file: "terminal",
+    build: (url: string, key: string) =>
+      `claude mcp add --scope user --transport http runeley ${url} --header "Authorization: Bearer ${key}"`,
+  },
+  {
+    client: "Codex",
+    logo: { light: "/logos/openai.svg", dark: "/logos/openai_dark.svg", scale: 1.3 },
+    file: "~/.codex/config.toml",
+    build: (url: string, key: string) =>
+      `[mcp_servers.runeley]\nurl = "${url}"\nhttp_headers = { Authorization = "Bearer ${key}" }`,
+  },
+  {
+    client: "Grok",
+    logo: { light: "/logos/grok-light.svg", dark: "/logos/grok-dark.svg" },
+    file: "~/.grok/config.toml",
+    build: (url: string, key: string) =>
+      `[mcp_servers.runeley]\nurl = "${url}"\nheaders = { Authorization = "Bearer ${key}" }`,
+  },
+  {
+    client: "Cursor",
+    logo: { light: "/logos/cursor_light.svg", dark: "/logos/cursor_dark.svg" },
+    file: "~/.cursor/mcp.json",
+    build: (url: string, key: string) =>
+      JSON.stringify({ mcpServers: { runeley: { url, headers: { Authorization: `Bearer ${key}` } } } }, null, 2),
+  },
+  {
+    client: "Todos de uma vez",
+    logo: null,
+    file: "no seu computador, dentro do repo",
+    build: (_url: string, key: string) =>
+      `RUNELEY_URL=${window.location.origin} RUNELEY_API_KEY=${key} bun run install-clients`,
+  },
+] as const;
