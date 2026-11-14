@@ -67,7 +67,7 @@ flowchart LR
 ## 🚀 Quick start
 
 ```sh
-curl -fsSL https://github.com/runelay/runelay/releases/latest/download/install.sh | sh
+curl -fsSL bot.runelay.com/install | sh
 ```
 
 That is it. The script creates `~/runelay`, writes a `.env` with a fresh `RUNELAY_SECRET`, pulls the image and starts it on `127.0.0.1:4312`. Open the link it prints, create your account and follow **Acesso → Configurar agentes**.
@@ -77,7 +77,7 @@ That is it. The script creates `~/runelay`, writes a `.env` with a fresh `RUNELA
 On the computer where your agents live:
 
 ```sh
-curl -fsSL https://github.com/runelay/runelay/releases/latest/download/install-cli.sh | sh
+curl -fsSL bot.runelay.com/cli | sh
 runelay migrate
 ```
 
@@ -96,7 +96,7 @@ runelay migrate
 Options go in front of `sh`:
 
 ```sh
-curl -fsSL https://github.com/runelay/runelay/releases/latest/download/install.sh \
+curl -fsSL bot.runelay.com/install \
   | PUBLIC_URL=https://runelay.example.com RUNELAY_DIR=/opt/runelay RUNELAY_VERSION=v0.1.0 sh
 ```
 
@@ -224,7 +224,7 @@ headers = { Authorization = "Bearer rnl_..." }
 The `runelay` CLI runs on your computer, because that is where your agents keep their files. Install it, log in through the browser, done: no env vars, no keys to copy.
 
 ```sh
-curl -fsSL https://github.com/runelay/runelay/releases/latest/download/install-cli.sh | sh
+curl -fsSL bot.runelay.com/cli | sh
 
 runelay login      # finds your server, opens the browser, saves this computer's key
 runelay status     # server, organization and what is stored in it
