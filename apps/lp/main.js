@@ -11,8 +11,8 @@ for (const element of document.querySelectorAll("[data-reveal]")) {
       element.classList.add("drawn");
       if (reduced) return void animate(element, { opacity: 1 }, quick);
       animate(element, { opacity: [0, 1], y: [16, 0], filter: ["blur(6px)", "blur(0px)"] }, spring);
-      const tiles = element.matches(".agents") && element.querySelectorAll("li");
-      if (tiles) animate(tiles, { x: [-24, 0], scale: [0.6, 1] }, { ...spring, delay: stagger(0.06) });
+      const tiles = element.matches(".cta") && element.querySelectorAll(".stack img");
+      if (tiles) animate(tiles, { x: [-10, 0], scale: [0.6, 1] }, { ...spring, delay: stagger(0.06) });
       const lines = element.matches(".terminal") && element.querySelectorAll(".out");
       if (lines) animate(lines, { opacity: [0, 1], x: [-6, 0] }, { duration: 0.3, delay: stagger(0.45, { startDelay: 0.5 }) });
     },
@@ -41,13 +41,18 @@ for (const details of document.querySelectorAll(".faq details")) {
   });
 }
 
-for (const button of document.querySelectorAll("[data-copy]")) {
+for (const button of document.querySelectorAll("[data-copy], [data-copy-from]")) {
+  const label = button.querySelector("[data-label]") ?? button;
+  const original = label.textContent;
+  let timer;
   button.addEventListener("click", () => {
-    navigator.clipboard.writeText(button.dataset.copy);
-    const label = button.textContent;
-    button.textContent = button.dataset.copied;
-    setTimeout(() => {
-      button.textContent = label;
+    const source = button.dataset.copyFrom ? document.querySelector(button.dataset.copyFrom) : null;
+    const text = button.dataset.copy ?? (source?.content ?? source)?.textContent ?? "";
+    navigator.clipboard.writeText(text.trim());
+    label.textContent = button.dataset.copied;
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      label.textContent = original;
     }, 1600);
   });
 }
