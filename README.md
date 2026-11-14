@@ -151,13 +151,6 @@ runelay.example.com {
 }
 ```
 
-**Tailscale only (private)**: nobody outside your tailnet can reach it, and OAuth still works because the provider redirects *your* browser.
-
-```sh
-sudo tailscale serve --bg --https=443 http://127.0.0.1:4312
-# then set PUBLIC_URL=https://<machine>.<tailnet>.ts.net in .env and run: docker compose up -d
-```
-
 **Cloudflare Tunnel**
 
 ```yaml

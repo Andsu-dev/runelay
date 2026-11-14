@@ -6,7 +6,6 @@
 - After signing in, the guided setup is the first screen until it is complete.
 - Docker image and links now live under the `runelay` GitHub organization: `ghcr.io/runelay/runelay`.
 - Short install URLs: `curl -fsSL bot.runelay.com/install | sh` and `curl -fsSL bot.runelay.com/cli | sh`.
-- README: running privately on a Tailscale tailnet.
 
 ## v0.1.0
 
