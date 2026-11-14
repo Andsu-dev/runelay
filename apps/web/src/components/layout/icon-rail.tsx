@@ -7,6 +7,7 @@ import { RailLink } from "./rail-link";
 import { RailLogo } from "./rail-logo";
 import { RailUserMenu } from "./rail-user-menu";
 import { ThemeToggle } from "./theme-toggle";
+import { UpdateButton } from "./update-button";
 import { useActiveCategory } from "./use-active-category";
 
 interface IconRailProps {
@@ -45,6 +46,7 @@ export function IconRail({ user, collapsed, onExpand, onSearch }: IconRailProps)
             </motion.div>
           )}
         </AnimatePresence>
+        <UpdateButton />
         <ThemeToggle />
         <RailUserMenu user={user} />
       </div>

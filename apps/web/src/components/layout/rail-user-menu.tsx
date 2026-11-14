@@ -1,11 +1,13 @@
 import { Logout03Icon, VolumeHighIcon, VolumeOffIcon } from "@hugeicons/core-free-icons";
 import type { AuthUser } from "@runelay/shared";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Button } from "@/components/ui/action/button";
 import { DropdownMenu } from "@/components/ui/overlay/dropdown-menu";
 import { DropdownMenuItem } from "@/components/ui/overlay/dropdown-menu-item";
 import { DropdownMenuSeparator } from "@/components/ui/overlay/dropdown-menu-separator";
 import { setSoundEnabled, useSoundEnabled } from "@/lib/sound";
+import { versionQuery } from "@/modules/system/api/system.api";
 import { useSignOut } from "./use-sign-out";
 import { UserAvatar } from "./user-avatar";
 
@@ -17,6 +19,7 @@ export function RailUserMenu({ user }: RailUserMenuProps) {
   const [open, setOpen] = useState(false);
   const signOut = useSignOut();
   const soundOn = useSoundEnabled();
+  const { data: version } = useQuery(versionQuery);
 
   return (
     <DropdownMenu
@@ -42,6 +45,11 @@ export function RailUserMenu({ user }: RailUserMenuProps) {
       <DropdownMenuItem icon={Logout03Icon} onSelect={signOut}>
         Sair
       </DropdownMenuItem>
+      {version && (
+        <span className="block px-2.5 pt-1.5 pb-1 text-[11px] text-muted-foreground tabular-nums">
+          runelay v{version.current}
+        </span>
+      )}
     </DropdownMenu>
   );
 }

@@ -14,6 +14,7 @@ import { oauthRoutes } from "@/modules/oauth/routes/oauth.routes";
 import { meRoutes, organizationsRoutes } from "@/modules/organizations/routes/organizations.routes";
 import { skillsRoutes } from "@/modules/skills/routes/skills.routes";
 import { sourcesRoutes } from "@/modules/sources/routes/sources.routes";
+import { systemRoutes } from "@/modules/system/routes/system.routes";
 import { respondError } from "@/shared/http";
 
 const v1 = new Hono()
@@ -31,6 +32,7 @@ const v1 = new Hono()
   .route("/activity", activityRoutes)
   .route("/onboarding", onboardingRoutes)
   .route("/tools", toolsRoutes)
+  .route("/system", systemRoutes)
   .route("/mcp", gatewayRoutes);
 
 export const app = new Hono()

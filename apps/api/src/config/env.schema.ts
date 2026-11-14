@@ -23,6 +23,8 @@ export const serverEnvSchema = z.object({
   RUNELAY_ALLOW_PRIVATE_URLS: flag,
   RUNELAY_SETUP_TOKEN: z.string().min(16).optional(),
   RUNELAY_RATE_LIMIT_PER_MINUTE: z.coerce.number().int().min(1).default(240),
+  RUNELAY_UPDATER_URL: z.url().optional(),
+  RUNELAY_UPDATER_TOKEN: z.string().min(16).optional(),
   GITHUB_CLIENT_ID: z.string().optional(),
   GITHUB_CLIENT_SECRET: z.string().optional(),
   WEB_DIST: z.string().default("../web/dist"),

@@ -28,5 +28,6 @@ export const ERROR_CATALOG = {
   },
   CLI_AUTH_RATE_LIMITED: { status: 429, message: "Muitos pedidos de login deste endereço. Espere um minuto." },
   API_KEY_REQUIRED: { status: 401, message: "Essa ação só vale para uma chave de API." },
+  UPDATE_UNAVAILABLE: { status: 409, message: "Atualização pelo painel não está configurada neste servidor." },
   UPSTREAM_FAILED: { status: 502, message: "O servidor do runelay respondeu com erro." },
 } as const satisfies Record<string, { status: number; message: string }>;

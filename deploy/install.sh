@@ -32,10 +32,12 @@ if [ ! -f .env ]; then
   }
   SECRET="$(random_hex 32)"
   SETUP_TOKEN="$(random_hex 18)"
+  UPDATER_TOKEN="$(random_hex 24)"
   cat > .env <<ENV
 PUBLIC_URL=$PUBLIC_URL
 RUNELAY_SECRET=$SECRET
 RUNELAY_SETUP_TOKEN=$SETUP_TOKEN
+RUNELAY_UPDATER_TOKEN=$UPDATER_TOKEN
 ALLOW_SIGNUP=false
 RUNELAY_VERSION=$VERSION
 RUNELAY_PORT=$PORT
@@ -58,4 +60,4 @@ if [ -n "$SETUP_TOKEN" ]; then
 else
   say "O link de primeiro acesso aparece em: cd $INSTALL_DIR && docker compose logs runelay"
 fi
-say "Atualizar: cd $INSTALL_DIR && docker compose pull && docker compose up -d"
+say "Atualizar: pelo botão no painel, ou cd $INSTALL_DIR && docker compose pull && docker compose up -d"

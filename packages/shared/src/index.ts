@@ -25,3 +25,4 @@ export * from "./skills/skill.schema";
 export type * from "./skills/skill.types";
 export * from "./sources/source.schema";
 export type * from "./sources/source.types";
+export type * from "./system/system.types";

@@ -3,7 +3,21 @@ services:
     image: ghcr.io/andsu-dev/runelay:${RUNELAY_VERSION:-latest}
     restart: unless-stopped
     env_file: .env
+    environment:
+      RUNELAY_UPDATER_URL: http://updater:8080
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
     ports:
       - "127.0.0.1:${RUNELAY_PORT:-4312}:4312"
     volumes:
       - ./data:/data
+
+  updater:
+    image: containrrr/watchtower:1.7.1
+    restart: unless-stopped
+    command: --http-api-update --label-enable --cleanup
+    environment:
+      WATCHTOWER_HTTP_API_TOKEN: ${RUNELAY_UPDATER_TOKEN:-}
+      DOCKER_API_VERSION: "1.44"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

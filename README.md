@@ -100,7 +100,7 @@ curl -fsSL bot.runelay.com/install \
   | PUBLIC_URL=https://runelay.example.com RUNELAY_DIR=/opt/runelay RUNELAY_VERSION=v0.1.0 sh
 ```
 
-**Update**: `cd ~/runelay && docker compose pull && docker compose up -d`
+**Update**: click the update button in the panel rail when a new release is out, or run `cd ~/runelay && docker compose pull && docker compose up -d`.
 
 </details>
 
@@ -113,16 +113,33 @@ services:
     image: ghcr.io/andsu-dev/runelay:latest
     restart: unless-stopped
     env_file: .env
+    environment:
+      RUNELAY_UPDATER_URL: http://updater:8080
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
     ports:
       - "127.0.0.1:4312:4312"
     volumes:
       - ./data:/data
+
+  updater:
+    image: containrrr/watchtower:1.7.1
+    restart: unless-stopped
+    command: --http-api-update --label-enable --cleanup
+    environment:
+      WATCHTOWER_HTTP_API_TOKEN: ${RUNELAY_UPDATER_TOKEN:-}
+      DOCKER_API_VERSION: "1.44"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 ```
+
+The `updater` service is optional. It powers the one-click update in the panel and only touches containers labeled for it. Leave it out if you do not want a container with access to the Docker socket.
 
 ```sh
 PUBLIC_URL=https://runelay.example.com     # the URL people and agents use
 RUNELAY_SECRET=$(openssl rand -hex 32)      # encrypts connections and API keys; back it up
 ALLOW_SIGNUP=false                          # first signup becomes the owner, then signups close
+RUNELAY_UPDATER_TOKEN=$(openssl rand -hex 24)  # lets the panel ask the updater for a new release
 ```
 
 </details>
@@ -172,6 +189,8 @@ OAuth callbacks go to `PUBLIC_URL/v1/oauth/callback`, so `PUBLIC_URL` must be th
 | `PUBLIC_URL` | `http://localhost:4312` | Public URL of the panel and API. Used for OAuth callbacks and cookies. |
 | `RUNELAY_SECRET` | required, 32+ chars | Encrypts connection configs, OAuth tokens and recoverable API keys. Losing it means reconnecting everything. |
 | `RUNELAY_SETUP_TOKEN` | generated | One-time token required to create the first account. |
+| `RUNELAY_UPDATER_TOKEN` | generated | Shared with the `updater` container. Owners and admins can then update from the panel. |
+| `RUNELAY_UPDATER_URL` | set by `compose.yaml` | Where the updater listens. |
 | `ALLOW_SIGNUP` | `false` | Keep signups open after the first account. |
 | `RUNELAY_ENABLE_EXECUTE` | `true` | Enables the sandboxed `execute` tool. See Security. |
 | `RUNELAY_ENABLE_STDIO` | `false` | Enables local MCP servers by command. See Security. |
@@ -340,7 +359,7 @@ runelay holds credentials for every account you connect, so it is locked down by
 
 **Backup**: copy the `data/` folder (the SQLite database) and keep `RUNELAY_SECRET` somewhere safe. Both are needed to restore.
 
-**Update**: `docker compose pull && docker compose up -d` (or `git pull && docker compose up -d --build` from source). Migrations run on startup.
+**Update**: the panel shows an update button when a new release is out (owners and admins, with the `updater` service). By hand: `docker compose pull && docker compose up -d` (or `git pull && docker compose up -d --build` from source). Migrations run on startup.
 
 **Health**: `GET /health` returns `ok`. The container has a healthcheck.
 
