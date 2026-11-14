@@ -1,10 +1,15 @@
 # Changelog
 
+## v0.1.2
+
+- The project lives at `github.com/Andsu-dev/runelay` again, and the Docker image is back at the public `ghcr.io/andsu-dev/runelay`.
+- Includes everything from v0.1.1: first-access setup screen and the guided setup as the first screen after signing in.
+
 ## v0.1.1
 
 - First access: a fresh server opens a "Configurar este runelay" screen that asks for the setup token (or the whole link) instead of a plain sign-in.
 - After signing in, the guided setup is the first screen until it is complete.
-- Docker image and links now live under the `runelay` GitHub organization: `ghcr.io/runelay/runelay`.
+- Docker image and links now live under the `runelay` GitHub organization: `ghcr.io/andsu-dev/runelay`.
 - Short install URLs: `curl -fsSL bot.runelay.com/install | sh` and `curl -fsSL bot.runelay.com/cli | sh`.
 
 ## v0.1.0
@@ -15,10 +20,10 @@ First public version of runelay: one MCP endpoint for every account, skill and m
 
 ```sh
 # server, on any machine with Docker
-curl -fsSL https://github.com/runelay/runelay/releases/latest/download/install.sh | sh
+curl -fsSL https://github.com/Andsu-dev/runelay/releases/latest/download/install.sh | sh
 
 # CLI, on your computer
-curl -fsSL https://github.com/runelay/runelay/releases/latest/download/install-cli.sh | sh
+curl -fsSL https://github.com/Andsu-dev/runelay/releases/latest/download/install-cli.sh | sh
 runelay migrate
 ```
 
@@ -60,5 +65,5 @@ runelay migrate
 
 ### Distribution
 
-- Docker image `ghcr.io/runelay/runelay` for `linux/amd64` and `linux/arm64`.
+- Docker image `ghcr.io/andsu-dev/runelay` for `linux/amd64` and `linux/arm64`.
 - `install.sh` for the server and `install-cli.sh` for the CLI attached to every release.

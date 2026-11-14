@@ -110,7 +110,7 @@ curl -fsSL bot.runelay.com/install \
 ```yaml
 services:
   runelay:
-    image: ghcr.io/runelay/runelay:latest
+    image: ghcr.io/andsu-dev/runelay:latest
     restart: unless-stopped
     env_file: .env
     ports:
@@ -131,7 +131,7 @@ ALLOW_SIGNUP=false                          # first signup becomes the owner, th
 <summary><b>Build from source</b></summary>
 
 ```sh
-git clone https://github.com/runelay/runelay.git && cd runelay
+git clone https://github.com/Andsu-dev/runelay.git && cd runelay
 cp .env.example .env    # set PUBLIC_URL and RUNELAY_SECRET
 docker compose up -d --build
 ```
