@@ -15,4 +15,15 @@ export const LOGIN_COPY = {
     switch: "Entrar",
     fallbackError: "O servidor não respondeu. Tente de novo em instantes.",
   },
+  setup: {
+    title: "Configurar este runelay",
+    description: "Crie a conta dona. Ela administra conexões, memória e chaves deste servidor.",
+    submit: "Criar conta dona",
+    switchPrompt: "",
+    switch: "",
+    fallbackError: "O servidor não respondeu. Tente de novo em instantes.",
+  },
 } as const;
+
+export const SETUP_TOKEN_HINT =
+  "Aparece no fim da instalação e no servidor em ~/runelay/.env (RUNELAY_SETUP_TOKEN). Pode colar o link inteiro.";

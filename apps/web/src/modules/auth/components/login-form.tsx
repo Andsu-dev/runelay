@@ -10,7 +10,8 @@ import { authClient } from "@/lib/auth-client";
 import { queryClient } from "@/lib/query-client";
 import { toast } from "@/lib/toast";
 import { meQuery } from "@/modules/auth/api/session.api";
-import { LOGIN_COPY } from "@/modules/auth/constants/login.constants";
+import { LOGIN_COPY, SETUP_TOKEN_HINT } from "@/modules/auth/constants/login.constants";
+import { onboardingQuery } from "@/modules/onboarding/api/onboarding.api";
 
 const FIELD_SURFACE = "h-11 bg-card shadow-xs ring-1 ring-border/70 hover:bg-card dark:bg-card dark:hover:bg-card";
 
@@ -18,30 +19,41 @@ interface LoginFormProps {
   mode: "signin" | "signup";
   setupToken?: string;
   redirectTo?: string;
+  needsSetup?: boolean;
 }
 
 const EASE_OUT = [0.2, 0, 0, 1] as const;
 
+const tokenFromInput = (raw: string) => {
+  const value = raw.trim();
+  if (!value) return undefined;
+  const fromLink = URL.parse(value)?.searchParams.get("token");
+  return fromLink ?? value;
+};
+
 const isLocalPath = (path: string | undefined): path is string =>
   Boolean(path?.startsWith("/") && !path.startsWith("//"));
 
-export function LoginForm({ mode, setupToken, redirectTo }: LoginFormProps) {
+export function LoginForm({ mode: requestedMode, setupToken, redirectTo, needsSetup = false }: LoginFormProps) {
   const navigate = useNavigate();
   const router = useRouter();
   const [pending, setPending] = useState(false);
-  const copy = LOGIN_COPY[mode];
+  const variant = needsSetup ? "setup" : requestedMode;
+  const mode = needsSetup ? "signup" : requestedMode;
+  const copy = LOGIN_COPY[variant];
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const email = String(form.get("email"));
     const password = String(form.get("password"));
+    const token = setupToken ?? tokenFromInput(String(form.get("setupToken") ?? ""));
     setPending(true);
     const { error } =
       mode === "signup"
         ? await authClient.signUp.email(
             { name: String(form.get("name")), email, password },
-            { headers: setupToken ? { [SETUP_TOKEN_HEADER]: setupToken } : {} },
+            { headers: token ? { [SETUP_TOKEN_HEADER]: token } : {} },
           )
         : await authClient.signIn.email({ email, password });
     setPending(false);
@@ -51,8 +63,13 @@ export function LoginForm({ mode, setupToken, redirectTo }: LoginFormProps) {
     }
     await queryClient.invalidateQueries({ queryKey: meQuery.queryKey });
     await router.invalidate();
-    if (isLocalPath(redirectTo)) router.history.push(redirectTo);
-    else navigate({ to: "/overview" });
+    if (isLocalPath(redirectTo)) {
+      router.history.push(redirectTo);
+      return;
+    }
+    const onboarding = await queryClient.fetchQuery(onboardingQuery).catch(() => null);
+    const pendingSetup = mode === "signup" || !onboarding || onboarding.completed < onboarding.total;
+    navigate({ to: pendingSetup ? "/setup" : "/overview" });
   };
 
   return (
@@ -70,7 +87,7 @@ export function LoginForm({ mode, setupToken, redirectTo }: LoginFormProps) {
         <div className="grid">
           <AnimatePresence initial={false} mode="popLayout">
             <motion.div
-              key={mode}
+              key={variant}
               initial={{ opacity: 0, y: 4, filter: "blur(2px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               exit={{ opacity: 0, y: -4, filter: "blur(2px)" }}
@@ -105,6 +122,11 @@ export function LoginForm({ mode, setupToken, redirectTo }: LoginFormProps) {
           <Field label="E-mail">
             <Input className={FIELD_SURFACE} name="email" type="email" required autoComplete="email" />
           </Field>
+          {needsSetup && !setupToken && (
+            <Field label="Token de primeiro acesso" hint={SETUP_TOKEN_HINT}>
+              <Input className={FIELD_SURFACE} name="setupToken" required autoComplete="off" spellCheck={false} />
+            </Field>
+          )}
           <Field label="Senha" hint={mode === "signup" ? "Pelo menos 8 caracteres." : undefined}>
             <Input
               className={FIELD_SURFACE}
@@ -122,7 +144,7 @@ export function LoginForm({ mode, setupToken, redirectTo }: LoginFormProps) {
         {copy.submit}
       </Button>
 
-      <p className="text-center text-[13px] text-muted-foreground">
+      <p className={needsSetup ? "hidden" : "text-center text-[13px] text-muted-foreground"}>
         {copy.switchPrompt}{" "}
         <Link
           to="/login"
