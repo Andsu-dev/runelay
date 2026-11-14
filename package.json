@@ -22,7 +22,8 @@
     "format": "biome format --write .",
     "typecheck": "bun --filter '*' typecheck",
     "build": "bun --filter @runelay/web build",
-    "build:cli": "bun apps/cli/build.ts"
+    "build:cli": "bun apps/cli/build.ts",
+    "test": "bun --filter '*' test"
   },
   "type": "module",
   "workspaces": [
