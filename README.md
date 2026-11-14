@@ -321,7 +321,7 @@ runelay holds credentials for every account you connect, so it is locked down by
 |---|---|---|
 | `RUNELAY_ENABLE_EXECUTE` | `true` | The `execute` tool. Agent code runs in QuickJS compiled to WebAssembly: a fresh sandbox per run with no filesystem, network, process or timers, 32 MB of memory and CPU and wall-clock limits. Tools cross the boundary as JSON only. Turn it off if you only want single `call_tool` calls. |
 | `RUNELAY_ENABLE_STDIO` | `false` | Local MCP servers (`command`). Even when on, only an owner or admin in the panel can create them, and the process gets a minimal environment (no server secrets). |
-| `RUNELAY_ALLOW_PRIVATE_URLS` | `false` | Connections to private, loopback, link-local and tailnet addresses (SSRF protection: cloud metadata, other services on the host). |
+| `RUNELAY_ALLOW_PRIVATE_URLS` | `false` | Connections to private, loopback, link-local and CGNAT (100.64.0.0/10) addresses (SSRF protection: cloud metadata, other services on the host). |
 
 **Prompt injection.** Tool results come from third parties (an issue, a page, an email). runelay limits what a manipulated agent can do: it cannot read credentials, cannot pin memories (pinned memories go into every agent's instructions, so only the panel can pin) and `execute` code runs in a WebAssembly sandbox with no access to the server. It can still write unpinned memories and call the tools you connected, so review memory health from time to time.
 
