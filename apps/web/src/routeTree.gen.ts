@@ -20,6 +20,7 @@ import { Route as SourcesIndexRouteImport } from './routes/sources/index'
 import { Route as SourcesNameRouteImport } from './routes/sources/$name'
 import { Route as AppConnectorsIndexRouteImport } from './routes/_app/connectors/index'
 import { Route as AppConnectorsNameRouteImport } from './routes/_app/connectors/$name'
+import { Route as AppConnectorsReconnectRouteImport } from './routes/_app/connectors/reconnect'
 import { Route as AppMemoryIndexRouteImport } from './routes/_app/memory/index'
 import { Route as AppMemorySlugRouteImport } from './routes/_app/memory/$slug'
 import { Route as AppSkillsIndexRouteImport } from './routes/_app/skills/index'
@@ -79,6 +80,11 @@ const AppConnectorsNameRoute = AppConnectorsNameRouteImport.update({
   path: '/connectors/$name',
   getParentRoute: () => AppRoute,
 } as any)
+const AppConnectorsReconnectRoute = AppConnectorsReconnectRouteImport.update({
+  id: '/connectors/reconnect',
+  path: '/connectors/reconnect',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppMemoryIndexRoute = AppMemoryIndexRouteImport.update({
   id: '/memory/',
   path: '/memory/',
@@ -110,6 +116,7 @@ export interface FileRoutesByFullPath {
   '/sources/$name': typeof SourcesNameRoute
   '/sources/': typeof SourcesIndexRoute
   '/connectors/$name': typeof AppConnectorsNameRoute
+  '/connectors/reconnect': typeof AppConnectorsReconnectRoute
   '/memory/$slug': typeof AppMemorySlugRoute
   '/skills/$slug': typeof AppSkillsSlugRoute
   '/connectors/': typeof AppConnectorsIndexRoute
@@ -126,6 +133,7 @@ export interface FileRoutesByTo {
   '/sources/$name': typeof SourcesNameRoute
   '/sources': typeof SourcesIndexRoute
   '/connectors/$name': typeof AppConnectorsNameRoute
+  '/connectors/reconnect': typeof AppConnectorsReconnectRoute
   '/memory/$slug': typeof AppMemorySlugRoute
   '/skills/$slug': typeof AppSkillsSlugRoute
   '/connectors': typeof AppConnectorsIndexRoute
@@ -144,6 +152,7 @@ export interface FileRoutesById {
   '/sources/$name': typeof SourcesNameRoute
   '/sources/': typeof SourcesIndexRoute
   '/_app/connectors/$name': typeof AppConnectorsNameRoute
+  '/_app/connectors/reconnect': typeof AppConnectorsReconnectRoute
   '/_app/memory/$slug': typeof AppMemorySlugRoute
   '/_app/skills/$slug': typeof AppSkillsSlugRoute
   '/_app/connectors/': typeof AppConnectorsIndexRoute
@@ -162,6 +171,7 @@ export interface FileRouteTypes {
     | '/sources/$name'
     | '/sources/'
     | '/connectors/$name'
+    | '/connectors/reconnect'
     | '/memory/$slug'
     | '/skills/$slug'
     | '/connectors/'
@@ -178,6 +188,7 @@ export interface FileRouteTypes {
     | '/sources/$name'
     | '/sources'
     | '/connectors/$name'
+    | '/connectors/reconnect'
     | '/memory/$slug'
     | '/skills/$slug'
     | '/connectors'
@@ -195,6 +206,7 @@ export interface FileRouteTypes {
     | '/sources/$name'
     | '/sources/'
     | '/_app/connectors/$name'
+    | '/_app/connectors/reconnect'
     | '/_app/memory/$slug'
     | '/_app/skills/$slug'
     | '/_app/connectors/'
@@ -290,6 +302,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppConnectorsNameRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/connectors/reconnect': {
+      id: '/_app/connectors/reconnect'
+      path: '/connectors/reconnect'
+      fullPath: '/connectors/reconnect'
+      preLoaderRoute: typeof AppConnectorsReconnectRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/memory/': {
       id: '/_app/memory/'
       path: '/memory'
@@ -326,6 +345,7 @@ interface AppRouteChildren {
   AppOverviewRoute: typeof AppOverviewRoute
   AppSetupRoute: typeof AppSetupRoute
   AppConnectorsNameRoute: typeof AppConnectorsNameRoute
+  AppConnectorsReconnectRoute: typeof AppConnectorsReconnectRoute
   AppMemorySlugRoute: typeof AppMemorySlugRoute
   AppSkillsSlugRoute: typeof AppSkillsSlugRoute
   AppConnectorsIndexRoute: typeof AppConnectorsIndexRoute
@@ -338,6 +358,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppOverviewRoute: AppOverviewRoute,
   AppSetupRoute: AppSetupRoute,
   AppConnectorsNameRoute: AppConnectorsNameRoute,
+  AppConnectorsReconnectRoute: AppConnectorsReconnectRoute,
   AppMemorySlugRoute: AppMemorySlugRoute,
   AppSkillsSlugRoute: AppSkillsSlugRoute,
   AppConnectorsIndexRoute: AppConnectorsIndexRoute,

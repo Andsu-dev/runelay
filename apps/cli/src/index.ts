@@ -2,7 +2,7 @@ import type { Result } from "@runeley/shared";
 import packageJson from "../package.json";
 
 const run = async () => {
-  const [name = "help", argument] = process.argv.slice(2);
+  const [name = "help", ...args] = process.argv.slice(2);
   if (name === "--version" || name === "-v" || name === "version") {
     console.log(packageJson.version);
     return;
@@ -16,7 +16,7 @@ const run = async () => {
     if (!["help", "--help", "-h"].includes(name)) process.exitCode = 1;
     return;
   }
-  const result: Result<null> = await command(argument);
+  const result: Result<null> = await command(args);
   if (result.error) {
     console.error(red(result.error.message));
     process.exitCode = 1;

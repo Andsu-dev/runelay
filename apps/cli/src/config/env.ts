@@ -17,6 +17,10 @@ const cliEnvSchema = z.object({
   RUNELEY_MEMORY_DIR: optionalText,
   RUNELEY_SKILLS_DIR: optionalText,
   XDG_CONFIG_HOME: optionalText,
+  RUNELEY_SKIP_KEYCHAIN: z
+    .enum(["", "0", "1", "true", "false"])
+    .optional()
+    .transform((value) => value === "1" || value === "true"),
 });
 
 export const cliEnv = parseEnv(cliEnvSchema);

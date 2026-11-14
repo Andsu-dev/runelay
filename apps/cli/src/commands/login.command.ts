@@ -3,6 +3,7 @@ import { hostname, userInfo } from "node:os";
 import { type CliAuthPollView, fail, ok, type Result } from "@runeley/shared";
 import { cliEnv } from "@/config/env";
 import { LOCAL_SERVER_URL, SERVER_ENV_FILE } from "@/constants/cli.constants";
+import { openBrowser } from "@/lib/browser";
 import { ask, bold, confirm, cyan, dim, green, interactive, startSpinner } from "@/lib/terminal";
 import { readStoredConfig, saveConfig } from "@/services/config.service";
 import { checkHealth, pollCliAuth, revokeCurrentKey, startCliAuth } from "@/services/runeley-api.service";
@@ -60,12 +61,6 @@ const deviceName = () => {
   return (user ? `${user}@${host}` : host).slice(0, 80);
 };
 
-const openBrowser = (url: string) => {
-  const opener = process.platform === "darwin" ? "open" : process.platform === "linux" ? "xdg-open" : null;
-  if (!interactive || !opener || !Bun.which(opener)) return false;
-  return Bun.spawnSync([opener, url], { stdout: "ignore", stderr: "ignore" }).exitCode === 0;
-};
-
 const waitForApproval = async (
   url: string,
   pollToken: string,
@@ -90,7 +85,7 @@ const waitForApproval = async (
   return fail("CLI_AUTH_NOT_FOUND", "O código expirou antes da autorização. Rode runeley login de novo.");
 };
 
-export const loginCommand = async (argument?: string): Promise<Result<null>> => {
+export const signIn = async (argument?: string): Promise<Result<null>> => {
   const url = await chooseUrl(argument);
   if (url.error) return url;
   const started = await startCliAuth(url.data, deviceName());
@@ -116,6 +111,13 @@ export const loginCommand = async (argument?: string): Promise<Result<null>> => 
   if (previous.data && previous.data.apiKey !== apiKey)
     await revokeCurrentKey({ url: previous.data.url, apiKey: previous.data.apiKey, fromEnv: false });
 
-  console.log(`\n${green("Logado")} em ${bold(organizationName ?? url.data)}. Próximo passo: ${bold("runeley sync")}`);
+  console.log(`\n${green("Logado")} em ${bold(organizationName ?? url.data)}.`);
+  return ok(null);
+};
+
+export const loginCommand = async ([argument]: string[] = []): Promise<Result<null>> => {
+  const signedIn = await signIn(argument);
+  if (signedIn.error) return signedIn;
+  console.log(`Próximo passo: ${bold("runeley migrate")}`);
   return ok(null);
 };

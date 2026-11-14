@@ -5,6 +5,7 @@ import {
   ok,
   type Result,
   type SourceConfig,
+  type SourceStatus,
   type SourcesSummaryView,
   type SourceView,
 } from "@runeley/shared";
@@ -67,12 +68,14 @@ export const listSources = (organizationId: string): Result<Source[]> => {
   return ok(sources);
 };
 
-export const listSourceViews = (organizationId: string): Result<SourceView[]> => {
+export const listSourceViews = (organizationId: string, status?: SourceStatus): Result<SourceView[]> => {
   const rows = attemptSync(
     () =>
       db
-        .query<SourceViewRow, [string, string]>(`${VIEW_SELECT} WHERE s.organization_id = ? ORDER BY s.name`)
-        .all(CATALOG_ICON_BY_URL_HASH, organizationId),
+        .query<SourceViewRow, [string, string, string | null, string | null]>(
+          `${VIEW_SELECT} WHERE s.organization_id = ? AND (? IS NULL OR s.status = ?) ORDER BY s.name`,
+        )
+        .all(CATALOG_ICON_BY_URL_HASH, organizationId, status ?? null, status ?? null),
     "STORAGE_FAILED",
   );
   if (rows.error) return rows;

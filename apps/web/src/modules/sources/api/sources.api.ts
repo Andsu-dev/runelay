@@ -3,6 +3,7 @@ import type {
   ImportSourcesInput,
   ImportView,
   OAuthStartView,
+  SourceStatus,
   SourcesSummaryView,
   SourceView,
   UpdateSourceInput,
@@ -14,6 +15,14 @@ export const sourcesQuery = queryOptions({
   queryKey: ["sources"],
   queryFn: () => api.get<SourceView[]>("/sources"),
 });
+
+export const sourcesByStatusQuery = (status: SourceStatus) =>
+  queryOptions({
+    queryKey: ["sources", { status }],
+    queryFn: () => api.get<SourceView[]>(`/sources?status=${status}`),
+  });
+
+export const needsAuthQuery = sourcesByStatusQuery("needs_auth");
 
 export const sourcesSummaryQuery = queryOptions({
   queryKey: ["sources", "summary"],

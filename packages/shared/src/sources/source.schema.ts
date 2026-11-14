@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const RESERVED_SOURCE_NAMES = ["summary", "import"];
+const RESERVED_SOURCE_NAMES = ["summary", "import", "reconnect"];
 
 const stringMap = z.record(z.string(), z.string()).default({});
 
@@ -59,7 +59,23 @@ export const updateSourceSchema = z
   .object({ config: sourceConfigSchema.optional(), enabled: z.boolean().optional() })
   .refine((body) => body.config !== undefined || body.enabled !== undefined, "Envie config ou enabled");
 
+export const importedOAuthSchema = z
+  .object({
+    clientId: z.string().min(1).max(500),
+    clientSecret: z.string().max(2000).optional(),
+    accessToken: z.string().max(20_000).optional(),
+    refreshToken: z.string().max(20_000).optional(),
+    expiresAt: z.number().int().positive().optional(),
+    scope: z.string().max(2000).optional(),
+    tokenType: z.string().max(40).optional(),
+  })
+  .refine((oauth) => Boolean(oauth.accessToken || oauth.refreshToken), "Envie accessToken ou refreshToken");
+
+export const importSourceSchema = createSourceSchema.extend({ oauth: importedOAuthSchema.optional() });
+
+export const listSourcesSchema = z.object({ status: sourceStatusSchema.optional() });
+
 export const importSourcesSchema = z.union([
-  z.object({ sources: z.array(createSourceSchema) }),
+  z.object({ sources: z.array(importSourceSchema) }),
   z.object({ config: z.string().min(1) }),
 ]);

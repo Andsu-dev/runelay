@@ -12,7 +12,8 @@ const expandMap = (map: Record<string, string> | undefined, env: EnvMap) =>
   Object.fromEntries(Object.entries(map ?? {}).map(([key, value]) => [key, expandEnv(value, env)]));
 
 const toSourceInput = (name: string, server: ClientServer, env: EnvMap): unknown => {
-  if (!server.url) {
+  const url = server.url ?? server.httpUrl;
+  if (!url) {
     return {
       name,
       config: {
@@ -30,14 +31,14 @@ const toSourceInput = (name: string, server: ClientServer, env: EnvMap): unknown
     const value = env[variable];
     if (value) headers[header] = value;
   }
-  return { name, config: { kind: "mcp", url: expandEnv(server.url, env), headers } };
+  return { name, config: { kind: "mcp", url: expandEnv(url, env), headers } };
 };
 
 export const sourcesFromServers = (servers: Record<string, unknown>, env: EnvMap): CreateSourceInput[] =>
   Object.entries(servers).flatMap(([name, raw]) => {
     const server = clientServerSchema.safeParse(raw);
     if (!server.success || server.data.enabled === false) return [];
-    if (IGNORED.test(`${name} ${server.data.url ?? ""}`)) return [];
+    if (IGNORED.test(`${name} ${server.data.url ?? server.data.httpUrl ?? ""}`)) return [];
     const input = createSourceSchema.safeParse(toSourceInput(name, server.data, env));
     return input.success ? [input.data] : [];
   });
@@ -52,6 +53,12 @@ export const parseClientConfig = (text: string, env: EnvMap): Result<CreateSourc
   const parsed = attemptSync(() => jsonClientConfigSchema.parse(JSON.parse(trimmed)), "INVALID_INPUT");
   if (parsed.error) return parsed;
   const projectServers = Object.values(parsed.data.projects ?? {}).map((project) => project.mcpServers ?? {});
-  const servers = Object.assign({}, ...projectServers, parsed.data.servers ?? {}, parsed.data.mcpServers ?? {});
+  const servers = Object.assign(
+    {},
+    ...projectServers,
+    parsed.data.mcp ?? {},
+    parsed.data.servers ?? {},
+    parsed.data.mcpServers ?? {},
+  );
   return ok(sourcesFromServers(servers, env));
 };

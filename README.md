@@ -72,6 +72,24 @@ curl -fsSL https://github.com/Andsu-dev/runeley/releases/latest/download/install
 
 That is it. The script creates `~/runeley`, writes a `.env` with a fresh `RUNELEY_SECRET`, pulls the image and starts it on `127.0.0.1:4312`. Open the link it prints, create your account and follow **Acesso → Configurar agentes**.
 
+### Migrate in one command
+
+On the computer where your agents live:
+
+```sh
+curl -fsSL https://github.com/Andsu-dev/runeley/releases/latest/download/install-cli.sh | sh
+runeley migrate
+```
+
+`migrate` logs in through the browser if needed, then reads Claude Code, Codex, Cursor, Grok, Gemini and OpenCode: MCP servers, memories, skills and global instructions. It shows a summary per agent, asks once and sends everything.
+
+- **Comes connected:** OAuth accounts the agent already logged into. runeley reads the tokens Grok keeps in `~/.grok/mcp_credentials.json` and, on macOS, the ones Codex and Claude Code keep in the Keychain (macOS may ask for permission). Servers that authenticate with headers come connected too.
+- **Asks for login:** everything else, including Cursor accounts (Cursor encrypts its tokens). At the end the CLI opens `/connectors/reconnect`, a queue that walks you through the remaining logins one tab at a time.
+- **Stays on the agent:** local command servers (stdio). Add them from the panel if you want them in runeley.
+- **Token rotation:** many providers rotate the refresh token on use. Once runeley refreshes it, the old agent may ask you to log in again. Run with `--replace` (or answer `t`) to remove the migrated MCPs from the agents and leave only runeley.
+
+`runeley migrate --yes` skips the question (required without a terminal). Tokens are sent only to your server and stored encrypted.
+
 <details>
 <summary><b>Installer options</b></summary>
 

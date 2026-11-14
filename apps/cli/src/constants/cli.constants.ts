@@ -25,6 +25,8 @@ export const HELP_TEXT = `runeley: suas memórias, habilidades e conexões iguai
 
 Uso: runeley <comando>
 
+  migrate       traz tudo dos agentes de uma vez, com as contas já conectadas
+                (--yes pula a confirmação, --replace deixa só o runeley nos agentes)
   login [url]   entra no servidor pelo navegador e guarda a chave deste computador
   status        mostra o servidor, a organização e o que está guardado nela
   push          envia memórias, habilidades e instruções dos agentes locais

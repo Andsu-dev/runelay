@@ -1,5 +1,7 @@
 import {
   type CreateSourceInput,
+  type ImportedOAuthInput,
+  type ImportSourceInput,
   type ImportSourcesInput,
   type ImportView,
   ok,
@@ -14,11 +16,12 @@ import {
   findSource,
   findSourceView,
   updateEnabled,
+  updateOAuth,
   upsertSource,
   upsertSources,
 } from "@/modules/sources/repositories/source.repository";
 import { checkSourcePolicy } from "@/modules/sources/services/source-policy.service";
-import type { SourceKey } from "@/modules/sources/types/source.types";
+import type { OAuthState, SourceKey } from "@/modules/sources/types/source.types";
 import type { SourceActor } from "@/modules/sources/types/source-policy.types";
 
 export { findSourceView, listSourceViews, summarizeSources } from "@/modules/sources/repositories/source.repository";
@@ -70,12 +73,39 @@ export const removeSource = async (key: SourceKey): Promise<Result<null>> => {
   return deleteSource(key);
 };
 
+const oauthStateFromImport = (oauth: ImportedOAuthInput, now = Date.now()): OAuthState => {
+  const expiresIn = oauth.expiresAt ? Math.floor((oauth.expiresAt - now) / 1000) : undefined;
+  return {
+    client: { client_id: oauth.clientId, ...(oauth.clientSecret ? { client_secret: oauth.clientSecret } : {}) },
+    tokens: {
+      access_token: oauth.accessToken ?? "",
+      token_type: oauth.tokenType ?? "Bearer",
+      ...(oauth.refreshToken ? { refresh_token: oauth.refreshToken } : {}),
+      ...(oauth.scope ? { scope: oauth.scope } : {}),
+      ...(expiresIn !== undefined && expiresIn > 0 ? { expires_in: expiresIn } : {}),
+    },
+    verifier: undefined,
+    imported: true,
+  };
+};
+
+const importOne = async (organizationId: string, source: ImportSourceInput) => {
+  const key = { organizationId, name: source.name };
+  if (source.oauth && source.config.kind === "mcp") {
+    const stored = updateOAuth(key, oauthStateFromImport(source.oauth));
+    if (stored.error) return false;
+  }
+  const connected = await connectSource(key);
+  return !connected.error;
+};
+
 export const importSources = async (
   organizationId: string,
   input: ImportSourcesInput,
   actor: SourceActor,
 ): Promise<Result<ImportView>> => {
-  const parsed = "config" in input ? parseClientConfig(input.config, {}) : ok(input.sources);
+  const parsed: Result<ImportSourceInput[]> =
+    "config" in input ? parseClientConfig(input.config, {}) : ok(input.sources);
   if (parsed.error) return parsed;
   const checks = await Promise.all(parsed.data.map((source) => checkSourcePolicy(source.config, actor)));
   const allowed = parsed.data.filter((_, index) => !checks[index]?.error);
@@ -83,8 +113,15 @@ export const importSources = async (
     const reason = checks[index]?.error?.message;
     return reason ? [{ name: source.name, reason }] : [];
   });
-  const saved = upsertSources(organizationId, allowed);
+  const saved = upsertSources(
+    organizationId,
+    allowed.map(({ name, config }) => ({ name, config })),
+  );
   if (saved.error) return saved;
-  await Promise.all(allowed.map((source) => connectSource({ organizationId, name: source.name })));
-  return ok({ imported: allowed.map((source) => source.name), skipped });
+  const results = await Promise.all(allowed.map((source) => importOne(organizationId, source)));
+  return ok({
+    imported: allowed.map((source) => source.name),
+    connected: allowed.filter((_, index) => results[index]).map((source) => source.name),
+    skipped,
+  });
 };

@@ -5,6 +5,7 @@ export interface OAuthState {
   client?: OAuthClientInformationMixed;
   tokens?: OAuthTokens;
   verifier?: string;
+  imported?: boolean;
 }
 
 export interface SourceKey {

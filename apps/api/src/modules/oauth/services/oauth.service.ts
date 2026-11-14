@@ -16,7 +16,12 @@ const findRemoteConfig = (key: SourceKey): Result<McpRemoteConfig> => {
 export const startLogin = async (key: SourceKey): Promise<Result<OAuthStartView>> => {
   const config = findRemoteConfig(key);
   if (config.error) return config;
-  const cleared = updateOAuth(key, { tokens: undefined });
+  const current = findSource(key);
+  if (current.error) return current;
+  const cleared = updateOAuth(
+    key,
+    current.data.oauth.imported ? { tokens: undefined, client: undefined, imported: undefined } : { tokens: undefined },
+  );
   if (cleared.error) return cleared;
 
   let authorizationUrl: string | null = null;

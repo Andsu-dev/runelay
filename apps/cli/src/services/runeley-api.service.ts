@@ -7,8 +7,8 @@ import {
   type ContextClient,
   type CreateMemoryInput,
   type CreateSkillInput,
-  type CreateSourceInput,
   fail,
+  type ImportSourceInput,
   type ImportView,
   ok,
   type Page,
@@ -16,6 +16,8 @@ import {
   type SkillFileView,
   type SkillListItemView,
   type SkillView,
+  type SourceStatus,
+  type SourceView,
 } from "@runeley/shared";
 import { HEALTH_TIMEOUT_MS, SKILL_PAGE_SIZE } from "@/constants/cli.constants";
 import type { Connection } from "@/types/config.types";
@@ -66,7 +68,7 @@ export const fetchStatus = (connection: Connection) => authed<CliStatusView>(con
 
 export const revokeCurrentKey = (connection: Connection) => authed<null>(connection, "DELETE", "/cli/key");
 
-export const pushSources = (connection: Connection, sources: CreateSourceInput[]) =>
+export const pushSources = (connection: Connection, sources: ImportSourceInput[]) =>
   authed<ImportView>(connection, "POST", "/sources/import", { sources });
 
 export const pushMemories = (connection: Connection, memories: CreateMemoryInput[]) =>
@@ -103,3 +105,6 @@ export const fetchSkillFile = (connection: Connection, slug: string, path: strin
     "GET",
     `/skills/${encodeURIComponent(slug)}/files?path=${encodeURIComponent(path)}`,
   );
+
+export const listSourcesByStatus = (connection: Connection, status: SourceStatus) =>
+  authed<SourceView[]>(connection, "GET", `/sources?status=${status}`);

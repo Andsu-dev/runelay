@@ -1,4 +1,4 @@
-import { createSourceSchema, importSourcesSchema, ok, updateSourceSchema } from "@runeley/shared";
+import { createSourceSchema, importSourcesSchema, listSourcesSchema, ok, updateSourceSchema } from "@runeley/shared";
 import { Hono } from "hono";
 import { requireOrganization } from "@/modules/auth/middlewares/authenticate";
 import { startLogin } from "@/modules/oauth/services/oauth.service";
@@ -21,8 +21,8 @@ const actorOf = ({ authMethod, role }: AppEnv["Variables"]) => ({ authMethod, ro
 
 export const sourcesRoutes = new Hono<AppEnv>()
   .use(requireOrganization)
-  .get("/", (c) => {
-    const views = listSourceViews(c.var.organizationId);
+  .get("/", validate("query", listSourcesSchema), (c) => {
+    const views = listSourceViews(c.var.organizationId, c.req.valid("query").status);
     return respond(c, views.error || c.var.authMethod === "session" ? views : ok(views.data.map(redactView)));
   })
   .post("/", validate("json", createSourceSchema), async (c) =>
