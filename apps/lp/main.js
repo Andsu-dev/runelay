@@ -44,9 +44,10 @@ for (const details of document.querySelectorAll(".faq details")) {
 for (const button of document.querySelectorAll("[data-copy]")) {
   button.addEventListener("click", () => {
     navigator.clipboard.writeText(button.dataset.copy);
-    button.textContent = "Copiado";
+    const label = button.textContent;
+    button.textContent = button.dataset.copied;
     setTimeout(() => {
-      button.textContent = "Copiar";
+      button.textContent = label;
     }, 1600);
   });
 }
