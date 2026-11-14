@@ -3,6 +3,8 @@
 ## v0.1.2
 
 - The project lives at `github.com/Andsu-dev/runelay` again, and the Docker image is back at the public `ghcr.io/andsu-dev/runelay`.
+- The `execute` sandbox releases its host handles when setup fails before the code runs.
+- CI with tests on every pull request, Dependabot and community health files.
 - Includes everything from v0.1.1: first-access setup screen and the guided setup as the first screen after signing in.
 
 ## v0.1.1
