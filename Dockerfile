@@ -20,5 +20,8 @@ ENV NODE_ENV=production RUNELEY_DATA=/data HOST=0.0.0.0 PORT=4312 WEB_DIST=/app/
 VOLUME /data
 EXPOSE 4312
 HEALTHCHECK --interval=30s --timeout=5s CMD node -e "fetch('http://127.0.0.1:4312/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+COPY deploy/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 WORKDIR /app/apps/api
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["bun", "src/index.ts"]

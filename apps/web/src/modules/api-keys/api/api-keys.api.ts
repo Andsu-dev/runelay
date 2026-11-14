@@ -1,5 +1,12 @@
-import type { ApiKeySecretView, ApiKeyView, CreateApiKeyInput, CreatedApiKeyView } from "@runeley/shared";
-import { queryOptions } from "@tanstack/react-query";
+import type {
+  ApiKeySecretView,
+  ApiKeyView,
+  AuditEventView,
+  CreateApiKeyInput,
+  CreatedApiKeyView,
+  Page,
+} from "@runeley/shared";
+import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 
 export const apiKeysQuery = queryOptions({
@@ -13,6 +20,19 @@ export const apiKeySecretQuery = (id: string) =>
     queryFn: () => api.get<ApiKeySecretView>(`/api-keys/${encodeURIComponent(id)}/secret`),
     staleTime: Number.POSITIVE_INFINITY,
     gcTime: 60_000,
+  });
+
+const ACTIVITY_PAGE_SIZE = 30;
+
+export const apiKeyActivityQuery = (id: string) =>
+  infiniteQueryOptions({
+    queryKey: ["api-keys", id, "activity"],
+    queryFn: ({ pageParam }) =>
+      api.get<Page<AuditEventView>>(
+        `/api-keys/${encodeURIComponent(id)}/activity?cursor=${pageParam}&limit=${ACTIVITY_PAGE_SIZE}`,
+      ),
+    initialPageParam: 0,
+    getNextPageParam: (page) => page.nextCursor,
   });
 
 export const createApiKey = (input: CreateApiKeyInput) => api.post<CreatedApiKeyView>("/api-keys", input);

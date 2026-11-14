@@ -90,4 +90,16 @@ export const MIGRATIONS = [
     sealed TEXT NOT NULL,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   )`,
+  `CREATE TABLE IF NOT EXISTS audit_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    organization_id TEXT NOT NULL,
+    api_key_id TEXT,
+    method TEXT NOT NULL,
+    path TEXT NOT NULL,
+    status INTEGER NOT NULL,
+    ip TEXT,
+    created_at TEXT NOT NULL DEFAULT (${SQL_NOW})
+  )`,
+  "CREATE INDEX IF NOT EXISTS audit_events_key_created ON audit_events (api_key_id, created_at)",
+  "CREATE INDEX IF NOT EXISTS tool_calls_key_created ON tool_calls (api_key_id, created_at)",
 ];

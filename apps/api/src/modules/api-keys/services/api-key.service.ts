@@ -7,6 +7,7 @@ export {
   findApiKeySecret as revealApiKey,
   listApiKeyViews as listApiKeys,
 } from "@/modules/api-keys/repositories/api-key.repository";
+export { listKeyActivity } from "@/modules/api-keys/repositories/audit.repository";
 
 export const createApiKey = async (
   organizationId: string,

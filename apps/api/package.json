@@ -17,6 +17,7 @@
     "@runeley/shared": "workspace:*",
     "better-auth": "1.7.25",
     "hono": "^4.10.7",
+    "quickjs-emscripten": "^0.32.0",
     "zod": "^4.6.7"
   }
 }

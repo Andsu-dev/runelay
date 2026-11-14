@@ -9,6 +9,7 @@ import { CLIENT_INFO } from "@/modules/connectors/constants/connector.constants"
 import type { Connection, Tool } from "@/modules/connectors/types/connector.types";
 import { createOAuthProvider } from "@/modules/oauth/providers/oauth-client.provider";
 import type { SourceKey } from "@/modules/sources/types/source.types";
+import { guardedFetch } from "@/modules/sources/utils/guarded-fetch";
 
 const unwrapToolResult = (result: CallToolResult): Result<unknown> => {
   const text = result.content.flatMap((part) => (part.type === "text" ? [part.text] : [])).join("\n");
@@ -50,7 +51,11 @@ const loadConnection = async (client: Client, source: string): Promise<Result<Co
 
 export const connectMcpRemote = async (key: SourceKey, config: McpRemoteConfig): Promise<Result<Connection>> => {
   const url = new URL(config.url);
-  const options = { authProvider: createOAuthProvider(key), requestInit: { headers: config.headers } };
+  const options = {
+    authProvider: createOAuthProvider(key),
+    requestInit: { headers: config.headers },
+    fetch: guardedFetch,
+  };
   const client = new Client(CLIENT_INFO);
   try {
     await client.connect(new StreamableHTTPClientTransport(url, options));

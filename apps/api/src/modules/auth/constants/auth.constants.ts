@@ -12,3 +12,6 @@ export const API_KEY_ACTIONS = ["create", "read", "update", "delete"] as const;
 
 export const SETUP_TOKEN_REQUIRED_MESSAGE =
   "Para criar a primeira conta, use o link de primeiro acesso que aparece no log do servidor ou no fim da instalação.";
+export const RATE_LIMIT_WINDOW_MS = 60_000;
+
+export const MCP_PATH = "/v1/mcp";

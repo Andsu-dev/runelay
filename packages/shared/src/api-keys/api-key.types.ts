@@ -12,6 +12,16 @@ export interface ApiKeyView {
   recoverable: boolean;
 }
 
+export interface AuditEventView {
+  id: string;
+  kind: "tool" | "http";
+  action: string;
+  ok: boolean;
+  durationMs: number | null;
+  ip: string | null;
+  createdAt: string;
+}
+
 export interface ApiKeySecretView {
   key: string;
 }

@@ -64,7 +64,7 @@ The MCP server exposes nine tools:
 | `list_connections` | Every connection with status and tool count. |
 | `search_tools` | Search tools across all connections (`source.tool`). |
 | `call_tool` | Call one tool with arguments. |
-| `execute` | Run JavaScript that chains tools (off by default, see Security). |
+| `execute` | Run JavaScript that chains tools inside a WebAssembly sandbox: `await tools.linear.list_issues({...})`. |
 | `search_context` | Full-text search across memories and skills. |
 | `read_memory` / `write_memory` | Read a memory, or create and update one (versioned). |
 | `read_skill` / `read_skill_file` | Read a skill and its files. |
@@ -147,9 +147,10 @@ OAuth callbacks go to `PUBLIC_URL/v1/oauth/callback`, so `PUBLIC_URL` must be th
 | `RUNELEY_SECRET` | required, 32+ chars | Encrypts connection configs, OAuth tokens and recoverable API keys. Losing it means reconnecting everything. |
 | `RUNELEY_SETUP_TOKEN` | generated | One-time token required to create the first account. |
 | `ALLOW_SIGNUP` | `false` | Keep signups open after the first account. |
-| `RUNELEY_ENABLE_EXECUTE` | `false` | Enables the `execute` tool. See Security. |
+| `RUNELEY_ENABLE_EXECUTE` | `true` | Enables the sandboxed `execute` tool. See Security. |
 | `RUNELEY_ENABLE_STDIO` | `false` | Enables local MCP servers by command. See Security. |
 | `RUNELEY_ALLOW_PRIVATE_URLS` | `false` | Allows connections to private network addresses. |
+| `RUNELEY_RATE_LIMIT_PER_MINUTE` | `240` | Requests per minute allowed for each API key. |
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | empty | Enables "Sign in with GitHub" on the panel. |
 | `RUNELEY_DATA` | `/data` in Docker | Where the SQLite database lives. |
 | `PORT` / `HOST` | `4312` / `0.0.0.0` in Docker | Where the server listens. |
@@ -255,17 +256,23 @@ runeley holds credentials for every account you connect, so it is locked down by
 - Importing a client config through the API never expands `${VARS}` from the server environment.
 - API keys belong to one organization. Revealing a key needs a panel session, never an API key.
 
-**Dangerous capabilities are off by default.**
+**Risky capabilities.**
 
 | Variable | Default | What it unlocks |
 |---|---|---|
-| `RUNELEY_ENABLE_EXECUTE` | `false` | The `execute` tool. It runs agent-written JavaScript in `node:vm`, which is **not** a security sandbox. Anyone with an API key, or an agent tricked by prompt injection, could run code on the server. Turn it on only for a single-user instance you fully trust. |
+| `RUNELEY_ENABLE_EXECUTE` | `true` | The `execute` tool. Agent code runs in QuickJS compiled to WebAssembly: a fresh sandbox per run with no filesystem, network, process or timers, 32 MB of memory and CPU and wall-clock limits. Tools cross the boundary as JSON only. Turn it off if you only want single `call_tool` calls. |
 | `RUNELEY_ENABLE_STDIO` | `false` | Local MCP servers (`command`). Even when on, only an owner or admin in the panel can create them, and the process gets a minimal environment (no server secrets). |
 | `RUNELEY_ALLOW_PRIVATE_URLS` | `false` | Connections to private, loopback, link-local and tailnet addresses (SSRF protection: cloud metadata, other services on the host). |
 
-**Prompt injection.** Tool results come from third parties (an issue, a page, an email). runeley limits what a manipulated agent can do: it cannot read credentials, cannot pin memories (pinned memories go into every agent's instructions, so only the panel can pin) and cannot run code unless you enabled `execute`. It can still write unpinned memories and call the tools you connected, so review memory health from time to time.
+**Prompt injection.** Tool results come from third parties (an issue, a page, an email). runeley limits what a manipulated agent can do: it cannot read credentials, cannot pin memories (pinned memories go into every agent's instructions, so only the panel can pin) and `execute` code runs in a WebAssembly sandbox with no access to the server. It can still write unpinned memories and call the tools you connected, so review memory health from time to time.
 
-**Not covered yet.** No per-key rate limit on `/v1/mcp`, no audit log per key, and the container runs as root. Put runeley behind HTTPS and keep `127.0.0.1` binding (the default) so only your proxy reaches it.
+**Abuse and visibility.**
+- Every API key has a sliding-window rate limit (`RUNELEY_RATE_LIMIT_PER_MINUTE`, default 240). Over the limit the API answers `429` with `retry-after`.
+- Every request made with an API key is audited: tool calls (source, tool, result, duration) and REST calls (method, path, status, IP). Open **Chaves de API → Atividade** to see one key's timeline.
+
+**Network.** Every outgoing request (MCP, OAuth, OpenAPI) resolves DNS and checks the address right before it goes out, and redirects are followed one hop at a time with the same check, so DNS rebinding and redirects cannot reach private addresses.
+
+**Container.** The image starts as root only to fix the ownership of `/data`, then drops to the unprivileged `node` user. The application code stays read-only for that user. Keep the `127.0.0.1` binding (the default) and put HTTPS in front.
 
 ## Operations
 

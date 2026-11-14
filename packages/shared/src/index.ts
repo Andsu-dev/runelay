@@ -6,6 +6,8 @@ export * from "./auth/auth.constants";
 export type * from "./auth/auth.types";
 export * from "./catalog/catalog.schema";
 export type * from "./catalog/catalog.types";
+export * from "./cli/cli-auth.schema";
+export type * from "./cli/cli-auth.types";
 export * from "./context/context.schema";
 export type * from "./context/context.types";
 export * from "./env/parse-env";

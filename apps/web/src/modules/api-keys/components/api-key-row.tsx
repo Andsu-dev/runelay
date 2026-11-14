@@ -1,4 +1,4 @@
-import { Delete02Icon } from "@hugeicons/core-free-icons";
+import { Activity01Icon, Delete02Icon } from "@hugeicons/core-free-icons";
 import type { ApiKeyView } from "@runeley/shared";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -8,6 +8,7 @@ import { Dialog } from "@/components/ui/overlay/dialog";
 import { formatDate } from "@/lib/format";
 import { toast } from "@/lib/toast";
 import { apiKeysQuery, deleteApiKey } from "@/modules/api-keys/api/api-keys.api";
+import { KeyActivityDialog } from "./key-activity-dialog";
 
 interface ApiKeyRowProps {
   apiKey: ApiKeyView;
@@ -16,6 +17,7 @@ interface ApiKeyRowProps {
 export function ApiKeyRow({ apiKey }: ApiKeyRowProps) {
   const queryClient = useQueryClient();
   const [confirming, setConfirming] = useState(false);
+  const [inspecting, setInspecting] = useState(false);
   const label = apiKey.name ?? "Sem nome";
 
   const revoke = useMutation({
@@ -41,7 +43,9 @@ export function ApiKeyRow({ apiKey }: ApiKeyRowProps) {
           {formatDate(apiKey.lastRequest)}
         </span>
       </div>
+      <IconAction icon={Activity01Icon} label="Atividade" onClick={() => setInspecting(true)} />
       <IconAction icon={Delete02Icon} label="Revogar" tone="destructive" onClick={() => setConfirming(true)} />
+      <KeyActivityDialog keyId={apiKey.id} label={label} open={inspecting} onOpenChange={setInspecting} />
       <Dialog
         open={confirming}
         onOpenChange={setConfirming}

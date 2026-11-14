@@ -12,9 +12,10 @@ import type {
 } from "@/modules/connectors/types/connector.types";
 import { resolveRefs } from "@/modules/connectors/utils/resolve-refs";
 import type { SourceKey } from "@/modules/sources/types/source.types";
+import { guardedFetch } from "@/modules/sources/utils/guarded-fetch";
 
 const loadDocument = async (spec: string): Promise<OpenApiDocument> => {
-  const text = /^https?:\/\//.test(spec) ? await (await fetch(spec)).text() : spec;
+  const text = /^https?:\/\//.test(spec) ? await (await guardedFetch(spec)).text() : spec;
   return (text.trim().startsWith("{") ? JSON.parse(text) : Bun.YAML.parse(text)) as OpenApiDocument;
 };
 
@@ -69,7 +70,7 @@ const callOperation = async (
 
   const response = await attempt(
     () =>
-      fetch(url, {
+      guardedFetch(url, {
         method: verb.toUpperCase(),
         headers,
         body: args.body === undefined ? undefined : JSON.stringify(args.body),

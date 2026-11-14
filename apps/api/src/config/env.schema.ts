@@ -5,6 +5,11 @@ const flag = z
   .default("false")
   .transform((value) => value === "true" || value === "1");
 
+const flagOn = z
+  .enum(["true", "false", "1", "0"])
+  .default("true")
+  .transform((value) => value === "true" || value === "1");
+
 export const serverEnvSchema = z.object({
   PUBLIC_URL: z
     .url()
@@ -13,10 +18,11 @@ export const serverEnvSchema = z.object({
   RUNELEY_SECRET: z.string().min(32, "RUNELEY_SECRET precisa de 32+ caracteres"),
   RUNELEY_DATA: z.string().default("./data"),
   ALLOW_SIGNUP: flag,
-  RUNELEY_ENABLE_EXECUTE: flag,
+  RUNELEY_ENABLE_EXECUTE: flagOn,
   RUNELEY_ENABLE_STDIO: flag,
   RUNELEY_ALLOW_PRIVATE_URLS: flag,
   RUNELEY_SETUP_TOKEN: z.string().min(16).optional(),
+  RUNELEY_RATE_LIMIT_PER_MINUTE: z.coerce.number().int().min(1).default(240),
   GITHUB_CLIENT_ID: z.string().optional(),
   GITHUB_CLIENT_SECRET: z.string().optional(),
   WEB_DIST: z.string().default("../web/dist"),

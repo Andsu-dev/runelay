@@ -1,6 +1,7 @@
 export const ERROR_CATALOG = {
   UNAUTHORIZED: { status: 401, message: "Faça login ou envie uma chave de API válida." },
   SESSION_REQUIRED: { status: 401, message: "Essa ação exige login no painel." },
+  RATE_LIMITED: { status: 429, message: "Muitas requisições com esta chave. Espere um minuto e tente de novo." },
   INVALID_INPUT: { status: 400, message: "Dados inválidos." },
   NOT_FOUND: { status: 404, message: "Rota não encontrada. A API fica em /v1." },
   API_KEY_NOT_FOUND: { status: 404, message: "Chave de API não encontrada." },
