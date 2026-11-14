@@ -2,12 +2,12 @@ import { ArrowLeft02Icon, RefreshIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { SourceView } from "@runelay/shared";
 import { Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/action/button";
 import { IconAction } from "@/components/ui/action/icon-action";
 import { formatDate } from "@/lib/format";
 import { ConnectorIcon } from "@/modules/catalog/components/connector-icon";
 import { KIND_LABEL, STATUS_LABEL } from "@/modules/sources/constants/source.constants";
 import { useSourceActions } from "@/modules/sources/hooks/use-source-actions";
+import { SourceConnectButton } from "./source-connect-button";
 import { SourceEditor } from "./source-editor";
 import { SourceStatusDot } from "./source-status-dot";
 
@@ -18,7 +18,8 @@ interface SourceDetailProps {
 
 export function SourceDetail({ source, oauthError }: SourceDetailProps) {
   const { name, config, status, error, toolCount, enabled, connectedAt } = source;
-  const { test, login, startLogin } = useSourceActions(name);
+  const { test } = useSourceActions(name);
+  const loginError = status === "ok" ? undefined : oauthError;
 
   return (
     <div className="flex flex-col gap-4">
@@ -52,21 +53,12 @@ export function SourceDetail({ source, oauthError }: SourceDetailProps) {
           spinning={test.isPending}
           disabled={test.isPending}
         />
-        {config.kind === "mcp" && (
-          <Button
-            size="sm"
-            variant={status === "needs_auth" ? "default" : "glass"}
-            loading={login.isPending}
-            onClick={startLogin}
-          >
-            {status === "needs_auth" ? "Fazer login" : "Reconectar"}
-          </Button>
-        )}
+        <SourceConnectButton source={source} />
       </header>
 
-      {(oauthError ?? error) && (
+      {(loginError ?? error) && (
         <p className="rounded-lg bg-destructive/10 px-3 py-2 text-[13px] break-words text-destructive">
-          {oauthError ? `O login falhou: ${oauthError}` : error}
+          {loginError ? `O login falhou: ${loginError}` : error}
         </p>
       )}
 

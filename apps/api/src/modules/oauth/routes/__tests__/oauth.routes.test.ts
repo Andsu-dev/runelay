@@ -45,16 +45,16 @@ test("callback requires a session", async () => {
 test("callback without a code redirects with the provider error", async () => {
   const described = await callback("state=guarded&error=access_denied&error_description=Negado");
   expect(described.status).toBe(302);
-  expect(described.headers.get("location")).toBe("/connectors/guarded?oauth_error=Negado");
+  expect(described.headers.get("location")).toBe("/connectors/guarded?oauth=done&oauth_error=Negado");
   const plain = await callback("state=guarded&error=access_denied");
-  expect(plain.headers.get("location")).toBe("/connectors/guarded?oauth_error=access_denied");
+  expect(plain.headers.get("location")).toBe("/connectors/guarded?oauth=done&oauth_error=access_denied");
   const bare = await callback("");
-  expect(bare.headers.get("location")).toBe("/connectors/?oauth_error=sem+code");
+  expect(bare.headers.get("location")).toBe("/connectors/?oauth=done&oauth_error=sem+code");
 });
 
 test("callback before login started reports the missing client", async () => {
   const response = await callback("state=guarded&code=early");
-  expect(response.headers.get("location")).toStartWith("/connectors/guarded?oauth_error=");
+  expect(response.headers.get("location")).toStartWith("/connectors/guarded?oauth=done&oauth_error=");
 });
 
 test("start returns the authorization url with state and pkce", async () => {
@@ -69,18 +69,37 @@ test("start returns the authorization url with state and pkce", async () => {
 
 test("callback with a rejected code redirects with the error", async () => {
   const response = await callback("state=guarded&code=wrong");
-  expect(response.headers.get("location")).toStartWith("/connectors/guarded?oauth_error=");
+  expect(response.headers.get("location")).toStartWith("/connectors/guarded?oauth=done&oauth_error=");
   expect(findSource(key()).data?.oauth.tokens).toBeUndefined();
 });
 
 test("callback with a valid code stores tokens and connects", async () => {
   await call("/v1/sources/guarded/oauth", { method: "POST", cookie: account.cookie });
   const response = await callback(`state=guarded&code=${GOOD_CODE}`);
-  expect(response.headers.get("location")).toBe("/connectors/guarded");
+  expect(response.headers.get("location")).toBe("/connectors/guarded?oauth=done");
   const view = findSourceView(key());
   expect(view.data?.status).toBe("ok");
   expect(view.data?.connectedAt).toBeTruthy();
   expect(findSource(key()).data?.oauth.tokens?.access_token).toBeTruthy();
+});
+
+test("a repeated callback after a successful login keeps the connection", async () => {
+  const response = await callback("state=guarded&code=wrong");
+  expect(response.headers.get("location")).toBe("/connectors/guarded?oauth=done");
+  expect(findSourceView(key()).data?.status).toBe("ok");
+});
+
+test("start explains when the provider refuses to register this server", async () => {
+  const closed = startFakeMcp({ requireToken: true, rejectRegistration: true });
+  await call("/v1/sources", {
+    method: "POST",
+    cookie: account.cookie,
+    json: { name: "allowlisted", config: { kind: "mcp", url: closed.mcpUrl } },
+  });
+  const response = await call("/v1/sources/allowlisted/oauth", { method: "POST", cookie: account.cookie });
+  const { error } = await body(response);
+  closed.stop();
+  expect(error?.message).toStartWith("allowlisted só libera login para apps aprovados");
 });
 
 test("complete login refuses non mcp sources", async () => {

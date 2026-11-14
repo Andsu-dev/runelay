@@ -28,7 +28,7 @@ const handleMcp = async (request: Request) => {
   return transport.handleRequest(request);
 };
 
-export const startFakeMcp = ({ requireToken = false } = {}): FakeMcpServer => {
+export const startFakeMcp = ({ requireToken = false, rejectRegistration = false } = {}): FakeMcpServer => {
   const requests: string[] = [];
   const server: Bun.Server<undefined> = Bun.serve({
     port: 0,
@@ -53,6 +53,7 @@ export const startFakeMcp = ({ requireToken = false } = {}): FakeMcpServer => {
         });
       }
       if (url.pathname === "/register") {
+        if (rejectRegistration) return new Response("Forbidden", { status: 403 });
         const metadata = (await request.json()) as Record<string, unknown>;
         return Response.json({ ...metadata, client_id: "fake-client" }, { status: 201 });
       }

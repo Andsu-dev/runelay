@@ -8,6 +8,7 @@ export const oauthRoutes = new Hono<SessionEnv>().get("/callback", requireSessio
   const name = c.req.query("state") ?? "";
   const code = c.req.query("code");
   const target = new URL(`${OAUTH_DONE_PATH}/${encodeURIComponent(name)}`, c.req.url);
+  target.searchParams.set("oauth", "done");
   if (!code) {
     target.searchParams.set("oauth_error", c.req.query("error_description") ?? c.req.query("error") ?? "sem code");
     return c.redirect(target.pathname + target.search);
