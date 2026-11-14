@@ -1,4 +1,4 @@
-import type { Result } from "@runeley/shared";
+import type { Result } from "@runelay/shared";
 import { recordToolCall } from "@/modules/activity/repositories/activity.repository";
 import type { Tool, ToolArgs } from "@/modules/connectors/types/connector.types";
 import type { GatewayCaller } from "@/modules/gateway/types/gateway.types";

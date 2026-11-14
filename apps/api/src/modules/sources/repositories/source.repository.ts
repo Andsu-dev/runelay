@@ -8,7 +8,7 @@ import {
   type SourceStatus,
   type SourcesSummaryView,
   type SourceView,
-} from "@runeley/shared";
+} from "@runelay/shared";
 import { db } from "@/db/connection";
 import { CATALOG_ICON_BY_URL_HASH } from "@/modules/catalog/constants/catalog.constants";
 import type {

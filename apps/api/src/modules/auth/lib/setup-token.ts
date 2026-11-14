@@ -1,9 +1,9 @@
 import { randomBytes, timingSafeEqual } from "node:crypto";
 import { env } from "@/config/env";
 
-export { SETUP_TOKEN_HEADER } from "@runeley/shared";
+export { SETUP_TOKEN_HEADER } from "@runelay/shared";
 
-export const SETUP_TOKEN = env.RUNELEY_SETUP_TOKEN ?? randomBytes(18).toString("base64url");
+export const SETUP_TOKEN = env.RUNELAY_SETUP_TOKEN ?? randomBytes(18).toString("base64url");
 
 export const setupUrl = () => `${env.PUBLIC_URL}/login?mode=signup&token=${SETUP_TOKEN}`;
 

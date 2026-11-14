@@ -1,4 +1,4 @@
-import { createApiKeySchema, paginationSchema } from "@runeley/shared";
+import { createApiKeySchema, paginationSchema } from "@runelay/shared";
 import { Hono } from "hono";
 import {
   createApiKey,

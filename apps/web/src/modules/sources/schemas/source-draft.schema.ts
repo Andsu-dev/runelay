@@ -1,4 +1,4 @@
-import { sourceConfigSchema } from "@runeley/shared";
+import { sourceConfigSchema } from "@runelay/shared";
 import { z } from "zod";
 import { parseKeyValueLines } from "@/modules/sources/utils/key-value-lines";
 

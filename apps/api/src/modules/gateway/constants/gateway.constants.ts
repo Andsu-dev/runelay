@@ -1,7 +1,7 @@
-export const GATEWAY_INFO = { name: "runeley", version: "0.1.0" };
+export const GATEWAY_INFO = { name: "runelay", version: "0.1.0" };
 
 export const GATEWAY_INSTRUCTIONS =
-  "runeley.bot aggregates every account the user connected and the user's memories and skills. Use search_tools to find tools (named source.tool), then call_tool for one call or execute to chain several calls in JavaScript. If a source shows needs_auth, tell the user to reconnect it in the runeley.bot dashboard. Before acting on a topic, use search_context, then read_memory or read_skill for details; save new facts with write_memory. The user's golden rules follow and always apply.";
+  "runelay aggregates every account the user connected and the user's memories and skills. Use search_tools to find tools (named source.tool), then call_tool for one call or execute to chain several calls in JavaScript. If a source shows needs_auth, tell the user to reconnect it in the runelay dashboard. Before acting on a topic, use search_context, then read_memory or read_skill for details; save new facts with write_memory. The user's golden rules follow and always apply.";
 
 export const SEARCH_DETAIL_LIMIT = 10;
 

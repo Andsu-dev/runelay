@@ -1,4 +1,4 @@
-import { type CatalogView, fail, ok, type Result, type SourceView } from "@runeley/shared";
+import { type CatalogView, fail, ok, type Result, type SourceView } from "@runelay/shared";
 import { CATALOG } from "@/modules/catalog/constants/catalog.constants";
 import { listInstalledByUrlHash } from "@/modules/sources/repositories/source.repository";
 import { createSource } from "@/modules/sources/services/source.service";

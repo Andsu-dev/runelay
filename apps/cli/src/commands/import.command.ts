@@ -1,9 +1,9 @@
 import { existsSync, readFileSync } from "node:fs";
-import { type CreateSourceInput, ok, type Result } from "@runeley/shared";
-import { parseClientConfig } from "@runeley/shared/importers";
+import { type CreateSourceInput, ok, type Result } from "@runelay/shared";
+import { parseClientConfig } from "@runelay/shared/importers";
 import { CLIENT_CONFIG_FILES } from "@/constants/clients.constants";
 import { resolveConnection } from "@/services/config.service";
-import { pushSources } from "@/services/runeley-api.service";
+import { pushSources } from "@/services/runelay-api.service";
 
 export const importCommand = async (): Promise<Result<null>> => {
   const connection = resolveConnection();

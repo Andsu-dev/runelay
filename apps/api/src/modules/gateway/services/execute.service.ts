@@ -1,4 +1,4 @@
-import type { Result } from "@runeley/shared";
+import type { Result } from "@runelay/shared";
 import { listLiveTools } from "@/modules/connectors/services/connection.service";
 import { EXECUTE_LIMITS } from "@/modules/gateway/constants/sandbox.constants";
 import { runInSandbox } from "@/modules/gateway/sandbox/run-in-sandbox";

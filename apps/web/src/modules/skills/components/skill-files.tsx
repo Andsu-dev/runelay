@@ -1,6 +1,6 @@
 import { File01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import type { SkillFileRefView } from "@runeley/shared";
+import type { SkillFileRefView } from "@runelay/shared";
 import { useState } from "react";
 import { formatBytes } from "@/lib/format";
 import { SkillFileDialog } from "./skill-file-dialog";

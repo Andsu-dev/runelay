@@ -1,6 +1,6 @@
 import { ArrowLeft02Icon, Delete02Icon, HistoryIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import type { MemoryView } from "@runeley/shared";
+import type { MemoryView } from "@runelay/shared";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { IconAction } from "@/components/ui/action/icon-action";

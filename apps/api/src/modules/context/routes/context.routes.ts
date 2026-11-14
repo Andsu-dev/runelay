@@ -1,4 +1,4 @@
-import { contextBriefSchema, contextSearchSchema } from "@runeley/shared";
+import { contextBriefSchema, contextSearchSchema } from "@runelay/shared";
 import { Hono } from "hono";
 import { requireOrganization } from "@/modules/auth/middlewares/authenticate";
 import { buildBrief, searchContext } from "@/modules/context/services/context.service";

@@ -1,4 +1,4 @@
-import { attemptSync, type CliAuthStatus, type CliStatusView, fail, ok, type Result } from "@runeley/shared";
+import { attemptSync, type CliAuthStatus, type CliStatusView, fail, ok, type Result } from "@runelay/shared";
 import { db } from "@/db/connection";
 import type { ConsumedCliAuthRow, NewCliAuthRequest, PendingCliAuthRow } from "@/modules/cli/types/cli-auth.types";
 import { SQL_NOW } from "@/shared/constants/sql.constants";

@@ -1,4 +1,4 @@
-import type { SourceConfig, SourceKind } from "@runeley/shared";
+import type { SourceConfig, SourceKind } from "@runelay/shared";
 import type { SourceDraft } from "@/modules/sources/schemas/source-draft.schema";
 import { formatKeyValueLines } from "@/modules/sources/utils/key-value-lines";
 

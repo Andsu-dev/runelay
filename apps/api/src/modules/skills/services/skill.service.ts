@@ -5,7 +5,7 @@ import {
   type Result,
   type SkillView,
   type UpdateSkillInput,
-} from "@runeley/shared";
+} from "@runelay/shared";
 import { findSkill, insertSkill, updateSkillRow, upsertSkills } from "@/modules/skills/repositories/skill.repository";
 
 export {

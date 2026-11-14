@@ -1,4 +1,4 @@
-import type { CatalogConnectorView } from "@runeley/shared";
+import type { CatalogConnectorView } from "@runelay/shared";
 import { useIsMutating } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "motion/react";
 import { Button } from "@/components/ui/action/button";

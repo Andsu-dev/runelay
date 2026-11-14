@@ -1,5 +1,5 @@
 import { Delete02Icon, RefreshIcon } from "@hugeicons/core-free-icons";
-import type { SourceView } from "@runeley/shared";
+import type { SourceView } from "@runelay/shared";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "@/components/ui/action/button";

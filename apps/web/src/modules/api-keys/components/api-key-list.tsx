@@ -1,4 +1,4 @@
-import type { ApiKeyView } from "@runeley/shared";
+import type { ApiKeyView } from "@runelay/shared";
 import { AnimatePresence, motion } from "motion/react";
 import { UI_SPRING } from "@/components/ui/display/spring";
 import { ApiKeyRow } from "./api-key-row";
@@ -11,7 +11,7 @@ export function ApiKeyList({ apiKeys }: ApiKeyListProps) {
   if (apiKeys.length === 0) {
     return (
       <div className="rounded-xl bg-card p-6 text-center text-sm text-muted-foreground">
-        Nenhuma chave ainda. Crie uma para cada agente que vai usar o runeley.
+        Nenhuma chave ainda. Crie uma para cada agente que vai usar o runelay.
       </div>
     );
   }

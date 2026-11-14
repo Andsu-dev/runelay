@@ -1,6 +1,6 @@
 import { ArrowLeft02Icon, RefreshIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import type { SourceView } from "@runeley/shared";
+import type { SourceView } from "@runelay/shared";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/action/button";
 import { IconAction } from "@/components/ui/action/icon-action";

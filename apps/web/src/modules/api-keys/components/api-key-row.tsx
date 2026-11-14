@@ -1,5 +1,5 @@
 import { Activity01Icon, Delete02Icon } from "@hugeicons/core-free-icons";
-import type { ApiKeyView } from "@runeley/shared";
+import type { ApiKeyView } from "@runelay/shared";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Button } from "@/components/ui/action/button";

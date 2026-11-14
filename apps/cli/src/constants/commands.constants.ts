@@ -1,4 +1,4 @@
-import type { Result } from "@runeley/shared";
+import type { Result } from "@runelay/shared";
 import { connectCommand } from "@/commands/connect.command";
 import { importCommand } from "@/commands/import.command";
 import { loginCommand } from "@/commands/login.command";

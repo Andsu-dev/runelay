@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-DATA_DIR="${RUNELEY_DATA:-/data}"
+DATA_DIR="${RUNELAY_DATA:-/data}"
 
 if [ "$(id -u)" = "0" ]; then
   mkdir -p "$DATA_DIR"

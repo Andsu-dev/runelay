@@ -1,4 +1,4 @@
-import { type ContextBriefView, type ContextClient, ok, type Result } from "@runeley/shared";
+import { type ContextBriefView, type ContextClient, ok, type Result } from "@runelay/shared";
 import {
   BRIEF_FOOTER,
   BRIEF_MAX_CHARS,

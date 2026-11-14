@@ -1,5 +1,5 @@
 import { Alert02Icon } from "@hugeicons/core-free-icons";
-import type { ActivitySummaryView } from "@runeley/shared";
+import type { ActivitySummaryView } from "@runelay/shared";
 import { formatNumber, formatPercent } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { StatValue } from "./stat-value";

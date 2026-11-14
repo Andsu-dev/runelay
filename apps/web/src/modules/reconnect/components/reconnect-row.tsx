@@ -1,6 +1,6 @@
 import { Loading03Icon, Tick02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import type { SourceView } from "@runeley/shared";
+import type { SourceView } from "@runelay/shared";
 import { AnimatePresence, motion } from "motion/react";
 import { UI_SPRING } from "@/components/ui/display/spring";
 import { cn } from "@/lib/utils";

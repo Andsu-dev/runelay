@@ -1,4 +1,4 @@
-import { attempt, fail, type OpenApiConfig, ok, type Result } from "@runeley/shared";
+import { attempt, fail, type OpenApiConfig, ok, type Result } from "@runelay/shared";
 import { ERROR_BODY_PREVIEW, OPENAPI_VERBS } from "@/modules/connectors/constants/connector.constants";
 import type {
   Connection,

@@ -1,4 +1,4 @@
-import type { CreateMemoryInput, CreateSkillInput } from "@runeley/shared";
+import type { CreateMemoryInput, CreateSkillInput } from "@runelay/shared";
 import { cliEnv } from "@/config/env";
 import {
   CLAUDE_PROJECTS_DIR,
@@ -11,8 +11,8 @@ import { listMemoryDirectories, readInstructions, readMemories, readSkills } fro
 import type { CollectedContext, CollectLine } from "@/types/collect.types";
 
 const memoryDirectories = () =>
-  cliEnv.RUNELEY_MEMORY_DIR
-    ? [{ agent: "Personalizado", path: cliEnv.RUNELEY_MEMORY_DIR }]
+  cliEnv.RUNELAY_MEMORY_DIR
+    ? [{ agent: "Personalizado", path: cliEnv.RUNELAY_MEMORY_DIR }]
     : [
         ...listMemoryDirectories(CLAUDE_PROJECTS_DIR, CURRENT_PROJECT_MEMORY_DIR).map((path) => ({
           agent: "Claude Code",
@@ -30,7 +30,7 @@ export const collectContext = (): CollectedContext => {
     for (const memory of fresh) memories.set(memory.slug, memory);
     if (found.length) lines.push({ agent, kind: "memories", added: fresh.length, found: found.length, path });
   }
-  if (!cliEnv.RUNELEY_MEMORY_DIR) {
+  if (!cliEnv.RUNELAY_MEMORY_DIR) {
     for (const source of INSTRUCTION_SOURCES) {
       const instructions = readInstructions(source);
       if (!instructions) continue;

@@ -1,4 +1,4 @@
-import type { CreateSourceInput } from "@runeley/shared";
+import type { CreateSourceInput } from "@runelay/shared";
 import type { ClientId } from "@/constants/clients.constants";
 
 export interface ClientSource {

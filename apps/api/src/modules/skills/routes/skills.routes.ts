@@ -1,4 +1,4 @@
-import { createSkillSchema, importSkillsSchema, listSkillsSchema, updateSkillSchema } from "@runeley/shared";
+import { createSkillSchema, importSkillsSchema, listSkillsSchema, updateSkillSchema } from "@runelay/shared";
 import { Hono } from "hono";
 import { z } from "zod";
 import { requireOrganization } from "@/modules/auth/middlewares/authenticate";

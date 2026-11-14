@@ -8,8 +8,8 @@ import {
   type Result,
   type SourceView,
   type UpdateSourceInput,
-} from "@runeley/shared";
-import { parseClientConfig } from "@runeley/shared/importers";
+} from "@runelay/shared";
+import { parseClientConfig } from "@runelay/shared/importers";
 import { connectSource, disconnectSource } from "@/modules/connectors/services/connection.service";
 import {
   deleteSource,

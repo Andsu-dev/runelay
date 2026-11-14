@@ -5,7 +5,7 @@ import {
   ok,
   type Result,
   type UpdateMemoryInput,
-} from "@runeley/shared";
+} from "@runelay/shared";
 import {
   findMemory,
   insertMemory,

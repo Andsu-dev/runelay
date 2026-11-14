@@ -1,4 +1,4 @@
-import type { OnboardingView } from "@runeley/shared";
+import type { OnboardingView } from "@runelay/shared";
 import { queryOptions } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 

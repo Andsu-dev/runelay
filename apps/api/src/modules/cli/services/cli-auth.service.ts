@@ -7,7 +7,7 @@ import {
   ok,
   type Result,
   type StartCliAuthInput,
-} from "@runeley/shared";
+} from "@runelay/shared";
 import { env } from "@/config/env";
 import { createApiKey, deleteApiKey } from "@/modules/api-keys/services/api-key.service";
 import {

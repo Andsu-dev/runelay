@@ -1,4 +1,4 @@
-import type { SourceView } from "@runeley/shared";
+import type { SourceView } from "@runelay/shared";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { type FormEvent, useState } from "react";
 import { Button } from "@/components/ui/action/button";

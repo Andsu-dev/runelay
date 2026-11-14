@@ -10,7 +10,7 @@ interface Note {
   slide?: number;
 }
 
-const STORAGE_KEY = "runeley-sound";
+const STORAGE_KEY = "runelay-sound";
 const VOLUME = 0.016;
 const listeners = new Set<() => void>();
 

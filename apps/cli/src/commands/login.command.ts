@@ -1,12 +1,12 @@
 import { existsSync, readFileSync } from "node:fs";
 import { hostname, userInfo } from "node:os";
-import { type CliAuthPollView, fail, ok, type Result } from "@runeley/shared";
+import { type CliAuthPollView, fail, ok, type Result } from "@runelay/shared";
 import { cliEnv } from "@/config/env";
 import { LOCAL_SERVER_URL, SERVER_ENV_FILE } from "@/constants/cli.constants";
 import { openBrowser } from "@/lib/browser";
 import { ask, bold, confirm, cyan, dim, green, interactive, startSpinner } from "@/lib/terminal";
 import { readStoredConfig, saveConfig } from "@/services/config.service";
-import { checkHealth, pollCliAuth, revokeCurrentKey, startCliAuth } from "@/services/runeley-api.service";
+import { checkHealth, pollCliAuth, revokeCurrentKey, startCliAuth } from "@/services/runelay-api.service";
 
 const normalizeUrl = (value: string) => {
   const trimmed = value.trim().replace(/\/+$/, "");
@@ -27,25 +27,25 @@ const discoverUrl = async () => {
 };
 
 const askForUrl = async (): Promise<string> => {
-  const answer = normalizeUrl(await ask("Endereço do seu runeley", LOCAL_SERVER_URL));
+  const answer = normalizeUrl(await ask("Endereço do seu runelay", LOCAL_SERVER_URL));
   if (await checkHealth(answer)) return answer;
-  console.log(`Não encontrei um runeley em ${answer}/health. Confira o endereço.`);
+  console.log(`Não encontrei um runelay em ${answer}/health. Confira o endereço.`);
   return askForUrl();
 };
 
 const chooseUrl = async (argument: string | undefined): Promise<Result<string>> => {
-  const given = argument ?? cliEnv.RUNELEY_URL;
+  const given = argument ?? cliEnv.RUNELAY_URL;
   if (given) {
     const url = normalizeUrl(given);
-    return (await checkHealth(url)) ? ok(url) : fail("UPSTREAM_FAILED", `Não encontrei um runeley em ${url}/health.`);
+    return (await checkHealth(url)) ? ok(url) : fail("UPSTREAM_FAILED", `Não encontrei um runelay em ${url}/health.`);
   }
   if (!interactive)
     return fail(
       "INVALID_INPUT",
-      "Sem terminal interativo. Passe o endereço: runeley login https://runeley.exemplo.com",
+      "Sem terminal interativo. Passe o endereço: runelay login https://runelay.exemplo.com",
     );
   const found = await discoverUrl();
-  if (found && (await confirm(`Encontrei o runeley em ${bold(found)}. Usar este?`))) return ok(found);
+  if (found && (await confirm(`Encontrei o runelay em ${bold(found)}. Usar este?`))) return ok(found);
   return ok(await askForUrl());
 };
 
@@ -82,7 +82,7 @@ const waitForApproval = async (
     if (polled.data.status === "expired") break;
   }
   stop(dim("O código expirou"));
-  return fail("CLI_AUTH_NOT_FOUND", "O código expirou antes da autorização. Rode runeley login de novo.");
+  return fail("CLI_AUTH_NOT_FOUND", "O código expirou antes da autorização. Rode runelay login de novo.");
 };
 
 export const signIn = async (argument?: string): Promise<Result<null>> => {
@@ -103,7 +103,7 @@ export const signIn = async (argument?: string): Promise<Result<null>> => {
   const approved = await waitForApproval(url.data, pollToken, intervalSeconds, expiresAt);
   if (approved.error) return approved;
   const { apiKey, organizationName } = approved.data;
-  if (!apiKey) return fail("UPSTREAM_FAILED", "O servidor aprovou mas não mandou a chave. Rode runeley login de novo.");
+  if (!apiKey) return fail("UPSTREAM_FAILED", "O servidor aprovou mas não mandou a chave. Rode runelay login de novo.");
 
   const previous = readStoredConfig();
   const saved = saveConfig({ url: url.data, apiKey, organizationName: organizationName ?? "" });
@@ -118,6 +118,6 @@ export const signIn = async (argument?: string): Promise<Result<null>> => {
 export const loginCommand = async ([argument]: string[] = []): Promise<Result<null>> => {
   const signedIn = await signIn(argument);
   if (signedIn.error) return signedIn;
-  console.log(`Próximo passo: ${bold("runeley migrate")}`);
+  console.log(`Próximo passo: ${bold("runelay migrate")}`);
   return ok(null);
 };

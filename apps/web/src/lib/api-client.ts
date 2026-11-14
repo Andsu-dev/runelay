@@ -1,4 +1,4 @@
-import { type AppError, appError, type Result } from "@runeley/shared";
+import { type AppError, appError, type Result } from "@runelay/shared";
 
 export class ApiError extends Error {
   readonly code: AppError["code"];

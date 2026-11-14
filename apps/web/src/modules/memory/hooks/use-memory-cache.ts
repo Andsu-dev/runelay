@@ -1,4 +1,4 @@
-import type { MemoryView } from "@runeley/shared";
+import type { MemoryView } from "@runelay/shared";
 import { useQueryClient } from "@tanstack/react-query";
 import { memoryQuery } from "@/modules/memory/api/memories.api";
 

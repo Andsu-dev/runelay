@@ -1,4 +1,4 @@
-import { type AuditEventView, attemptSync, ok, type Page, type Result } from "@runeley/shared";
+import { type AuditEventView, attemptSync, ok, type Page, type Result } from "@runelay/shared";
 import { db } from "@/db/connection";
 import type { AuditEventRow, AuditRecord } from "@/modules/api-keys/types/audit.types";
 

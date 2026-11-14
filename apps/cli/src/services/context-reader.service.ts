@@ -6,7 +6,7 @@ import {
   memoryTypeSchema,
   type SkillFileInput,
   skillSlugSchema,
-} from "@runeley/shared";
+} from "@runelay/shared";
 import { SKILL_MARKER_FILE } from "@/constants/cli.constants";
 import {
   BINARY_EXTENSIONS,

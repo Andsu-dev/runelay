@@ -1,6 +1,6 @@
 import { ArrowDown01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import type { CatalogSectionView } from "@runeley/shared";
+import type { CatalogSectionView } from "@runelay/shared";
 import { motion } from "motion/react";
 import { useId, useState } from "react";
 import { AnimatedHeight } from "@/components/layout/animated-height";

@@ -1,10 +1,10 @@
 {
-  "name": "@runeley/cli",
+  "name": "@runelay/cli",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "bin": {
-    "runeley": "src/index.ts"
+    "runelay": "src/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -14,7 +14,7 @@
     "sync-context": "bun src/index.ts pull"
   },
   "dependencies": {
-    "@runeley/shared": "workspace:*",
+    "@runelay/shared": "workspace:*",
     "zod": "^4.6.7"
   }
 }

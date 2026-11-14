@@ -1,4 +1,4 @@
-import type { ActivitySummaryView, SourcesSummaryView } from "@runeley/shared";
+import type { ActivitySummaryView, SourcesSummaryView } from "@runelay/shared";
 import { StaggerIn } from "@/components/layout/stagger-in";
 import { StaggerItem } from "@/components/layout/stagger-item";
 import { CallsBySourceWidget } from "./calls-by-source-widget";

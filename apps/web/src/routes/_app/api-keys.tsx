@@ -25,7 +25,7 @@ function ApiKeysPage() {
       <header className="flex items-start gap-3">
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <h1 className="text-lg font-semibold">Chaves de API</h1>
-          <p className="text-[13px] text-muted-foreground">Cada agente entra no runeley com a própria chave.</p>
+          <p className="text-[13px] text-muted-foreground">Cada agente entra no runelay com a própria chave.</p>
         </div>
         <IconAction icon={Add01Icon} label="Nova chave" onClick={() => setCreating(true)} />
       </header>

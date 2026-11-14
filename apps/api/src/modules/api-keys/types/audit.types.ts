@@ -1,4 +1,4 @@
-import type { AuditEventView } from "@runeley/shared";
+import type { AuditEventView } from "@runelay/shared";
 
 export interface AuditRecord {
   organizationId: string;

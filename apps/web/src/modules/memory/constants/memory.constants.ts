@@ -1,4 +1,4 @@
-import type { MemoryType } from "@runeley/shared";
+import type { MemoryType } from "@runelay/shared";
 
 export const MEMORY_TYPE_LABEL: Record<MemoryType, string> = {
   user: "Usuário",

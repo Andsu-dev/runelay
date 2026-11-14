@@ -1,6 +1,6 @@
 import { Tick02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import type { OrganizationView } from "@runeley/shared";
+import type { OrganizationView } from "@runelay/shared";
 import { cn } from "@/lib/utils";
 import { OrganizationTile } from "./organization-tile";
 

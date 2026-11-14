@@ -1,4 +1,4 @@
-import type { DailyCallsView } from "@runeley/shared";
+import type { DailyCallsView } from "@runelay/shared";
 import { Tooltip } from "@/components/ui/overlay/tooltip";
 import { formatDay, formatNumber } from "@/lib/format";
 

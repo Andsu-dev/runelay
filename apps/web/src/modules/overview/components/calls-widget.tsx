@@ -1,5 +1,5 @@
 import { Analytics01Icon } from "@hugeicons/core-free-icons";
-import type { ActivitySummaryView } from "@runeley/shared";
+import type { ActivitySummaryView } from "@runelay/shared";
 import { formatNumber } from "@/lib/format";
 import { DailyCallsChart } from "./daily-calls-chart";
 import { DeltaBadge } from "./delta-badge";

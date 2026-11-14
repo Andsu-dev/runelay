@@ -1,4 +1,4 @@
-import { type ApiKeySecretView, type ApiKeyView, attemptSync, fail, ok, type Result } from "@runeley/shared";
+import { type ApiKeySecretView, type ApiKeyView, attemptSync, fail, ok, type Result } from "@runelay/shared";
 import { db } from "@/db/connection";
 import { seal, unseal } from "@/shared/crypto";
 

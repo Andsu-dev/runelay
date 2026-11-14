@@ -1,4 +1,4 @@
-import type { CreateOrganizationInput, MeView, OrganizationView, SetActiveOrganizationInput } from "@runeley/shared";
+import type { CreateOrganizationInput, MeView, OrganizationView, SetActiveOrganizationInput } from "@runelay/shared";
 import { api } from "@/lib/api-client";
 
 export const createOrganization = (input: CreateOrganizationInput) =>

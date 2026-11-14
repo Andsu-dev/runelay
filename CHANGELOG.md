@@ -12,6 +12,6 @@ First public version.
 - Context routing: short brief synced into `CLAUDE.md` and `AGENTS.md`, the rest on demand through MCP.
 - CLI: `import`, `import-context` (Claude Code, Codex, Cursor, Grok, Gemini, OpenCode), `sync-context`, `install-clients`.
 - Panel: overview, connectors, skills, memory, API keys and a guided setup.
-- One-line install: `curl -fsSL https://github.com/Andsu-dev/runeley/releases/latest/download/install.sh | sh`.
+- One-line install: `curl -fsSL https://github.com/Andsu-dev/runelay/releases/latest/download/install.sh | sh`.
 - Secure by default: setup token for the first account, `execute` and local commands off, private URLs blocked, credentials hidden from agents, agents cannot pin memories.
-- Docker image on `ghcr.io/andsu-dev/runeley` for `linux/amd64` and `linux/arm64`.
+- Docker image on `ghcr.io/andsu-dev/runelay` for `linux/amd64` and `linux/arm64`.

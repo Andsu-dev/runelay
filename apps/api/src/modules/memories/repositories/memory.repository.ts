@@ -13,7 +13,7 @@ import {
   type Page,
   type Result,
   type UpdateMemoryInput,
-} from "@runeley/shared";
+} from "@runelay/shared";
 import { db } from "@/db/connection";
 import { MEMORY_LIST_COLUMNS, MEMORY_REF_COLUMNS } from "@/modules/memories/constants/memory.constants";
 import type { MemoryContent, MemoryDetailRow, MemoryListRow } from "@/modules/memories/types/memory.types";

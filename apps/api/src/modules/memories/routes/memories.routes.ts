@@ -4,7 +4,7 @@ import {
   importMemoriesSchema,
   listMemoriesSchema,
   updateMemorySchema,
-} from "@runeley/shared";
+} from "@runelay/shared";
 import { Hono } from "hono";
 import { requireOrganization } from "@/modules/auth/middlewares/authenticate";
 import {

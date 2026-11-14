@@ -1,6 +1,6 @@
 import { cliEnv } from "@/config/env";
 
-const home = cliEnv.RUNELEY_HOME;
+const home = cliEnv.RUNELAY_HOME;
 
 export const CLIENT_CONFIG_FILES = {
   claude: `${home}/.claude.json`,
@@ -24,6 +24,6 @@ export const CLIENT_AGENT_LABELS: Record<ClientId, string> = {
 
 export const TOML_HEADER_KEYS = { codex: "http_headers", grok: "headers" } as const;
 
-export const TOML_RUNELEY_HEADER = "[mcp_servers.runeley]";
+export const TOML_RUNELAY_HEADER = "[mcp_servers.runelay]";
 
 export const JSON_SERVER_KEYS = ["mcpServers", "servers", "mcp"] as const;

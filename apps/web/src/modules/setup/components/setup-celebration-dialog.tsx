@@ -16,7 +16,7 @@ const playCelebration = (node: HTMLDivElement | null) => {
 };
 
 export function SetupCelebrationDialog({ organizationId }: SetupCelebrationDialogProps) {
-  const storageKey = `runeley-setup-celebrated:${organizationId}`;
+  const storageKey = `runelay-setup-celebrated:${organizationId}`;
   const { finished, loaded } = useSetupProgress(organizationId);
   const [celebrated, setCelebrated] = useState(() => readStorage(storageKey) === "true");
   const open = loaded && finished && !celebrated;
@@ -48,7 +48,7 @@ export function SetupCelebrationDialog({ organizationId }: SetupCelebrationDialo
           </div>
           <div className="flex flex-col items-center gap-2">
             <FollowAuthorLink />
-            <span className="text-xs text-muted-foreground">Novidades do runeley saem primeiro por lá.</span>
+            <span className="text-xs text-muted-foreground">Novidades do runelay saem primeiro por lá.</span>
           </div>
         </div>
       </Dialog>

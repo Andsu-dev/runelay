@@ -1,4 +1,4 @@
-import type { AuditEventView } from "@runeley/shared";
+import type { AuditEventView } from "@runelay/shared";
 import { cn } from "@/lib/utils";
 
 interface KeyActivityRowProps {

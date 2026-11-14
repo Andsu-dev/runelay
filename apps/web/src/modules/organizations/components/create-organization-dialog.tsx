@@ -1,4 +1,4 @@
-import { createOrganizationSchema } from "@runeley/shared";
+import { createOrganizationSchema } from "@runelay/shared";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { type FormEvent, useState } from "react";
 import { Button } from "@/components/ui/action/button";

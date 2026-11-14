@@ -1,4 +1,4 @@
-import { type AuthUser, fail, ok, type Result } from "@runeley/shared";
+import { type AuthUser, fail, ok, type Result } from "@runelay/shared";
 import { auth } from "@/modules/auth/lib/better-auth";
 import { findMembershipRole } from "@/modules/auth/repositories/membership.repository";
 import type { Principal } from "@/modules/auth/types/auth.types";

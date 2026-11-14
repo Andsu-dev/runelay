@@ -1,4 +1,4 @@
-import type { ContextHitView, ToolView } from "@runeley/shared";
+import type { ContextHitView, ToolView } from "@runelay/shared";
 import { queryOptions } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 

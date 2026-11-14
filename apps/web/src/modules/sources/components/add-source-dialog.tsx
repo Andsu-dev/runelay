@@ -1,4 +1,4 @@
-import { sourceNameSchema } from "@runeley/shared";
+import { sourceNameSchema } from "@runelay/shared";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { type FormEvent, useState } from "react";
 import { Button } from "@/components/ui/action/button";
@@ -59,7 +59,7 @@ export function AddSourceDialog({ open, onOpenChange }: AddSourceDialogProps) {
       open={open}
       onOpenChange={onOpenChange}
       title="Nova conexão"
-      description="Ela aparece em todos os agentes que usam o runeley."
+      description="Ela aparece em todos os agentes que usam o runelay."
       contentClassName="sm:max-w-lg"
     >
       <form onSubmit={submit} className="flex flex-col gap-4">

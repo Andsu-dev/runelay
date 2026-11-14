@@ -1,4 +1,4 @@
-import { activityRangeSchema, toolSearchSchema } from "@runeley/shared";
+import { activityRangeSchema, toolSearchSchema } from "@runelay/shared";
 import { Hono } from "hono";
 import { describeOnboarding, summarizeActivity } from "@/modules/activity/services/activity.service";
 import { requireOrganization } from "@/modules/auth/middlewares/authenticate";

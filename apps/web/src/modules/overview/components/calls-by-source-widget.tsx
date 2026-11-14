@@ -1,5 +1,5 @@
 import { PlugSocketIcon } from "@hugeicons/core-free-icons";
-import type { RankedCountView } from "@runeley/shared";
+import type { RankedCountView } from "@runelay/shared";
 import { RankedBarRow } from "./ranked-bar-row";
 import { WidgetCard } from "./widget-card";
 

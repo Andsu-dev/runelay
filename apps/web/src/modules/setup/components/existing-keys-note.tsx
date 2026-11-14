@@ -1,4 +1,4 @@
-import type { ApiKeyView } from "@runeley/shared";
+import type { ApiKeyView } from "@runelay/shared";
 import { CommandBlock } from "@/components/ui/display/command-block";
 import { formatDate } from "@/lib/format";
 

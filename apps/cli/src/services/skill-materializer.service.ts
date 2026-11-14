@@ -7,12 +7,12 @@ import {
   type SkillFileView,
   type SkillListItemView,
   type SkillView,
-} from "@runeley/shared";
+} from "@runelay/shared";
 import { SKILL_FETCH_CONCURRENCY, SKILL_MARKER_FILE, SKILLS_TARGET_DIR } from "@/constants/cli.constants";
 import { SKILL_ENTRY_FILE, SKILL_SOURCES } from "@/constants/context.constants";
 import { mapWithConcurrency } from "@/lib/concurrency";
 import { listLocalSkillSlugs } from "@/services/context-reader.service";
-import { fetchSkill, fetchSkillFile, listEnabledSkills } from "@/services/runeley-api.service";
+import { fetchSkill, fetchSkillFile, listEnabledSkills } from "@/services/runelay-api.service";
 import type { Connection } from "@/types/config.types";
 import type { SkillPullResult } from "@/types/skill-pull.types";
 
@@ -31,7 +31,7 @@ const entryOf = ({ name, description, body }: SkillView) =>
 
 const replaceFolder = (target: string, skill: SkillView, files: SkillFileView[]) =>
   attemptSync(() => {
-    const staging = `${target}.runeley-tmp`;
+    const staging = `${target}.runelay-tmp`;
     rmSync(staging, { recursive: true, force: true });
     mkdirSync(staging, { recursive: true });
     writeFileSync(join(staging, SKILL_ENTRY_FILE), entryOf(skill));

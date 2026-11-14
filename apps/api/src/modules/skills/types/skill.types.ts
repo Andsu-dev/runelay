@@ -1,4 +1,4 @@
-import type { SkillListItemView, SkillView } from "@runeley/shared";
+import type { SkillListItemView, SkillView } from "@runelay/shared";
 
 export interface SkillListRow extends Omit<SkillListItemView, "enabled"> {
   enabled: 0 | 1;

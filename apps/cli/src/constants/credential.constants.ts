@@ -1,6 +1,6 @@
 import { cliEnv } from "@/config/env";
 
-const home = cliEnv.RUNELEY_HOME;
+const home = cliEnv.RUNELAY_HOME;
 
 export const GROK_CREDENTIALS_FILE = `${home}/.grok/mcp_credentials.json`;
 

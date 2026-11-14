@@ -1,4 +1,4 @@
-import { approveCliAuthSchema, startCliAuthSchema } from "@runeley/shared";
+import { approveCliAuthSchema, startCliAuthSchema } from "@runelay/shared";
 import { Hono } from "hono";
 import { deleteApiKey } from "@/modules/api-keys/services/api-key.service";
 import { requireOrganization, requireSession } from "@/modules/auth/middlewares/authenticate";

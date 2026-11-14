@@ -5,8 +5,8 @@ import { resolvesToPrivateAddress } from "@/modules/sources/utils/private-addres
 const assertPublic = async (url: URL) => {
   if (url.protocol !== "https:" && url.protocol !== "http:")
     throw new Error(`Protocolo não permitido: ${url.protocol}`);
-  if (!env.RUNELEY_ALLOW_PRIVATE_URLS && (await resolvesToPrivateAddress(url.hostname))) {
-    throw new Error(`${url.hostname} aponta para a rede interna. Libere com RUNELEY_ALLOW_PRIVATE_URLS=true.`);
+  if (!env.RUNELAY_ALLOW_PRIVATE_URLS && (await resolvesToPrivateAddress(url.hostname))) {
+    throw new Error(`${url.hostname} aponta para a rede interna. Libere com RUNELAY_ALLOW_PRIVATE_URLS=true.`);
   }
 };
 

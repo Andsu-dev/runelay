@@ -1,8 +1,8 @@
-import type { CreateMemoryInput, CreateSkillInput, Result } from "@runeley/shared";
-import { ok } from "@runeley/shared";
+import type { CreateMemoryInput, CreateSkillInput, Result } from "@runelay/shared";
+import { ok } from "@runelay/shared";
 import { MEMORY_BATCH_SIZE, SKILL_BATCH_SIZE } from "@/constants/context.constants";
 import { chunk } from "@/lib/chunk";
-import { pushMemories, pushSkills } from "@/services/runeley-api.service";
+import { pushMemories, pushSkills } from "@/services/runelay-api.service";
 import type { Connection } from "@/types/config.types";
 
 const pushInBatches = async <T>(

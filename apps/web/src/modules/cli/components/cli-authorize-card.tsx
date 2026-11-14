@@ -1,4 +1,4 @@
-import type { CliAuthRequestView } from "@runeley/shared";
+import type { CliAuthRequestView } from "@runelay/shared";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
@@ -44,7 +44,7 @@ export function CliAuthorizeCard({ request, organizationName }: CliAuthorizeCard
               <LogoMark className="size-8" entrance />
             </span>
             <div className="flex flex-col gap-1">
-              <h1 className="text-xl font-semibold tracking-[-0.02em]">Autorizar o runeley CLI</h1>
+              <h1 className="text-xl font-semibold tracking-[-0.02em]">Autorizar o runelay CLI</h1>
               <p className="text-[13px] text-muted-foreground">
                 Pedido de <span className="font-medium text-foreground">{request.device}</span>
               </p>

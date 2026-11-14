@@ -1,5 +1,5 @@
 {
-  "name": "runeley",
+  "name": "runelay",
   "version": "0.1.0",
   "homepage": "https://bot.runelay.com",
   "devDependencies": {
@@ -10,18 +10,18 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "bun --filter @runeley/api --filter @runeley/web dev",
-    "start": "bun --filter @runeley/api start",
-    "import": "bun --filter @runeley/cli import",
-    "install-clients": "bun --filter @runeley/cli install-clients",
-    "import-context": "bun --filter @runeley/cli import-context",
-    "sync-context": "bun --filter @runeley/cli sync-context",
-    "seed": "bun --filter @runeley/api seed",
+    "dev": "bun --filter @runelay/api --filter @runelay/web dev",
+    "start": "bun --filter @runelay/api start",
+    "import": "bun --filter @runelay/cli import",
+    "install-clients": "bun --filter @runelay/cli install-clients",
+    "import-context": "bun --filter @runelay/cli import-context",
+    "sync-context": "bun --filter @runelay/cli sync-context",
+    "seed": "bun --filter @runelay/api seed",
     "check": "biome check --write .",
     "lint": "biome lint .",
     "format": "biome format --write .",
     "typecheck": "bun --filter '*' typecheck",
-    "build": "bun --filter @runeley/web build",
+    "build": "bun --filter @runelay/web build",
     "build:cli": "bun apps/cli/build.ts"
   },
   "type": "module",

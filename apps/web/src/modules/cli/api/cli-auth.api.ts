@@ -1,4 +1,4 @@
-import type { ApproveCliAuthInput, CliAuthRequestView } from "@runeley/shared";
+import type { ApproveCliAuthInput, CliAuthRequestView } from "@runelay/shared";
 import { queryOptions } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 

@@ -3,7 +3,7 @@ import { readStorage, writeStorage } from "./storage";
 
 export type Theme = "system" | "light" | "dark";
 
-const STORAGE_KEY = "runeley-theme";
+const STORAGE_KEY = "runelay-theme";
 const THEMES: Theme[] = ["system", "light", "dark"];
 const listeners = new Set<() => void>();
 

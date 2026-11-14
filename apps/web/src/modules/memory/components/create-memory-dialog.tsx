@@ -1,4 +1,4 @@
-import { createMemorySchema, type MemoryType } from "@runeley/shared";
+import { createMemorySchema, type MemoryType } from "@runelay/shared";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { type FormEvent, useState } from "react";

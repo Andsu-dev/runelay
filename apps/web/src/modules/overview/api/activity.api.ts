@@ -1,4 +1,4 @@
-import type { ActivitySummaryView } from "@runeley/shared";
+import type { ActivitySummaryView } from "@runelay/shared";
 import { queryOptions } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 

@@ -1,13 +1,13 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { attemptSync, ok, type Result } from "@runeley/shared";
-import { CLIENT_CONFIG_FILES, TOML_HEADER_KEYS, TOML_RUNELEY_HEADER } from "@/constants/clients.constants";
+import { attemptSync, ok, type Result } from "@runelay/shared";
+import { CLIENT_CONFIG_FILES, TOML_HEADER_KEYS, TOML_RUNELAY_HEADER } from "@/constants/clients.constants";
 import { dim, green, red } from "@/lib/terminal";
 import { resolveConnection } from "@/services/config.service";
 
 const withTomlBlock = (current: string, block: string) => {
-  const start = current.indexOf(TOML_RUNELEY_HEADER);
+  const start = current.indexOf(TOML_RUNELAY_HEADER);
   if (start < 0) return `${current}${current.endsWith("\n") || !current ? "" : "\n"}\n${block}`;
-  const rest = current.slice(start + TOML_RUNELEY_HEADER.length);
+  const rest = current.slice(start + TOML_RUNELAY_HEADER.length);
   const next = rest.search(/^\[/m);
   const tail = next < 0 ? "" : rest.slice(next);
   return `${current.slice(0, start)}${block}${tail ? `\n${tail}` : ""}`;
@@ -21,7 +21,7 @@ const connectClaude = (url: string, authorization: string) => {
     console.log(dim("claude: pulei (comando claude não encontrado)"));
     return;
   }
-  Bun.spawnSync(["claude", "mcp", "remove", "--scope", "user", "runeley"]);
+  Bun.spawnSync(["claude", "mcp", "remove", "--scope", "user", "runelay"]);
   const added = Bun.spawnSync([
     "claude",
     "mcp",
@@ -30,7 +30,7 @@ const connectClaude = (url: string, authorization: string) => {
     "user",
     "--transport",
     "http",
-    "runeley",
+    "runelay",
     url,
     "--header",
     `Authorization: ${authorization}`,
@@ -50,7 +50,7 @@ export const connectCommand = async (): Promise<Result<null>> => {
   for (const [client, headerKey] of Object.entries(TOML_HEADER_KEYS)) {
     const file = CLIENT_CONFIG_FILES[client as keyof typeof TOML_HEADER_KEYS];
     if (!existsSync(file)) continue;
-    const block = `${TOML_RUNELEY_HEADER}\nurl = "${url}"\n${headerKey} = { Authorization = "${authorization}" }\n`;
+    const block = `${TOML_RUNELAY_HEADER}\nurl = "${url}"\n${headerKey} = { Authorization = "${authorization}" }\n`;
     report(
       client,
       attemptSync(() => writeFileSync(file, withTomlBlock(readFileSync(file, "utf8"), block)), "STORAGE_FAILED"),
@@ -62,7 +62,7 @@ export const connectCommand = async (): Promise<Result<null>> => {
       "cursor",
       attemptSync(() => {
         const cursor = JSON.parse(readFileSync(CLIENT_CONFIG_FILES.cursor, "utf8"));
-        cursor.mcpServers = { ...cursor.mcpServers, runeley: { url, headers: { Authorization: authorization } } };
+        cursor.mcpServers = { ...cursor.mcpServers, runelay: { url, headers: { Authorization: authorization } } };
         writeFileSync(CLIENT_CONFIG_FILES.cursor, JSON.stringify(cursor, null, 2));
       }, "STORAGE_FAILED"),
     );

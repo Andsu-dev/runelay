@@ -1,4 +1,4 @@
-import type { MemoryVersionView } from "@runeley/shared";
+import type { MemoryVersionView } from "@runelay/shared";
 import { motion } from "motion/react";
 import { UI_SPRING } from "@/components/ui/display/spring";
 import { formatDateTime } from "@/lib/format";

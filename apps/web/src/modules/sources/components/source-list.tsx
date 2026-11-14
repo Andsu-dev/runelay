@@ -1,5 +1,5 @@
 import { PlugSocketIcon } from "@hugeicons/core-free-icons";
-import type { SourceView } from "@runeley/shared";
+import type { SourceView } from "@runelay/shared";
 import { AnimatePresence, motion } from "motion/react";
 import { EmptyState } from "@/components/ui/display/empty-state";
 import { UI_SPRING } from "@/components/ui/display/spring";

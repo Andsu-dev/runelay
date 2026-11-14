@@ -1,4 +1,4 @@
-import type { SourceConfig } from "@runeley/shared";
+import type { SourceConfig } from "@runelay/shared";
 
 export const sourceTarget = (config: SourceConfig) => {
   if (config.kind === "stdio") return [config.command, ...config.args].join(" ");

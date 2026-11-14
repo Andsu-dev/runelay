@@ -1,4 +1,4 @@
-import { appError, type ErrorCode, type Result } from "@runeley/shared";
+import { appError, type ErrorCode, type Result } from "@runelay/shared";
 import type { Context } from "hono";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 

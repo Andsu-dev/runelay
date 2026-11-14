@@ -1,5 +1,5 @@
 import { Wrench01Icon } from "@hugeicons/core-free-icons";
-import type { RankedCountView } from "@runeley/shared";
+import type { RankedCountView } from "@runelay/shared";
 import { formatNumber } from "@/lib/format";
 import { WidgetCard } from "./widget-card";
 

@@ -1,6 +1,6 @@
 import { Logout03Icon, MoreHorizontalIcon, VolumeHighIcon, VolumeOffIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import type { AuthUser } from "@runeley/shared";
+import type { AuthUser } from "@runelay/shared";
 import { useState } from "react";
 import { Button } from "@/components/ui/action/button";
 import { DropdownMenu } from "@/components/ui/overlay/dropdown-menu";

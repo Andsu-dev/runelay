@@ -9,7 +9,7 @@ export const LOGIN_COPY = {
   },
   signup: {
     title: "Criar conta",
-    description: "A primeira conta vira a dona deste runeley.",
+    description: "A primeira conta vira a dona deste runelay.",
     submit: "Criar conta",
     switchPrompt: "Já tem conta?",
     switch: "Entrar",

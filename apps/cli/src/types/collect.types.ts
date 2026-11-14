@@ -1,4 +1,4 @@
-import type { CreateMemoryInput, CreateSkillInput } from "@runeley/shared";
+import type { CreateMemoryInput, CreateSkillInput } from "@runelay/shared";
 
 export interface CollectLine {
   agent: string;

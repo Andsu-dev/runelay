@@ -1,4 +1,4 @@
-import { ok, type Result } from "@runeley/shared";
+import { ok, type Result } from "@runelay/shared";
 import { bold } from "@/lib/terminal";
 import { resolveConnection } from "@/services/config.service";
 import { collectContext } from "@/services/context-collector.service";

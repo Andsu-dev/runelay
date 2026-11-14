@@ -14,7 +14,7 @@ export const Route = createFileRoute("/cli/authorize")({
   },
   loaderDeps: ({ search }) => ({ code: search.code }),
   loader: ({ context, deps }) => {
-    if (!deps.code) throw new Error("Abra o link que o runeley login mostrou no terminal.");
+    if (!deps.code) throw new Error("Abra o link que o runelay login mostrou no terminal.");
     return context.queryClient.ensureQueryData(cliAuthRequestQuery(deps.code));
   },
   errorComponent: CliAuthorizeError,

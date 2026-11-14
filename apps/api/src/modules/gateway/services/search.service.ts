@@ -1,4 +1,4 @@
-import { ok, type Result } from "@runeley/shared";
+import { ok, type Result } from "@runelay/shared";
 import { listLiveTools } from "@/modules/connectors/services/connection.service";
 import {
   SEARCH_DEFAULT_LIMIT,

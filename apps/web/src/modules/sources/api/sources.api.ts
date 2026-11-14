@@ -7,7 +7,7 @@ import type {
   SourcesSummaryView,
   SourceView,
   UpdateSourceInput,
-} from "@runeley/shared";
+} from "@runelay/shared";
 import { queryOptions } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 

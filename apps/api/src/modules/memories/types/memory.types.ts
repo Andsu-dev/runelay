@@ -1,4 +1,4 @@
-import type { CreateMemoryInput, MemoryListItemView, MemoryView } from "@runeley/shared";
+import type { CreateMemoryInput, MemoryListItemView, MemoryView } from "@runelay/shared";
 
 export interface MemoryListRow extends Omit<MemoryListItemView, "pinned"> {
   pinned: 0 | 1;

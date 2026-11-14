@@ -1,5 +1,5 @@
 import { HugeiconsIcon } from "@hugeicons/react";
-import type { SourceKind } from "@runeley/shared";
+import type { SourceKind } from "@runelay/shared";
 import { motion } from "motion/react";
 import { McpIcon } from "@/components/brand/mcp-icon";
 import { UI_SPRING } from "@/components/ui/display/spring";

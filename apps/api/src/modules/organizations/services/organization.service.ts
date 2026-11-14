@@ -7,7 +7,7 @@ import {
   type OrganizationView,
   ok,
   type Result,
-} from "@runeley/shared";
+} from "@runelay/shared";
 import { auth } from "@/modules/auth/lib/better-auth";
 import { findMembership, listMemberships, slugTaken } from "@/modules/auth/repositories/membership.repository";
 

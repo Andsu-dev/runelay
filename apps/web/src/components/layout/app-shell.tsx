@@ -13,7 +13,7 @@ import { RouteTransition } from "./route-transition";
 import { SidePanel } from "./side-panel";
 
 const PANEL_WIDTH = 248;
-const COLLAPSED_KEY = "runeley-panel-collapsed";
+const COLLAPSED_KEY = "runelay-panel-collapsed";
 
 export function AppShell() {
   const { data: me } = useSuspenseQuery(meQuery);

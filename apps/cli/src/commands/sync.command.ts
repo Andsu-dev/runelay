@@ -1,4 +1,4 @@
-import type { Result } from "@runeley/shared";
+import type { Result } from "@runelay/shared";
 import { pullCommand } from "@/commands/pull.command";
 import { pushCommand } from "@/commands/push.command";
 

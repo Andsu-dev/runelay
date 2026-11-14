@@ -1,4 +1,4 @@
-import { attempt, attemptSync, errorMessage, fail, ok, type Result } from "@runeley/shared";
+import { attempt, attemptSync, errorMessage, fail, ok, type Result } from "@runelay/shared";
 import {
   newQuickJSWASMModule,
   type QuickJSDeferredPromise,

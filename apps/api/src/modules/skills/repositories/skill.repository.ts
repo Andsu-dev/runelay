@@ -13,7 +13,7 @@ import {
   type SkillListItemView,
   type SkillView,
   type UpdateSkillInput,
-} from "@runeley/shared";
+} from "@runelay/shared";
 import { db } from "@/db/connection";
 import { SKILL_LIST_COLUMNS } from "@/modules/skills/constants/skill.constants";
 import type { SkillContent, SkillDetailRow, SkillListRow } from "@/modules/skills/types/skill.types";

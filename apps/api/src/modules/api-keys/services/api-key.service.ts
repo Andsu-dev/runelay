@@ -1,4 +1,4 @@
-import { attempt, type CreatedApiKeyView, ok, type Result } from "@runeley/shared";
+import { attempt, type CreatedApiKeyView, ok, type Result } from "@runelay/shared";
 import { findApiKeyView, saveApiKeySecret } from "@/modules/api-keys/repositories/api-key.repository";
 import { auth } from "@/modules/auth/lib/better-auth";
 

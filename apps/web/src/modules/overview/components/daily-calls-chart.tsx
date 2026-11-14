@@ -1,4 +1,4 @@
-import type { DailyCallsView } from "@runeley/shared";
+import type { DailyCallsView } from "@runelay/shared";
 import { formatCompact, formatDay } from "@/lib/format";
 import { DailyBar } from "./daily-bar";
 

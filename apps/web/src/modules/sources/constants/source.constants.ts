@@ -1,5 +1,5 @@
 import { ApiIcon, ComputerTerminal01Icon } from "@hugeicons/core-free-icons";
-import type { SourceKind, SourceStatus } from "@runeley/shared";
+import type { SourceKind, SourceStatus } from "@runelay/shared";
 
 export const STATUS_LABEL: Record<SourceStatus, string> = {
   ok: "Conectado",
@@ -28,6 +28,6 @@ export const KIND_ICON = {
 
 export const KIND_HINT: Record<SourceKind, string> = {
   mcp: "URL de um servidor MCP. Se pedir login, o OAuth abre em seguida.",
-  stdio: "Comando que sobe um MCP na própria máquina do runeley.",
+  stdio: "Comando que sobe um MCP na própria máquina do runelay.",
   openapi: "Spec OpenAPI em JSON ou YAML. Cada operação vira uma tool.",
 };

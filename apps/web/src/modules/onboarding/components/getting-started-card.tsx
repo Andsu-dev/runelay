@@ -18,7 +18,7 @@ interface GettingStartedCardProps {
 const EASE = [0.2, 0, 0, 1] as const;
 
 export function GettingStartedCard({ organizationId, onNavigate }: GettingStartedCardProps) {
-  const storageKey = `runeley-onboarding-dismissed:${organizationId}`;
+  const storageKey = `runelay-onboarding-dismissed:${organizationId}`;
   const [dismissed, setDismissed] = useState(() => readStorage(storageKey) === "true");
   const { currentStep, completed, total, finished, loaded } = useSetupProgress(organizationId);
   const visible = loaded && !dismissed && !finished;

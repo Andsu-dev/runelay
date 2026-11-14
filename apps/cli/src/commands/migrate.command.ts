@@ -1,4 +1,4 @@
-import { fail, ok, type Result } from "@runeley/shared";
+import { fail, ok, type Result } from "@runelay/shared";
 import { connectCommand } from "@/commands/connect.command";
 import { signIn } from "@/commands/login.command";
 import { cliEnv } from "@/config/env";
@@ -11,13 +11,13 @@ import { collectContext } from "@/services/context-collector.service";
 import { pushContext } from "@/services/context-push.service";
 import { scanLocalCredentials } from "@/services/credential-reader.service";
 import { planMigration } from "@/services/migration-plan.service";
-import { fetchStatus, listSourcesByStatus, pushSources } from "@/services/runeley-api.service";
+import { fetchStatus, listSourcesByStatus, pushSources } from "@/services/runelay-api.service";
 import type { CollectedContext } from "@/types/collect.types";
 import type { Connection } from "@/types/config.types";
 import type { MigrationPlan } from "@/types/migration.types";
 
 const KEYCHAIN_NOTICE =
-  "Vou ler os logins de MCP que o Codex e o Claude Code guardam no Keychain para as contas chegarem já conectadas. O macOS pode pedir permissão para cada item. Os tokens vão só para o seu runeley, cifrados.";
+  "Vou ler os logins de MCP que o Codex e o Claude Code guardam no Keychain para as contas chegarem já conectadas. O macOS pode pedir permissão para cada item. Os tokens vão só para o seu runelay, cifrados.";
 
 const plural = (total: number, one: string, many: string) => `${total} ${total === 1 ? one : many}`;
 
@@ -64,7 +64,7 @@ const askToProceed = async (organizationName: string, yes: boolean, replaceFlag:
     return { proceed: !/^n/i.test(answer), replace: true };
   }
   const answer = await ask(
-    `Enviar tudo para ${bold(organizationName)}? ${dim("[S/n/t]  t = enviar e deixar só o runeley nos agentes")}`,
+    `Enviar tudo para ${bold(organizationName)}? ${dim("[S/n/t]  t = enviar e deixar só o runelay nos agentes")}`,
   );
   return { proceed: !/^n/i.test(answer), replace: /^t/i.test(answer) };
 };
@@ -115,7 +115,7 @@ export const migrateCommand = async (args: string[]): Promise<Result<null>> => {
   const yes = args.includes("--yes") || args.includes("-y");
   const replaceFlag = args.includes("--replace");
   const urlArgument = args.find((arg) => !arg.startsWith("-"));
-  if (!interactive && !yes) return fail("INVALID_INPUT", "Sem terminal interativo. Rode runeley migrate --yes.");
+  if (!interactive && !yes) return fail("INVALID_INPUT", "Sem terminal interativo. Rode runelay migrate --yes.");
 
   let connection = resolveConnection();
   if (connection.error) {
@@ -126,7 +126,7 @@ export const migrateCommand = async (args: string[]): Promise<Result<null>> => {
   }
   const organizationName = await describeOrganization(connection.data);
 
-  const useKeychain = process.platform === "darwin" && !cliEnv.RUNELEY_SKIP_KEYCHAIN;
+  const useKeychain = process.platform === "darwin" && !cliEnv.RUNELAY_SKIP_KEYCHAIN;
   if (useKeychain) console.log(dim(KEYCHAIN_NOTICE));
   const scan = scanLocalCredentials(useKeychain);
   const clients = scanClientConfigs();
@@ -145,7 +145,7 @@ export const migrateCommand = async (args: string[]): Promise<Result<null>> => {
   const sent = await sendEverything(connection.data, plan, context);
   if (sent.error) return sent;
 
-  console.log(bold("\nLigando o runeley nos agentes:"));
+  console.log(bold("\nLigando o runelay nos agentes:"));
   await connectCommand();
   if (replace) {
     for (const [client, removed] of removeMigratedServers(migratedNamesByClient(plan, new Set(sent.data.imported)))) {

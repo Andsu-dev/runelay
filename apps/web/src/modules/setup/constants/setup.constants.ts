@@ -7,7 +7,7 @@ export const SETUP_STEPS: SetupStepDefinition[] = [
     id: "source",
     title: "Conecte suas contas",
     description:
-      "Linear, GitHub, Notion e o resto entram uma vez aqui. O login fica cifrado no runeley, nunca no agente.",
+      "Linear, GitHub, Notion e o resto entram uma vez aqui. O login fica cifrado no runelay, nunca no agente.",
     doneSummary: "Contas conectadas.",
   },
   {
@@ -26,7 +26,7 @@ export const SETUP_STEPS: SetupStepDefinition[] = [
     id: "import",
     title: "Traga sua memória e suas habilidades",
     description:
-      "Lê as memórias do Claude Code e as skills de ~/.claude/skills e manda para esta organização. Rode dentro do repo do runeley, uma vez.",
+      "Lê as memórias do Claude Code e as skills de ~/.claude/skills e manda para esta organização. Rode dentro do repo do runelay, uma vez.",
     doneSummary: "Contexto importado.",
   },
   {
@@ -39,8 +39,8 @@ export const SETUP_STEPS: SetupStepDefinition[] = [
 ];
 
 export const contextCommands = (origin: string, key: string) => ({
-  importContext: `RUNELEY_URL=${origin} RUNELEY_API_KEY=${key} bun run import-context`,
-  syncContext: `RUNELEY_URL=${origin} RUNELEY_API_KEY=${key} bun run sync-context`,
+  importContext: `RUNELAY_URL=${origin} RUNELAY_API_KEY=${key} bun run import-context`,
+  syncContext: `RUNELAY_URL=${origin} RUNELAY_API_KEY=${key} bun run sync-context`,
 });
 
 export const TIMELINE_EASE = [0.22, 1, 0.36, 1] as const;

@@ -1,4 +1,4 @@
-import type { SourceConfig, SourceView } from "@runeley/shared";
+import type { SourceConfig, SourceView } from "@runelay/shared";
 
 const HIDDEN = "••••••";
 

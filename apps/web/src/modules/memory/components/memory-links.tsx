@@ -1,4 +1,4 @@
-import type { MemoryView } from "@runeley/shared";
+import type { MemoryView } from "@runelay/shared";
 import { MemoryLinkGroup } from "./memory-link-group";
 
 interface MemoryLinksProps {

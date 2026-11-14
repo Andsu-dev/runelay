@@ -1,4 +1,4 @@
-import { fail, ok, type Result, type SourceConfig } from "@runeley/shared";
+import { fail, ok, type Result, type SourceConfig } from "@runelay/shared";
 import { env } from "@/config/env";
 import type { SourceActor } from "@/modules/sources/types/source-policy.types";
 import { resolvesToPrivateAddress } from "@/modules/sources/utils/private-address";
@@ -12,8 +12,8 @@ const urlsOf = (config: SourceConfig) => {
 
 export const checkSourcePolicy = async (config: SourceConfig, actor: SourceActor): Promise<Result<null>> => {
   if (config.kind === "stdio") {
-    if (!env.RUNELEY_ENABLE_STDIO) {
-      return fail("FORBIDDEN", "Conexões por comando local estão desligadas neste servidor (RUNELEY_ENABLE_STDIO).");
+    if (!env.RUNELAY_ENABLE_STDIO) {
+      return fail("FORBIDDEN", "Conexões por comando local estão desligadas neste servidor (RUNELAY_ENABLE_STDIO).");
     }
     if (actor.authMethod !== "session" || (actor.role !== "owner" && actor.role !== "admin")) {
       return fail("FORBIDDEN", "Só owner ou admin, logado no painel, cria conexão por comando local.");
@@ -24,10 +24,10 @@ export const checkSourcePolicy = async (config: SourceConfig, actor: SourceActor
     if (!url || (url.protocol !== "https:" && url.protocol !== "http:")) {
       return fail("INVALID_INPUT", `URL inválida: ${raw}`);
     }
-    if (!env.RUNELEY_ALLOW_PRIVATE_URLS && (await resolvesToPrivateAddress(url.hostname))) {
+    if (!env.RUNELAY_ALLOW_PRIVATE_URLS && (await resolvesToPrivateAddress(url.hostname))) {
       return fail(
         "FORBIDDEN",
-        `${url.hostname} aponta para a rede interna. Libere com RUNELEY_ALLOW_PRIVATE_URLS=true.`,
+        `${url.hostname} aponta para a rede interna. Libere com RUNELAY_ALLOW_PRIVATE_URLS=true.`,
       );
     }
   }

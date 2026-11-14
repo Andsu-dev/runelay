@@ -1,4 +1,4 @@
-import type { Result } from "@runeley/shared";
+import type { Result } from "@runelay/shared";
 import packageJson from "../package.json";
 
 const run = async () => {

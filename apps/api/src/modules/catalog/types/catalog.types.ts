@@ -1,4 +1,4 @@
-import type { CatalogConnectorView, CatalogSectionView } from "@runeley/shared";
+import type { CatalogConnectorView, CatalogSectionView } from "@runelay/shared";
 
 export type CatalogEntry = Omit<CatalogConnectorView, "installed" | "sourceName" | "status">;
 

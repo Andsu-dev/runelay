@@ -1,9 +1,9 @@
 services:
-  runeley:
-    image: ghcr.io/andsu-dev/runeley:${RUNELEY_VERSION:-latest}
+  runelay:
+    image: ghcr.io/andsu-dev/runelay:${RUNELAY_VERSION:-latest}
     restart: unless-stopped
     env_file: .env
     ports:
-      - "127.0.0.1:${RUNELEY_PORT:-4312}:4312"
+      - "127.0.0.1:${RUNELAY_PORT:-4312}:4312"
     volumes:
       - ./data:/data

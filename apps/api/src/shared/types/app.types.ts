@@ -1,4 +1,4 @@
-import type { AuthUser, OrganizationRole } from "@runeley/shared";
+import type { AuthUser, OrganizationRole } from "@runelay/shared";
 import type { AuthMethod } from "@/modules/auth/types/auth.types";
 
 export interface AppEnv {

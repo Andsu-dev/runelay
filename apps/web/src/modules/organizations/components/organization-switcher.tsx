@@ -1,6 +1,6 @@
 import { Add01Icon, UnfoldMoreIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import type { MeView, OrganizationView } from "@runeley/shared";
+import type { MeView, OrganizationView } from "@runelay/shared";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { Popover } from "@/components/ui/overlay/popover";

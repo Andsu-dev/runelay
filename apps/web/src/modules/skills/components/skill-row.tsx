@@ -1,4 +1,4 @@
-import type { SkillListItemView } from "@runeley/shared";
+import type { SkillListItemView } from "@runelay/shared";
 import { Link } from "@tanstack/react-router";
 import { MonogramTile } from "@/components/ui/display/monogram-tile";
 import { Switch } from "@/components/ui/form/switch";

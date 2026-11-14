@@ -24,9 +24,9 @@ export const ERROR_CATALOG = {
   INTERNAL: { status: 500, message: "Erro inesperado no servidor." },
   CLI_AUTH_NOT_FOUND: {
     status: 404,
-    message: "Esse código expirou ou já foi usado. Rode runeley login de novo no terminal.",
+    message: "Esse código expirou ou já foi usado. Rode runelay login de novo no terminal.",
   },
   CLI_AUTH_RATE_LIMITED: { status: 429, message: "Muitos pedidos de login deste endereço. Espere um minuto." },
   API_KEY_REQUIRED: { status: 401, message: "Essa ação só vale para uma chave de API." },
-  UPSTREAM_FAILED: { status: 502, message: "O servidor do runeley respondeu com erro." },
+  UPSTREAM_FAILED: { status: 502, message: "O servidor do runelay respondeu com erro." },
 } as const satisfies Record<string, { status: number; message: string }>;

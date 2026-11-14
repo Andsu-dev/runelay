@@ -1,6 +1,6 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset=".github/assets/banner-dark.svg" />
-  <img src=".github/assets/banner-light.svg" alt="runeley: all your agents, one brain" width="100%" />
+  <img src=".github/assets/banner-light.svg" alt="runelay: all your agents, one brain" width="100%" />
 </picture>
 
 <p align="center">
@@ -15,7 +15,7 @@
 
 <p align="center">
   Connect Linear, GitHub and Notion <b>once</b>. Bring the skills and memories you already have.<br />
-  Claude Code, Codex, Cursor, Antigravity and Grok all see the same tools and the same context, from <b>your</b> server.
+  Claude Code, Codex, Cursor, Antigravity and Grokbot all see the same tools and the same context, from <b>your</b> server.
 </p>
 
 <p align="center">
@@ -31,7 +31,7 @@
 
 Every agent lives on its own island. You log into Linear four times, copy the same skill to four folders, and teach Claude a rule that Codex never hears about.
 
-runeley is the bridge: **one MCP endpoint, on your server**, in front of every account, skill and memory. It runs no model. Your agent thinks; runeley is where it finds tools and context.
+runelay is the bridge: **one MCP endpoint, on your server**, in front of every account, skill and memory. It runs no model. Your agent thinks; runelay is where it finds tools and context.
 
 ```mermaid
 flowchart LR
@@ -41,7 +41,7 @@ flowchart LR
     CU[Cursor]
     GK[Grok]
   end
-  R((runeley))
+  R((runelay))
   subgraph B[" Your stuff "]
     AC[Linear · GitHub · Notion · any OpenAPI]
     SK[Skills]
@@ -67,28 +67,28 @@ flowchart LR
 ## 🚀 Quick start
 
 ```sh
-curl -fsSL https://github.com/Andsu-dev/runeley/releases/latest/download/install.sh | sh
+curl -fsSL https://github.com/Andsu-dev/runelay/releases/latest/download/install.sh | sh
 ```
 
-That is it. The script creates `~/runeley`, writes a `.env` with a fresh `RUNELEY_SECRET`, pulls the image and starts it on `127.0.0.1:4312`. Open the link it prints, create your account and follow **Acesso → Configurar agentes**.
+That is it. The script creates `~/runelay`, writes a `.env` with a fresh `RUNELAY_SECRET`, pulls the image and starts it on `127.0.0.1:4312`. Open the link it prints, create your account and follow **Acesso → Configurar agentes**.
 
 ### Migrate in one command
 
 On the computer where your agents live:
 
 ```sh
-curl -fsSL https://github.com/Andsu-dev/runeley/releases/latest/download/install-cli.sh | sh
-runeley migrate
+curl -fsSL https://github.com/Andsu-dev/runelay/releases/latest/download/install-cli.sh | sh
+runelay migrate
 ```
 
 `migrate` logs in through the browser if needed, then reads Claude Code, Codex, Cursor, Grok, Gemini and OpenCode: MCP servers, memories, skills and global instructions. It shows a summary per agent, asks once and sends everything.
 
-- **Comes connected:** OAuth accounts the agent already logged into. runeley reads the tokens Grok keeps in `~/.grok/mcp_credentials.json` and, on macOS, the ones Codex and Claude Code keep in the Keychain (macOS may ask for permission). Servers that authenticate with headers come connected too.
+- **Comes connected:** OAuth accounts the agent already logged into. runelay reads the tokens Grok keeps in `~/.grok/mcp_credentials.json` and, on macOS, the ones Codex and Claude Code keep in the Keychain (macOS may ask for permission). Servers that authenticate with headers come connected too.
 - **Asks for login:** everything else, including Cursor accounts (Cursor encrypts its tokens). At the end the CLI opens `/connectors/reconnect`, a queue that walks you through the remaining logins one tab at a time.
-- **Stays on the agent:** local command servers (stdio). Add them from the panel if you want them in runeley.
-- **Token rotation:** many providers rotate the refresh token on use. Once runeley refreshes it, the old agent may ask you to log in again. Run with `--replace` (or answer `t`) to remove the migrated MCPs from the agents and leave only runeley.
+- **Stays on the agent:** local command servers (stdio). Add them from the panel if you want them in runelay.
+- **Token rotation:** many providers rotate the refresh token on use. Once runelay refreshes it, the old agent may ask you to log in again. Run with `--replace` (or answer `t`) to remove the migrated MCPs from the agents and leave only runelay.
 
-`runeley migrate --yes` skips the question (required without a terminal). Tokens are sent only to your server and stored encrypted.
+`runelay migrate --yes` skips the question (required without a terminal). Tokens are sent only to your server and stored encrypted.
 
 <details>
 <summary><b>Installer options</b></summary>
@@ -96,11 +96,11 @@ runeley migrate
 Options go in front of `sh`:
 
 ```sh
-curl -fsSL https://github.com/Andsu-dev/runeley/releases/latest/download/install.sh \
-  | PUBLIC_URL=https://runeley.example.com RUNELEY_DIR=/opt/runeley RUNELEY_VERSION=v0.1.0 sh
+curl -fsSL https://github.com/Andsu-dev/runelay/releases/latest/download/install.sh \
+  | PUBLIC_URL=https://runelay.example.com RUNELAY_DIR=/opt/runelay RUNELAY_VERSION=v0.1.0 sh
 ```
 
-**Update**: `cd ~/runeley && docker compose pull && docker compose up -d`
+**Update**: `cd ~/runelay && docker compose pull && docker compose up -d`
 
 </details>
 
@@ -109,8 +109,8 @@ curl -fsSL https://github.com/Andsu-dev/runeley/releases/latest/download/install
 
 ```yaml
 services:
-  runeley:
-    image: ghcr.io/andsu-dev/runeley:latest
+  runelay:
+    image: ghcr.io/andsu-dev/runelay:latest
     restart: unless-stopped
     env_file: .env
     ports:
@@ -120,8 +120,8 @@ services:
 ```
 
 ```sh
-PUBLIC_URL=https://runeley.example.com     # the URL people and agents use
-RUNELEY_SECRET=$(openssl rand -hex 32)      # encrypts connections and API keys; back it up
+PUBLIC_URL=https://runelay.example.com     # the URL people and agents use
+RUNELAY_SECRET=$(openssl rand -hex 32)      # encrypts connections and API keys; back it up
 ALLOW_SIGNUP=false                          # first signup becomes the owner, then signups close
 ```
 
@@ -131,12 +131,12 @@ ALLOW_SIGNUP=false                          # first signup becomes the owner, th
 <summary><b>Build from source</b></summary>
 
 ```sh
-git clone https://github.com/Andsu-dev/runeley.git && cd runeley
-cp .env.example .env    # set PUBLIC_URL and RUNELEY_SECRET
+git clone https://github.com/Andsu-dev/runelay.git && cd runelay
+cp .env.example .env    # set PUBLIC_URL and RUNELAY_SECRET
 docker compose up -d --build
 ```
 
-> `bun run dev` is only for working on runeley itself. To run it, use the image.
+> `bun run dev` is only for working on runelay itself. To run it, use the image.
 
 </details>
 
@@ -146,7 +146,7 @@ docker compose up -d --build
 **Caddy**
 
 ```caddy
-runeley.example.com {
+runelay.example.com {
   reverse_proxy 127.0.0.1:4312
 }
 ```
@@ -155,7 +155,7 @@ runeley.example.com {
 
 ```yaml
 ingress:
-  - hostname: runeley.example.com
+  - hostname: runelay.example.com
     service: http://127.0.0.1:4312
   - service: http_status:404
 ```
@@ -170,15 +170,15 @@ OAuth callbacks go to `PUBLIC_URL/v1/oauth/callback`, so `PUBLIC_URL` must be th
 | Variable | Default | Description |
 |---|---|---|
 | `PUBLIC_URL` | `http://localhost:4312` | Public URL of the panel and API. Used for OAuth callbacks and cookies. |
-| `RUNELEY_SECRET` | required, 32+ chars | Encrypts connection configs, OAuth tokens and recoverable API keys. Losing it means reconnecting everything. |
-| `RUNELEY_SETUP_TOKEN` | generated | One-time token required to create the first account. |
+| `RUNELAY_SECRET` | required, 32+ chars | Encrypts connection configs, OAuth tokens and recoverable API keys. Losing it means reconnecting everything. |
+| `RUNELAY_SETUP_TOKEN` | generated | One-time token required to create the first account. |
 | `ALLOW_SIGNUP` | `false` | Keep signups open after the first account. |
-| `RUNELEY_ENABLE_EXECUTE` | `true` | Enables the sandboxed `execute` tool. See Security. |
-| `RUNELEY_ENABLE_STDIO` | `false` | Enables local MCP servers by command. See Security. |
-| `RUNELEY_ALLOW_PRIVATE_URLS` | `false` | Allows connections to private network addresses. |
-| `RUNELEY_RATE_LIMIT_PER_MINUTE` | `240` | Requests per minute allowed for each API key. |
+| `RUNELAY_ENABLE_EXECUTE` | `true` | Enables the sandboxed `execute` tool. See Security. |
+| `RUNELAY_ENABLE_STDIO` | `false` | Enables local MCP servers by command. See Security. |
+| `RUNELAY_ALLOW_PRIVATE_URLS` | `false` | Allows connections to private network addresses. |
+| `RUNELAY_RATE_LIMIT_PER_MINUTE` | `240` | Requests per minute allowed for each API key. |
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | empty | Enables "Sign in with GitHub" on the panel. |
-| `RUNELEY_DATA` | `/data` in Docker | Where the SQLite database lives. |
+| `RUNELAY_DATA` | `/data` in Docker | Where the SQLite database lives. |
 | `PORT` / `HOST` | `4312` / `0.0.0.0` in Docker | Where the server listens. |
 
 </details>
@@ -191,58 +191,58 @@ OAuth callbacks go to `PUBLIC_URL/v1/oauth/callback`, so `PUBLIC_URL` must be th
 **Claude Code**
 
 ```sh
-claude mcp add --scope user --transport http runeley https://runeley.example.com/v1/mcp \
+claude mcp add --scope user --transport http runelay https://runelay.example.com/v1/mcp \
   --header "Authorization: Bearer rnl_..."
 ```
 
 **Codex** (`~/.codex/config.toml`)
 
 ```toml
-[mcp_servers.runeley]
-url = "https://runeley.example.com/v1/mcp"
+[mcp_servers.runelay]
+url = "https://runelay.example.com/v1/mcp"
 http_headers = { Authorization = "Bearer rnl_..." }
 ```
 
 **Grok** (`~/.grok/config.toml`)
 
 ```toml
-[mcp_servers.runeley]
-url = "https://runeley.example.com/v1/mcp"
+[mcp_servers.runelay]
+url = "https://runelay.example.com/v1/mcp"
 headers = { Authorization = "Bearer rnl_..." }
 ```
 
 **Cursor** (`~/.cursor/mcp.json`)
 
 ```json
-{ "mcpServers": { "runeley": { "url": "https://runeley.example.com/v1/mcp", "headers": { "Authorization": "Bearer rnl_..." } } } }
+{ "mcpServers": { "runelay": { "url": "https://runelay.example.com/v1/mcp", "headers": { "Authorization": "Bearer rnl_..." } } } }
 ```
 
-**All of them at once** with the CLI (see below): `runeley login`, then `runeley connect`.
+**All of them at once** with the CLI (see below): `runelay login`, then `runelay connect`.
 
 ## 📥 Bring your context
 
-The `runeley` CLI runs on your computer, because that is where your agents keep their files. Install it, log in through the browser, done: no env vars, no keys to copy.
+The `runelay` CLI runs on your computer, because that is where your agents keep their files. Install it, log in through the browser, done: no env vars, no keys to copy.
 
 ```sh
-curl -fsSL https://github.com/Andsu-dev/runeley/releases/latest/download/install-cli.sh | sh
+curl -fsSL https://github.com/Andsu-dev/runelay/releases/latest/download/install-cli.sh | sh
 
-runeley login      # finds your server, opens the browser, saves this computer's key
-runeley status     # server, organization and what is stored in it
-runeley push       # memories, skills and global instructions from every installed agent
-runeley pull       # brief into CLAUDE.md and AGENTS.md, new skills into ~/.claude/skills
-runeley sync       # push, then pull
-runeley connect    # registers the runeley MCP in Claude Code, Codex, Cursor and Grok
-runeley import     # MCP servers from Claude, Codex, Grok and Cursor configs become connections
-runeley logout     # revokes this computer's key and clears the config
+runelay login      # finds your server, opens the browser, saves this computer's key
+runelay status     # server, organization and what is stored in it
+runelay push       # memories, skills and global instructions from every installed agent
+runelay pull       # brief into CLAUDE.md and AGENTS.md, new skills into ~/.claude/skills
+runelay sync       # push, then pull
+runelay connect    # registers the runelay MCP in Claude Code, Codex, Cursor and Grok
+runelay import     # MCP servers from Claude, Codex, Grok and Cursor configs become connections
+runelay logout     # revokes this computer's key and clears the config
 ```
 
-`runeley login` looks for `PUBLIC_URL` in `~/runeley/.env` (what the installer writes), then for `http://localhost:4312`, and asks before using what it found. You can also pass the address: `runeley login https://runeley.example.com`. The browser shows a code: check it matches the terminal and approve. The key shows up in the panel as `CLI <device>` and is saved in `~/.config/runeley/config.json` (mode 600, `XDG_CONFIG_HOME` respected).
+`runelay login` looks for `PUBLIC_URL` in `~/runelay/.env` (what the installer writes), then for `http://localhost:4312`, and asks before using what it found. You can also pass the address: `runelay login https://runelay.example.com`. The browser shows a code: check it matches the terminal and approve. The key shows up in the panel as `CLI <device>` and is saved in `~/.config/runelay/config.json` (mode 600, `XDG_CONFIG_HOME` respected).
 
-The installer puts the binary in `~/.runeley/bin` (change it with `RUNELEY_INSTALL_DIR`, pin a release with `RUNELEY_VERSION=v0.2.0`) and adds it to your shell `PATH`.
+The installer puts the binary in `~/.runelay/bin` (change it with `RUNELAY_INSTALL_DIR`, pin a release with `RUNELAY_VERSION=v0.2.0`) and adds it to your shell `PATH`.
 
-**CI / env vars.** `RUNELEY_URL` and `RUNELEY_API_KEY` override the saved config, so a pipeline can run `runeley push` with a key created in the panel. Inside a clone of this repo, `bun run import-context`, `sync-context`, `install-clients` and `import` still work and map to `push`, `pull`, `connect` and `import`.
+**CI / env vars.** `RUNELAY_URL` and `RUNELAY_API_KEY` override the saved config, so a pipeline can run `runelay push` with a key created in the panel. Inside a clone of this repo, `bun run import-context`, `sync-context`, `install-clients` and `import` still work and map to `push`, `pull`, `connect` and `import`.
 
-`runeley push` reads:
+`runelay push` reads:
 
 | Agent | Skills | Memory and instructions |
 |---|---|---|
@@ -256,9 +256,9 @@ The installer puts the binary in `~/.runeley/bin` (change it with `RUNELEY_INSTA
 
 Duplicates are merged (first one wins). Memories listed under `## Regras de ouro` in a `MEMORY.md`, and global instruction files, come in pinned.
 
-`runeley pull` only touches the block between `<!-- runeley:start -->` and `<!-- runeley:end -->`. Everything else in your files stays as it is. The brief tells agents to save new facts with `write_memory`, so memory flows back to runeley instead of local files.
+`runelay pull` only touches the block between `<!-- runelay:start -->` and `<!-- runelay:end -->`. Everything else in your files stays as it is. The brief tells agents to save new facts with `write_memory`, so memory flows back to runelay instead of local files.
 
-Enabled skills you do not have in any agent folder are written to `~/.claude/skills/<slug>/` with a `.runeley` marker. Later pulls update only marked folders and `push` skips them. A folder without the marker is yours and is never overwritten.
+Enabled skills you do not have in any agent folder are written to `~/.claude/skills/<slug>/` with a `.runelay` marker. Later pulls update only marked folders and `push` skips them. A folder without the marker is yours and is never overwritten.
 
 ## 📖 Reference
 
@@ -305,12 +305,12 @@ Everything the panel does goes through a versioned JSON API. Every response is `
 <details>
 <summary><b>🔒 Security</b></summary>
 
-runeley holds credentials for every account you connect, so it is locked down by default.
+runelay holds credentials for every account you connect, so it is locked down by default.
 
-**First access.** While no account exists, signing up needs a one-time setup token. The installer generates it and prints the link (`/login?mode=signup&token=…`). Without `RUNELEY_SETUP_TOKEN` in `.env`, the server makes one at startup and prints the link in `docker compose logs`. After the first account, signups close (unless `ALLOW_SIGNUP=true`).
+**First access.** While no account exists, signing up needs a one-time setup token. The installer generates it and prints the link (`/login?mode=signup&token=…`). Without `RUNELAY_SETUP_TOKEN` in `.env`, the server makes one at startup and prints the link in `docker compose logs`. After the first account, signups close (unless `ALLOW_SIGNUP=true`).
 
 **Credentials.**
-- Connection configs, OAuth tokens and recoverable API keys are encrypted with AES-256-GCM using `RUNELEY_SECRET`.
+- Connection configs, OAuth tokens and recoverable API keys are encrypted with AES-256-GCM using `RUNELAY_SECRET`.
 - Agents never receive credentials: requests made with an API key, and the `list_connections` tool, see headers and env values as `••••••`.
 - Importing a client config through the API never expands `${VARS}` from the server environment.
 - API keys belong to one organization. Revealing a key needs a panel session, never an API key.
@@ -319,14 +319,14 @@ runeley holds credentials for every account you connect, so it is locked down by
 
 | Variable | Default | What it unlocks |
 |---|---|---|
-| `RUNELEY_ENABLE_EXECUTE` | `true` | The `execute` tool. Agent code runs in QuickJS compiled to WebAssembly: a fresh sandbox per run with no filesystem, network, process or timers, 32 MB of memory and CPU and wall-clock limits. Tools cross the boundary as JSON only. Turn it off if you only want single `call_tool` calls. |
-| `RUNELEY_ENABLE_STDIO` | `false` | Local MCP servers (`command`). Even when on, only an owner or admin in the panel can create them, and the process gets a minimal environment (no server secrets). |
-| `RUNELEY_ALLOW_PRIVATE_URLS` | `false` | Connections to private, loopback, link-local and tailnet addresses (SSRF protection: cloud metadata, other services on the host). |
+| `RUNELAY_ENABLE_EXECUTE` | `true` | The `execute` tool. Agent code runs in QuickJS compiled to WebAssembly: a fresh sandbox per run with no filesystem, network, process or timers, 32 MB of memory and CPU and wall-clock limits. Tools cross the boundary as JSON only. Turn it off if you only want single `call_tool` calls. |
+| `RUNELAY_ENABLE_STDIO` | `false` | Local MCP servers (`command`). Even when on, only an owner or admin in the panel can create them, and the process gets a minimal environment (no server secrets). |
+| `RUNELAY_ALLOW_PRIVATE_URLS` | `false` | Connections to private, loopback, link-local and tailnet addresses (SSRF protection: cloud metadata, other services on the host). |
 
-**Prompt injection.** Tool results come from third parties (an issue, a page, an email). runeley limits what a manipulated agent can do: it cannot read credentials, cannot pin memories (pinned memories go into every agent's instructions, so only the panel can pin) and `execute` code runs in a WebAssembly sandbox with no access to the server. It can still write unpinned memories and call the tools you connected, so review memory health from time to time.
+**Prompt injection.** Tool results come from third parties (an issue, a page, an email). runelay limits what a manipulated agent can do: it cannot read credentials, cannot pin memories (pinned memories go into every agent's instructions, so only the panel can pin) and `execute` code runs in a WebAssembly sandbox with no access to the server. It can still write unpinned memories and call the tools you connected, so review memory health from time to time.
 
 **Abuse and visibility.**
-- Every API key has a sliding-window rate limit (`RUNELEY_RATE_LIMIT_PER_MINUTE`, default 240). Over the limit the API answers `429` with `retry-after`.
+- Every API key has a sliding-window rate limit (`RUNELAY_RATE_LIMIT_PER_MINUTE`, default 240). Over the limit the API answers `429` with `retry-after`.
 - Every request made with an API key is audited: tool calls (source, tool, result, duration) and REST calls (method, path, status, IP). Open **Chaves de API → Atividade** to see one key's timeline.
 
 **Network.** Every outgoing request (MCP, OAuth, OpenAPI) resolves DNS and checks the address right before it goes out, and redirects are followed one hop at a time with the same check, so DNS rebinding and redirects cannot reach private addresses.
@@ -338,7 +338,7 @@ runeley holds credentials for every account you connect, so it is locked down by
 <details>
 <summary><b>Operations: backup, update, health</b></summary>
 
-**Backup**: copy the `data/` folder (the SQLite database) and keep `RUNELEY_SECRET` somewhere safe. Both are needed to restore.
+**Backup**: copy the `data/` folder (the SQLite database) and keep `RUNELAY_SECRET` somewhere safe. Both are needed to restore.
 
 **Update**: `docker compose pull && docker compose up -d` (or `git pull && docker compose up -d --build` from source). Migrations run on startup.
 
@@ -360,7 +360,7 @@ bun run dev                   # API on :4312, panel on :5173 (Vite proxies /v1)
 apps/
   api/      Hono + better-auth + SQLite. Feature modules in src/modules/<feature>/{routes,services,repositories,...}
   web/      React + Vite + TanStack Router/Query + Tailwind + motion
-  cli/      the runeley CLI: login, status, push, pull, sync, connect, import, logout
+  cli/      the runelay CLI: login, status, push, pull, sync, connect, import, logout
 packages/
   shared/   zod schemas, types and the { data, error } Result used by every app
 ```

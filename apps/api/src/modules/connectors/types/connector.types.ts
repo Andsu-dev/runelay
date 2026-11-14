@@ -1,4 +1,4 @@
-import type { Result } from "@runeley/shared";
+import type { Result } from "@runelay/shared";
 
 export type JsonSchema = Record<string, unknown>;
 

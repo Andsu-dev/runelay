@@ -35,8 +35,8 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/${{ github.repository_owner }}/runeley
-            ${{ vars.DOCKERHUB_USERNAME && format('{0}/runeley', vars.DOCKERHUB_USERNAME) || '' }}
+            ghcr.io/${{ github.repository_owner }}/runelay
+            ${{ vars.DOCKERHUB_USERNAME && format('{0}/runelay', vars.DOCKERHUB_USERNAME) || '' }}
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
@@ -77,6 +77,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          sed "s#ghcr.io/andsu-dev/runeley#ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/runeley#" deploy/compose.yaml > compose.yaml
-          gh release create "$GITHUB_REF_NAME" deploy/install.sh deploy/install-cli.sh compose.yaml dist/cli/runeley-* \
+          sed "s#ghcr.io/andsu-dev/runelay#ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/runelay#" deploy/compose.yaml > compose.yaml
+          gh release create "$GITHUB_REF_NAME" deploy/install.sh deploy/install-cli.sh compose.yaml dist/cli/runelay-* \
             --title "$GITHUB_REF_NAME" --notes-file CHANGELOG.md --verify-tag

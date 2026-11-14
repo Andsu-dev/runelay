@@ -1,4 +1,4 @@
-import type { CatalogView, SourceView } from "@runeley/shared";
+import type { CatalogView, SourceView } from "@runelay/shared";
 import { queryOptions } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 

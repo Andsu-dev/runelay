@@ -1,4 +1,4 @@
-import { createOrganizationSchema, setActiveOrganizationSchema } from "@runeley/shared";
+import { createOrganizationSchema, setActiveOrganizationSchema } from "@runelay/shared";
 import { Hono } from "hono";
 import { requireAccount, requireSession } from "@/modules/auth/middlewares/authenticate";
 import {

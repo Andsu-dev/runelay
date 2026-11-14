@@ -1,4 +1,4 @@
-import type { ImportSourceInput } from "@runeley/shared";
+import type { ImportSourceInput } from "@runelay/shared";
 import type { ClientId } from "@/constants/clients.constants";
 import type { LocalCredential } from "@/types/credential.types";
 

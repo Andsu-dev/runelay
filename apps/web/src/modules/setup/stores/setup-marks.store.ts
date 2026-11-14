@@ -5,7 +5,7 @@ import type { SetupStepId } from "@/modules/setup/types/setup.types";
 const listeners = new Set<() => void>();
 const cache = new Map<string, SetupStepId[]>();
 
-const storageKey = (organizationId: string) => `runeley-setup:${organizationId}`;
+const storageKey = (organizationId: string) => `runelay-setup:${organizationId}`;
 
 const parse = (raw: string | null): SetupStepId[] => {
   try {

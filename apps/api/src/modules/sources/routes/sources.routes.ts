@@ -1,4 +1,4 @@
-import { createSourceSchema, importSourcesSchema, listSourcesSchema, ok, updateSourceSchema } from "@runeley/shared";
+import { createSourceSchema, importSourcesSchema, listSourcesSchema, ok, updateSourceSchema } from "@runelay/shared";
 import { Hono } from "hono";
 import { requireOrganization } from "@/modules/auth/middlewares/authenticate";
 import { startLogin } from "@/modules/oauth/services/oauth.service";

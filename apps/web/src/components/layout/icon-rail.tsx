@@ -1,5 +1,5 @@
 import { Search01Icon, SidebarLeftIcon } from "@hugeicons/core-free-icons";
-import type { AuthUser } from "@runeley/shared";
+import type { AuthUser } from "@runelay/shared";
 import { AnimatePresence, motion } from "motion/react";
 import { NAV_CATEGORIES } from "./nav-items";
 import { RailButton } from "./rail-button";

@@ -1,4 +1,4 @@
-import { fail, ok, type Result } from "@runeley/shared";
+import { fail, ok, type Result } from "@runelay/shared";
 import { connectMcpRemote, connectStdio } from "@/modules/connectors/clients/mcp.client";
 import { connectOpenApi } from "@/modules/connectors/clients/openapi.client";
 import type { Connection, Tool } from "@/modules/connectors/types/connector.types";

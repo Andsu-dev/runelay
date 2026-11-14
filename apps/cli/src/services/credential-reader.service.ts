@@ -57,7 +57,7 @@ export const scanLocalCredentials = (useKeychain: boolean): CredentialScan => {
     ...fromFile(CLAUDE_CREDENTIALS_FILE, parseClaudeCredentials),
   ];
   if (useKeychain) credentials.push(...fromCodexKeychain(), ...fromClaudeKeychain());
-  else if (process.platform === "darwin") notes.push("Keychain ignorado (RUNELEY_SKIP_KEYCHAIN).");
+  else if (process.platform === "darwin") notes.push("Keychain ignorado (RUNELAY_SKIP_KEYCHAIN).");
   notes.push("Cursor guarda os logins cifrados, então as contas dele vão pedir login de novo.");
   return { credentials, notes };
 };

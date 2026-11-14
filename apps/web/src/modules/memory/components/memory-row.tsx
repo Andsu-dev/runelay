@@ -1,6 +1,6 @@
 import { ArrowLeft02Icon, ArrowRight01Icon, PinIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import type { MemoryListItemView } from "@runeley/shared";
+import type { MemoryListItemView } from "@runelay/shared";
 import { Link } from "@tanstack/react-router";
 import { formatDate } from "@/lib/format";
 import { MemoryTypePill } from "./memory-type-pill";

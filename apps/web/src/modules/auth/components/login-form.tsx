@@ -1,4 +1,4 @@
-import { SETUP_TOKEN_HEADER } from "@runeley/shared";
+import { SETUP_TOKEN_HEADER } from "@runelay/shared";
 import { Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { type FormEvent, useState } from "react";

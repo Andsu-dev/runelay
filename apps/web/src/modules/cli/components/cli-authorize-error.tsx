@@ -16,7 +16,7 @@ export function CliAuthorizeError({ error }: ErrorComponentProps) {
         <HugeiconsIcon icon={Alert02Icon} size={28} strokeWidth={1.6} className="text-destructive" />
         <h1 className="text-lg font-semibold">Não deu para autorizar</h1>
         <p className="text-[13px] text-muted-foreground">
-          {error instanceof Error ? error.message : "Rode runeley login de novo no terminal."}
+          {error instanceof Error ? error.message : "Rode runelay login de novo no terminal."}
         </p>
       </motion.div>
     </main>

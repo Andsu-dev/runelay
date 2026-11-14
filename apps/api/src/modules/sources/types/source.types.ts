@@ -1,5 +1,5 @@
 import type { OAuthClientInformationMixed, OAuthTokens } from "@modelcontextprotocol/sdk/shared/auth.js";
-import type { SourceConfig, SourceStatus, SourceView } from "@runeley/shared";
+import type { SourceConfig, SourceStatus, SourceView } from "@runelay/shared";
 
 export interface OAuthState {
   client?: OAuthClientInformationMixed;

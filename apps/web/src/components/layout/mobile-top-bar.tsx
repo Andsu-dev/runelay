@@ -16,7 +16,7 @@ export function MobileTopBar({ onMenu, onSearch }: MobileTopBarProps) {
         <span className="flex size-7 items-center justify-center rounded-md bg-app-icon shadow-xs">
           <LogoMark className="size-4" />
         </span>
-        runeley
+        runelay
       </Link>
       <div className="ml-auto">
         <IconAction icon={Search01Icon} label="Buscar" onClick={onSearch} />

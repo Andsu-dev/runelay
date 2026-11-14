@@ -1,4 +1,4 @@
-import { attemptSync, type OrganizationRole, type OrganizationView, ok, type Result } from "@runeley/shared";
+import { attemptSync, type OrganizationRole, type OrganizationView, ok, type Result } from "@runelay/shared";
 import { db } from "@/db/connection";
 import { PERSONAL_ORGANIZATION_NAME } from "@/modules/auth/constants/auth.constants";
 import { slugify } from "@/modules/auth/utils/slugify";

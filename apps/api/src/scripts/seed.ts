@@ -25,7 +25,7 @@ for (const source of SEED_SOURCES) {
 const key = await createApiKey(organization.data, userId, SEED_API_KEY_NAME);
 if (key.error) throw new Error(key.error.message);
 
-console.log(`\nBanco: ${env.RUNELEY_DATA}`);
+console.log(`\nBanco: ${env.RUNELAY_DATA}`);
 console.log(`Login: ${SEED_USER.email} / ${SEED_USER.password}`);
-console.log(`RUNELEY_API_KEY=${key.data.key}`);
+console.log(`RUNELAY_API_KEY=${key.data.key}`);
 process.exit(0);

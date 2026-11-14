@@ -1,4 +1,4 @@
-import type { MeView } from "@runeley/shared";
+import type { MeView } from "@runelay/shared";
 import { queryOptions } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 

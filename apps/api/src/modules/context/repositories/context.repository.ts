@@ -1,5 +1,5 @@
 import type { SQLQueryBindings } from "bun:sqlite";
-import { attemptSync, type ContextHitView, type ContextSearchInput, ok, type Result } from "@runeley/shared";
+import { attemptSync, type ContextHitView, type ContextSearchInput, ok, type Result } from "@runelay/shared";
 import { db } from "@/db/connection";
 import { SNIPPET_TOKENS } from "@/modules/context/constants/context.constants";
 import type {

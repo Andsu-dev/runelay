@@ -1,4 +1,4 @@
-import type { RankedCountView } from "@runeley/shared";
+import type { RankedCountView } from "@runelay/shared";
 import { motion } from "motion/react";
 import { formatNumber, formatPercent } from "@/lib/format";
 

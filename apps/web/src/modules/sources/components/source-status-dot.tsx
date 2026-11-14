@@ -1,4 +1,4 @@
-import type { SourceStatus } from "@runeley/shared";
+import type { SourceStatus } from "@runelay/shared";
 import { cn } from "@/lib/utils";
 import { STATUS_DOT, STATUS_LABEL } from "@/modules/sources/constants/source.constants";
 

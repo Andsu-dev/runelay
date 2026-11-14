@@ -1,6 +1,6 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { attemptSync, type CreateSourceInput, type Result, sourceNameSchema } from "@runeley/shared";
-import { parseClientConfig } from "@runeley/shared/importers";
+import { attemptSync, type CreateSourceInput, type Result, sourceNameSchema } from "@runelay/shared";
+import { parseClientConfig } from "@runelay/shared/importers";
 import {
   CLIENT_AGENT_LABELS,
   CLIENT_CONFIG_FILES,

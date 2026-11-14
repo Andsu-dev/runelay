@@ -6,7 +6,7 @@ const root = join(import.meta.dir, "../..");
 const only = process.argv[2];
 
 for (const target of TARGETS.filter((name) => !only || name === only)) {
-  const outfile = join(root, "dist/cli", `runeley-${target}`);
+  const outfile = join(root, "dist/cli", `runelay-${target}`);
   const built = Bun.spawnSync(
     [
       "bun",

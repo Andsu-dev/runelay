@@ -1,4 +1,4 @@
-import type { MemoryVersionView } from "@runeley/shared";
+import type { MemoryVersionView } from "@runelay/shared";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";

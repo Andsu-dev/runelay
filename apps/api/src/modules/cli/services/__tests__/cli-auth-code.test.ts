@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { approveCliAuthSchema } from "@runeley/shared";
+import { approveCliAuthSchema } from "@runelay/shared";
 import { CLI_AUTH_CODE_ALPHABET } from "../../constants/cli-auth.constants";
 import { generateCliAuthCode } from "../cli-auth.service";
 

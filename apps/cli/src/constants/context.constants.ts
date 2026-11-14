@@ -1,14 +1,14 @@
 import { cliEnv } from "@/config/env";
 import type { AgentDirectory, InstructionFile } from "@/types/context.types";
 
-const HOME = cliEnv.RUNELEY_HOME;
+const HOME = cliEnv.RUNELAY_HOME;
 
 export const CLAUDE_PROJECTS_DIR = `${HOME}/.claude/projects`;
 
 export const CURRENT_PROJECT_MEMORY_DIR = `${CLAUDE_PROJECTS_DIR}/${process.cwd().replaceAll("/", "-")}/memory`;
 
-export const SKILL_SOURCES: AgentDirectory[] = cliEnv.RUNELEY_SKILLS_DIR
-  ? [{ agent: "Personalizado", path: cliEnv.RUNELEY_SKILLS_DIR }]
+export const SKILL_SOURCES: AgentDirectory[] = cliEnv.RUNELAY_SKILLS_DIR
+  ? [{ agent: "Personalizado", path: cliEnv.RUNELAY_SKILLS_DIR }]
   : [
       { agent: "Claude Code", path: `${HOME}/.claude/skills` },
       { agent: "Agentes (universal)", path: `${HOME}/.agents/skills` },
@@ -59,12 +59,12 @@ export const LIMITS = {
   filePath: 300,
 };
 
-export const CONTEXT_START_MARKER = "<!-- runeley:start -->";
+export const CONTEXT_START_MARKER = "<!-- runelay:start -->";
 
-export const CONTEXT_END_MARKER = "<!-- runeley:end -->";
+export const CONTEXT_END_MARKER = "<!-- runelay:end -->";
 
 export const CONTEXT_TARGETS = {
-  claude: `${cliEnv.RUNELEY_HOME}/.claude/CLAUDE.md`,
-  codex: `${cliEnv.RUNELEY_HOME}/.codex/AGENTS.md`,
-  grok: `${cliEnv.RUNELEY_HOME}/.grok/AGENTS.md`,
+  claude: `${cliEnv.RUNELAY_HOME}/.claude/CLAUDE.md`,
+  codex: `${cliEnv.RUNELAY_HOME}/.codex/AGENTS.md`,
+  grok: `${cliEnv.RUNELAY_HOME}/.grok/AGENTS.md`,
 } as const;

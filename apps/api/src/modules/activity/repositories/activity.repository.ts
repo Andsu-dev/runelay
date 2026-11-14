@@ -4,7 +4,7 @@ import {
   type DailyCallsView,
   type RankedCountView,
   type Result,
-} from "@runeley/shared";
+} from "@runelay/shared";
 import { db } from "@/db/connection";
 import { EMPTY_TOTALS, RANKING_LIMIT } from "@/modules/activity/constants/activity.constants";
 import type { ActivityTotalsRow, OnboardingRow, ToolCallRecord } from "@/modules/activity/types/activity.types";

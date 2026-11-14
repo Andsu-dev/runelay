@@ -13,7 +13,7 @@ export function ReconnectDone({ connected, skipped }: ReconnectDoneProps) {
   const title = connected === 0 ? "Nenhum login pendente" : skipped ? "Quase tudo conectado" : "Tudo conectado";
   const description = skipped
     ? `${skipped === 1 ? "Uma conta ficou" : `${skipped} contas ficaram`} para depois. Ela aparece em Conectores quando você quiser.`
-    : "Seus agentes já enxergam essas contas pelo runeley.";
+    : "Seus agentes já enxergam essas contas pelo runelay.";
 
   return (
     <motion.div

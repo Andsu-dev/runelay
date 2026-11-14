@@ -6,7 +6,7 @@ import { clientServerSchema, jsonClientConfigSchema, tomlClientConfigSchema } fr
 import { expandEnv } from "./expand-env";
 import type { ClientServer, EnvMap } from "./importer.types";
 
-const IGNORED = /runeley|executor/i;
+const IGNORED = /runelay|executor/i;
 
 const expandMap = (map: Record<string, string> | undefined, env: EnvMap) =>
   Object.fromEntries(Object.entries(map ?? {}).map(([key, value]) => [key, expandEnv(value, env)]));

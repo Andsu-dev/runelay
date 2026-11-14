@@ -1,4 +1,4 @@
-import type { MemoryView } from "@runeley/shared";
+import type { MemoryView } from "@runelay/shared";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Switch } from "@/components/ui/form/switch";
 import { toast } from "@/lib/toast";

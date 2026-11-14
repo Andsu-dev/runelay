@@ -36,7 +36,7 @@ export const requireSession = createMiddleware<SessionEnv>(async (c, next) => {
 export const requireOrganization = createMiddleware<AppEnv>(async (c, next) => {
   const principal = hasBearer(c.req.raw.headers) ? await principalFromApiKey(c.req.raw.headers) : null;
   if (principal) {
-    const limit = consumeRateLimit(principal.apiKeyId ?? principal.organizationId, env.RUNELEY_RATE_LIMIT_PER_MINUTE);
+    const limit = consumeRateLimit(principal.apiKeyId ?? principal.organizationId, env.RUNELAY_RATE_LIMIT_PER_MINUTE);
     if (!limit.allowed) {
       c.header("retry-after", String(limit.retryAfter));
       return respondError(c, "RATE_LIMITED");

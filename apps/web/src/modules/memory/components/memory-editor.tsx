@@ -1,4 +1,4 @@
-import { type MemoryView, updateMemorySchema } from "@runeley/shared";
+import { type MemoryView, updateMemorySchema } from "@runelay/shared";
 import { useMutation } from "@tanstack/react-query";
 import { type FormEvent, useState } from "react";
 import { Button } from "@/components/ui/action/button";

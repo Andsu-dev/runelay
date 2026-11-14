@@ -16,10 +16,10 @@ import { ensurePersonalOrganization } from "@/modules/auth/repositories/membersh
 import { countUsers } from "@/modules/auth/repositories/user.repository";
 
 export const auth = betterAuth({
-  appName: "runeley.bot",
+  appName: "runelay",
   baseURL: env.PUBLIC_URL,
   basePath: AUTH_BASE_PATH,
-  secret: env.RUNELEY_SECRET,
+  secret: env.RUNELAY_SECRET,
   database: db,
   trustedOrigins: [env.PUBLIC_URL],
   emailAndPassword: { enabled: true },

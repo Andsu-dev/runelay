@@ -1,4 +1,4 @@
-import type { Result } from "@runeley/shared";
+import type { Result } from "@runelay/shared";
 import type { JsonSchema, ToolArgs } from "@/modules/connectors/types/connector.types";
 
 export interface SearchToolsInput {

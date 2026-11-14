@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { fail, ok } from "@runeley/shared";
+import { fail, ok } from "@runelay/shared";
 import { EXECUTE_LIMITS } from "@/modules/gateway/constants/sandbox.constants";
 import { runInSandbox } from "@/modules/gateway/sandbox/run-in-sandbox";
 import type { ToolNamespace } from "@/modules/gateway/types/gateway.types";

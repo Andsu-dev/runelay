@@ -1,5 +1,5 @@
 import { Edit02Icon } from "@hugeicons/core-free-icons";
-import type { SkillView } from "@runeley/shared";
+import type { SkillView } from "@runelay/shared";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";

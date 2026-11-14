@@ -1,4 +1,4 @@
-import type { SourceView } from "@runeley/shared";
+import type { SourceView } from "@runelay/shared";
 import { Link } from "@tanstack/react-router";
 import { ConnectorIcon } from "@/modules/catalog/components/connector-icon";
 import { SourceStatusDot } from "@/modules/sources/components/source-status-dot";

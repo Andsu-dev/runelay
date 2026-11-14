@@ -1,4 +1,4 @@
-import { catalogQuerySchema, installCatalogSchema } from "@runeley/shared";
+import { catalogQuerySchema, installCatalogSchema } from "@runelay/shared";
 import { Hono } from "hono";
 import { requireOrganization } from "@/modules/auth/middlewares/authenticate";
 import { installCatalogItem, listCatalog } from "@/modules/catalog/services/catalog.service";

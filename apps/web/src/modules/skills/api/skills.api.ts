@@ -1,4 +1,4 @@
-import type { Page, SkillFileView, SkillListItemView, SkillView, UpdateSkillInput } from "@runeley/shared";
+import type { Page, SkillFileView, SkillListItemView, SkillView, UpdateSkillInput } from "@runelay/shared";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 

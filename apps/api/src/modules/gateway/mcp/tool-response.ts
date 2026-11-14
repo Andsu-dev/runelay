@@ -1,5 +1,5 @@
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import type { Result } from "@runeley/shared";
+import type { Result } from "@runelay/shared";
 
 export const toToolResponse = (result: Result<unknown>): CallToolResult => {
   const payload = result.error ? { error: result.error } : result.data;

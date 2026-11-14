@@ -1,5 +1,5 @@
 import { PlugSocketIcon } from "@hugeicons/core-free-icons";
-import type { SourcesSummaryView } from "@runeley/shared";
+import type { SourcesSummaryView } from "@runelay/shared";
 import { Link } from "@tanstack/react-router";
 import { formatNumber } from "@/lib/format";
 import { StatValue } from "./stat-value";

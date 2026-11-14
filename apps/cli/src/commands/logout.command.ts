@@ -1,7 +1,7 @@
-import { ok, type Result } from "@runeley/shared";
+import { ok, type Result } from "@runelay/shared";
 import { dim, green } from "@/lib/terminal";
 import { clearConfig, readStoredConfig } from "@/services/config.service";
-import { revokeCurrentKey } from "@/services/runeley-api.service";
+import { revokeCurrentKey } from "@/services/runelay-api.service";
 
 export const logoutCommand = async (): Promise<Result<null>> => {
   const stored = readStoredConfig();

@@ -1,4 +1,4 @@
-import type { Page } from "@runeley/shared";
+import type { Page } from "@runelay/shared";
 
 export const pageOf = <T>(items: T[], total: number, cursor: number): Page<T> => ({
   items,

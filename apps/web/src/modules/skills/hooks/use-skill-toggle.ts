@@ -1,4 +1,4 @@
-import type { Page, SkillListItemView, SkillView } from "@runeley/shared";
+import type { Page, SkillListItemView, SkillView } from "@runelay/shared";
 import { type InfiniteData, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/lib/toast";
 import { skillQuery, updateSkill } from "@/modules/skills/api/skills.api";

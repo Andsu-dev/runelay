@@ -1,5 +1,5 @@
 import { auth } from "@modelcontextprotocol/sdk/client/auth.js";
-import { attempt, fail, type McpRemoteConfig, type OAuthStartView, ok, type Result } from "@runeley/shared";
+import { attempt, fail, type McpRemoteConfig, type OAuthStartView, ok, type Result } from "@runelay/shared";
 import { connectSource } from "@/modules/connectors/services/connection.service";
 import { createOAuthProvider } from "@/modules/oauth/providers/oauth-client.provider";
 import { findSource, updateOAuth } from "@/modules/sources/repositories/source.repository";

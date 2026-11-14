@@ -1,5 +1,5 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { contextSearchSchema, memorySlugSchema, memoryTypeSchema, ok, skillSlugSchema } from "@runeley/shared";
+import { contextSearchSchema, memorySlugSchema, memoryTypeSchema, ok, skillSlugSchema } from "@runelay/shared";
 import { z } from "zod";
 import { env } from "@/config/env";
 import { findTool } from "@/modules/connectors/services/connection.service";
@@ -56,7 +56,7 @@ export const createGatewayServer = (caller: GatewayCaller) => {
     },
   );
 
-  if (env.RUNELEY_ENABLE_EXECUTE) {
+  if (env.RUNELAY_ENABLE_EXECUTE) {
     server.registerTool(
       "execute",
       { description: TOOL_DESCRIPTIONS.execute, inputSchema: { code: z.string() } },

@@ -5,7 +5,7 @@ import type {
   CreateApiKeyInput,
   CreatedApiKeyView,
   Page,
-} from "@runeley/shared";
+} from "@runelay/shared";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 

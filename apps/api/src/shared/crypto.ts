@@ -1,8 +1,8 @@
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from "node:crypto";
-import { attemptSync, type Result } from "@runeley/shared";
+import { attemptSync, type Result } from "@runelay/shared";
 import { env } from "@/config/env";
 
-const key = createHash("sha256").update(`runeley:sources:${env.RUNELEY_SECRET}`).digest();
+const key = createHash("sha256").update(`runeley:sources:${env.RUNELAY_SECRET}`).digest();
 
 export const seal = (value: unknown): string => {
   const iv = randomBytes(12);

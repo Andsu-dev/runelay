@@ -1,4 +1,4 @@
-import type { MemoryType } from "@runeley/shared";
+import type { MemoryType } from "@runelay/shared";
 import { MEMORY_TYPE_LABEL } from "@/modules/memory/constants/memory.constants";
 
 interface MemoryTypePillProps {

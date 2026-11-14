@@ -8,7 +8,7 @@ export function RailLogo() {
   return (
     <Link
       to="/overview"
-      aria-label="runeley, visão geral"
+      aria-label="runelay, visão geral"
       onPointerEnter={() => setHovered(true)}
       onPointerLeave={() => setHovered(false)}
       className="flex size-10 items-center justify-center"

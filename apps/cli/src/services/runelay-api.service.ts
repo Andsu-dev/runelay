@@ -18,7 +18,7 @@ import {
   type SkillView,
   type SourceStatus,
   type SourceView,
-} from "@runeley/shared";
+} from "@runelay/shared";
 import { HEALTH_TIMEOUT_MS, SKILL_PAGE_SIZE } from "@/constants/cli.constants";
 import type { Connection } from "@/types/config.types";
 

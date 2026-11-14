@@ -1,6 +1,6 @@
-import type { CreateSourceInput } from "@runeley/shared";
+import type { CreateSourceInput } from "@runelay/shared";
 
-export const SEED_USER = { email: "me@runeley.local", password: "senha-forte-123", name: "Anderson" };
+export const SEED_USER = { email: "me@runelay.local", password: "senha-forte-123", name: "Anderson" };
 
 export const SEED_API_KEY_NAME = "seed";
 

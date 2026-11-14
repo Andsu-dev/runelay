@@ -7,7 +7,7 @@ import type {
   MemoryView,
   Page,
   UpdateMemoryInput,
-} from "@runeley/shared";
+} from "@runelay/shared";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 

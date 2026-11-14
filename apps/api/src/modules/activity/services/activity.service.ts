@@ -1,4 +1,4 @@
-import { type OnboardingView, ok, type Result } from "@runeley/shared";
+import { type OnboardingView, ok, type Result } from "@runelay/shared";
 import { ONBOARDING_STEPS } from "@/modules/activity/constants/activity.constants";
 import { findOnboardingProgress } from "@/modules/activity/repositories/activity.repository";
 

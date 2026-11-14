@@ -1,4 +1,4 @@
-import type { CatalogConnectorView, CatalogView } from "@runeley/shared";
+import type { CatalogConnectorView, CatalogView } from "@runelay/shared";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { openPendingTab, sendTab } from "@/lib/oauth-tab";
 import { toast } from "@/lib/toast";

@@ -1,10 +1,10 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { ok, type Result } from "@runeley/shared";
+import { ok, type Result } from "@runelay/shared";
 import { CONTEXT_END_MARKER, CONTEXT_START_MARKER, CONTEXT_TARGETS } from "@/constants/context.constants";
 import { bold, dim, red } from "@/lib/terminal";
 import { resolveConnection } from "@/services/config.service";
-import { fetchBrief } from "@/services/runeley-api.service";
+import { fetchBrief } from "@/services/runelay-api.service";
 import { materializeSkills } from "@/services/skill-materializer.service";
 import type { Connection } from "@/types/config.types";
 import type { SkillPullOutcome } from "@/types/skill-pull.types";
@@ -65,7 +65,7 @@ const pullSkills = async (connection: Connection) => {
 export const pullCommand = async (): Promise<Result<null>> => {
   const connection = resolveConnection();
   if (connection.error) return connection;
-  console.log(bold("Trazendo o contexto do runeley:"));
+  console.log(bold("Trazendo o contexto do runelay:"));
   await pullBriefs(connection.data);
   await pullSkills(connection.data);
   return ok(null);

@@ -1,6 +1,6 @@
 import { Delete02Icon, LinkSquare01Icon, MoreHorizontalIcon, RefreshIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import type { CatalogConnectorView } from "@runeley/shared";
+import type { CatalogConnectorView } from "@runelay/shared";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "@/components/ui/action/button";

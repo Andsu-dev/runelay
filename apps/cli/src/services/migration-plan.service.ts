@@ -1,4 +1,4 @@
-import type { ImportedOAuthInput } from "@runeley/shared";
+import type { ImportedOAuthInput } from "@runelay/shared";
 import type { ClientId } from "@/constants/clients.constants";
 import { credentialsByUrl } from "@/services/credential-reader.service";
 import type { ClientSource } from "@/types/client-config.types";
