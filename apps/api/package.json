@@ -13,7 +13,7 @@
   "dependencies": {
     "@better-auth/api-key": "1.7.25",
     "@hono/bun": "^1.0.1",
-    "@hono/zod-validator": "^0.7.6",
+    "@hono/zod-validator": "^0.9.1",
     "@modelcontextprotocol/sdk": "^1.32.2",
     "@runelay/shared": "workspace:*",
     "better-auth": "1.7.25",
