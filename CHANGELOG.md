@@ -8,10 +8,10 @@ First public version of runelay: one MCP endpoint for every account, skill and m
 
 ```sh
 # server, on any machine with Docker
-curl -fsSL https://github.com/Andsu-dev/runelay/releases/latest/download/install.sh | sh
+curl -fsSL https://github.com/runelay/runelay/releases/latest/download/install.sh | sh
 
 # CLI, on your computer
-curl -fsSL https://github.com/Andsu-dev/runelay/releases/latest/download/install-cli.sh | sh
+curl -fsSL https://github.com/runelay/runelay/releases/latest/download/install-cli.sh | sh
 runelay migrate
 ```
 
@@ -53,5 +53,5 @@ runelay migrate
 
 ### Distribution
 
-- Docker image `ghcr.io/andsu-dev/runelay` for `linux/amd64` and `linux/arm64`.
+- Docker image `ghcr.io/runelay/runelay` for `linux/amd64` and `linux/arm64`.
 - `install.sh` for the server and `install-cli.sh` for the CLI attached to every release.
