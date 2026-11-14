@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.2.1
+
+- Connectors that sign in with a token (GitHub) ask for it in a dialog, on install and on the installed card, instead of opening a browser login that cannot work.
+- After a browser login, the login tab tells the panel it is done and closes itself, and the panel refreshes on its own.
+- A repeated OAuth callback no longer wipes the tokens of a connection that just connected, and no longer shows a stale "login failed" next to a green connection.
+- A provider that only lets approved apps sign in now gets a clear message instead of a raw 403. Figma and Intercom left the catalog for that reason.
+- The catalog refreshes connection status after an install.
+
 ## v0.2.0
 
 ### Panel
