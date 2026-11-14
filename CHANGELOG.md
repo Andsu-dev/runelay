@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.2.0
+
+### Panel
+
+- Update button in the rail when a new release is out, with the release notes and a confirmation before updating. The page reloads by itself on the new version.
+- Current version shown in the account menu.
+- Hide the names of memories and skills with one click, with an animated mask.
+
+### Server
+
+- One-click update for owners and admins through an optional `updater` service (Watchtower) in `compose.yaml`. The installer generates `RUNELAY_UPDATER_TOKEN`.
+- `GET /v1/system/version` reports the current and latest release, checked against GitHub at most once an hour.
+
 ## v0.1.2
 
 - The project lives at `github.com/Andsu-dev/runelay` again, and the Docker image is back at the public `ghcr.io/andsu-dev/runelay`.
