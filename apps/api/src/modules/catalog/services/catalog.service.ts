@@ -31,6 +31,7 @@ export const listCatalog = (organizationId: string, query?: string): Result<Cata
         const source = installedByHash.get(hashUrl(item.url));
         return {
           ...item,
+          tokenUrl: item.tokenUrl ?? null,
           installed: Boolean(source),
           sourceName: source?.name ?? null,
           status: source?.status ?? null,
@@ -44,8 +45,16 @@ export const installCatalogItem = async (
   organizationId: string,
   id: string,
   actor: SourceActor,
+  token?: string,
 ): Promise<Result<SourceView>> => {
   const item = CATALOG.flatMap((section) => section.items).find((candidate) => candidate.id === id);
   if (!item) return fail("CATALOG_ITEM_NOT_FOUND");
-  return createSource(organizationId, { name: item.id, config: { kind: "mcp", url: item.url, headers: {} } }, actor);
+  return createSource(
+    organizationId,
+    {
+      name: item.id,
+      config: { kind: "mcp", url: item.url, headers: token ? { Authorization: `Bearer ${token}` } : {} },
+    },
+    actor,
+  );
 };

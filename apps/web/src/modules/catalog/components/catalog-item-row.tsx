@@ -1,8 +1,10 @@
 import type { CatalogConnectorView } from "@runelay/shared";
 import { useIsMutating } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "motion/react";
+import { useState } from "react";
 import { Button } from "@/components/ui/action/button";
 import { INSTALL_MUTATION_KEY, useCatalogActions } from "@/modules/catalog/hooks/use-catalog-actions";
+import { TokenDialog } from "@/modules/sources/components/token-dialog";
 import { ConnectorIcon } from "./connector-icon";
 import { ConnectorStatusDot } from "./connector-status-dot";
 import { InstallConnectorButton } from "./install-connector-button";
@@ -16,6 +18,7 @@ export function CatalogItemRow({ connector }: CatalogItemRowProps) {
   const actions = useCatalogActions(connector);
   const installing = useIsMutating({ mutationKey: INSTALL_MUTATION_KEY }) > 0;
   const needsLogin = connector.installed && connector.status === "needs_auth";
+  const [asking, setAsking] = useState(false);
   const state = needsLogin ? "login" : connector.installed ? "installed" : "available";
 
   return (
@@ -50,10 +53,25 @@ export function CatalogItemRow({ connector }: CatalogItemRowProps) {
           )}
           {state !== "available" && <InstalledConnectorMenu connector={connector} actions={actions} />}
           {state === "available" && (
-            <InstallConnectorButton name={connector.name} pending={installing} onInstall={actions.startInstall} />
+            <InstallConnectorButton
+              name={connector.name}
+              pending={installing}
+              onInstall={() => (connector.auth === "api_key" ? setAsking(true) : actions.startInstall())}
+            />
           )}
         </motion.div>
       </AnimatePresence>
+      <TokenDialog
+        name={connector.name}
+        tokenUrl={connector.tokenUrl}
+        open={asking}
+        pending={actions.install.isPending}
+        onOpenChange={setAsking}
+        onSubmit={(token) => {
+          setAsking(false);
+          actions.startInstall(token);
+        }}
+      />
     </div>
   );
 }

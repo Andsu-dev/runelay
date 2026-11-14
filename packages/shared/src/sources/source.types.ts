@@ -1,4 +1,5 @@
 import type { z } from "zod";
+import type { CatalogAuth } from "../catalog/catalog.types";
 import type {
   createSourceSchema,
   importedOAuthSchema,
@@ -36,6 +37,8 @@ export interface SourceView {
   connectedAt: string | null;
   updatedAt: string;
   icon: string | null;
+  auth: CatalogAuth | null;
+  tokenUrl: string | null;
 }
 
 export interface OAuthStartView {

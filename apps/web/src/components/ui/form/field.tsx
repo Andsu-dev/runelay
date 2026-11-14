@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 interface FieldProps {
   label: string;
-  hint?: string;
+  hint?: ReactNode;
   error?: string;
   className?: string;
   children: ReactNode;

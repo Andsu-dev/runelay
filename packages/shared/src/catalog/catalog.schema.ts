@@ -6,4 +6,5 @@ export const catalogQuerySchema = z.object({
 
 export const installCatalogSchema = z.object({
   id: z.string().trim().min(1),
+  token: z.string().trim().min(1).optional(),
 });

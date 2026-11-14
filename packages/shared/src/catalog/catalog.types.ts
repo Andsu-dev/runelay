@@ -11,6 +11,7 @@ export interface CatalogConnectorView {
   url: string;
   icon: string | null;
   auth: CatalogAuth;
+  tokenUrl: string | null;
   installed: boolean;
   sourceName: string | null;
   status: SourceStatus | null;

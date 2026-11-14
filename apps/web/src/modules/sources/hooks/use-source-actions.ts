@@ -1,4 +1,4 @@
-import type { SourceView } from "@runelay/shared";
+import type { McpRemoteConfig, SourceView } from "@runelay/shared";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { openPendingTab, sendTab } from "@/lib/oauth-tab";
 import { toast } from "@/lib/toast";
@@ -82,5 +82,21 @@ export const useSourceActions = (name: string) => {
 
   const startLogin = () => login.mutate(openPendingTab());
 
-  return { toggle, remove, test, login, startLogin };
+  const saveToken = useMutation({
+    mutationFn: ({ config, token }: { config: McpRemoteConfig; token: string }) =>
+      updateSource(name, { config: { ...config, headers: { ...config.headers, Authorization: `Bearer ${token}` } } }),
+    onSuccess: (updated) => {
+      replaceInList(updated);
+      queryClient.setQueryData(["sources", name], updated);
+      if (updated.status === "ok") toast(`${name} conectada.`);
+      else toast(updated.error ?? `${name}: ${STATUS_LABEL[updated.status].toLowerCase()}.`, "error");
+    },
+    onError: (error) => toast(error.message, "error"),
+    onSettled: () => {
+      refreshSummary();
+      queryClient.invalidateQueries({ queryKey: ["catalog"] });
+    },
+  });
+
+  return { toggle, remove, test, login, startLogin, saveToken };
 };

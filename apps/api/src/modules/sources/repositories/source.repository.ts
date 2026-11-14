@@ -10,7 +10,7 @@ import {
   type SourceView,
 } from "@runelay/shared";
 import { db } from "@/db/connection";
-import { CATALOG_ICON_BY_URL_HASH } from "@/modules/catalog/constants/catalog.constants";
+import { CATALOG_BY_URL_HASH } from "@/modules/catalog/constants/catalog.constants";
 import type {
   InstalledSourceRow,
   OAuthState,
@@ -28,8 +28,9 @@ const COLUMNS =
   "organization_id AS organizationId, name, config, oauth, status, error, tool_count AS toolCount, enabled, updated_at AS updatedAt";
 
 const VIEW_SELECT = `SELECT s.name, s.config, s.status, s.error, s.tool_count AS toolCount, s.enabled,
-    s.connected_at AS connectedAt, s.updated_at AS updatedAt, icons.value AS icon
-  FROM sources s LEFT JOIN json_each(?) icons ON icons.key = s.url_hash`;
+    s.connected_at AS connectedAt, s.updated_at AS updatedAt, json_extract(catalog.value, '$.icon') AS icon,
+    json_extract(catalog.value, '$.auth') AS auth, json_extract(catalog.value, '$.tokenUrl') AS tokenUrl
+  FROM sources s LEFT JOIN json_each(?) catalog ON catalog.key = s.url_hash`;
 
 const decryptView = (row: SourceViewRow): Result<SourceView> => {
   const config = unseal<SourceConfig>(row.config);
@@ -75,7 +76,7 @@ export const listSourceViews = (organizationId: string, status?: SourceStatus): 
         .query<SourceViewRow, [string, string, string | null, string | null]>(
           `${VIEW_SELECT} WHERE s.organization_id = ? AND (? IS NULL OR s.status = ?) ORDER BY s.name`,
         )
-        .all(CATALOG_ICON_BY_URL_HASH, organizationId, status ?? null, status ?? null),
+        .all(CATALOG_BY_URL_HASH, organizationId, status ?? null, status ?? null),
     "STORAGE_FAILED",
   );
   if (rows.error) return rows;
@@ -110,7 +111,7 @@ export const findSourceView = ({ organizationId, name }: SourceKey): Result<Sour
     () =>
       db
         .query<SourceViewRow, [string, string, string]>(`${VIEW_SELECT} WHERE s.organization_id = ? AND s.name = ?`)
-        .get(CATALOG_ICON_BY_URL_HASH, organizationId, name),
+        .get(CATALOG_BY_URL_HASH, organizationId, name),
     "STORAGE_FAILED",
   );
   if (row.error) return row;

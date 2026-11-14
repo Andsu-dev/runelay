@@ -21,6 +21,7 @@ export const CATALOG: CatalogSection[] = [
         url: "https://api.githubcopilot.com/mcp/",
         icon: "github",
         auth: "api_key",
+        tokenUrl: "https://github.com/settings/personal-access-tokens/new",
       },
       {
         id: "notion",
@@ -28,14 +29,6 @@ export const CATALOG: CatalogSection[] = [
         description: "Páginas, bancos e busca no workspace.",
         url: "https://mcp.notion.com/mcp",
         icon: "notion",
-        auth: "oauth",
-      },
-      {
-        id: "figma",
-        name: "Figma",
-        description: "Arquivos, frames e contexto de design.",
-        url: "https://mcp.figma.com/mcp",
-        icon: "figma",
         auth: "oauth",
       },
       {
@@ -171,14 +164,6 @@ export const CATALOG: CatalogSection[] = [
         auth: "oauth",
       },
       {
-        id: "intercom",
-        name: "Intercom",
-        description: "Conversas e contatos do suporte.",
-        url: "https://mcp.intercom.com/mcp",
-        icon: "intercom",
-        auth: "oauth",
-      },
-      {
         id: "hubspot",
         name: "HubSpot",
         description: "Contatos, empresas e negócios do CRM.",
@@ -230,10 +215,11 @@ export const CATALOG: CatalogSection[] = [
   },
 ];
 
-export const CATALOG_ICON_BY_URL_HASH = JSON.stringify(
+export const CATALOG_BY_URL_HASH = JSON.stringify(
   Object.fromEntries(
-    CATALOG.flatMap((section) => section.items)
-      .filter((item) => item.icon)
-      .map((item) => [hashUrl(item.url), item.icon]),
+    CATALOG.flatMap((section) => section.items).map((item) => [
+      hashUrl(item.url),
+      { icon: item.icon, auth: item.auth, tokenUrl: item.tokenUrl ?? null },
+    ]),
   ),
 );

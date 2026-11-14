@@ -2,7 +2,6 @@ import { Delete02Icon, RefreshIcon } from "@hugeicons/core-free-icons";
 import type { SourceView } from "@runelay/shared";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Button } from "@/components/ui/action/button";
 import { IconAction } from "@/components/ui/action/icon-action";
 import { Switch } from "@/components/ui/form/switch";
 import { ConnectorIcon } from "@/modules/catalog/components/connector-icon";
@@ -10,6 +9,7 @@ import { KIND_LABEL, STATUS_LABEL } from "@/modules/sources/constants/source.con
 import { useSourceActions } from "@/modules/sources/hooks/use-source-actions";
 import { sourceTarget } from "@/modules/sources/utils/source-target";
 import { DeleteSourceDialog } from "./delete-source-dialog";
+import { SourceConnectButton } from "./source-connect-button";
 import { SourceStatusDot } from "./source-status-dot";
 
 interface SourceCardProps {
@@ -18,9 +18,8 @@ interface SourceCardProps {
 
 export function SourceCard({ source }: SourceCardProps) {
   const { name, config, status, error, toolCount, enabled } = source;
-  const { toggle, remove, test, login, startLogin } = useSourceActions(name);
+  const { toggle, remove, test } = useSourceActions(name);
   const [confirming, setConfirming] = useState(false);
-  const needsLogin = enabled && status === "needs_auth";
 
   return (
     <div className="flex flex-col gap-2 rounded-xl bg-card p-4 shadow-xs sm:p-5">
@@ -45,17 +44,7 @@ export function SourceCard({ source }: SourceCardProps) {
           </span>
         </div>
 
-        {config.kind === "mcp" && (
-          <Button
-            size="sm"
-            variant={needsLogin ? "default" : "glass"}
-            loading={login.isPending}
-            onClick={startLogin}
-            className="hidden sm:inline-flex"
-          >
-            {needsLogin ? "Fazer login" : "Reconectar"}
-          </Button>
-        )}
+        <SourceConnectButton source={source} className="hidden sm:inline-flex" />
         <IconAction
           icon={RefreshIcon}
           label="Testar conexão"
@@ -74,17 +63,7 @@ export function SourceCard({ source }: SourceCardProps) {
 
       {error && enabled && <p className="text-xs break-words text-destructive">{error}</p>}
 
-      {config.kind === "mcp" && (
-        <Button
-          size="sm"
-          variant={needsLogin ? "default" : "glass"}
-          loading={login.isPending}
-          onClick={startLogin}
-          className="sm:hidden"
-        >
-          {needsLogin ? "Fazer login" : "Reconectar"}
-        </Button>
-      )}
+      <SourceConnectButton source={source} className="sm:hidden" />
 
       <DeleteSourceDialog
         name={name}

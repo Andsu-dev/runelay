@@ -1,5 +1,6 @@
 import type { CatalogConnectorView, CatalogView } from "@runelay/shared";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { openPendingTab, sendTab } from "@/lib/oauth-tab";
 import { toast } from "@/lib/toast";
 import { installConnector } from "@/modules/catalog/api/catalog.api";
@@ -12,6 +13,7 @@ export const INSTALL_MUTATION_KEY = ["catalog-install"];
 
 export const useCatalogActions = (connector: CatalogConnectorView) => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const sourceName = connector.sourceName ?? connector.id;
 
   const markInstalled = (installed: boolean) => {
@@ -38,6 +40,7 @@ export const useCatalogActions = (connector: CatalogConnectorView) => {
   };
 
   const refresh = () => {
+    queryClient.invalidateQueries({ queryKey: CATALOG_KEY });
     queryClient.invalidateQueries({ queryKey: sourcesQuery.queryKey });
     queryClient.invalidateQueries({ queryKey: onboardingQuery.queryKey });
   };
@@ -49,16 +52,19 @@ export const useCatalogActions = (connector: CatalogConnectorView) => {
 
   const install = useMutation({
     mutationKey: INSTALL_MUTATION_KEY,
-    mutationFn: async (tab: Window | null) => {
-      const source = await installConnector(connector.id);
+    mutationFn: async ({ tab, token }: { tab: Window | null; token?: string }) => {
+      const source = await installConnector(connector.id, token);
       const redirecting = tab ? await redirectToLogin(source.name, tab) : false;
       return { source, redirecting };
     },
     onMutate: () => markInstalled(true),
-    onSuccess: ({ redirecting }) => {
-      if (!redirecting) toast(`${connector.name} instalado.`);
+    onSuccess: ({ source, redirecting }) => {
+      if (redirecting) return;
+      if (source.status === "ok" || connector.auth !== "api_key") return toast(`${connector.name} instalado.`);
+      toast(source.error ?? `O ${connector.name} não aceitou o token.`, "error");
+      navigate({ to: "/connectors/$name", params: { name: source.name } });
     },
-    onError: (error, tab, snapshot) => {
+    onError: (error, { tab }, snapshot) => {
       tab?.close();
       restore(snapshot);
       toast(error.message, "error");
@@ -88,7 +94,8 @@ export const useCatalogActions = (connector: CatalogConnectorView) => {
     onSettled: refresh,
   });
 
-  const startInstall = () => install.mutate(connector.auth === "oauth" ? openPendingTab() : null);
+  const startInstall = (token?: string) =>
+    install.mutate({ tab: connector.auth === "oauth" ? openPendingTab() : null, token });
   const startReconnect = () => reconnect.mutate(openPendingTab());
 
   return { sourceName, install, reconnect, remove, startInstall, startReconnect };
