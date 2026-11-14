@@ -245,9 +245,6 @@ details[data-state="open"] .chevron { transform: rotate(180deg); }
 .download-meta { margin-top: 14px; font-size: 13px; color: var(--muted-foreground); }
 .setup .note a { text-underline-offset: 3px; }
 
-.download-link { margin-top: 14px; }
-.download-link a { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--muted-foreground); text-decoration: none; transition: color 0.2s; }
-.download-link a:hover { color: var(--foreground); }
 
 .downloads { margin-top: 48px; }
 .platforms { list-style: none; margin: 0; padding: 0; text-align: left; border-radius: 16px; background: var(--muted); }
@@ -286,6 +283,12 @@ details[data-state="open"] .chevron { transform: rotate(180deg); }
   .platform-meta { flex-basis: calc(100% - 36px); order: 3; margin-left: 36px; margin-top: -10px; }
   .platform-actions { order: 4; width: 100%; margin-left: 36px; }
   }
+
+.install-cta { margin-top: 28px; display: grid; justify-items: center; }
+.button-solid.large { height: 48px; padding: 0 22px; font-size: 16px; border-radius: 12px; }
+.install-divider { margin: 36px 0 0; font-size: 14px; color: var(--muted-foreground); }
+.install-divider + .terminal { margin-top: 14px; }
+.answer a { color: var(--foreground); text-underline-offset: 3px; }
 
 .footer { max-width: 640px; margin: 0 auto; padding: 32px 16px 48px; display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 13px; color: var(--muted-foreground); }
 .lang { display: flex; gap: 4px; padding: 3px; border-radius: 999px; background: var(--muted); }

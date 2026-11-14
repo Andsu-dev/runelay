@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>runelay</title>
-    <meta name="description" content="All your agents with the same accounts, skills and memories. One open-source MCP endpoint, on your server." />
+    <meta name="description" content="All your agents with the same accounts, skills and memories. One open-source MCP endpoint, on your computer or your server." />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="stylesheet" href="/styles.css" />
@@ -23,9 +23,9 @@
           All your agents.<br />
           <span class="mark">One brain.<svg class="scribble underline" viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M3 9c40-6 92-7 194-3" /></svg></span>
         </h1>
-        <p class="lead" data-reveal>runelay plugs Claude Code, Codex, Cursor, Antigravity and Grokbot into the same accounts, skills and memories. One MCP endpoint, running on your server.</p>
+        <p class="lead" data-reveal>runelay plugs Claude Code, Codex, Cursor, Antigravity and Grokbot into the same accounts, skills and memories. One MCP endpoint, running on your computer or your server.</p>
         <div class="cta" data-reveal>
-          <a class="button-solid" href="/setup">Get started</a>
+          <a class="button-solid" href="/download"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 2.5v8m0 0 3-3m-3 3-3-3M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Download</a>
           <button class="button-dashed" type="button" data-copy-from="#agent-prompt" data-copied="Prompt copied"><span class="stack" aria-hidden="true"><img src="/logos/claude.svg" alt="" /><img src="/logos/codex.svg" alt="" /><img src="/logos/cursor.svg" alt="" /><img src="/logos/antigravity.svg" alt="" /><img class="photo" src="/logos/grokbot.png" alt="" /></span><span data-label>Set up with your agent</span><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 3.5v-.5a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 3v5A1.5 1.5 0 0 0 4 9.5h.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
         </div>
         <template id="agent-prompt">Help me set up runelay, an open-source MCP gateway I host myself so all my agents share the same accounts, skills and memory.
@@ -60,7 +60,7 @@ Docs: https://github.com/Andsu-dev/runelay#readme</template>
           <li data-reveal><span class="check" aria-hidden="true"></span><span><strong>Skills that travel.</strong> Your <code>SKILL.md</code> folders, served on demand to any agent.</span></li>
           <li data-reveal><span class="check" aria-hidden="true"></span><span><strong>Shared memory.</strong> Notes with <code>[[links]]</code> and versions. What one learns, all of them know.</span></li>
           <li data-reveal><span class="check" aria-hidden="true"></span><span><strong>One key per agent.</strong> Revoke one without breaking the others.</span></li>
-          <li data-reveal><span class="check" aria-hidden="true"></span><span><strong>Your server, your rules.</strong> One container, SQLite and zero third-party services.</span></li>
+          <li data-reveal><span class="check" aria-hidden="true"></span><span><strong>Your machine, your rules.</strong> One app or one container, SQLite and zero third-party services.</span></li>
         </ul>
       </section>
 
@@ -71,7 +71,7 @@ Docs: https://github.com/Andsu-dev/runelay#readme</template>
           <table>
             <thead><tr><th></th><th class="us"><span class="vendor"><img src="/favicon.svg" alt="" />runelay</span></th><th><span class="vendor"><img src="/logos/composio.png" alt="" />Composio</span></th><th><span class="vendor"><img src="/logos/executor.png" alt="" />Executor</span></th></tr></thead>
             <tbody>
-              <tr><th>Runs on</th><td class="us">Your server</td><td>Their cloud</td><td>Cloud or self-hosted</td></tr>
+              <tr><th>Runs on</th><td class="us">Your computer or server</td><td>Their cloud</td><td>Cloud or self-hosted</td></tr>
               <tr><th>Cost</th><td class="us">Free self-hosted</td><td>$18 per seat</td><td>Free self-hosted</td></tr>
               <tr><th>Memory across agents</th><td class="us"><span class="yes">✓</span></td><td><span class="no">—</span></td><td><span class="no">—</span></td></tr>
               <tr><th>Imports what you have</th><td class="us"><span class="yes">✓</span></td><td><span class="no">—</span></td><td><span class="no">—</span></td></tr>
@@ -83,6 +83,11 @@ Docs: https://github.com/Andsu-dev/runelay#readme</template>
 
       <section id="install">
         <h2 data-reveal><span class="mark">Live in one minute<svg class="scribble circle" viewBox="0 0 220 60" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M30 8C90-2 205 6 214 28c8 22-80 30-150 27C10 52-6 34 10 20 26 8 70 4 120 6" /></svg></span></h2>
+        <div class="install-cta" data-reveal>
+          <a class="button-solid large" href="/download"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 2.5v8m0 0 3-3m-3 3-3-3M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Download the app</a>
+          <p class="download-meta">Mac, Windows and Linux · free and open source</p>
+        </div>
+        <p class="install-divider" data-reveal>or run it on a server with Docker</p>
         <div class="terminal" data-reveal>
           <div class="terminal-bar">
             <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
@@ -95,7 +100,6 @@ Docs: https://github.com/Andsu-dev/runelay#readme</template>
 <span class="out ok">runelay is live at http://127.0.0.1:4312</span></code></pre>
         </div>
         <p class="note" data-reveal>then just point your agents at <code>/v1/mcp</code> ✌️</p>
-              <p class="download-link" data-reveal><a href="/download"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M8 2.5v8m0 0 3-3m-3 3-3-3M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>or get the desktop app</a></p>
       </section>
 
       <section class="faq">
@@ -104,16 +108,20 @@ Docs: https://github.com/Andsu-dev/runelay#readme</template>
           <div class="answer"><p>Any MCP client. And a single command imports the memories, skills and instructions you already have in Claude Code, Codex, Cursor, Grok, Gemini and OpenCode.</p></div>
         </details>
         <details data-reveal>
+          <summary>Do I need Docker or a server?<svg class="chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer"><p>No. <a href="/download">Download the app</a> for Mac, Windows or Linux and it runs on your computer. Want it always on, for every machine you use? Install it on a server with Docker in one command.</p></div>
+        </details>
+        <details data-reveal>
           <summary>Can I migrate in one click?<svg class="chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
           <div class="answer"><p>Yes. Run <code>runelay migrate</code>: it finds Claude Code, Codex, Cursor and Grok on your machine and brings everything over at once, with connections, memories, skills and instructions. Accounts your agent was already logged into arrive connected, and the ones that need a login go into a queue you clear on a single screen. Coming from Executor, it arrives as a connection that is already logged in.</p></div>
         </details>
         <details data-reveal>
           <summary>Do I need to pay for anything?<svg class="chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
-          <div class="answer"><p>No. It is one container with SQLite. The only accounts involved are the ones you connect.</p></div>
+          <div class="answer"><p>No. It is a free app (or one container) with SQLite. The only accounts involved are the ones you connect.</p></div>
         </details>
         <details data-reveal>
           <summary>Is it faster than a cloud service?<svg class="chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
-          <div class="answer"><p>Calls go from your server straight to Linear, GitHub or whoever, without passing through anyone else's infrastructure.</p></div>
+          <div class="answer"><p>Calls go from your machine straight to Linear, GitHub or whoever, without passing through anyone else's infrastructure.</p></div>
         </details>
       </section>
 
