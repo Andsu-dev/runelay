@@ -26,7 +26,7 @@ const FOOTER = {
       ["Product", [["Download", "/download/"], ["Setup", "/setup/"], ["Integrations", "/integrations/"], ["Changelog", "/changelog/"], ["Benchmark", "/benchmark/"]]],
       ["Guides", [["Share MCP across agents", "/guides/share-mcp-across-agents/"], ["Claude Code", "/guides/claude-code/"], ["Cursor", "/guides/cursor/"], ["Codex", "/guides/codex/"], ["runelay migrate", "/docs/migrate/"]]],
       ["Learn", [["Self-hosted MCP gateway", "/self-hosted-mcp-gateway/"], ["MCP gateway vs MCP server", "/mcp-gateway-vs-mcp-server/"], ["Composio alternative", "/composio-alternative/"], ["Executor alternative", "/executor-alternative/"], ["Runelay vs Runlayer", "/vs/runlayer/"]]],
-      ["Project", [["GitHub", REPO], ["Docs", `${REPO}#readme`], ["Releases", `${REPO}/releases`], ["llms.txt", "/llms.txt"]]],
+      ["Project", [["GitHub", REPO], ["Docs", "https://docs.runelay.com"], ["Releases", `${REPO}/releases`], ["llms.txt", "/llms.txt"]]],
     ],
   },
   pt: {
@@ -39,7 +39,7 @@ const FOOTER = {
       ["Produto", [["Baixar", "/download/"], ["Configurar", "/setup/"], ["Integrações", "/integrations/"], ["Changelog", "/changelog/"], ["Benchmark", "/benchmark/"]]],
       ["Guias", [["Compartilhar MCP entre agentes", "/guides/share-mcp-across-agents/"], ["Claude Code", "/guides/claude-code/"], ["Cursor", "/guides/cursor/"], ["Codex", "/guides/codex/"], ["runelay migrate", "/docs/migrate/"]]],
       ["Entenda", [["MCP gateway self-hosted", "/self-hosted-mcp-gateway/"], ["MCP gateway vs MCP server", "/mcp-gateway-vs-mcp-server/"], ["Alternativa ao Composio", "/composio-alternative/"], ["Alternativa ao Executor", "/executor-alternative/"], ["Runelay vs Runlayer", "/vs/runlayer/"]]],
-      ["Projeto", [["GitHub", REPO], ["Documentação", `${REPO}#readme`], ["Releases", `${REPO}/releases`], ["llms.txt", "/llms.txt"]]],
+      ["Projeto", [["GitHub", REPO], ["Documentação", "https://docs.runelay.com"], ["Releases", `${REPO}/releases`], ["llms.txt", "/llms.txt"]]],
     ],
   },
 };
