@@ -5,6 +5,7 @@ COPY apps/api/package.json apps/api/
 COPY apps/cli/package.json apps/cli/
 COPY apps/web/package.json apps/web/
 COPY apps/lp/package.json apps/lp/
+COPY apps/docs/package.json apps/docs/
 COPY packages/shared/package.json packages/shared/
 RUN bun install --frozen-lockfile
 COPY packages/shared packages/shared
