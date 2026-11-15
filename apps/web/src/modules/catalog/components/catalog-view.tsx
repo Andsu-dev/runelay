@@ -8,6 +8,7 @@ import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { catalogQuery } from "@/modules/catalog/api/catalog.api";
 import { CatalogSection } from "./catalog-section";
+import { FeaturedConnectorCard } from "./featured-connector-card";
 
 interface CatalogViewProps {
   query: string;
@@ -26,9 +27,13 @@ export function CatalogView({ query }: CatalogViewProps) {
 
   if (isPending) return <ListSkeleton columns={2} />;
 
-  const sections = catalog?.sections.filter((section) => section.items.length > 0) ?? [];
+  const featured = catalog?.sections.flatMap((section) => section.items.filter((item) => item.featured)) ?? [];
+  const sections =
+    catalog?.sections
+      .map((section) => ({ ...section, items: section.items.filter((item) => !item.featured) }))
+      .filter((section) => section.items.length > 0) ?? [];
 
-  if (sections.length === 0) {
+  if (featured.length === 0 && sections.length === 0) {
     return (
       <EmptyState
         icon={PlugSocketIcon}
@@ -44,6 +49,11 @@ export function CatalogView({ query }: CatalogViewProps) {
       gap={0.06}
       className={cn("-mx-3 flex flex-col gap-5 transition-opacity duration-200", isPlaceholderData && "opacity-60")}
     >
+      {featured.map((connector) => (
+        <StaggerItem key={connector.id} className="px-3">
+          <FeaturedConnectorCard connector={connector} />
+        </StaggerItem>
+      ))}
       {sections.map((section) => (
         <StaggerItem key={section.id}>
           <CatalogSection section={section} />

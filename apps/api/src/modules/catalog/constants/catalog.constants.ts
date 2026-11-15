@@ -13,6 +13,15 @@ export const CATALOG: CatalogSection[] = [
     title: "Populares",
     items: [
       {
+        id: "conty",
+        name: "Conty",
+        description: "Campanhas com creators, do briefing ao relatório de vendas.",
+        url: "https://mcp.appconty.com/mcp",
+        icon: "/logos/conty.png",
+        auth: "oauth",
+        featured: true,
+      },
+      {
         id: "linear",
         name: "Linear",
         description: "Issues, projetos e ciclos do seu time.",
@@ -32,7 +41,7 @@ export const CATALOG: CatalogSection[] = [
       {
         id: "google_calendar",
         name: "Google Agenda",
-        description: "Eventos, agendas e horários livres.",
+        description: "Eventos e agendas da sua conta.",
         url: "https://calendarmcp.googleapis.com/mcp/v1",
         icon: "googlecalendar",
         auth: "oauth",
@@ -172,6 +181,15 @@ export const CATALOG: CatalogSection[] = [
         url: "https://mcp.context7.com/mcp",
         icon: null,
         auth: "none",
+      },
+      {
+        id: "firecrawl",
+        name: "Firecrawl",
+        description: "Busca na web, scraping e crawling de sites.",
+        url: "https://mcp.firecrawl.dev/v2/mcp",
+        icon: "/logos/firecrawl.png",
+        auth: "api_key",
+        tokenUrl: "https://www.firecrawl.dev/app/api-keys",
       },
       {
         id: "huggingface",

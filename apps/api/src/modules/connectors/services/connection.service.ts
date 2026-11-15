@@ -36,7 +36,7 @@ export const connectSource = async (key: SourceKey): Promise<Result<Connection>>
     return connection;
   }
   live.set(liveKey(key), connection.data);
-  updateStatus(key, { status: "ok", error: connection.data.warning ?? null, toolCount: connection.data.tools.length });
+  updateStatus(key, { status: "ok", error: null, toolCount: connection.data.tools.length });
   return connection;
 };
 

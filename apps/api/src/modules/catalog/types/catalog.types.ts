@@ -1,8 +1,12 @@
 import type { CatalogConnectorView, CatalogSectionView, GoogleService } from "@runelay/shared";
 import type { OAuthBroker } from "@/modules/oauth/types/oauth.types";
 
-export type CatalogEntry = Omit<CatalogConnectorView, "installed" | "sourceName" | "status" | "tokenUrl"> & {
+export type CatalogEntry = Omit<
+  CatalogConnectorView,
+  "installed" | "sourceName" | "status" | "tokenUrl" | "featured"
+> & {
   tokenUrl?: string;
+  featured?: boolean;
   broker?: OAuthBroker;
   googleService?: GoogleService;
 };

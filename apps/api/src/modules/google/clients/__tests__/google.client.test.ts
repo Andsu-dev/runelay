@@ -66,40 +66,40 @@ test("fails when the token cannot be refreshed", async () => {
   expect((await connectGoogle(key(), CONFIG)).error?.code).toBe("NEEDS_AUTH");
 });
 
-test("proxies the remote MCP tools with the service prefix and adds REST tools for selected services", async () => {
+test("loads runelay's REST tools for the selected services without any Google MCP server", async () => {
   grant();
   const connection = await connectGoogle(key(), CONFIG);
   if (connection.error) throw new Error(connection.error.message);
   const names = connection.data.tools.map((tool) => tool.name).sort();
   expect(names).toEqual([
     "account_whoami",
+    "calendar_create_event",
+    "calendar_delete_event",
+    "calendar_list_calendars",
     "calendar_list_events",
+    "docs_append_text",
     "docs_create_document",
-    "docs_list_events",
+    "docs_read_document",
     "gmail_send_email",
   ]);
-  expect(connection.data.warning).toBeUndefined();
-  const calendar = connection.data.tools.find((tool) => tool.name === "calendar_list_events");
-  expect((await calendar?.call({ text: "hoje" }))?.data).toBe("calendarmcp.googleapis.com:hoje");
-  expect(google.last("calendarmcp.googleapis.com")).toMatchObject({
-    path: "/mcp/v1",
-    authorization: "Bearer mcp-token",
-  });
+  google.routes.set("GET www.googleapis.com/calendar/v3/users/me/calendarList", () => ({
+    body: { items: [{ id: "primary", summary: "Ana", primary: true }] },
+  }));
+  const calendar = connection.data.tools.find((tool) => tool.name === "calendar_list_calendars");
+  expect((await calendar?.call({}))?.data).toMatchObject({ calendars: [{ id: "primary", primary: true }] });
+  expect(google.last()).toMatchObject({ host: "www.googleapis.com", authorization: "Bearer mcp-token" });
+  expect(google.requests.some((request) => request.host.includes("mcp."))).toBe(false);
   updateOAuth(key(), { tokens: undefined });
-  const revoked = await calendar?.call({ text: "x" });
+  const revoked = await calendar?.call({});
   expect(revoked?.error?.message).toContain("Conecte o Google");
   await connection.data.close();
 });
 
-test("a Google MCP server that fails is reported without dropping the other tools", async () => {
+test("a connected source reports every tool and no error", async () => {
   grant();
-  google.failingHosts.add("docsmcp.googleapis.com");
   expect((await connectSource(key())).error).toBeNull();
   const view = findSourceView(key()).data;
-  expect(view?.status).toBe("ok");
-  expect(view?.error).toStartWith("Não foi possível carregar: Docs (");
-  expect(view?.toolCount).toBe(4);
-  const tool = await findTool(account.organizationId, "google.calendar_list_events");
+  expect(view).toMatchObject({ status: "ok", error: null, toolCount: 9 });
+  const tool = await findTool(account.organizationId, "google.docs_read_document");
   expect(tool.data?.source).toBe("google");
-  expect((await findTool(account.organizationId, "google.docs_list_events")).error?.code).toBe("TOOL_NOT_FOUND");
 });

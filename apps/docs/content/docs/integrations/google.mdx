@@ -10,14 +10,16 @@ Google is in the runelay catalog as one connector per service, under **Work and 
 
 | Catalog entry | Connection name | What agents can do | Scopes |
 |---|---|---|---|
-| Google Calendar | `google_calendar` | List calendars and events, create, update and delete events, suggest times. Runs Google's Calendar MCP server. | `calendar`, `calendar.events` |
+| Google Calendar | `google_calendar` | List calendars and events, create and delete events. | `calendar`, `calendar.events` |
 | Gmail | `gmail` | Send an email (to, subject, body, cc). It can't read mail. | `gmail.send` |
 | Google Drive | `google_drive` | Create a text file and list the files runelay created. | `drive.file` |
-| Google Docs | `google_docs` | Create a doc; read and edit docs through Google's Docs MCP server. | `documents`, `drive.file` |
-| Google Sheets | `google_sheets` | Create a spreadsheet with rows; read and edit values through Google's Sheets MCP server. | `spreadsheets`, `drive.file` |
-| Google Slides | `google_slides` | Create a deck with slides of text; read and edit decks through Google's Slides MCP server. | `presentations`, `drive.file` |
+| Google Docs | `google_docs` | Create a doc, read its text and append text to it. | `documents`, `drive.file` |
+| Google Sheets | `google_sheets` | Create a spreadsheet with rows, read a range, overwrite a range and append rows. | `spreadsheets`, `drive.file` |
+| Google Slides | `google_slides` | Create a deck with slides of text, read the text of each slide and add a slide. | `presentations`, `drive.file` |
 | Google Forms | `google_forms` | Create a form and add questions (text, paragraph, choice, scale). | `forms.body`, `drive.file` |
 | Google Meet | `google_meet` | Create a meeting space and return its link. | `meetings.space.created` |
+
+Every tool is runelay's own and calls Google's REST APIs directly, so there is no Google MCP server or preview program involved.
 
 `drive.file` only reaches files runelay created, not the rest of your Drive. Restricted scopes, such as reading Gmail or full Drive access, are not requested on purpose.
 

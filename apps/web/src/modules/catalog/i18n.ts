@@ -15,6 +15,11 @@ export const catalogMessages = defineMessages(
     emptyCatalog: "Catálogo vazio",
     emptyDescription: "Use Adicionar e Conexão personalizada para ligar qualquer servidor MCP ou OpenAPI.",
     finishLogin: "Concluir login",
+    featured: {
+      label: "Destaque",
+      connect: "Conectar",
+      conty: "Rode suas campanhas com creators pelo agente: briefing, convites, aprovação de vídeos, cupons e vendas.",
+    },
     install: "Instalar {name}",
     options: "Opções de {name}",
     open: "Abrir",
@@ -45,6 +50,11 @@ export const catalogMessages = defineMessages(
     emptyCatalog: "Catalog is empty",
     emptyDescription: "Use Add and Custom connection to hook up any MCP or OpenAPI server.",
     finishLogin: "Finish sign-in",
+    featured: {
+      label: "Featured",
+      connect: "Connect",
+      conty: "Run your creator campaigns from your agent: briefs, invites, video approvals, coupons and sales.",
+    },
     install: "Install {name}",
     options: "{name} options",
     open: "Open",

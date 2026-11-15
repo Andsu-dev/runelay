@@ -15,7 +15,9 @@ export function GoogleSourcePanel({ source, config }: GoogleSourcePanelProps) {
     <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-6 gap-y-3 rounded-xl bg-card p-4 text-[13px] sm:p-5">
       <dt className="text-muted-foreground">{t("sources.google.service")}</dt>
       <dd className="truncate font-medium">
-        {config.services.map((service) => t(GOOGLE_SERVICE_LABEL[service])).join(", ")}
+        {config.services
+          .flatMap((service) => (GOOGLE_SERVICE_LABEL[service] ? [t(GOOGLE_SERVICE_LABEL[service])] : []))
+          .join(", ")}
       </dd>
       <dt className="text-muted-foreground">{t("sources.google.account")}</dt>
       <dd className={email ? "truncate font-medium" : "text-muted-foreground"}>
