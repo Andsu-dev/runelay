@@ -26,7 +26,7 @@ export function SourceEditor({ source, config }: SourceEditorProps) {
     mutationFn: () =>
       updateSource(source.name, {
         config: parsed.data,
-        oauthClient: oauthClientChange(draft, source.oauthClientId),
+        oauthClient: oauthClientChange(draft, source),
       }),
     onSuccess: (updated) => {
       queryClient.setQueryData(["sources", source.name], updated);

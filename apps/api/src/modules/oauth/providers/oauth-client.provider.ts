@@ -32,8 +32,9 @@ const customClientInformation = (oauth: OAuthState | undefined) =>
     ...(oauth.customClient.clientSecret ? { client_secret: oauth.customClient.clientSecret } : {}),
   };
 
-const withProviderParams = (url: URL) => {
+const withProviderParams = (url: URL, scopes: string[] | undefined) => {
   const rewritten = new URL(url);
+  if (scopes?.length) rewritten.searchParams.set("scope", scopes.join(" "));
   for (const [name, value] of Object.entries(AUTHORIZATION_PARAMS_BY_HOST[url.hostname] ?? {})) {
     rewritten.searchParams.set(name, value);
   }
@@ -83,7 +84,9 @@ export const createOAuthProvider = (key: SourceKey, onRedirect?: (url: URL) => v
       markConnected(key);
     },
     redirectToAuthorization: (url) =>
-      onRedirect?.(broker ? brokerAuthorizationUrl(url, broker) : withProviderParams(url)),
+      onRedirect?.(
+        broker ? brokerAuthorizationUrl(url, broker) : withProviderParams(url, oauth()?.customClient?.scopes),
+      ),
     saveCodeVerifier: (verifier) => save({ verifier }),
     codeVerifier: () => oauth()?.verifier ?? "",
     invalidateCredentials: (scope) => save(CLEARED_BY_SCOPE[scope]),

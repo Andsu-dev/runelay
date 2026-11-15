@@ -38,6 +38,8 @@ When a remote MCP server requires sign-in, runelay runs the OAuth flow and store
 
 Some services have no automatic client registration (Google is one), so runelay can't create its own OAuth client there. For those, create the OAuth client yourself in the service, with `PUBLIC_URL/v1/oauth/callback` as the redirect URL, then open **Use my own OAuth client** when adding or editing the connection and paste the Client ID and Client secret. The secret is stored encrypted and is never shown again. Changing or removing the client signs the connection out.
 
+By default the login asks for every scope the server advertises, which can be more than you want (Gmail's list includes full mailbox access and permanent delete). To narrow it, list the scopes to ask for in **Scopes**, one per line. Changing the list signs the connection out so the new consent takes effect.
+
 A connection whose sign-in expired shows **Needs sign-in**. Reconnect it from the panel. After `runelay migrate`, the `/connectors/reconnect` queue walks you through every pending login one tab at a time.
 
 Servers that take a key instead of OAuth can be connected by pasting the token. It is encrypted on the server and agents never see it.

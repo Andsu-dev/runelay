@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/action/button";
 import { Field } from "@/components/ui/form/field";
 import { Input } from "@/components/ui/form/input";
+import { Textarea } from "@/components/ui/form/textarea";
 import { useT } from "@/lib/i18n";
 import { OAUTH_CALLBACK_PATH } from "@/modules/sources/constants/source.constants";
 import type { SourceDraft } from "@/modules/sources/schemas/source-draft.schema";
@@ -42,6 +43,14 @@ export function OAuthClientFields({ draft, onChange }: OAuthClientFieldsProps) {
           value={draft.oauthClientSecret}
           onChange={(event) => onChange({ ...draft, oauthClientSecret: event.target.value })}
           autoComplete="off"
+        />
+      </Field>
+      <Field label="Scopes" hint={t("sources.fields.oauthClientScopesHint")}>
+        <Textarea
+          value={draft.oauthClientScopes}
+          onChange={(event) => onChange({ ...draft, oauthClientScopes: event.target.value })}
+          placeholder="https://www.googleapis.com/auth/gmail.readonly"
+          className="min-h-16 font-mono text-xs"
         />
       </Field>
     </div>

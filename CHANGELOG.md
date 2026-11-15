@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Panel
+
+- Connections that use your own OAuth client can list the scopes to ask for, one per line, instead of every scope the server advertises. For Gmail that means you can leave out full mailbox access and delete. Changing the scopes asks you to log in again.
+
 ## v0.6.2
 
 ### Desktop app

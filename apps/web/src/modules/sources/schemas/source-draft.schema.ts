@@ -13,6 +13,7 @@ export const sourceDraftSchema = z
     env: z.string(),
     oauthClientId: z.string(),
     oauthClientSecret: z.string(),
+    oauthClientScopes: z.string(),
   })
   .transform((draft): z.input<typeof sourceConfigSchema> => {
     const headers = parseKeyValueLines(draft.headers, ":");

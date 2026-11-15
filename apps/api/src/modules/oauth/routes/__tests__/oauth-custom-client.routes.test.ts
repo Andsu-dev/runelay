@@ -162,3 +162,69 @@ test("Google token requests drop the resource parameter and other providers keep
   expect(sent.map(({ body }) => new URLSearchParams(body).has("resource"))).toEqual([false, false, true, false]);
   expect(new URLSearchParams(sent[0]?.body).get("grant_type")).toBe("refresh_token");
 });
+
+const READ_SCOPE = "https://scope.test/read";
+const SCOPES = [READ_SCOPE, "https://scope.test/draft"];
+
+const scoped = () => ({ organizationId: account.organizationId, name: "scoped" });
+
+test("a custom client can ask for chosen scopes instead of every advertised one", async () => {
+  const advertising = startFakeMcp({
+    requireToken: true,
+    rejectRegistration: true,
+    authorizationServer: { registration_endpoint: undefined },
+    protectedResource: { scopes_supported: ["https://scope.test/read", "https://scope.test/everything"] },
+  });
+  const created = await call("/v1/sources", {
+    method: "POST",
+    cookie: account.cookie,
+    json: {
+      name: "scoped",
+      config: { kind: "mcp", url: advertising.mcpUrl },
+      oauthClient: { ...CLIENT, scopes: SCOPES },
+    },
+  });
+  expect((await body<SourceView>(created)).data.oauthClientScopes).toEqual(SCOPES);
+  const login = await call("/v1/sources/scoped/oauth", { method: "POST", cookie: account.cookie });
+  const chosen = new URL((await body<OAuthStartView>(login)).data.authorizationUrl ?? "");
+  expect(chosen.searchParams.get("scope")).toBe(SCOPES.join(" "));
+
+  const cleared = await call("/v1/sources/scoped", {
+    method: "PATCH",
+    cookie: account.cookie,
+    json: { oauthClient: { clientId: CLIENT.clientId } },
+  });
+  expect((await body<SourceView>(cleared)).data.oauthClientScopes).toEqual([]);
+  const relogin = await call("/v1/sources/scoped/oauth", { method: "POST", cookie: account.cookie });
+  const advertised = new URL((await body<OAuthStartView>(relogin)).data.authorizationUrl ?? "");
+  advertising.stop();
+  expect(advertised.searchParams.get("scope")).toBe("https://scope.test/read https://scope.test/everything");
+});
+
+test("changing only the scopes keeps the stored secret and drops the login", async () => {
+  expect(findSource(scoped()).data?.oauth.customClient).toEqual({
+    clientId: CLIENT.clientId,
+    clientSecret: CLIENT.clientSecret,
+  });
+  const response = await call("/v1/sources/scoped", {
+    method: "PATCH",
+    cookie: account.cookie,
+    json: { oauthClient: { clientId: CLIENT.clientId, scopes: [READ_SCOPE] } },
+  });
+  const { data } = await body<SourceView>(response);
+  expect(data.oauthClientScopes).toEqual([READ_SCOPE]);
+  expect(data.status).toBe("needs_auth");
+  expect(JSON.stringify(data)).not.toContain(CLIENT.clientSecret);
+  const oauth = findSource(scoped()).data?.oauth;
+  expect(oauth?.customClient).toEqual({ ...CLIENT, scopes: [READ_SCOPE] });
+  expect(oauth?.tokens).toBeUndefined();
+});
+
+test("a different client id does not inherit the old secret", async () => {
+  await call("/v1/sources/scoped", {
+    method: "PATCH",
+    cookie: account.cookie,
+    json: { oauthClient: { clientId: "another-client" } },
+  });
+  expect(findSource(scoped()).data?.oauth.customClient).toEqual({ clientId: "another-client" });
+});
