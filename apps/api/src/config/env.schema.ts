@@ -26,6 +26,11 @@ export const serverEnvSchema = z.object({
   RUNELAY_DESKTOP: flag,
   RUNELAY_UPDATER_URL: z.url().optional(),
   RUNELAY_UPDATER_TOKEN: z.string().min(16).optional(),
+  RUNELAY_OAUTH_BROKER_URL: z
+    .url()
+    .default("https://auth.runelay.com")
+    .transform((url) => url.replace(/\/$/, "")),
+  RUNELAY_GOOGLE_CLIENT_ID: z.string().optional(),
   GITHUB_CLIENT_ID: z.string().optional(),
   GITHUB_CLIENT_SECRET: z.string().optional(),
   WEB_DIST: z.string().default("../web/dist"),

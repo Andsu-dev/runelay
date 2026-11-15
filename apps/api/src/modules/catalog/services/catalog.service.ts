@@ -56,5 +56,6 @@ export const installCatalogItem = async (
       config: { kind: "mcp", url: item.url, headers: token ? { Authorization: `Bearer ${token}` } : {} },
     },
     actor,
+    item.broker && { broker: item.broker },
   );
 };

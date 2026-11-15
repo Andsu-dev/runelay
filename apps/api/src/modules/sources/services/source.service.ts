@@ -32,11 +32,13 @@ export const createSource = async (
   organizationId: string,
   input: CreateSourceInput,
   actor: SourceActor,
+  oauth?: Partial<OAuthState>,
 ): Promise<Result<SourceView>> => {
   const allowed = await checkSourcePolicy(input.config, actor);
   if (allowed.error) return allowed;
   const saved = upsertSource(organizationId, input);
   if (saved.error) return saved;
+  if (oauth) updateOAuth({ organizationId, name: input.name }, oauth);
   await connectSource({ organizationId, name: input.name });
   return findSourceView({ organizationId, name: input.name });
 };
