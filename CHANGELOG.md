@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.3
+
+- The Docker image is about 4x smaller: a two-stage build ships one compiled server binary, the panel and a minimal Debian, with no Node or `node_modules`. Download drops from about 278 MB to about 66 MB, and idle RAM from about 86 MiB to about 52 MiB in our test.
+- The image no longer includes Node, so local MCP servers launched with `npx` need the desktop app or a custom image.
+- Site: `/benchmark` page comparing runelay and Executor, and a Benchmark link in the navigation.
+
 ## v0.3.2
 
 ### Desktop app
