@@ -10,3 +10,7 @@
 /download/windows https://github.com/Andsu-dev/runelay/releases/latest/download/runelay-win-x64.exe 302
 /download/linux https://github.com/Andsu-dev/runelay/releases/latest/download/runelay-linux-x86_64.AppImage 302
 /download/linux-arm https://github.com/Andsu-dev/runelay/releases/latest/download/runelay-linux-arm64.AppImage 302
+/vs/composio /composio-alternative/ 301
+/guide/* /guides/:splat 301
+/integration/* /integrations/:splat 301
+/integrations/cloudflare_docs /integrations/ 301
