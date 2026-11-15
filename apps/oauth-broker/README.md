@@ -89,7 +89,7 @@ bun run deploy
 1. Create an OAuth client of type **Web application**.
 2. Add the authorized redirect URI `https://auth.runelay.com/google/callback` (or your broker's origin).
 3. Enable the Google Calendar API, Google Docs API and Google Sheets API in the same project.
-4. On the OAuth consent screen, add the scopes runelay asks for: `calendar.events`, `calendar.calendarlist.readonly`, `documents` and `spreadsheets`.
+4. On the OAuth consent screen, add the scopes runelay asks for: `calendar`, `calendar.events`, `documents` and `spreadsheets`.
 5. Publish the app to **Production**. While it stays in Testing, Google expires refresh tokens after 7 days and users have to log in again.
 
 ## Running your own broker
