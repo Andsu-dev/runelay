@@ -10,6 +10,7 @@ import { DropdownMenuSeparator } from "@/components/ui/overlay/dropdown-menu-sep
 import { useT } from "@/lib/i18n";
 import { versionQuery } from "@/modules/system/api/system.api";
 import { SignOutDialog } from "./sign-out-dialog";
+import { openContribute, useContributeSeen } from "./use-contribute";
 import { UserAvatar } from "./user-avatar";
 
 interface RailUserMenuProps {
@@ -20,6 +21,7 @@ export function RailUserMenu({ user }: RailUserMenuProps) {
   const [open, setOpen] = useState(false);
   const [confirmingSignOut, setConfirmingSignOut] = useState(false);
   const t = useT();
+  const contributeSeen = useContributeSeen();
   const navigate = useNavigate();
   const { data: version } = useQuery(versionQuery);
 
@@ -32,8 +34,16 @@ export function RailUserMenu({ user }: RailUserMenuProps) {
         align="end"
         className="w-56"
         trigger={
-          <Button variant="ghost" size="icon" aria-label={t("layout.account.accountOf", { name: user.name })}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative"
+            aria-label={t("layout.account.accountOf", { name: user.name })}
+          >
             <UserAvatar name={user.name} seed={user.id} image={user.image} />
+            {!contributeSeen && (
+              <span aria-hidden className="absolute top-1.5 right-1.5 size-2 rounded-full bg-chart-1 ring-2 ring-rail" />
+            )}
           </Button>
         }
       >
@@ -44,6 +54,12 @@ export function RailUserMenu({ user }: RailUserMenuProps) {
         <DropdownMenuSeparator />
         <DropdownMenuItem icon={Settings01Icon} onSelect={() => navigate({ to: "/settings/server" })}>
           {t("common.actions.settings")}
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={openContribute}>
+          <span aria-hidden className="w-[15px] text-center text-[15px] leading-none">
+            ☕
+          </span>
+          {t("layout.account.contribute")}
         </DropdownMenuItem>
         <DropdownMenuItem
           icon={Logout03Icon}

@@ -1,8 +1,11 @@
 import { useState } from "react";
-import { FollowAuthorLink } from "@/components/brand/follow-author-link";
 import { LogoMark } from "@/components/brand/logo-mark";
+import { XIcon } from "@/components/brand/x-icon";
+import { openContribute } from "@/components/layout/use-contribute";
+import { Button, buttonVariants } from "@/components/ui/action/button";
 import { PixelConfetti } from "@/components/ui/display/pixel-confetti";
 import { Dialog } from "@/components/ui/overlay/dialog";
+import { AUTHOR } from "@/constants/author.constants";
 import { useT } from "@/lib/i18n";
 import { cue } from "@/lib/sound";
 import { readStorage, writeStorage } from "@/lib/storage";
@@ -44,16 +47,32 @@ export function SetupCelebrationDialog({ organizationId }: SetupCelebrationDialo
         contentClassName="sm:max-w-sm"
       >
         <div className="flex flex-col items-center gap-4 pt-2 pb-1 text-center">
-          <span className="flex size-14 items-center justify-center rounded-xl bg-app-icon shadow-lg">
-            <LogoMark className="size-8" entrance />
+          <span className="flex items-center">
+            <span className="relative z-10 flex size-14 items-center justify-center rounded-xl bg-app-icon shadow-lg">
+              <LogoMark className="size-8" entrance />
+            </span>
+            <span aria-hidden className="-ml-3 text-[44px] leading-none">
+              ☕
+            </span>
           </span>
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1.5">
             <h2 className="text-lg font-semibold tracking-[-0.01em]">{t("setup.celebration.title")}</h2>
             <p className="text-[13px] text-pretty text-muted-foreground">{t("setup.celebration.description")}</p>
           </div>
-          <div className="flex flex-col items-center gap-2">
-            <FollowAuthorLink />
-            <span className="text-xs text-muted-foreground">{t("setup.celebration.follow")}</span>
+          <div className="flex w-full gap-2">
+            <Button className="flex-1" onClick={openContribute}>
+              {t("setup.celebration.supportAction")}
+            </Button>
+            <a
+              href={AUTHOR.url}
+              target="_blank"
+              rel="noreferrer"
+              data-sound="tap"
+              className={buttonVariants({ variant: "glass" })}
+            >
+              <XIcon />
+              {t("setup.celebration.follow")}
+            </a>
           </div>
         </div>
       </Dialog>
