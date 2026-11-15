@@ -100,8 +100,9 @@ OAuth callbacks go to `PUBLIC_URL/v1/oauth/callback`, so `PUBLIC_URL` must be th
 | `RUNELAY_ENABLE_STDIO` | `false` | Enables local MCP servers by command. See [Security](/security). The Docker image ships without Node, so commands like `npx` need the desktop app or a custom image. |
 | `RUNELAY_ALLOW_PRIVATE_URLS` | `false` | Allows connections to private network addresses. |
 | `RUNELAY_RATE_LIMIT_PER_MINUTE` | `240` | Requests per minute allowed for each API key. |
-| `RUNELAY_OAUTH_BROKER_URL` | `https://auth.runelay.com` | OAuth broker used by Google Agenda, Docs and Sheets. Point it to your own broker to use your own Google app. |
+| `RUNELAY_OAUTH_BROKER_URL` | `https://auth.runelay.com` | OAuth broker used by the Google and GitHub connectors. Point it to your own broker to use your own OAuth apps. |
 | `RUNELAY_GOOGLE_CLIENT_ID` | runelay's Google app | Google OAuth client ID used with your own broker. |
+| `RUNELAY_GITHUB_CLIENT_ID` | runelay's GitHub app | GitHub OAuth client ID used with your own broker. |
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | empty | Enables "Sign in with GitHub" on the panel. |
 | `RUNELAY_DATA` | `/data` in Docker | Where the SQLite database lives. |
 | `PORT` / `HOST` | `4312` / `0.0.0.0` in Docker | Where the server listens. |

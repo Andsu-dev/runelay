@@ -8,7 +8,7 @@ GitHub is in the runelay catalog under **Popular**. Once it is connected, every 
 
 | | |
 |---|---|
-| **Auth** | Personal token |
+| **Auth** | OAuth (or a personal token) |
 | **MCP URL** | `https://api.githubcopilot.com/mcp/` |
 | **Connection name** | `github` |
 | **Tool prefix** | `github.` |
@@ -17,9 +17,17 @@ GitHub is in the runelay catalog under **Popular**. Once it is connected, every 
 
 1. Open **Connectors → Catalog** in the runelay panel.
 2. Press **+** next to GitHub.
-3. Paste a GitHub token in the dialog and press **Connect**. The dialog links to [https://github.com/settings/personal-access-tokens/new](https://github.com/settings/personal-access-tokens/new) to create one.
+3. A new tab opens on GitHub's sign-in page. Approve access and the tab closes on its own.
 
-runelay sends the token as an `Authorization: Bearer` header. It is encrypted on the server and agents never see it. If GitHub rejects the token, runelay opens the connection page so you can fix it.
+The login goes through runelay's hosted OAuth broker (`auth.runelay.com`) and asks for the `repo` and `read:user` scopes. GitHub's tokens expire, and runelay refreshes them on its own, so the connection doesn't drop. The connection is saved even if the sign-in tab does not open; finish it later with **Finish sign-in** on the catalog row, or from the sign-ins queue at `/connectors/reconnect`.
+
+### With a token
+
+Pasting a token still works. Create one at [https://github.com/settings/personal-access-tokens/new](https://github.com/settings/personal-access-tokens/new) and paste it on the connection. runelay sends it as an `Authorization: Bearer` header. It is encrypted on the server and agents never see it.
+
+### Your own broker
+
+Self-hosted instances use `auth.runelay.com` and runelay's GitHub app by default. If you run your own broker, set `RUNELAY_OAUTH_BROKER_URL` and `RUNELAY_GITHUB_CLIENT_ID` to your broker and your GitHub OAuth app. See [Self-hosting](/self-hosting#environment-variables).
 
 ## Use it
 
