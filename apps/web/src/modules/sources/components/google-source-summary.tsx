@@ -9,6 +9,8 @@ interface GoogleSourceSummaryProps {
 
 export function GoogleSourceSummary({ source, config }: GoogleSourceSummaryProps) {
   const t = useT();
-  const services = config.services.map((service) => t(GOOGLE_SERVICE_LABEL[service])).join(", ");
+  const services = config.services
+    .flatMap((service) => (GOOGLE_SERVICE_LABEL[service] ? [t(GOOGLE_SERVICE_LABEL[service])] : []))
+    .join(", ");
   return source.google?.email ? `${services} · ${source.google.email}` : services;
 }
