@@ -1,12 +1,12 @@
-import type { SourceConfig, SourceKind } from "@runelay/shared";
-import type { SourceDraft } from "@/modules/sources/schemas/source-draft.schema";
+import type { GoogleConfig, SourceConfig } from "@runelay/shared";
+import type { DraftKind, SourceDraft } from "@/modules/sources/schemas/source-draft.schema";
 import { formatKeyValueLines } from "@/modules/sources/utils/key-value-lines";
 
 const EMPTY_DRAFT: SourceDraft = { kind: "mcp", url: "", command: "", spec: "", baseUrl: "", headers: "", env: "" };
 
-export const emptyDraft = (kind: SourceKind = "mcp"): SourceDraft => ({ ...EMPTY_DRAFT, kind });
+export const emptyDraft = (kind: DraftKind = "mcp"): SourceDraft => ({ ...EMPTY_DRAFT, kind });
 
-export const draftFromConfig = (config: SourceConfig): SourceDraft => {
+export const draftFromConfig = (config: Exclude<SourceConfig, GoogleConfig>): SourceDraft => {
   if (config.kind === "stdio") {
     return {
       ...EMPTY_DRAFT,

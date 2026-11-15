@@ -1,17 +1,17 @@
 import { HugeiconsIcon } from "@hugeicons/react";
-import type { SourceKind } from "@runelay/shared";
 import { motion } from "motion/react";
 import { McpIcon } from "@/components/brand/mcp-icon";
 import { UI_SPRING } from "@/components/ui/display/spring";
 import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { KIND_ICON, KIND_LABEL } from "@/modules/sources/constants/source.constants";
+import type { DraftKind } from "@/modules/sources/schemas/source-draft.schema";
 
-const KINDS: SourceKind[] = ["mcp", "stdio", "openapi"];
+const KINDS: DraftKind[] = ["mcp", "stdio", "openapi"];
 
 interface KindSwitchProps {
-  value: SourceKind;
-  onChange: (kind: SourceKind) => void;
+  value: DraftKind;
+  onChange: (kind: DraftKind) => void;
 }
 
 export function KindSwitch({ value, onChange }: KindSwitchProps) {

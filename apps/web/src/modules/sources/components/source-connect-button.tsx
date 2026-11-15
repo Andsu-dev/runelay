@@ -17,9 +17,9 @@ export function SourceConnectButton({ source, className }: SourceConnectButtonPr
   const { login, startLogin, saveToken } = useSourceActions(name);
   const [asking, setAsking] = useState(false);
 
-  if (config.kind !== "mcp") return null;
+  if (config.kind !== "mcp" && config.kind !== "google") return null;
 
-  if (source.auth === "api_key") {
+  if (config.kind === "mcp" && (source.auth === "api_key" || "Authorization" in config.headers)) {
     const broken = status !== "ok";
     return (
       <>

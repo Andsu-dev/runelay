@@ -9,6 +9,7 @@ import { useT } from "@/lib/i18n";
 import { ConnectorIcon } from "@/modules/catalog/components/connector-icon";
 import { KIND_LABEL, STATUS_LABEL } from "@/modules/sources/constants/source.constants";
 import { useSourceActions } from "@/modules/sources/hooks/use-source-actions";
+import { GoogleSourcePanel } from "./google-source-panel";
 import { RenameSourceDialog } from "./rename-source-dialog";
 import { SourceConnectButton } from "./source-connect-button";
 import { SourceEditor } from "./source-editor";
@@ -69,7 +70,11 @@ export function SourceDetail({ source, oauthError }: SourceDetailProps) {
         </p>
       )}
 
-      <SourceEditor key={source.updatedAt} source={source} />
+      {config.kind === "google" ? (
+        <GoogleSourcePanel source={source} config={config} />
+      ) : (
+        <SourceEditor key={source.updatedAt} source={source} config={config} />
+      )}
       <RenameSourceDialog key={name} name={name} open={renaming} onOpenChange={setRenaming} />
     </div>
   );
