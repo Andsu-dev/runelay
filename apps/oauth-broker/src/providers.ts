@@ -1,12 +1,21 @@
-export interface BrokerEnv {
+export interface RateLimiter {
+  limit(options: { key: string }): Promise<{ success: boolean }>;
+}
+
+export interface BrokerSecrets {
   GOOGLE_CLIENT_ID?: string;
   GOOGLE_CLIENT_SECRET?: string;
 }
 
+export interface BrokerEnv extends BrokerSecrets {
+  CALLBACK_RATE_LIMITER?: RateLimiter;
+  TOKEN_RATE_LIMITER?: RateLimiter;
+}
+
 export interface BrokerProvider {
   tokenUrl: string;
-  clientIdKey: keyof BrokerEnv;
-  clientSecretKey: keyof BrokerEnv;
+  clientIdKey: keyof BrokerSecrets;
+  clientSecretKey: keyof BrokerSecrets;
 }
 
 export const PROVIDERS = new Map<string, BrokerProvider>([

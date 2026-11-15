@@ -18,6 +18,8 @@ export const BROKER_AUTHORIZATION_PARAMS: Record<OAuthBrokerProvider, Record<str
 
 export const AUTHORIZATION_HOSTS_WITHOUT_RESOURCE = new Set(["accounts.google.com"]);
 
+export const TOKEN_URLS_WITHOUT_RESOURCE = new Set([BROKER_TOKEN_URLS.google]);
+
 export const AUTHORIZATION_PARAMS_BY_HOST: Record<string, Record<string, string>> = {
   "accounts.google.com": BROKER_AUTHORIZATION_PARAMS.google,
 };

@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, expect, test } from "bun:test";
 import type { OAuthStartView, SourceView } from "@runelay/shared";
-import { createOAuthProvider } from "@/modules/oauth/providers/oauth-client.provider";
+import { createOAuthFetch, createOAuthProvider } from "@/modules/oauth/providers/oauth-client.provider";
 import { findSource, findSourceView } from "@/modules/sources/repositories/source.repository";
 import { body, call, signUp, type TestAccount } from "../../../../../test/helpers";
 import { type FakeMcpServer, GOOD_CODE, startFakeMcp, withEnv } from "../../../../../test/sources-helpers";
@@ -143,4 +143,22 @@ test("Google logins drop the resource parameter and other providers keep it", as
   expect(redirected?.searchParams.get("client_id")).toBe("x");
   await provider.redirectToAuthorization(new URL(`https://login.example.test/authorize?client_id=x&${resource}`));
   expect(redirected?.searchParams.get("resource")).toBe("https://mcp.test/mcp");
+});
+
+test("Google token requests drop the resource parameter and other providers keep it", async () => {
+  const sent: { url: string; body: string }[] = [];
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = (async (input: string | URL | Request, init?: RequestInit) => {
+    sent.push({ url: String(input), body: String(init?.body) });
+    return new Response("{}");
+  }) as typeof fetch;
+  const form = () => new URLSearchParams({ grant_type: "refresh_token", resource: "https://mcp.test/mcp" });
+  const oauthFetch = createOAuthFetch(key());
+  await oauthFetch("https://oauth2.googleapis.com/token", { method: "POST", body: form() });
+  await oauthFetch("https://oauth2.googleapis.com/token", { method: "POST", body: form().toString() });
+  await oauthFetch("https://login.example.test/token", { method: "POST", body: form() });
+  await oauthFetch("https://oauth2.googleapis.com/token", { method: "GET" });
+  globalThis.fetch = realFetch;
+  expect(sent.map(({ body }) => new URLSearchParams(body).has("resource"))).toEqual([false, false, true, false]);
+  expect(new URLSearchParams(sent[0]?.body).get("grant_type")).toBe("refresh_token");
 });

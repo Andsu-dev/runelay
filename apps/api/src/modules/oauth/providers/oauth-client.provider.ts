@@ -5,6 +5,7 @@ import {
   AUTHORIZATION_PARAMS_BY_HOST,
   OAUTH_CALLBACK_PATH,
   OAUTH_CLIENT_NAME,
+  TOKEN_URLS_WITHOUT_RESOURCE,
 } from "@/modules/oauth/constants/oauth.constants";
 import {
   brokerAuthorizationUrl,
@@ -40,7 +41,18 @@ const withProviderParams = (url: URL) => {
   return rewritten;
 };
 
-export const createOAuthFetch = (key: SourceKey) => brokerFetch(findSource(key).data?.oauth.broker);
+const withoutResource = (init?: RequestInit): RequestInit | undefined => {
+  if (!(init?.body instanceof URLSearchParams) && typeof init?.body !== "string") return init;
+  const body = new URLSearchParams(init.body);
+  body.delete("resource");
+  return { ...init, body };
+};
+
+export const createOAuthFetch = (key: SourceKey): ReturnType<typeof brokerFetch> => {
+  const send = brokerFetch(findSource(key).data?.oauth.broker);
+  return (input, init) =>
+    send(input, TOKEN_URLS_WITHOUT_RESOURCE.has(new URL(input).href) ? withoutResource(init) : init);
+};
 
 export const createOAuthProvider = (key: SourceKey, onRedirect?: (url: URL) => void): OAuthClientProvider => {
   const oauth = () => findSource(key).data?.oauth;

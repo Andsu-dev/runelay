@@ -63,6 +63,11 @@
 - `list_connections`, `search_tools`, `call_tool`, `execute`: find and call tools from every connected account; `execute` chains calls in a sandboxed JavaScript runtime.
 - `search_context`, `read_memory`, `write_memory`, `read_skill`, `read_skill_file`: shared memory and skills across agents.
 
+## Legal
+
+- [Privacy Policy](https://runelay.com/privacy/): runelay is self-hosted, so accounts, tokens, memories and skills stay encrypted on your own instance; the OAuth broker at auth.runelay.com stores nothing; Google user data follows the Google API Services User Data Policy, including Limited Use.
+- [Terms of Service](https://runelay.com/terms/): MIT license, provided as is; the OAuth broker is free and best-effort, only for runelay.
+
 ## Optional
 
 - [Source code](https://github.com/Andsu-dev/runelay): Bun, Hono, SQLite, React.

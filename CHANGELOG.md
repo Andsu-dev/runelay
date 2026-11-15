@@ -6,6 +6,17 @@
 
 - Remote MCP connections can use your own OAuth client: paste a Client ID and, if the service gives one, a Client secret when adding or editing a connection. This is the way in for services without automatic client registration, such as Google. The secret is stored encrypted and never sent back to the panel.
 
+## v0.5.0
+
+### Connections
+
+- Google Calendar, Google Docs and Google Sheets are in the catalog. They sign in with one click through runelay's hosted OAuth broker, with no Google Cloud project to set up. Each asks only for the scopes it needs, and the connection keeps a refresh token so it doesn't drop after an hour.
+- OAuth broker (`apps/oauth-broker`, served at `auth.runelay.com`): a stateless Cloudflare Worker that holds runelay's registered OAuth apps for providers without dynamic client registration. It relays the login back to your instance and adds the client secret to token requests; it stores and logs nothing. Logins going to a remote instance show a confirmation page naming the destination, PKCE is required, only known parameters are forwarded, and requests are rate limited per IP. Run your own with `RUNELAY_OAUTH_BROKER_URL` and `RUNELAY_GOOGLE_CLIENT_ID`.
+
+### Site
+
+- Privacy Policy and Terms pages at `/privacy/` and `/terms/`, in English and Portuguese.
+
 ## v0.4.3
 
 ### Panel
