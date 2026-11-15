@@ -14,3 +14,6 @@
 /guide/* /guides/:splat 301
 /integration/* /integrations/:splat 301
 /integrations/cloudflare_docs /integrations/ 301
+/docs https://docs.runelay.com/ 301
+/docs/ https://docs.runelay.com/ 301
+/pt-br/llms.txt /llms.txt 301
