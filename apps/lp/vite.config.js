@@ -5,7 +5,7 @@ const cleanUrls = {
   configureServer(server) {
     server.middlewares.use((request, _response, next) => {
       const [path, query = ""] = request.url.split("?");
-      if (/^\/(pt-br\/)?(setup|download)$/.test(path)) request.url = `${path}/${query && `?${query}`}`;
+      if (/^\/(pt-br\/)?(setup|download|benchmark)$/.test(path)) request.url = `${path}/${query && `?${query}`}`;
       next();
     });
   },
@@ -35,7 +35,7 @@ export default defineConfig({
   build: {
     target: "es2022",
     rollupOptions: {
-      input: { en: "index.html", ptBr: "pt-br/index.html", setup: "setup/index.html", ptBrSetup: "pt-br/setup/index.html", download: "download/index.html", ptBrDownload: "pt-br/download/index.html", notFound: "404.html" },
+      input: { en: "index.html", ptBr: "pt-br/index.html", setup: "setup/index.html", ptBrSetup: "pt-br/setup/index.html", download: "download/index.html", ptBrDownload: "pt-br/download/index.html", notFound: "404.html", benchmark: "benchmark/index.html", ptBrBenchmark: "pt-br/benchmark/index.html" },
     },
   },
 });
