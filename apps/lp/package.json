@@ -9,9 +9,16 @@
     "indexnow": "node indexnow.mjs"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-react": "^6.0.5",
+    "tailwindcss": "^4.3.3",
     "vite": "^8.2.1"
   },
   "dependencies": {
-    "motion": "^14.12.0"
+    "@tanstack/react-query": "^5.101.4",
+    "@tanstack/react-router": "^1.170.27",
+    "motion": "^14.12.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
   }
 }

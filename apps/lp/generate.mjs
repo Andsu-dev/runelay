@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { card, checks, code, escape, icon, jsonLd, links, plain, prose, steps } from "./blocks.mjs";
 import { EXISTING, INTEGRATION_PAGES, INTEGRATIONS_EN, PAGES } from "./content.mjs";
+import { FEATURES } from "./features.mjs";
 
 const ORIGIN = "https://runelay.com";
 const CATALOG = "../api/src/modules/catalog/constants/catalog.constants.ts";
@@ -13,6 +14,11 @@ const LANGS = {
   pt: { prefix: "/pt-br", html: "pt-BR", locale: "pt_BR", og: "/og-pt.png", home: "pt-br/index.html", cta: "pt-br/composio-alternative/index.html", copy: "Copiar", copied: "Copiado", questions: "Perguntas", more: "Continue lendo" },
 };
 
+const CTA_NOTE = {
+  en: "Free and open source. Runs on your computer or your server.",
+  pt: "Grátis e open source. Roda no seu computador ou no seu servidor.",
+};
+
 const chrome = Object.fromEntries(
   Object.entries(LANGS).map(([lang, { home, cta }]) => [
     lang,
@@ -20,22 +26,20 @@ const chrome = Object.fromEntries(
       topbar: readFileSync(home, "utf8")
         .match(/<header class="topbar">[\s\S]*?<\/header>/)[0]
         .replaceAll(' aria-current="page"', ""),
-      cta: readFileSync(cta, "utf8").match(/<div class="bench-cta"[\s\S]*?<\/div>/)[0],
+      cta: readFileSync(cta, "utf8")
+        .match(/<div class="bench-cta"[\s\S]*?<\/div>/)[0]
+        .replace(/<strong>([^<]*)<\/strong>/, (_match, title) => `<div class="bench-cta-copy"><strong>${title}</strong><span>${CTA_NOTE[lang]}</span></div>`),
     },
   ]),
 );
 
 const faqCard = (items, lang) =>
-  card(
-    "help",
-    LANGS[lang].questions,
-    `<div class="faq">${items
-      .map(
-        ([question, answer]) =>
-          `<details><summary>${question}<svg class="chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><div class="answer"><p>${answer}</p></div></details>`,
-      )
-      .join("")}</div>`,
-  ).replace('class="bcard"', 'class="bcard faq-card"');
+  `<section class="page-section" data-reveal><h2 class="section-title">${LANGS[lang].questions}</h2><div class="faq faq-list">${items
+    .map(
+      ([question, answer]) =>
+        `<details><summary>${question}<svg class="chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><div class="answer"><p>${answer}</p></div></details>`,
+    )
+    .join("")}</div></section>`;
 
 const faqSchema = (items) =>
   jsonLd({
@@ -47,7 +51,7 @@ const faqSchema = (items) =>
 const registry = new Map();
 
 const related = (slugs, lang) =>
-  `<nav class="guides" aria-label="${LANGS[lang].more}" data-reveal><h2 class="bcard-title">${icon("book")}${LANGS[lang].more}</h2>${links(
+  `<nav class="guides page-section" aria-label="${LANGS[lang].more}" data-reveal><h2 class="section-title">${LANGS[lang].more}</h2>${links(
     slugs.map((slug) => {
       const entry = registry.get(slug);
       return [`/${slug}/`, entry.icon, ...entry[lang]];
@@ -384,7 +388,7 @@ const changelog = () => {
 for (const [slug, entry] of Object.entries(EXISTING)) registry.set(slug, entry);
 for (const page of PAGES) registry.set(page.slug, { icon: page.icon, en: [page.en.cardTitle, page.en.cardText], pt: [page.pt.cardTitle, page.pt.cardText] });
 
-const generated = [...PAGES, hub(), ...catalog.filter((item) => INTEGRATION_PAGES.includes(item.id)).map(integration), changelog()];
+const generated = [...PAGES, ...FEATURES, hub(), ...catalog.filter((item) => INTEGRATION_PAGES.includes(item.id)).map(integration), changelog()];
 for (const page of generated) registry.set(page.slug, { icon: page.icon, en: [page.en.cardTitle, page.en.cardText], pt: [page.pt.cardTitle, page.pt.cardText] });
 
 for (const page of generated) for (const lang of ["en", "pt"]) document(page.slug, lang, page[lang], page.related, page.mark);

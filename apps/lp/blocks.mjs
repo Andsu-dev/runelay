@@ -13,6 +13,8 @@ const ICONS = {
   import: '<path d="M12 3.5v11m0 0 4-4m-4 4-4-4M4.5 16.5v2a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5v-2"/>',
   clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/>',
   arrow: '<path d="M5 12h14m0 0-5-5m5 5-5 5"/>',
+  brain: '<path d="M9.5 4.5a2.5 2.5 0 0 0-2.5 2.5 2.5 2.5 0 0 0-2 4 2.5 2.5 0 0 0 1 4 2.5 2.5 0 0 0 3.5 3.5 2 2 0 0 0 2.5-1.5V6a2 2 0 0 0-2.5-1.5Zm5 0A2.5 2.5 0 0 1 17 7a2.5 2.5 0 0 1 2 4 2.5 2.5 0 0 1-1 4 2.5 2.5 0 0 1-3.5 3.5 2 2 0 0 1-2.5-1.5"/>',
+  spark: '<path d="m4 20 10-10m2-6 .6 1.6L18 6l-1.4.6L16 8l-.6-1.4L14 6l1.4-.4L16 4Zm3 6 .5 1.2 1.2.5-1.2.5L19 13l-.5-1.3-1.2-.5 1.2-.5L19 10ZM9 3l.5 1.2 1.2.5-1.2.5L9 6.5l-.5-1.3-1.2-.5 1.2-.5L9 3Z"/>',
 };
 
 export const icon = (name, size = 15) =>
@@ -65,3 +67,8 @@ export const links = (items) =>
       return href ? `<a class="guide-card" href="${href}">${inner}<span class="guide-arrow">${icon("arrow", 16)}</span></a>` : `<div class="guide-card static">${inner}</div>`;
     })
     .join("")}</div>`;
+
+const COPY_ICON = '<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 3.5v-.5a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 3v5A1.5 1.5 0 0 0 4 9.5h.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>';
+
+export const promptCard = ({ id, logo = "", title, text, prompt }) =>
+  `<div class="prompt-card"><div class="prompt-head">${logo}<span><strong>${title}</strong><small>${text}</small></span><button class="button-solid small" type="button" data-copy-from="#${id}" data-copied="{{copied}}">${COPY_ICON}<span data-label>{{copy}}</span></button></div><template id="${id}">${escape(prompt)}</template></div>`;
