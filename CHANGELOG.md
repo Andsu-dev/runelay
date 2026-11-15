@@ -1,5 +1,32 @@
 # Changelog
 
+## v0.3.2
+
+### Desktop app
+
+- First open asks where runelay runs: on this computer or on a server you already have. Pick a card, press Continue, and a short confirmation plays before the panel opens.
+- Keep several servers and switch between them from Settings or the Server menu. Adding a server checks that the URL answers as runelay first.
+- If a remote server is down, the app offers to retry or go back to this computer.
+
+### Settings
+
+- New Settings area with its own navigation: Server, Profile, Preferences and About.
+- Server shows the address, status, version and the MCP endpoint for agents.
+- Change your name inline and upload or remove a profile photo.
+- Sounds, theme and language live in Preferences.
+- About links to the GitHub repository and, in the browser, to the desktop download.
+
+### Language
+
+- The whole panel is available in Portuguese and English, with dates and numbers following the chosen language.
+- Switching language or theme plays a short page transition.
+
+### Panel
+
+- Removing a memory, API key or connection asks for confirmation in a popover next to the button. Signing out asks too.
+- An empty overview shows a blurred preview of the charts instead of a bare message.
+- Charts use the runelay colors.
+
 ## v0.3.1
 
 ### Overview
