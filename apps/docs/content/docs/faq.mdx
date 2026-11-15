@@ -6,7 +6,7 @@ icon: MessageCircleQuestionMark
 
 ## Doesn't a normal agent harness already do this?
 
-Each harness does it for itself. Claude Code, Codex, Cursor, Grok, Gemini and OpenCode each keep their own MCP config, their own logins, their own memory and their own skills folder, per tool and per machine. Add Linear to one and the others never see it; teach one a rule and the others never hear it.
+Each harness does it for itself. Claude Code, Codex, Cursor, Grokbot, Gemini and OpenCode each keep their own MCP config, their own logins, their own memory and their own skills folder, per tool and per machine. Add Linear to one and the others never see it; teach one a rule and the others never hear it.
 
 runelay sits under all of them. You connect an account once, on your server, and every agent gets the same tools through one MCP endpoint. Memories and skills live in one place too, so what one agent writes, the others read. Adding a new agent is one key and one line of config, not a fresh round of logins.
 
@@ -28,7 +28,7 @@ No. runelay runs no model and calls no LLM. Your agent does the thinking with wh
 
 ## Which agents work with it?
 
-Any agent that speaks MCP over HTTP with a bearer token. `runelay connect` wires Claude Code, Codex, Cursor and Grok for you, and `runelay migrate` also imports from Gemini and OpenCode. See [Connect agents](/connect-agents) and [Migrate from your agents](/migrate).
+Any agent that speaks MCP over HTTP with a bearer token. `runelay connect` wires Claude Code, Codex, Cursor and Grokbot for you, and `runelay migrate` also imports from Gemini and OpenCode. Antigravity, Hermes Agent, OpenClaw, MausBot, OpenCode, OpenBot and Kimi Code take one config entry each. See [Connect agents](/connect-agents) and [Migrate from your agents](/migrate).
 
 ## What if something breaks?
 

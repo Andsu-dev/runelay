@@ -1,0 +1,27 @@
+---
+title: Overview
+description: Point Claude Code, Codex, Cursor, Grokbot, Antigravity, Hermes Agent, OpenClaw, MausBot, OpenCode, OpenBot and Kimi Code at your runelay endpoint.
+icon: Plug
+---
+
+Every agent talks to the same endpoint, `PUBLIC_URL/v1/mcp`, with its own API key (`rnl_…`).
+
+The easiest path is the panel: open **Access → Set up agents**. The guide walks you through connecting accounts, creating a key and wiring each client.
+
+To do it all at once from your computer, use the [CLI](/cli): `runelay login`, then `runelay connect`.
+
+## Per agent
+
+Each page has the config block and how to load it.
+
+- [Claude Code](/connect-agents/claude-code): One `claude mcp add` command.
+- [Codex](/connect-agents/codex): One block in `~/.codex/config.toml`.
+- [Cursor](/connect-agents/cursor): One block in `~/.cursor/mcp.json`.
+- [Grokbot](/connect-agents/grok): One block in `~/.grok/config.toml`.
+- [Antigravity](/connect-agents/antigravity): One block in `mcp_config.json`, added by hand.
+- [Hermes Agent](/connect-agents/hermes-agent): One block in `~/.hermes/config.yaml`.
+- [OpenClaw](/connect-agents/openclaw): One `openclaw mcp set` command.
+- [MausBot](/connect-agents/mausbot): One pasted command in **Plugins**.
+- [OpenCode](/connect-agents/opencode): One block in `opencode.json`.
+- [OpenBot](/connect-agents/openbot): One custom MCP in the panel.
+- [Kimi Code](/connect-agents/kimi-code): One block in `~/.kimi-code/mcp.json`.
