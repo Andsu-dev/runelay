@@ -181,6 +181,7 @@
     letter-spacing: -0.006em;
     min-height: 100dvh;
     overflow-x: clip;
+    overscroll-behavior: none;
   }
   ::selection {
     background-color: var(--foreground);

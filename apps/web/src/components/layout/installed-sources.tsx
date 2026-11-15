@@ -19,7 +19,7 @@ export function InstalledSources({ onNavigate }: InstalledSourcesProps) {
   const { data: sources, isPending } = useQuery(sourcesQuery);
 
   return (
-    <PanelSection label="layout.nav.installed">
+    <PanelSection label="layout.nav.installed" collapsible>
       {isPending && PLACEHOLDERS.map((item) => <Skeleton key={item} className="mx-2.5 my-1.5 h-5 bg-sidebar-active" />)}
       {sources?.length === 0 && (
         <Link

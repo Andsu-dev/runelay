@@ -14,7 +14,7 @@ export function PanelCategory({ category, scope, onNavigate }: PanelCategoryProp
   return (
     <div className="flex flex-col gap-5">
       {category.sections.map((section) => (
-        <PanelSection key={section.label} label={section.label}>
+        <PanelSection key={section.label} label={section.label} collapsible>
           {section.items.map((item) =>
             "soon" in item ? (
               <PanelSoonItem key={item.label} item={item} />
