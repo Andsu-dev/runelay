@@ -284,11 +284,41 @@ details[data-state="open"] .chevron { transform: rotate(180deg); }
   .platform-actions { order: 4; width: 100%; margin-left: 36px; }
   }
 
-.install-cta { margin-top: 28px; display: grid; justify-items: center; }
-.button-solid.large { height: 48px; padding: 0 22px; font-size: 16px; border-radius: 12px; }
-.install-divider { margin: 36px 0 0; font-size: 14px; color: var(--muted-foreground); }
-.install-divider + .terminal { margin-top: 14px; }
 .answer a { color: var(--foreground); text-underline-offset: 3px; }
+
+.nav-links { display: flex; align-items: center; gap: 2px; }
+.nav-links a:not(.button-solid) { padding: 6px 10px; border-radius: 8px; font-size: 14px; font-weight: 500; color: var(--muted-foreground); text-decoration: none; transition: color 0.2s, background 0.2s; }
+.nav-links a:not(.button-solid):hover, .nav-links a[aria-current="page"] { color: var(--foreground); background: color-mix(in oklch, var(--foreground) 6%, transparent); }
+.nav-links .button-solid { margin-left: 8px; }
+
+.install-options { --w: min(calc(100vw - 32px), 820px); width: var(--w); margin: 28px 0 0 calc(50% - var(--w) / 2); display: grid; grid-template-columns: 1fr 1.3fr; gap: 12px; text-align: left; }
+.install-card { display: flex; flex-direction: column; gap: 6px; padding: 20px; border-radius: 16px; background: var(--muted); color: inherit; text-decoration: none; min-width: 0; }
+.install-card.primary { background: color-mix(in oklch, var(--foreground) 9%, var(--muted)); box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--foreground) 10%, transparent); transition: transform 0.2s var(--ease-out), background 0.2s; }
+.install-card.primary:hover { transform: translateY(-2px); }
+.install-card strong { font-size: 16px; letter-spacing: -0.015em; }
+.install-card-icon { display: grid; place-items: center; width: 34px; height: 34px; margin-bottom: 6px; border-radius: 10px; background: color-mix(in oklch, var(--foreground) 8%, transparent); }
+.install-card-text { font-size: 14px; color: var(--muted-foreground); flex: 1; }
+.install-card .button-solid, .install-card .cmd { margin-top: 12px; }
+.install-card-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+.install-card-actions .button-solid { margin-top: 0; }
+.install-card .cmd code { font-size: 12px; }
+
+@media (max-width: 640px) {
+  .install-options { grid-template-columns: 1fr; }
+  .nav-links .nav-secondary { display: none; }
+}
+
+.os-logos { display: flex; align-items: center; }
+.os-logo { position: relative; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; color: var(--foreground); background: color-mix(in oklch, var(--foreground) 18%, var(--muted)); box-shadow: 0 0 0 2px color-mix(in oklch, var(--foreground) 9%, var(--muted)); outline: none; transition: transform 0.2s var(--ease-out); }
+.os-logo + .os-logo { margin-left: -8px; }
+.os-logo svg { width: 15px; height: 15px; }
+.os-logo:hover, .os-logo:focus-visible { transform: translateY(-2px); z-index: 1; }
+.os-logo::after {
+  content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 6px); padding: 4px 8px; border-radius: 6px; white-space: nowrap;
+  font-size: 12px; font-weight: 500; color: var(--background); background: var(--foreground);
+  opacity: 0; pointer-events: none; transform: translate(-50%, 4px); transition: opacity 0.16s, transform 0.16s var(--ease-out);
+}
+.os-logo:hover::after, .os-logo:focus-visible::after { opacity: 1; transform: translate(-50%, 0); }
 
 .footer { max-width: 640px; margin: 0 auto; padding: 32px 16px 48px; display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 13px; color: var(--muted-foreground); }
 .lang { display: flex; gap: 4px; padding: 3px; border-radius: 999px; background: var(--muted); }
