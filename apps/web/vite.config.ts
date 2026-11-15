@@ -9,6 +9,6 @@ export default defineConfig({
   resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } },
   server: {
     port: 5173,
-    proxy: { "/v1": { target: "http://localhost:4312", changeOrigin: false } },
+    proxy: { "/v1": { target: process.env.RUNELAY_API_URL ?? "http://localhost:4312", changeOrigin: false } },
   },
 });
