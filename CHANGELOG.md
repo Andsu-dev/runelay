@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Catalog
+
+- Conty (OAuth) is the featured connector, highlighted at the top of the catalog: agents run creator campaigns from the brief to the sales report.
+- Firecrawl (API key) is in the catalog: web search, scraping and site crawling for every agent.
+
 ## v0.6.0
 
 ### Connections
