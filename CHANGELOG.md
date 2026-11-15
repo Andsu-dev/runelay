@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.4.1
+
+- Dashboard lists (top connectors, most used tools, recent skills and memories) stop growing and scroll inside their card.
+- The collapsed side panel no longer shows a sliver of its content next to the rail.
+
 ## v0.4.0
 
 ### Panel
