@@ -8,6 +8,7 @@ import type {
   importSourcesSchema,
   listSourcesSchema,
   mcpRemoteConfigSchema,
+  oauthClientSchema,
   openApiConfigSchema,
   sourceAuthKindSchema,
   sourceConfigSchema,
@@ -26,6 +27,7 @@ export type CreateSourceInput = z.infer<typeof createSourceSchema>;
 export type UpdateSourceInput = z.infer<typeof updateSourceSchema>;
 export type ImportSourcesInput = z.infer<typeof importSourcesSchema>;
 export type ImportSourceInput = z.infer<typeof importSourceSchema>;
+export type OAuthClientInput = z.infer<typeof oauthClientSchema>;
 export type ImportedOAuthInput = z.infer<typeof importedOAuthSchema>;
 export type ListSourcesInput = z.infer<typeof listSourcesSchema>;
 export type SourceAuthKind = z.infer<typeof sourceAuthKindSchema>;
@@ -43,6 +45,7 @@ export interface SourceView {
   icon: string | null;
   auth: CatalogAuth | null;
   tokenUrl: string | null;
+  oauthClientId: string | null;
 }
 
 export interface OAuthStartView {

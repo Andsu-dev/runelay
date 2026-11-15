@@ -9,6 +9,7 @@ import { sourceAuthQuery } from "@/modules/sources/api/sources.api";
 import { KIND_HINT } from "@/modules/sources/constants/source.constants";
 import type { SourceDraft } from "@/modules/sources/schemas/source-draft.schema";
 import { KindSwitch } from "./kind-switch";
+import { OAuthClientFields } from "./oauth-client-fields";
 
 interface SourceConfigFieldsProps {
   draft: SourceDraft;
@@ -95,6 +96,8 @@ export function SourceConfigFields({ draft, onChange, lockKind = false }: Source
           />
         </Field>
       )}
+
+      {isMcp && auth !== "header" && <OAuthClientFields draft={draft} onChange={onChange} />}
     </div>
   );
 }

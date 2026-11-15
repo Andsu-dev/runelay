@@ -32,3 +32,5 @@ export const KIND_HINT: Record<SourceKind, MessageKey> = {
   stdio: "sources.kindHint.stdio",
   openapi: "sources.kindHint.openapi",
 };
+
+export const OAUTH_CALLBACK_PATH = "/v1/oauth/callback";

@@ -8,6 +8,7 @@ import { attempt, errorMessage, fail, type McpRemoteConfig, ok, type Result, typ
 import { CLIENT_INFO } from "@/modules/connectors/constants/connector.constants";
 import type { Connection, Tool } from "@/modules/connectors/types/connector.types";
 import { createOAuthFetch, createOAuthProvider } from "@/modules/oauth/providers/oauth-client.provider";
+import { findSource } from "@/modules/sources/repositories/source.repository";
 import type { SourceKey } from "@/modules/sources/types/source.types";
 
 const unwrapToolResult = (result: CallToolResult): Result<unknown> => {
@@ -49,6 +50,8 @@ const loadConnection = async (client: Client, source: string): Promise<Result<Co
   }, "CONNECTION_FAILED");
 
 export const connectMcpRemote = async (key: SourceKey, config: McpRemoteConfig): Promise<Result<Connection>> => {
+  const oauth = findSource(key).data?.oauth;
+  if (oauth?.customClient && !oauth.tokens) return fail("NEEDS_AUTH");
   const url = new URL(config.url);
   const options = {
     authProvider: createOAuthProvider(key),

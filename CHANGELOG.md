@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Panel
+
+- Remote MCP connections can use your own OAuth client: paste a Client ID and, if the service gives one, a Client secret when adding or editing a connection. This is the way in for services without automatic client registration, such as Google. The secret is stored encrypted and never sent back to the panel.
+
 ## v0.5.0
 
 ### Connections

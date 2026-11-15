@@ -7,7 +7,7 @@ import { toast } from "@/lib/toast";
 import { sourcesQuery, updateSource } from "@/modules/sources/api/sources.api";
 import { STATUS_LABEL } from "@/modules/sources/constants/source.constants";
 import { sourceDraftSchema } from "@/modules/sources/schemas/source-draft.schema";
-import { draftFromConfig } from "@/modules/sources/utils/source-draft";
+import { draftFromSource, oauthClientChange } from "@/modules/sources/utils/source-draft";
 import { SourceConfigFields } from "./source-config-fields";
 
 interface SourceEditorProps {
@@ -17,15 +17,20 @@ interface SourceEditorProps {
 export function SourceEditor({ source }: SourceEditorProps) {
   const t = useT();
   const queryClient = useQueryClient();
-  const [draft, setDraft] = useState(() => draftFromConfig(source.config));
+  const [draft, setDraft] = useState(() => draftFromSource(source));
   const [submitted, setSubmitted] = useState(false);
   const parsed = sourceDraftSchema.safeParse(draft);
 
   const save = useMutation({
-    mutationFn: () => updateSource(source.name, { config: parsed.data }),
+    mutationFn: () =>
+      updateSource(source.name, {
+        config: parsed.data,
+        oauthClient: oauthClientChange(draft, source.oauthClientId),
+      }),
     onSuccess: (updated) => {
       queryClient.setQueryData(["sources", source.name], updated);
       queryClient.invalidateQueries({ queryKey: sourcesQuery.queryKey });
+      setDraft((current) => ({ ...current, oauthClientSecret: "" }));
       toast(
         translate("sources.editor.saved", {
           name: source.name,

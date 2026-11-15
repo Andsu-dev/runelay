@@ -10,7 +10,7 @@ import { toast } from "@/lib/toast";
 import { createSource, sourcesQuery } from "@/modules/sources/api/sources.api";
 import { STATUS_LABEL } from "@/modules/sources/constants/source.constants";
 import { sourceDraftSchema } from "@/modules/sources/schemas/source-draft.schema";
-import { emptyDraft } from "@/modules/sources/utils/source-draft";
+import { emptyDraft, oauthClientFromDraft } from "@/modules/sources/utils/source-draft";
 import { SourceConfigFields } from "./source-config-fields";
 
 interface AddSourceDialogProps {
@@ -56,7 +56,7 @@ export function AddSourceDialog({ open, onOpenChange }: AddSourceDialogProps) {
     event.preventDefault();
     setSubmitted(true);
     if (!parsedName.success || !parsedConfig.success) return;
-    create.mutate({ name: parsedName.data, config: parsedConfig.data });
+    create.mutate({ name: parsedName.data, config: parsedConfig.data, oauthClient: oauthClientFromDraft(draft) });
   };
 
   return (
