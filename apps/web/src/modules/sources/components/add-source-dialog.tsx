@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/action/button";
 import { Field } from "@/components/ui/form/field";
 import { Input } from "@/components/ui/form/input";
 import { Dialog } from "@/components/ui/overlay/dialog";
+import { translate, translateError, translateMessage, useT } from "@/lib/i18n";
 import { toast } from "@/lib/toast";
 import { createSource, sourcesQuery } from "@/modules/sources/api/sources.api";
 import { STATUS_LABEL } from "@/modules/sources/constants/source.constants";
@@ -18,6 +19,7 @@ interface AddSourceDialogProps {
 }
 
 export function AddSourceDialog({ open, onOpenChange }: AddSourceDialogProps) {
+  const t = useT();
   const queryClient = useQueryClient();
   const [name, setName] = useState("");
   const [draft, setDraft] = useState(emptyDraft);
@@ -36,7 +38,10 @@ export function AddSourceDialog({ open, onOpenChange }: AddSourceDialogProps) {
       queryClient.invalidateQueries({ queryKey: ["catalog"] });
       queryClient.invalidateQueries({ queryKey: ["onboarding"] });
       toast(
-        `${source.name} adicionada: ${STATUS_LABEL[source.status].toLowerCase()}.`,
+        translate("sources.add.added", {
+          name: source.name,
+          status: translate(STATUS_LABEL[source.status]).toLowerCase(),
+        }),
         source.status === "ok" ? "success" : "info",
       );
       setName("");
@@ -44,7 +49,7 @@ export function AddSourceDialog({ open, onOpenChange }: AddSourceDialogProps) {
       setSubmitted(false);
       onOpenChange(false);
     },
-    onError: (error) => toast(error.message, "error"),
+    onError: (error) => toast(translateError(error), "error"),
   });
 
   const submit = (event: FormEvent) => {
@@ -58,25 +63,27 @@ export function AddSourceDialog({ open, onOpenChange }: AddSourceDialogProps) {
     <Dialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Nova conexão"
-      description="Ela aparece em todos os agentes que usam o runelay."
+      title={t("sources.add.title")}
+      description={t("sources.add.description")}
       contentClassName="sm:max-w-lg"
     >
       <form onSubmit={submit} className="flex flex-col gap-4">
         <Field
-          label="Nome"
-          hint="Vira o prefixo das tools: nome.tool"
-          error={submitted && !parsedName.success ? parsedName.error.issues[0]?.message : undefined}
+          label={t("sources.add.name")}
+          hint={t("sources.add.nameHint")}
+          error={
+            submitted && !parsedName.success ? translateMessage(parsedName.error.issues[0]?.message ?? "") : undefined
+          }
         >
           <Input value={name} onChange={(event) => setName(event.target.value)} placeholder="linear" autoFocus />
         </Field>
         <SourceConfigFields draft={draft} onChange={setDraft} />
         {submitted && !parsedConfig.success && (
-          <p className="text-xs text-destructive">{parsedConfig.error.issues[0]?.message}</p>
+          <p className="text-xs text-destructive">{translateMessage(parsedConfig.error.issues[0]?.message ?? "")}</p>
         )}
         <div className="flex justify-end">
-          <Button type="submit" loading={create.isPending} loadingText="Conectando">
-            Adicionar
+          <Button type="submit" loading={create.isPending} loadingText={t("sources.add.submitting")}>
+            {t("sources.add.submit")}
           </Button>
         </div>
       </form>

@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { UI_SPRING } from "@/components/ui/display/spring";
+import { useT } from "@/lib/i18n";
 
 interface ReconnectProgressProps {
   done: number;
@@ -7,6 +8,7 @@ interface ReconnectProgressProps {
 }
 
 export function ReconnectProgress({ done, total }: ReconnectProgressProps) {
+  const t = useT();
   const ratio = total ? done / total : 1;
   return (
     <div className="flex items-center gap-3">
@@ -19,7 +21,7 @@ export function ReconnectProgress({ done, total }: ReconnectProgressProps) {
         />
       </div>
       <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
-        {done} de {total}
+        {t("reconnect.progress", { done, total })}
       </span>
     </div>
   );

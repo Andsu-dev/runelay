@@ -4,6 +4,7 @@ import type { MemoryListItemView } from "@runelay/shared";
 import { Link } from "@tanstack/react-router";
 import { MaskedName } from "@/components/ui/display/masked-name";
 import { formatDate } from "@/lib/format";
+import { useT } from "@/lib/i18n";
 import { MemoryTypePill } from "./memory-type-pill";
 
 interface MemoryRowProps {
@@ -11,6 +12,8 @@ interface MemoryRowProps {
 }
 
 export function MemoryRow({ memory }: MemoryRowProps) {
+  const t = useT();
+
   return (
     <Link
       to="/memory/$slug"
@@ -30,11 +33,11 @@ export function MemoryRow({ memory }: MemoryRowProps) {
         </span>
       </div>
       <div className="flex shrink-0 items-center gap-3 text-[12px] text-muted-foreground tabular-nums">
-        <span className="flex items-center gap-1" title="Links para outras memórias">
+        <span className="flex items-center gap-1" title={t("memory.row.outgoing")}>
           <HugeiconsIcon icon={ArrowRight01Icon} size={13} strokeWidth={1.8} />
           {memory.linkCount}
         </span>
-        <span className="flex items-center gap-1" title="Memórias que apontam para esta">
+        <span className="flex items-center gap-1" title={t("memory.row.incoming")}>
           <HugeiconsIcon icon={ArrowLeft02Icon} size={13} strokeWidth={1.8} />
           {memory.backlinkCount}
         </span>

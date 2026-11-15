@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { runPageTransition } from "./page-transition";
 import { readStorage, writeStorage } from "./storage";
 
 export type Theme = "system" | "light" | "dark";
@@ -20,10 +21,11 @@ const applyTheme = (theme: Theme) => {
 };
 
 export const setTheme = (theme: Theme) => {
+  if (theme === current) return;
   current = theme;
   writeStorage(STORAGE_KEY, theme === "system" ? null : theme);
-  applyTheme(theme);
   for (const listener of listeners) listener();
+  runPageTransition(() => applyTheme(current));
 };
 
 export const nextTheme = (theme: Theme): Theme => THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length] ?? "system";

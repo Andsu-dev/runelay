@@ -1,7 +1,7 @@
 import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
 import type { RecentUsageView } from "@runelay/shared";
 import { motion } from "motion/react";
-import { formatNumber } from "@/lib/format";
+import { formatNumber, formatRelative } from "@/lib/format";
 
 interface RecentUsageRowProps {
   item: RecentUsageView;
@@ -9,20 +9,6 @@ interface RecentUsageRowProps {
   color: string;
   peak: number;
 }
-
-const RELATIVE_FORMAT = new Intl.RelativeTimeFormat("pt-BR", { numeric: "auto", style: "short" });
-
-const RELATIVE_UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
-  ["day", 86_400_000],
-  ["hour", 3_600_000],
-  ["minute", 60_000],
-];
-
-const formatRelative = (value: string) => {
-  const elapsed = new Date(value).getTime() - Date.now();
-  const unit = RELATIVE_UNITS.find(([, size]) => Math.abs(elapsed) >= size);
-  return unit ? RELATIVE_FORMAT.format(Math.round(elapsed / unit[1]), unit[0]) : "agora";
-};
 
 export function RecentUsageRow({ item, icon, color, peak }: RecentUsageRowProps) {
   const share = peak > 0 ? item.calls / peak : 0;

@@ -4,6 +4,7 @@ import { StaggerIn } from "@/components/layout/stagger-in";
 import { StaggerItem } from "@/components/layout/stagger-item";
 import { EmptyState } from "@/components/ui/display/empty-state";
 import { ListSkeleton } from "@/components/ui/display/list-skeleton";
+import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { catalogQuery } from "@/modules/catalog/api/catalog.api";
 import { CatalogSection } from "./catalog-section";
@@ -13,6 +14,7 @@ interface CatalogViewProps {
 }
 
 export function CatalogView({ query }: CatalogViewProps) {
+  const t = useT();
   const {
     data: catalog,
     isPending,
@@ -30,8 +32,8 @@ export function CatalogView({ query }: CatalogViewProps) {
     return (
       <EmptyState
         icon={PlugSocketIcon}
-        title={query ? `Nenhum conector com “${query}”` : "Catálogo vazio"}
-        description="Use Adicionar e Conexão personalizada para ligar qualquer servidor MCP ou OpenAPI."
+        title={query ? t("catalog.emptyQuery", { query }) : t("catalog.emptyCatalog")}
+        description={t("catalog.emptyDescription")}
       />
     );
   }

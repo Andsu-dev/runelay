@@ -2,6 +2,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Link } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import { UI_SPRING } from "@/components/ui/display/spring";
+import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import type { NavLinkItem } from "./nav.types";
 import { useLinkActive } from "./use-link-active";
@@ -13,6 +14,7 @@ interface PanelLinkProps {
 }
 
 export function PanelLink({ item, scope, onNavigate }: PanelLinkProps) {
+  const t = useT();
   const active = useLinkActive(item.link);
 
   return (
@@ -38,7 +40,7 @@ export function PanelLink({ item, scope, onNavigate }: PanelLinkProps) {
         strokeWidth={1.5}
         className={cn("relative transition-colors duration-200", active ? "text-foreground" : "text-muted-foreground")}
       />
-      <span className="relative">{item.label}</span>
+      <span className="relative">{t(item.label)}</span>
     </Link>
   );
 }

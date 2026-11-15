@@ -1,4 +1,5 @@
 import { Dialog } from "@/components/ui/overlay/dialog";
+import { useT } from "@/lib/i18n";
 import { SkillFileContent } from "./skill-file-content";
 
 interface SkillFileDialogProps {
@@ -8,12 +9,14 @@ interface SkillFileDialogProps {
 }
 
 export function SkillFileDialog({ slug, path, onClose }: SkillFileDialogProps) {
+  const t = useT();
+
   return (
     <Dialog
       open={path !== null}
       onOpenChange={(open) => !open && onClose()}
       title={path ?? ""}
-      description="Arquivo da habilidade"
+      description={t("skills.files.dialogDescription")}
       contentClassName="sm:max-w-2xl"
     >
       {path && <SkillFileContent slug={slug} path={path} />}

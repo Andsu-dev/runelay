@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import { UI_SPRING } from "@/components/ui/display/spring";
 import { Tooltip } from "@/components/ui/overlay/tooltip";
+import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import type { NavCategory } from "./nav.types";
 
@@ -12,11 +13,13 @@ interface RailLinkProps {
 }
 
 export function RailLink({ category, active }: RailLinkProps) {
+  const t = useT();
+
   return (
-    <Tooltip content={category.label} side="right" hideArrow>
+    <Tooltip content={t(category.label)} side="right" hideArrow>
       <Link
         {...category.link}
-        aria-label={category.label}
+        aria-label={t(category.label)}
         aria-current={active ? "page" : undefined}
         className={cn(
           "relative flex size-9 items-center justify-center rounded-lg transition-colors duration-200 pressable",

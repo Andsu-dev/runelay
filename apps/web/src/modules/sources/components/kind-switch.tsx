@@ -3,6 +3,7 @@ import type { SourceKind } from "@runelay/shared";
 import { motion } from "motion/react";
 import { McpIcon } from "@/components/brand/mcp-icon";
 import { UI_SPRING } from "@/components/ui/display/spring";
+import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { KIND_ICON, KIND_LABEL } from "@/modules/sources/constants/source.constants";
 
@@ -14,9 +15,11 @@ interface KindSwitchProps {
 }
 
 export function KindSwitch({ value, onChange }: KindSwitchProps) {
+  const t = useT();
+
   return (
     <fieldset className="grid grid-cols-3 gap-1 overflow-hidden rounded-lg bg-muted/60 p-1">
-      <legend className="sr-only">Tipo de conexão</legend>
+      <legend className="sr-only">{t("sources.kindLegend")}</legend>
       {KINDS.map((kind) => (
         <button
           key={kind}
@@ -41,7 +44,7 @@ export function KindSwitch({ value, onChange }: KindSwitchProps) {
           ) : (
             <HugeiconsIcon icon={KIND_ICON[kind]} size={16} strokeWidth={1.6} className="relative shrink-0" />
           )}
-          <span className="relative truncate">{KIND_LABEL[kind]}</span>
+          <span className="relative truncate">{t(KIND_LABEL[kind])}</span>
         </button>
       ))}
     </fieldset>

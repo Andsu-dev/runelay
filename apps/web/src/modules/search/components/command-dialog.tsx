@@ -1,4 +1,5 @@
 import { Dialog } from "@/components/ui/overlay/dialog";
+import { useT } from "@/lib/i18n";
 import { CommandPanel } from "./command-panel";
 
 interface CommandDialogProps {
@@ -7,12 +8,14 @@ interface CommandDialogProps {
 }
 
 export function CommandDialog({ open, onOpenChange }: CommandDialogProps) {
+  const t = useT();
+
   return (
     <Dialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Buscar"
-      description="Memórias, habilidades e tools"
+      title={t("search.title")}
+      description={t("search.description")}
       hideHeader
       hideClose
       contentClassName="gap-0 overflow-hidden p-0 pb-0 sm:top-[18%] sm:max-w-xl sm:translate-y-0 sm:pb-0"

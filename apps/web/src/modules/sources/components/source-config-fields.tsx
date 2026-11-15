@@ -1,6 +1,7 @@
 import { Field } from "@/components/ui/form/field";
 import { Input } from "@/components/ui/form/input";
 import { Textarea } from "@/components/ui/form/textarea";
+import { useT } from "@/lib/i18n";
 import { KIND_HINT } from "@/modules/sources/constants/source.constants";
 import type { SourceDraft } from "@/modules/sources/schemas/source-draft.schema";
 import { KindSwitch } from "./kind-switch";
@@ -12,12 +13,13 @@ interface SourceConfigFieldsProps {
 }
 
 export function SourceConfigFields({ draft, onChange, lockKind = false }: SourceConfigFieldsProps) {
+  const t = useT();
   const set = (field: keyof SourceDraft) => (value: string) => onChange({ ...draft, [field]: value });
 
   return (
     <div className="flex flex-col gap-3">
       {!lockKind && <KindSwitch value={draft.kind} onChange={(kind) => onChange({ ...draft, kind })} />}
-      <p className="text-xs text-muted-foreground">{KIND_HINT[draft.kind]}</p>
+      <p className="text-xs text-muted-foreground">{t(KIND_HINT[draft.kind])}</p>
 
       {draft.kind === "mcp" && (
         <Field label="URL">
@@ -31,7 +33,7 @@ export function SourceConfigFields({ draft, onChange, lockKind = false }: Source
       )}
 
       {draft.kind === "stdio" && (
-        <Field label="Comando">
+        <Field label={t("sources.fields.command")}>
           <Input
             value={draft.command}
             onChange={(event) => set("command")(event.target.value)}
@@ -46,20 +48,20 @@ export function SourceConfigFields({ draft, onChange, lockKind = false }: Source
           <Input
             value={draft.spec}
             onChange={(event) => set("spec")(event.target.value)}
-            placeholder="https://api.exemplo.com/openapi.json"
+            placeholder={t("sources.fields.specPlaceholder")}
             required
           />
         </Field>
       )}
 
       {draft.kind === "openapi" && (
-        <Field label="Base URL" hint="Opcional. Sem ela, vale a do próprio spec.">
+        <Field label="Base URL" hint={t("sources.fields.baseUrlHint")}>
           <Input value={draft.baseUrl} onChange={(event) => set("baseUrl")(event.target.value)} />
         </Field>
       )}
 
       {draft.kind === "stdio" ? (
-        <Field label="Variáveis de ambiente" hint="Uma por linha, CHAVE=valor.">
+        <Field label={t("sources.fields.env")} hint={t("sources.fields.envHint")}>
           <Textarea
             value={draft.env}
             onChange={(event) => set("env")(event.target.value)}
@@ -67,7 +69,7 @@ export function SourceConfigFields({ draft, onChange, lockKind = false }: Source
           />
         </Field>
       ) : (
-        <Field label="Headers" hint="Um por linha, Nome: valor. Ficam cifrados.">
+        <Field label="Headers" hint={t("sources.fields.headersHint")}>
           <Textarea
             value={draft.headers}
             onChange={(event) => set("headers")(event.target.value)}

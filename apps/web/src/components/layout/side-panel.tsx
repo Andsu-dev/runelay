@@ -2,6 +2,7 @@ import { SidebarLeftIcon } from "@hugeicons/core-free-icons";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "motion/react";
 import { IconAction } from "@/components/ui/action/icon-action";
+import { useT } from "@/lib/i18n";
 import { meQuery } from "@/modules/auth/api/session.api";
 import { GettingStartedCard } from "@/modules/onboarding/components/getting-started-card";
 import { OrganizationSwitcher } from "@/modules/organizations/components/organization-switcher";
@@ -17,15 +18,23 @@ interface SidePanelProps {
 }
 
 export function SidePanel({ scope, onCollapse, onNavigate }: SidePanelProps) {
+  const t = useT();
   const { data: me } = useSuspenseQuery(meQuery);
   const activeCategory = useActiveCategory();
-  const categories = scope === "drawer" ? NAV_CATEGORIES : [activeCategory];
+  const categories =
+    scope !== "drawer"
+      ? [activeCategory]
+      : NAV_CATEGORIES.includes(activeCategory)
+        ? NAV_CATEGORIES
+        : [activeCategory, ...NAV_CATEGORIES];
 
   return (
     <div className="flex h-full w-full flex-col gap-4 bg-panel px-2 py-3">
       <div className="flex items-center gap-1">
         <OrganizationSwitcher me={me} />
-        {onCollapse && <IconAction icon={SidebarLeftIcon} label="Recolher painel" onClick={onCollapse} />}
+        {onCollapse && (
+          <IconAction icon={SidebarLeftIcon} label={t("layout.shell.collapsePanel")} onClick={onCollapse} />
+        )}
       </div>
 
       <div className="no-scrollbar relative min-h-0 flex-1 overflow-y-auto">

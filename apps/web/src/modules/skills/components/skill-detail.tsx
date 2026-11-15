@@ -5,6 +5,7 @@ import { Link } from "@tanstack/react-router";
 import { MonogramTile } from "@/components/ui/display/monogram-tile";
 import { Switch } from "@/components/ui/form/switch";
 import { formatDate } from "@/lib/format";
+import { useT } from "@/lib/i18n";
 import { useSkillToggle } from "@/modules/skills/hooks/use-skill-toggle";
 import { SkillBody } from "./skill-body";
 import { SkillFiles } from "./skill-files";
@@ -14,6 +15,7 @@ interface SkillDetailProps {
 }
 
 export function SkillDetail({ skill }: SkillDetailProps) {
+  const t = useT();
   const toggle = useSkillToggle(skill.slug, skill.name);
 
   return (
@@ -23,7 +25,7 @@ export function SkillDetail({ skill }: SkillDetailProps) {
         className="flex w-fit items-center gap-1.5 text-[13px] text-muted-foreground transition-colors duration-200 hover:text-foreground"
       >
         <HugeiconsIcon icon={ArrowLeft02Icon} size={16} strokeWidth={1.6} />
-        Habilidades
+        {t("skills.detail.back")}
       </Link>
 
       <header className="flex items-start gap-3">
@@ -32,13 +34,14 @@ export function SkillDetail({ skill }: SkillDetailProps) {
           <h1 className="truncate text-lg font-semibold">{skill.name}</h1>
           <p className="text-[13px] text-pretty text-muted-foreground">{skill.description || skill.slug}</p>
           <p className="text-[12px] text-muted-foreground/80">
-            <span className="font-mono">{skill.slug}</span> · atualizada em {formatDate(skill.updatedAt)}
+            <span className="font-mono">{skill.slug}</span> ·{" "}
+            {t("skills.detail.updatedAt", { date: formatDate(skill.updatedAt) })}
           </p>
         </div>
         <Switch
           checked={skill.enabled}
           disabled={toggle.isPending}
-          label={skill.enabled ? `Desativar ${skill.name}` : `Ativar ${skill.name}`}
+          label={t(skill.enabled ? "skills.detail.disable" : "skills.detail.enable", { name: skill.name })}
           onCheckedChange={(next) => toggle.mutate(next)}
           className="mt-1"
         />

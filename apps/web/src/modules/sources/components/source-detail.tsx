@@ -4,6 +4,7 @@ import type { SourceView } from "@runelay/shared";
 import { Link } from "@tanstack/react-router";
 import { IconAction } from "@/components/ui/action/icon-action";
 import { formatDate } from "@/lib/format";
+import { useT } from "@/lib/i18n";
 import { ConnectorIcon } from "@/modules/catalog/components/connector-icon";
 import { KIND_LABEL, STATUS_LABEL } from "@/modules/sources/constants/source.constants";
 import { useSourceActions } from "@/modules/sources/hooks/use-source-actions";
@@ -17,6 +18,7 @@ interface SourceDetailProps {
 }
 
 export function SourceDetail({ source, oauthError }: SourceDetailProps) {
+  const t = useT();
   const { name, config, status, error, toolCount, enabled, connectedAt } = source;
   const { test } = useSourceActions(name);
   const loginError = status === "ok" ? undefined : oauthError;
@@ -29,7 +31,7 @@ export function SourceDetail({ source, oauthError }: SourceDetailProps) {
         className="flex w-fit items-center gap-1.5 text-[13px] text-muted-foreground transition-colors duration-200 hover:text-foreground"
       >
         <HugeiconsIcon icon={ArrowLeft02Icon} size={16} strokeWidth={1.6} />
-        Conectores
+        {t("sources.back")}
       </Link>
 
       <header className="flex items-start gap-3">
@@ -39,16 +41,17 @@ export function SourceDetail({ source, oauthError }: SourceDetailProps) {
             <ConnectorIcon name={name} icon={source.icon} />
             <h1 className="truncate text-lg font-semibold">{name}</h1>
             <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
-              {KIND_LABEL[config.kind]}
+              {t(KIND_LABEL[config.kind])}
             </span>
           </div>
           <p className="text-[13px] text-muted-foreground">
-            {enabled ? STATUS_LABEL[status] : "Pausada"} · {toolCount} tools · login em {formatDate(connectedAt)}
+            {enabled ? t(STATUS_LABEL[status]) : t("sources.status.paused")} · {t.plural("sources.tools", toolCount)} ·{" "}
+            {t("sources.loginOn", { date: formatDate(connectedAt) })}
           </p>
         </div>
         <IconAction
           icon={RefreshIcon}
-          label="Testar conexão"
+          label={t("sources.test")}
           onClick={() => test.mutate()}
           spinning={test.isPending}
           disabled={test.isPending}
@@ -58,7 +61,7 @@ export function SourceDetail({ source, oauthError }: SourceDetailProps) {
 
       {(loginError ?? error) && (
         <p className="rounded-lg bg-destructive/10 px-3 py-2 text-[13px] break-words text-destructive">
-          {loginError ? `O login falhou: ${loginError}` : error}
+          {loginError ? t("sources.loginFailed", { error: loginError }) : error}
         </p>
       )}
 

@@ -1,7 +1,10 @@
 import { motion } from "motion/react";
 import { UI_SPRING } from "@/components/ui/display/spring";
+import { useT } from "@/lib/i18n";
 
 export function CliAuthorized() {
+  const t = useT();
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
@@ -29,8 +32,8 @@ export function CliAuthorized() {
         </svg>
       </motion.span>
       <div className="flex flex-col gap-1">
-        <h1 className="text-xl font-semibold tracking-[-0.02em]">Pronto, pode voltar para o terminal.</h1>
-        <p className="text-[13px] text-muted-foreground">O runelay CLI já recebeu a chave deste computador.</p>
+        <h1 className="text-xl font-semibold tracking-[-0.02em]">{t("cli.authorized.title")}</h1>
+        <p className="text-[13px] text-muted-foreground">{t("cli.authorized.description")}</p>
       </div>
     </motion.div>
   );

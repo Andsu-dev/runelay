@@ -1,6 +1,7 @@
 import type { DailyCallsView } from "@runelay/shared";
 import { useState } from "react";
-import { formatDay, formatNumber } from "@/lib/format";
+import { formatDay } from "@/lib/format";
+import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { ChartTooltip } from "./chart-tooltip";
 
@@ -9,6 +10,7 @@ interface ErrorDayStripProps {
 }
 
 export function ErrorDayStrip({ daily }: ErrorDayStripProps) {
+  const t = useT();
   const peak = Math.max(1, ...daily.map((day) => day.errors));
   const [active, setActive] = useState<number | null>(null);
   const [shown, setShown] = useState(0);
@@ -23,7 +25,7 @@ export function ErrorDayStrip({ daily }: ErrorDayStripProps) {
     <div className="flex flex-col gap-2">
       <div
         role="img"
-        aria-label="Erros por dia"
+        aria-label={t("overview.errorRate.strip")}
         className="relative flex h-8 gap-[3px]"
         onPointerLeave={() => activate(null)}
       >
@@ -31,7 +33,7 @@ export function ErrorDayStrip({ daily }: ErrorDayStripProps) {
           <button
             key={day.day}
             type="button"
-            aria-label={`${formatDay(day.day)}: ${formatNumber(day.errors)} erros`}
+            aria-label={`${formatDay(day.day)}: ${t.plural("overview.errors", day.errors)}`}
             onPointerEnter={() => activate(index)}
             onFocus={() => activate(index)}
             onBlur={() => activate(null)}
@@ -42,7 +44,7 @@ export function ErrorDayStrip({ daily }: ErrorDayStripProps) {
             style={
               day.errors > 0
                 ? {
-                    backgroundColor: `color-mix(in oklch, var(--chart-3) ${30 + (day.errors / peak) * 70}%, transparent)`,
+                    backgroundColor: `color-mix(in oklch, var(--destructive) ${30 + (day.errors / peak) * 70}%, transparent)`,
                   }
                 : undefined
             }
@@ -52,10 +54,10 @@ export function ErrorDayStrip({ daily }: ErrorDayStripProps) {
           {shownDay && (
             <span className="flex flex-col">
               <span className="text-[13px] font-semibold tabular-nums">
-                {shownDay.errors === 1 ? "1 erro" : `${formatNumber(shownDay.errors)} erros`}
+                {t.plural("overview.errors", shownDay.errors)}
               </span>
               <span className="text-background/70">
-                {formatDay(shownDay.day)} · {formatNumber(shownDay.calls)} chamadas
+                {formatDay(shownDay.day)} · {t.plural("overview.calls", shownDay.calls)}
               </span>
             </span>
           )}

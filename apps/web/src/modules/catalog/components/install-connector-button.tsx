@@ -1,5 +1,6 @@
 import { Add01Icon } from "@hugeicons/core-free-icons";
 import { IconAction } from "@/components/ui/action/icon-action";
+import { useT } from "@/lib/i18n";
 
 interface InstallConnectorButtonProps {
   name: string;
@@ -8,7 +9,15 @@ interface InstallConnectorButtonProps {
 }
 
 export function InstallConnectorButton({ name, pending, onInstall }: InstallConnectorButtonProps) {
+  const t = useT();
+
   return (
-    <IconAction icon={Add01Icon} label={`Instalar ${name}`} variant="glass" onClick={onInstall} disabled={pending} />
+    <IconAction
+      icon={Add01Icon}
+      label={t("catalog.install", { name })}
+      variant="glass"
+      onClick={onInstall}
+      disabled={pending}
+    />
   );
 }

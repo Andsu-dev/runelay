@@ -1,6 +1,7 @@
 import { Search01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { type ChangeEvent, useRef, useState } from "react";
+import { useT } from "@/lib/i18n";
 import { CommandResults } from "./command-results";
 
 interface CommandPanelProps {
@@ -8,6 +9,7 @@ interface CommandPanelProps {
 }
 
 export function CommandPanel({ onNavigate }: CommandPanelProps) {
+  const t = useT();
   const [draft, setDraft] = useState("");
   const [term, setTerm] = useState("");
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -26,8 +28,8 @@ export function CommandPanel({ onNavigate }: CommandPanelProps) {
         <input
           value={draft}
           onChange={change}
-          placeholder="Buscar memórias, habilidades e tools"
-          aria-label="Buscar"
+          placeholder={t("search.placeholder")}
+          aria-label={t("search.title")}
           className="h-13 min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground md:text-sm"
         />
         <kbd className="hidden rounded-md bg-muted px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground sm:block">

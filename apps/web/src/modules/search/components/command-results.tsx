@@ -2,6 +2,7 @@ import { Brain02Icon, MagicWand01Icon, Wrench01Icon } from "@hugeicons/core-free
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { motion } from "motion/react";
 import { Skeleton } from "@/components/ui/display/skeleton";
+import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { contextSearchQuery, toolSearchQuery } from "@/modules/search/api/search.api";
 import { CommandGroup } from "./command-group";
@@ -15,16 +16,13 @@ interface CommandResultsProps {
 }
 
 export function CommandResults({ term, onNavigate }: CommandResultsProps) {
+  const t = useT();
   const memoryHits = useQuery({ ...contextSearchQuery(term, "memory"), placeholderData: keepPreviousData });
   const skillHits = useQuery({ ...contextSearchQuery(term, "skill"), placeholderData: keepPreviousData });
   const tools = useQuery({ ...toolSearchQuery(term), placeholderData: keepPreviousData });
 
   if (!term) {
-    return (
-      <p className="px-2.5 py-8 text-center text-[13px] text-muted-foreground">
-        Busque memórias, habilidades e tools de todos os conectores.
-      </p>
-    );
+    return <p className="px-2.5 py-8 text-center text-[13px] text-muted-foreground">{t("search.hint")}</p>;
   }
 
   if (memoryHits.isPending || skillHits.isPending || tools.isPending) {
@@ -52,10 +50,10 @@ export function CommandResults({ term, onNavigate }: CommandResultsProps) {
       className={cn("flex flex-col gap-1 transition-opacity duration-200", stale && "opacity-60")}
     >
       {empty && (
-        <p className="px-2.5 py-8 text-center text-[13px] text-muted-foreground">Nada encontrado para “{term}”.</p>
+        <p className="px-2.5 py-8 text-center text-[13px] text-muted-foreground">{t("search.empty", { term })}</p>
       )}
       {memories.length > 0 && (
-        <CommandGroup label="Memórias">
+        <CommandGroup label={t("search.groups.memories")}>
           {memories.map((hit) => (
             <CommandResultLink
               key={hit.slug}
@@ -69,7 +67,7 @@ export function CommandResults({ term, onNavigate }: CommandResultsProps) {
         </CommandGroup>
       )}
       {skills.length > 0 && (
-        <CommandGroup label="Habilidades">
+        <CommandGroup label={t("search.groups.skills")}>
           {skills.map((hit) => (
             <CommandResultLink
               key={hit.slug}
@@ -83,7 +81,7 @@ export function CommandResults({ term, onNavigate }: CommandResultsProps) {
         </CommandGroup>
       )}
       {toolHits.length > 0 && (
-        <CommandGroup label="Tools">
+        <CommandGroup label={t("search.groups.tools")}>
           {toolHits.map((tool) => (
             <CommandResultLink
               key={tool.name}

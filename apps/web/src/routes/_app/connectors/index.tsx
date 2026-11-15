@@ -3,6 +3,7 @@ import { z } from "zod";
 import { FadeIn } from "@/components/ui/display/fade-in";
 import { PageHeader } from "@/components/ui/display/page-header";
 import { SearchField } from "@/components/ui/form/search-field";
+import { useT } from "@/lib/i18n";
 import { AddConnectorMenu } from "@/modules/catalog/components/add-connector-menu";
 import { CatalogView } from "@/modules/catalog/components/catalog-view";
 import { InstalledView } from "@/modules/catalog/components/installed-view";
@@ -18,14 +19,15 @@ export const Route = createFileRoute("/_app/connectors/")({
 });
 
 function ConnectorsPage() {
+  const t = useT();
   const { tab = "catalog", query = "" } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
 
   return (
     <section className="flex flex-col gap-5">
       <PageHeader
-        title={CONNECTOR_TITLE[tab]}
-        description="Conecte suas contas uma vez. Todos os agentes da organização usam."
+        title={t(CONNECTOR_TITLE[tab])}
+        description={t("catalog.description")}
         actions={
           <div className="flex items-center gap-2">
             <RefreshSourcesButton />
@@ -36,7 +38,7 @@ function ConnectorsPage() {
       {tab === "catalog" && (
         <SearchField
           value={query}
-          placeholder="Buscar no catálogo"
+          placeholder={t("catalog.search")}
           onSearch={(value) => navigate({ search: (prev) => ({ ...prev, query: value || undefined }), replace: true })}
         />
       )}

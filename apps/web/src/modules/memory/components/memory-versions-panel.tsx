@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { Button } from "@/components/ui/action/button";
 import { Skeleton } from "@/components/ui/display/skeleton";
+import { translate, translateError, useT } from "@/lib/i18n";
 import { toast } from "@/lib/toast";
 import { memoryVersionsQuery, updateMemory } from "@/modules/memory/api/memories.api";
 import { useMemoryCache } from "@/modules/memory/hooks/use-memory-cache";
@@ -15,6 +16,7 @@ interface MemoryVersionsPanelProps {
 }
 
 export function MemoryVersionsPanel({ slug, onRestored }: MemoryVersionsPanelProps) {
+  const t = useT();
   const storeMemory = useMemoryCache();
   const { data: versions, error } = useQuery(memoryVersionsQuery(slug));
   const [selected, setSelected] = useState<MemoryVersionView | null>(null);
@@ -25,13 +27,13 @@ export function MemoryVersionsPanel({ slug, onRestored }: MemoryVersionsPanelPro
       updateMemory(slug, { name: version.name, description: version.description, body: version.body }),
     onSuccess: (memory) => {
       storeMemory(memory);
-      toast("Versão restaurada.");
+      toast(translate("memory.versions.restored"));
       onRestored();
     },
-    onError: (failure) => toast(failure.message, "error"),
+    onError: (failure) => toast(translateError(failure), "error"),
   });
 
-  if (error) return <p className="text-[13px] text-destructive">{error.message}</p>;
+  if (error) return <p className="text-[13px] text-destructive">{translateError(error)}</p>;
 
   if (!versions) {
     return (
@@ -44,7 +46,7 @@ export function MemoryVersionsPanel({ slug, onRestored }: MemoryVersionsPanelPro
   }
 
   if (versions.length === 0 || !current) {
-    return <p className="text-[13px] text-muted-foreground">Nenhuma versão anterior. Cada edição salva cria uma.</p>;
+    return <p className="text-[13px] text-muted-foreground">{t("memory.versions.empty")}</p>;
   }
 
   return (
@@ -71,13 +73,17 @@ export function MemoryVersionsPanel({ slug, onRestored }: MemoryVersionsPanelPro
               {current.description && <span className="text-[12px] text-muted-foreground">{current.description}</span>}
             </div>
             <pre className="max-h-[45dvh] overflow-auto rounded-lg bg-muted/50 p-3 font-mono text-[12px] leading-relaxed break-words whitespace-pre-wrap">
-              {current.body || "Sem conteúdo."}
+              {current.body || t("memory.versions.noBody")}
             </pre>
           </motion.div>
         </AnimatePresence>
         <div className="flex justify-end">
-          <Button loading={restore.isPending} loadingText="Restaurando" onClick={() => restore.mutate(current)}>
-            Restaurar esta versão
+          <Button
+            loading={restore.isPending}
+            loadingText={t("memory.versions.restoring")}
+            onClick={() => restore.mutate(current)}
+          >
+            {t("memory.versions.restore")}
           </Button>
         </div>
       </div>

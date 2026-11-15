@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/action/button";
 import { HideNamesToggle } from "@/components/ui/action/hide-names-toggle";
 import { PageHeader } from "@/components/ui/display/page-header";
 import { SearchField } from "@/components/ui/form/search-field";
+import { useT } from "@/lib/i18n";
 import type { MemoryListFilter } from "@/modules/memory/api/memories.api";
 import { CreateMemoryDialog } from "@/modules/memory/components/create-memory-dialog";
 import { MemoryHealthCard } from "@/modules/memory/components/memory-health-card";
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/_app/memory/")({
 });
 
 function MemoryPage() {
+  const t = useT();
   const { query = "", filter = "all" } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
   const [creating, setCreating] = useState(false);
@@ -35,14 +37,14 @@ function MemoryPage() {
   return (
     <section className="flex flex-col gap-5">
       <PageHeader
-        title={MEMORY_FILTER_TITLE[filter]}
+        title={t(MEMORY_FILTER_TITLE[filter])}
         description={<MemoryTotal filter={listFilter} />}
         actions={
           <div className="flex items-center gap-2">
             <HideNamesToggle />
             <Button size="sm" onClick={() => setCreating(true)}>
               <HugeiconsIcon icon={Add01Icon} strokeWidth={1.8} />
-              Nova memória
+              {t("memory.page.create")}
             </Button>
           </div>
         }
@@ -52,7 +54,7 @@ function MemoryPage() {
           <div className="flex flex-col gap-3">
             <SearchField
               value={query}
-              placeholder="Buscar memórias"
+              placeholder={t("memory.page.search")}
               onSearch={(value) =>
                 navigate({ search: (prev) => ({ ...prev, query: value || undefined }), replace: true })
               }

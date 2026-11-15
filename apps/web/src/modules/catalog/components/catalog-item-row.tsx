@@ -3,6 +3,7 @@ import { useIsMutating } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { Button } from "@/components/ui/action/button";
+import { useT } from "@/lib/i18n";
 import { INSTALL_MUTATION_KEY, useCatalogActions } from "@/modules/catalog/hooks/use-catalog-actions";
 import { TokenDialog } from "@/modules/sources/components/token-dialog";
 import { ConnectorIcon } from "./connector-icon";
@@ -15,6 +16,7 @@ interface CatalogItemRowProps {
 }
 
 export function CatalogItemRow({ connector }: CatalogItemRowProps) {
+  const t = useT();
   const actions = useCatalogActions(connector);
   const installing = useIsMutating({ mutationKey: INSTALL_MUTATION_KEY }) > 0;
   const needsLogin = connector.installed && connector.status === "needs_auth";
@@ -48,7 +50,7 @@ export function CatalogItemRow({ connector }: CatalogItemRowProps) {
               disabled={installing}
               onClick={actions.startReconnect}
             >
-              Concluir login
+              {t("catalog.finishLogin")}
             </Button>
           )}
           {state !== "available" && <InstalledConnectorMenu connector={connector} actions={actions} />}

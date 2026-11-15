@@ -1,11 +1,12 @@
-import { ArrowLeft02Icon, Delete02Icon, HistoryIcon } from "@hugeicons/core-free-icons";
+import { ArrowLeft02Icon, HistoryIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { MemoryView } from "@runelay/shared";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { IconAction } from "@/components/ui/action/icon-action";
 import { formatDate } from "@/lib/format";
-import { DeleteMemoryDialog } from "./delete-memory-dialog";
+import { useT } from "@/lib/i18n";
+import { DeleteMemoryButton } from "./delete-memory-button";
 import { MemoryEditor } from "./memory-editor";
 import { MemoryLinks } from "./memory-links";
 import { MemoryTypePill } from "./memory-type-pill";
@@ -16,9 +17,9 @@ interface MemoryDetailProps {
 }
 
 export function MemoryDetail({ memory }: MemoryDetailProps) {
+  const t = useT();
   const [revision, setRevision] = useState(0);
   const [showingVersions, setShowingVersions] = useState(false);
-  const [deleting, setDeleting] = useState(false);
 
   return (
     <div className="flex flex-col gap-4">
@@ -27,7 +28,7 @@ export function MemoryDetail({ memory }: MemoryDetailProps) {
         className="flex w-fit items-center gap-1.5 text-[13px] text-muted-foreground transition-colors duration-200 hover:text-foreground"
       >
         <HugeiconsIcon icon={ArrowLeft02Icon} size={16} strokeWidth={1.6} />
-        Memória
+        {t("memory.detail.back")}
       </Link>
 
       <header className="flex items-start gap-3">
@@ -37,11 +38,12 @@ export function MemoryDetail({ memory }: MemoryDetailProps) {
             <MemoryTypePill type={memory.type} />
           </div>
           <p className="text-[12px] text-muted-foreground">
-            <span className="font-mono">[[{memory.slug}]]</span> · atualizada em {formatDate(memory.updatedAt)}
+            <span className="font-mono">[[{memory.slug}]]</span> ·{" "}
+            {t("memory.detail.updatedAt", { date: formatDate(memory.updatedAt) })}
           </p>
         </div>
-        <IconAction icon={HistoryIcon} label="Versões" onClick={() => setShowingVersions(true)} />
-        <IconAction icon={Delete02Icon} label="Remover" tone="destructive" onClick={() => setDeleting(true)} />
+        <IconAction icon={HistoryIcon} label={t("memory.detail.versions")} onClick={() => setShowingVersions(true)} />
+        <DeleteMemoryButton memory={memory} />
       </header>
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-start">
@@ -55,7 +57,6 @@ export function MemoryDetail({ memory }: MemoryDetailProps) {
         onOpenChange={setShowingVersions}
         onRestored={() => setRevision(revision + 1)}
       />
-      <DeleteMemoryDialog memory={memory} open={deleting} onOpenChange={setDeleting} />
     </div>
   );
 }

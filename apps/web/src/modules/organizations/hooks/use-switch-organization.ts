@@ -1,6 +1,7 @@
 import type { MeView, OrganizationView } from "@runelay/shared";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useRouter } from "@tanstack/react-router";
+import { translate, translateError } from "@/lib/i18n";
 import { toast } from "@/lib/toast";
 import { meQuery } from "@/modules/auth/api/session.api";
 import { setActiveOrganization } from "@/modules/organizations/api/organizations.api";
@@ -31,11 +32,11 @@ export const useSwitchOrganization = () => {
     },
     onSuccess: async (me) => {
       await reset(me);
-      toast(`Agora em ${me.organization.name}.`);
+      toast(translate("organizations.switcher.switched", { name: me.organization.name }));
     },
     onError: (error, _organization, previous) => {
       if (previous) queryClient.setQueryData(meQuery.queryKey, previous);
-      toast(error.message, "error");
+      toast(translateError(error), "error");
     },
   });
 };

@@ -4,6 +4,7 @@ import type { MeView, OrganizationView } from "@runelay/shared";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { Popover } from "@/components/ui/overlay/popover";
+import { useT } from "@/lib/i18n";
 import { useSwitchOrganization } from "@/modules/organizations/hooks/use-switch-organization";
 import { CreateOrganizationDialog } from "./create-organization-dialog";
 import { OrganizationOption } from "./organization-option";
@@ -14,6 +15,7 @@ interface OrganizationSwitcherProps {
 }
 
 export function OrganizationSwitcher({ me }: OrganizationSwitcherProps) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [creating, setCreating] = useState(false);
   const switchOrganization = useSwitchOrganization();
@@ -61,7 +63,7 @@ export function OrganizationSwitcher({ me }: OrganizationSwitcherProps) {
         }
       >
         <p className="px-2 pt-1 pb-1.5 text-[11px] font-medium tracking-[0.06em] text-muted-foreground uppercase">
-          Organizações
+          {t("organizations.switcher.heading")}
         </p>
         <div className="flex max-h-72 flex-col gap-0.5 overflow-y-auto">
           {me.organizations.map((organization) => (
@@ -85,7 +87,7 @@ export function OrganizationSwitcher({ me }: OrganizationSwitcherProps) {
           <span className="flex size-6 items-center justify-center">
             <HugeiconsIcon icon={Add01Icon} size={15} strokeWidth={1.8} />
           </span>
-          Nova organização
+          {t("organizations.switcher.create")}
         </button>
       </Popover>
       <CreateOrganizationDialog open={creating} onOpenChange={setCreating} />

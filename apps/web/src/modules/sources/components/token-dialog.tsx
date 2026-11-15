@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/action/button";
 import { Field } from "@/components/ui/form/field";
 import { Input } from "@/components/ui/form/input";
 import { Dialog } from "@/components/ui/overlay/dialog";
+import { useT } from "@/lib/i18n";
 
 interface TokenDialogProps {
   name: string;
@@ -14,6 +15,7 @@ interface TokenDialogProps {
 }
 
 export function TokenDialog({ name, tokenUrl, open, pending, onOpenChange, onSubmit }: TokenDialogProps) {
+  const t = useT();
   const [token, setToken] = useState("");
   const trimmed = token.trim();
 
@@ -31,12 +33,12 @@ export function TokenDialog({ name, tokenUrl, open, pending, onOpenChange, onSub
     <Dialog
       open={open}
       onOpenChange={close}
-      title={`Conectar ${name}`}
-      description={`O ${name} entra com um token seu. Ele fica cifrado no servidor e os agentes nunca veem.`}
+      title={t("sources.token.title", { name })}
+      description={t("sources.token.description", { name })}
     >
       <form onSubmit={submit} className="flex flex-col gap-4">
         <Field
-          label="Token"
+          label={t("sources.token.label")}
           hint={
             tokenUrl ? (
               <a
@@ -45,7 +47,7 @@ export function TokenDialog({ name, tokenUrl, open, pending, onOpenChange, onSub
                 rel="noreferrer"
                 className="underline-offset-4 hover:text-foreground hover:underline"
               >
-                Criar um token no {name}
+                {t("sources.token.create", { name })}
               </a>
             ) : undefined
           }
@@ -54,14 +56,14 @@ export function TokenDialog({ name, tokenUrl, open, pending, onOpenChange, onSub
             type="password"
             value={token}
             onChange={(event) => setToken(event.target.value)}
-            placeholder="Cole o token aqui"
+            placeholder={t("sources.token.placeholder")}
             autoComplete="off"
             autoFocus
           />
         </Field>
         <div className="flex justify-end">
           <Button type="submit" loading={pending} disabled={!trimmed}>
-            Conectar
+            {t("sources.token.submit")}
           </Button>
         </div>
       </form>

@@ -2,6 +2,7 @@ import type { SourceView } from "@runelay/shared";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { type FormEvent, useState } from "react";
 import { Button } from "@/components/ui/action/button";
+import { translate, translateError, translateMessage, useT } from "@/lib/i18n";
 import { toast } from "@/lib/toast";
 import { sourcesQuery, updateSource } from "@/modules/sources/api/sources.api";
 import { STATUS_LABEL } from "@/modules/sources/constants/source.constants";
@@ -14,6 +15,7 @@ interface SourceEditorProps {
 }
 
 export function SourceEditor({ source }: SourceEditorProps) {
+  const t = useT();
   const queryClient = useQueryClient();
   const [draft, setDraft] = useState(() => draftFromConfig(source.config));
   const [submitted, setSubmitted] = useState(false);
@@ -25,11 +27,14 @@ export function SourceEditor({ source }: SourceEditorProps) {
       queryClient.setQueryData(["sources", source.name], updated);
       queryClient.invalidateQueries({ queryKey: sourcesQuery.queryKey });
       toast(
-        `Salvo. ${source.name}: ${STATUS_LABEL[updated.status].toLowerCase()}.`,
+        translate("sources.editor.saved", {
+          name: source.name,
+          status: translate(STATUS_LABEL[updated.status]).toLowerCase(),
+        }),
         updated.status === "ok" ? "success" : "info",
       );
     },
-    onError: (error) => toast(error.message, "error"),
+    onError: (error) => toast(translateError(error), "error"),
   });
 
   const submit = (event: FormEvent) => {
@@ -41,10 +46,12 @@ export function SourceEditor({ source }: SourceEditorProps) {
   return (
     <form onSubmit={submit} className="flex flex-col gap-4 rounded-xl bg-card p-4 sm:p-5">
       <SourceConfigFields draft={draft} onChange={setDraft} lockKind />
-      {submitted && !parsed.success && <p className="text-xs text-destructive">{parsed.error.issues[0]?.message}</p>}
+      {submitted && !parsed.success && (
+        <p className="text-xs text-destructive">{translateMessage(parsed.error.issues[0]?.message ?? "")}</p>
+      )}
       <div className="flex justify-end">
-        <Button type="submit" loading={save.isPending} loadingText="Salvando e testando">
-          Salvar e testar
+        <Button type="submit" loading={save.isPending} loadingText={t("sources.editor.submitting")}>
+          {t("sources.editor.submit")}
         </Button>
       </div>
     </form>

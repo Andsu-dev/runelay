@@ -3,6 +3,7 @@ import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { MotionConfig } from "motion/react";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import "@/lib/i18n/locale";
 import { queryClient } from "@/lib/query-client";
 import { startSound } from "@/lib/sound";
 import { routeTree } from "@/routeTree.gen";

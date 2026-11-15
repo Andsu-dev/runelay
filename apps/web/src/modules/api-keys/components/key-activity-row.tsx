@@ -1,11 +1,10 @@
 import type { AuditEventView } from "@runelay/shared";
+import { formatShortDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 interface KeyActivityRowProps {
   event: AuditEventView;
 }
-
-const TIME_FORMAT = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "medium" });
 
 export function KeyActivityRow({ event }: KeyActivityRowProps) {
   return (
@@ -20,7 +19,7 @@ export function KeyActivityRow({ event }: KeyActivityRowProps) {
       )}
       {event.ip && <span className="hidden shrink-0 text-xs text-muted-foreground sm:inline">{event.ip}</span>}
       <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
-        {TIME_FORMAT.format(new Date(event.createdAt))}
+        {formatShortDateTime(event.createdAt)}
       </span>
     </li>
   );

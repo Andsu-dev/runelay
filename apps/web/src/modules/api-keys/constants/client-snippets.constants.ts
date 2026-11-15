@@ -29,8 +29,10 @@ export const CLIENT_SNIPPETS = [
   },
   {
     client: "Todos de uma vez",
+    labelKey: "apiKeys.snippets.allClients",
     logo: null,
     file: "no seu computador, dentro do repo",
+    fileKey: "apiKeys.snippets.allClientsFile",
     build: (_url: string, key: string) =>
       `RUNELAY_URL=${window.location.origin} RUNELAY_API_KEY=${key} bun run install-clients`,
   },

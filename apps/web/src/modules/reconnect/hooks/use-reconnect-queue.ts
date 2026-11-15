@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { translateError } from "@/lib/i18n";
 import { openPendingTab, sendTab } from "@/lib/oauth-tab";
 import { toast } from "@/lib/toast";
 import { RECONNECT_POLL_MS, type ReconnectRowState } from "@/modules/reconnect/constants/reconnect.constants";
@@ -34,7 +35,7 @@ export const useReconnectQueue = () => {
     onError: (error, { tab }) => {
       tab?.close();
       setWaiting(null);
-      toast(error.message, "error");
+      toast(translateError(error), "error");
     },
   });
 

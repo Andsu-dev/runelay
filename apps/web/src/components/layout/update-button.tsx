@@ -5,6 +5,7 @@ import { motion } from "motion/react";
 import { useState } from "react";
 import { Button } from "@/components/ui/action/button";
 import { Popover } from "@/components/ui/overlay/popover";
+import { translate, translateError, useT } from "@/lib/i18n";
 import { toast } from "@/lib/toast";
 import {
   DESKTOP_DOWNLOAD_URL,
@@ -16,6 +17,7 @@ import {
 import { ReleaseNotes } from "@/modules/system/components/release-notes";
 
 export function UpdateButton() {
+  const t = useT();
   const { data } = useQuery(versionQuery);
   const [open, setOpen] = useState(false);
   const [updating, setUpdating] = useState(false);
@@ -26,7 +28,7 @@ export function UpdateButton() {
     navigator.clipboard.writeText(UPDATE_COMMAND).then(
       () => {
         setOpen(false);
-        toast("Comando copiado. Rode no servidor para atualizar.", "info");
+        toast(translate("layout.update.commandCopied"), "info");
       },
       () => toast(UPDATE_COMMAND, "info", 8000),
     );
@@ -36,17 +38,17 @@ export function UpdateButton() {
     setUpdating(true);
     startUpdate()
       .then(() => {
-        toast(`Atualizando para a ${data.latest}. A página recarrega sozinha.`, "info", 6000);
+        toast(translate("layout.update.updatingToast", { version: data.latest ?? "" }), "info", 6000);
         return waitForVersionChange(data.current);
       })
       .then((changed) => {
         if (changed) return window.location.reload();
         setUpdating(false);
-        toast("A atualização não terminou. Veja os logs do servidor.", "error");
+        toast(translate("layout.update.unfinished"), "error");
       })
       .catch((error: Error) => {
         setUpdating(false);
-        toast(error.message, "error");
+        toast(translateError(error), "error");
       });
   };
 
@@ -62,7 +64,11 @@ export function UpdateButton() {
         <motion.button
           type="button"
           disabled={updating}
-          aria-label={updating ? `Atualizando para a ${data.latest}` : `runelay ${data.latest} disponível`}
+          aria-label={
+            updating
+              ? t("layout.update.updatingTo", { version: data.latest ?? "" })
+              : t("layout.update.available", { version: data.latest ?? "" })
+          }
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           whileTap={{ scale: 0.92 }}
@@ -82,8 +88,12 @@ export function UpdateButton() {
     >
       <div className="flex flex-col gap-3 p-4">
         <div className="flex flex-col gap-0.5">
-          <span className="text-[13px] font-semibold">runelay {data.latest} disponível</span>
-          <span className="text-[12px] text-muted-foreground">Você está na {data.current}.</span>
+          <span className="text-[13px] font-semibold">
+            {t("layout.update.available", { version: data.latest ?? "" })}
+          </span>
+          <span className="text-[12px] text-muted-foreground">
+            {t("layout.update.currentVersion", { version: data.current })}
+          </span>
         </div>
         {data.notes && <ReleaseNotes notes={data.notes} />}
         {data.releaseUrl && (
@@ -93,27 +103,27 @@ export function UpdateButton() {
             rel="noreferrer"
             className="text-[12px] text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
           >
-            Ver a release no GitHub
+            {t("layout.update.viewRelease")}
           </a>
         )}
         <p className="text-[12px] text-muted-foreground">
           {data.desktop
-            ? "Baixe o app novo e arraste para Aplicativos. Seus dados ficam."
+            ? t("layout.update.desktopHint")
             : data.canUpdate
-              ? "O servidor baixa a versão nova e reinicia em menos de um minuto. A página recarrega sozinha."
-              : "Este servidor não atualiza pelo painel. Rode o comando no servidor."}
+              ? t("layout.update.serverHint")
+              : t("layout.update.manualHint")}
         </p>
         <div className="flex justify-end gap-2">
           <Button variant="ghost" size="sm" onClick={() => setOpen(false)}>
-            Agora não
+            {t("layout.update.notNow")}
           </Button>
           {data.desktop ? (
             <Button size="sm" cue="tap" onClick={() => window.open(DESKTOP_DOWNLOAD_URL, "_blank")}>
-              Baixar
+              {t("layout.update.download")}
             </Button>
           ) : (
             <Button size="sm" cue="tap" onClick={data.canUpdate ? update : copyCommand}>
-              {data.canUpdate ? "Atualizar" : "Copiar comando"}
+              {data.canUpdate ? t("layout.update.update") : t("common.actions.copyCommand")}
             </Button>
           )}
         </div>

@@ -14,6 +14,7 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppApiKeysRouteImport } from './routes/_app/api-keys'
 import { Route as AppOverviewRouteImport } from './routes/_app/overview'
+import { Route as AppSettingsRouteImport } from './routes/_app/settings'
 import { Route as AppSetupRouteImport } from './routes/_app/setup'
 import { Route as CliAuthorizeRouteImport } from './routes/cli/authorize'
 import { Route as SourcesIndexRouteImport } from './routes/sources/index'
@@ -23,6 +24,11 @@ import { Route as AppConnectorsNameRouteImport } from './routes/_app/connectors/
 import { Route as AppConnectorsReconnectRouteImport } from './routes/_app/connectors/reconnect'
 import { Route as AppMemoryIndexRouteImport } from './routes/_app/memory/index'
 import { Route as AppMemorySlugRouteImport } from './routes/_app/memory/$slug'
+import { Route as AppSettingsIndexRouteImport } from './routes/_app/settings/index'
+import { Route as AppSettingsAboutRouteImport } from './routes/_app/settings/about'
+import { Route as AppSettingsPreferencesRouteImport } from './routes/_app/settings/preferences'
+import { Route as AppSettingsProfileRouteImport } from './routes/_app/settings/profile'
+import { Route as AppSettingsServerRouteImport } from './routes/_app/settings/server'
 import { Route as AppSkillsIndexRouteImport } from './routes/_app/skills/index'
 import { Route as AppSkillsSlugRouteImport } from './routes/_app/skills/$slug'
 
@@ -48,6 +54,11 @@ const AppApiKeysRoute = AppApiKeysRouteImport.update({
 const AppOverviewRoute = AppOverviewRouteImport.update({
   id: '/overview',
   path: '/overview',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => AppRoute,
 } as any)
 const AppSetupRoute = AppSetupRouteImport.update({
@@ -95,6 +106,31 @@ const AppMemorySlugRoute = AppMemorySlugRouteImport.update({
   path: '/memory/$slug',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSettingsIndexRoute = AppSettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppSettingsRoute,
+} as any)
+const AppSettingsAboutRoute = AppSettingsAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => AppSettingsRoute,
+} as any)
+const AppSettingsPreferencesRoute = AppSettingsPreferencesRouteImport.update({
+  id: '/preferences',
+  path: '/preferences',
+  getParentRoute: () => AppSettingsRoute,
+} as any)
+const AppSettingsProfileRoute = AppSettingsProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AppSettingsRoute,
+} as any)
+const AppSettingsServerRoute = AppSettingsServerRouteImport.update({
+  id: '/server',
+  path: '/server',
+  getParentRoute: () => AppSettingsRoute,
+} as any)
 const AppSkillsIndexRoute = AppSkillsIndexRouteImport.update({
   id: '/skills/',
   path: '/skills/',
@@ -111,6 +147,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/api-keys': typeof AppApiKeysRoute
   '/overview': typeof AppOverviewRoute
+  '/settings': typeof AppSettingsRouteWithChildren
   '/setup': typeof AppSetupRoute
   '/cli/authorize': typeof CliAuthorizeRoute
   '/sources/$name': typeof SourcesNameRoute
@@ -118,9 +155,14 @@ export interface FileRoutesByFullPath {
   '/connectors/$name': typeof AppConnectorsNameRoute
   '/connectors/reconnect': typeof AppConnectorsReconnectRoute
   '/memory/$slug': typeof AppMemorySlugRoute
+  '/settings/about': typeof AppSettingsAboutRoute
+  '/settings/preferences': typeof AppSettingsPreferencesRoute
+  '/settings/profile': typeof AppSettingsProfileRoute
+  '/settings/server': typeof AppSettingsServerRoute
   '/skills/$slug': typeof AppSkillsSlugRoute
   '/connectors/': typeof AppConnectorsIndexRoute
   '/memory/': typeof AppMemoryIndexRoute
+  '/settings/': typeof AppSettingsIndexRoute
   '/skills/': typeof AppSkillsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -135,9 +177,14 @@ export interface FileRoutesByTo {
   '/connectors/$name': typeof AppConnectorsNameRoute
   '/connectors/reconnect': typeof AppConnectorsReconnectRoute
   '/memory/$slug': typeof AppMemorySlugRoute
+  '/settings/about': typeof AppSettingsAboutRoute
+  '/settings/preferences': typeof AppSettingsPreferencesRoute
+  '/settings/profile': typeof AppSettingsProfileRoute
+  '/settings/server': typeof AppSettingsServerRoute
   '/skills/$slug': typeof AppSkillsSlugRoute
   '/connectors': typeof AppConnectorsIndexRoute
   '/memory': typeof AppMemoryIndexRoute
+  '/settings': typeof AppSettingsIndexRoute
   '/skills': typeof AppSkillsIndexRoute
 }
 export interface FileRoutesById {
@@ -147,6 +194,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_app/api-keys': typeof AppApiKeysRoute
   '/_app/overview': typeof AppOverviewRoute
+  '/_app/settings': typeof AppSettingsRouteWithChildren
   '/_app/setup': typeof AppSetupRoute
   '/cli/authorize': typeof CliAuthorizeRoute
   '/sources/$name': typeof SourcesNameRoute
@@ -154,9 +202,14 @@ export interface FileRoutesById {
   '/_app/connectors/$name': typeof AppConnectorsNameRoute
   '/_app/connectors/reconnect': typeof AppConnectorsReconnectRoute
   '/_app/memory/$slug': typeof AppMemorySlugRoute
+  '/_app/settings/about': typeof AppSettingsAboutRoute
+  '/_app/settings/preferences': typeof AppSettingsPreferencesRoute
+  '/_app/settings/profile': typeof AppSettingsProfileRoute
+  '/_app/settings/server': typeof AppSettingsServerRoute
   '/_app/skills/$slug': typeof AppSkillsSlugRoute
   '/_app/connectors/': typeof AppConnectorsIndexRoute
   '/_app/memory/': typeof AppMemoryIndexRoute
+  '/_app/settings/': typeof AppSettingsIndexRoute
   '/_app/skills/': typeof AppSkillsIndexRoute
 }
 export interface FileRouteTypes {
@@ -166,6 +219,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/api-keys'
     | '/overview'
+    | '/settings'
     | '/setup'
     | '/cli/authorize'
     | '/sources/$name'
@@ -173,9 +227,14 @@ export interface FileRouteTypes {
     | '/connectors/$name'
     | '/connectors/reconnect'
     | '/memory/$slug'
+    | '/settings/about'
+    | '/settings/preferences'
+    | '/settings/profile'
+    | '/settings/server'
     | '/skills/$slug'
     | '/connectors/'
     | '/memory/'
+    | '/settings/'
     | '/skills/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -190,9 +249,14 @@ export interface FileRouteTypes {
     | '/connectors/$name'
     | '/connectors/reconnect'
     | '/memory/$slug'
+    | '/settings/about'
+    | '/settings/preferences'
+    | '/settings/profile'
+    | '/settings/server'
     | '/skills/$slug'
     | '/connectors'
     | '/memory'
+    | '/settings'
     | '/skills'
   id:
     | '__root__'
@@ -201,6 +265,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/_app/api-keys'
     | '/_app/overview'
+    | '/_app/settings'
     | '/_app/setup'
     | '/cli/authorize'
     | '/sources/$name'
@@ -208,9 +273,14 @@ export interface FileRouteTypes {
     | '/_app/connectors/$name'
     | '/_app/connectors/reconnect'
     | '/_app/memory/$slug'
+    | '/_app/settings/about'
+    | '/_app/settings/preferences'
+    | '/_app/settings/profile'
+    | '/_app/settings/server'
     | '/_app/skills/$slug'
     | '/_app/connectors/'
     | '/_app/memory/'
+    | '/_app/settings/'
     | '/_app/skills/'
   fileRoutesById: FileRoutesById
 }
@@ -258,6 +328,13 @@ declare module '@tanstack/react-router' {
       path: '/overview'
       fullPath: '/overview'
       preLoaderRoute: typeof AppOverviewRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/settings': {
+      id: '/_app/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/setup': {
@@ -323,6 +400,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMemorySlugRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/settings/': {
+      id: '/_app/settings/'
+      path: '/'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof AppSettingsIndexRouteImport
+      parentRoute: typeof AppSettingsRoute
+    }
+    '/_app/settings/about': {
+      id: '/_app/settings/about'
+      path: '/about'
+      fullPath: '/settings/about'
+      preLoaderRoute: typeof AppSettingsAboutRouteImport
+      parentRoute: typeof AppSettingsRoute
+    }
+    '/_app/settings/preferences': {
+      id: '/_app/settings/preferences'
+      path: '/preferences'
+      fullPath: '/settings/preferences'
+      preLoaderRoute: typeof AppSettingsPreferencesRouteImport
+      parentRoute: typeof AppSettingsRoute
+    }
+    '/_app/settings/profile': {
+      id: '/_app/settings/profile'
+      path: '/profile'
+      fullPath: '/settings/profile'
+      preLoaderRoute: typeof AppSettingsProfileRouteImport
+      parentRoute: typeof AppSettingsRoute
+    }
+    '/_app/settings/server': {
+      id: '/_app/settings/server'
+      path: '/server'
+      fullPath: '/settings/server'
+      preLoaderRoute: typeof AppSettingsServerRouteImport
+      parentRoute: typeof AppSettingsRoute
+    }
     '/_app/skills/': {
       id: '/_app/skills/'
       path: '/skills'
@@ -340,9 +452,30 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AppSettingsRouteChildren {
+  AppSettingsAboutRoute: typeof AppSettingsAboutRoute
+  AppSettingsPreferencesRoute: typeof AppSettingsPreferencesRoute
+  AppSettingsProfileRoute: typeof AppSettingsProfileRoute
+  AppSettingsServerRoute: typeof AppSettingsServerRoute
+  AppSettingsIndexRoute: typeof AppSettingsIndexRoute
+}
+
+const AppSettingsRouteChildren: AppSettingsRouteChildren = {
+  AppSettingsAboutRoute: AppSettingsAboutRoute,
+  AppSettingsPreferencesRoute: AppSettingsPreferencesRoute,
+  AppSettingsProfileRoute: AppSettingsProfileRoute,
+  AppSettingsServerRoute: AppSettingsServerRoute,
+  AppSettingsIndexRoute: AppSettingsIndexRoute,
+}
+
+const AppSettingsRouteWithChildren = AppSettingsRoute._addFileChildren(
+  AppSettingsRouteChildren,
+)
+
 interface AppRouteChildren {
   AppApiKeysRoute: typeof AppApiKeysRoute
   AppOverviewRoute: typeof AppOverviewRoute
+  AppSettingsRoute: typeof AppSettingsRouteWithChildren
   AppSetupRoute: typeof AppSetupRoute
   AppConnectorsNameRoute: typeof AppConnectorsNameRoute
   AppConnectorsReconnectRoute: typeof AppConnectorsReconnectRoute
@@ -356,6 +489,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppApiKeysRoute: AppApiKeysRoute,
   AppOverviewRoute: AppOverviewRoute,
+  AppSettingsRoute: AppSettingsRouteWithChildren,
   AppSetupRoute: AppSetupRoute,
   AppConnectorsNameRoute: AppConnectorsNameRoute,
   AppConnectorsReconnectRoute: AppConnectorsReconnectRoute,

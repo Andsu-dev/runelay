@@ -1,4 +1,5 @@
 import { useCallback, useRef } from "react";
+import { useT } from "@/lib/i18n";
 
 interface LoadMoreSentinelProps {
   active: boolean;
@@ -8,6 +9,7 @@ interface LoadMoreSentinelProps {
 }
 
 export function LoadMoreSentinel({ active, busy, onReach, rootMargin = "240px" }: LoadMoreSentinelProps) {
+  const t = useT();
   const onReachRef = useRef(onReach);
   onReachRef.current = onReach;
 
@@ -30,7 +32,7 @@ export function LoadMoreSentinel({ active, busy, onReach, rootMargin = "240px" }
 
   return (
     <div ref={active ? attach : undefined} className="flex h-10 items-center justify-center">
-      {busy && <p className="text-[12px] text-muted-foreground">Carregando</p>}
+      {busy && <p className="text-[12px] text-muted-foreground">{t("common.states.loading")}</p>}
     </div>
   );
 }

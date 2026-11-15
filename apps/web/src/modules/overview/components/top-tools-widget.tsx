@@ -2,6 +2,7 @@ import { Wrench01Icon } from "@hugeicons/core-free-icons";
 import type { RankedCountView } from "@runelay/shared";
 import { useQuery } from "@tanstack/react-query";
 import { formatNumber } from "@/lib/format";
+import { useT } from "@/lib/i18n";
 import { ConnectorIcon } from "@/modules/catalog/components/connector-icon";
 import { sourcesQuery } from "@/modules/sources/api/sources.api";
 import { WidgetCard } from "./widget-card";
@@ -11,13 +12,14 @@ interface TopToolsWidgetProps {
 }
 
 export function TopToolsWidget({ items }: TopToolsWidgetProps) {
+  const t = useT();
   const { data: sources } = useQuery(sourcesQuery);
   const iconOf = (name: string) => sources?.find((source) => source.name === name)?.icon ?? null;
 
   return (
-    <WidgetCard icon={Wrench01Icon} title="Tools mais usadas">
+    <WidgetCard icon={Wrench01Icon} title={t("overview.topTools.title")}>
       {items.length === 0 ? (
-        <p className="text-[13px] text-muted-foreground">Nenhuma tool foi chamada no período.</p>
+        <p className="text-[13px] text-muted-foreground">{t("overview.topTools.empty")}</p>
       ) : (
         <ol className="flex flex-col gap-0.5">
           {items.map((item, index) => {

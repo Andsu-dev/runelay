@@ -6,6 +6,7 @@ import { SegmentedControl } from "@/components/ui/display/segmented-control";
 import { Field } from "@/components/ui/form/field";
 import { Input } from "@/components/ui/form/input";
 import { Textarea } from "@/components/ui/form/textarea";
+import { translate, translateError, translateMessage, useT } from "@/lib/i18n";
 import { toast } from "@/lib/toast";
 import { updateMemory } from "@/modules/memory/api/memories.api";
 import { MEMORY_TYPE_OPTIONS } from "@/modules/memory/constants/memory.constants";
@@ -17,6 +18,7 @@ interface MemoryEditorProps {
 }
 
 export function MemoryEditor({ memory }: MemoryEditorProps) {
+  const t = useT();
   const storeMemory = useMemoryCache();
   const [draft, setDraft] = useState({
     name: memory.name,
@@ -30,16 +32,19 @@ export function MemoryEditor({ memory }: MemoryEditorProps) {
     draft.description !== memory.description ||
     draft.type !== memory.type ||
     draft.body !== memory.body;
-  const issueFor = (field: string) =>
-    parsed.success ? undefined : parsed.error.issues.find((issue) => issue.path[0] === field)?.message;
+  const issueFor = (field: string) => {
+    const message = parsed.success ? undefined : parsed.error.issues.find((issue) => issue.path[0] === field)?.message;
+    return message && translateMessage(message);
+  };
+  const typeOptions = MEMORY_TYPE_OPTIONS.map((option) => ({ ...option, label: t(option.label) }));
 
   const save = useMutation({
     mutationFn: () => updateMemory(memory.slug, draft),
     onSuccess: (updated) => {
       storeMemory(updated);
-      toast("Memória salva.");
+      toast(translate("memory.editor.saved"));
     },
-    onError: (error) => toast(error.message, "error"),
+    onError: (error) => toast(translateError(error), "error"),
   });
 
   const submit = (event: FormEvent) => {
@@ -50,27 +55,27 @@ export function MemoryEditor({ memory }: MemoryEditorProps) {
   return (
     <form onSubmit={submit} className="flex flex-col gap-4 rounded-xl bg-card p-4 sm:p-5">
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Nome" error={issueFor("name")}>
+        <Field label={t("memory.fields.name")} error={issueFor("name")}>
           <Input value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} />
         </Field>
         <div className="flex flex-col gap-1.5">
-          <span className="text-[13px] font-medium">Tipo</span>
+          <span className="text-[13px] font-medium">{t("memory.fields.type")}</span>
           <SegmentedControl
-            label="Tipo"
-            options={MEMORY_TYPE_OPTIONS}
+            label={t("memory.fields.type")}
+            options={typeOptions}
             value={draft.type}
             onChange={(type) => setDraft({ ...draft, type })}
           />
         </div>
       </div>
-      <Field label="Descrição" error={issueFor("description")}>
+      <Field label={t("memory.fields.description")} error={issueFor("description")}>
         <Input
           value={draft.description}
           onChange={(event) => setDraft({ ...draft, description: event.target.value })}
         />
       </Field>
       <MemoryPinSwitch memory={memory} />
-      <Field label="Conteúdo" error={issueFor("body")}>
+      <Field label={t("memory.fields.body")} error={issueFor("body")}>
         <Textarea
           value={draft.body}
           onChange={(event) => setDraft({ ...draft, body: event.target.value })}
@@ -86,11 +91,16 @@ export function MemoryEditor({ memory }: MemoryEditorProps) {
               setDraft({ name: memory.name, description: memory.description, type: memory.type, body: memory.body })
             }
           >
-            Descartar
+            {t("memory.editor.discard")}
           </Button>
         )}
-        <Button type="submit" loading={save.isPending} loadingText="Salvando" disabled={!dirty || !parsed.success}>
-          Salvar
+        <Button
+          type="submit"
+          loading={save.isPending}
+          loadingText={t("memory.editor.saving")}
+          disabled={!dirty || !parsed.success}
+        >
+          {t("memory.editor.save")}
         </Button>
       </div>
     </form>

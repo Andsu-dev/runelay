@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { CommandBlock } from "@/components/ui/display/command-block";
+import { useT } from "@/lib/i18n";
 import { CLIENT_SNIPPETS } from "@/modules/api-keys/constants/client-snippets.constants";
 import { TIMELINE_EASE } from "@/modules/setup/constants/setup.constants";
 import { ClientChip } from "./client-chip";
@@ -13,6 +14,7 @@ interface ClientBranchesProps {
 const FORK = "M1 0 C1 14, 8 20, 24 20";
 
 export function ClientBranches({ apiKey, secret }: ClientBranchesProps) {
+  const t = useT();
   const [selected, setSelected] = useState<string>(CLIENT_SNIPPETS[0].client);
   const url = `${window.location.origin}/v1/mcp`;
   const active = CLIENT_SNIPPETS.find((snippet) => snippet.client === selected);
@@ -32,14 +34,14 @@ export function ClientBranches({ apiKey, secret }: ClientBranchesProps) {
       </svg>
       <div className="flex flex-col gap-3">
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-5">
-          {CLIENT_SNIPPETS.map(({ client, logo }, order) => (
+          {CLIENT_SNIPPETS.map((snippet, order) => (
             <ClientChip
-              key={client}
-              client={client}
-              logo={logo}
+              key={snippet.client}
+              client={"labelKey" in snippet ? t(snippet.labelKey) : snippet.client}
+              logo={snippet.logo}
               order={order}
-              selected={selected === client}
-              onSelect={() => setSelected(client)}
+              selected={selected === snippet.client}
+              onSelect={() => setSelected(snippet.client)}
             />
           ))}
         </div>
@@ -53,11 +55,15 @@ export function ClientBranches({ apiKey, secret }: ClientBranchesProps) {
               transition={{ duration: 0.35, ease: TIMELINE_EASE }}
               className="flex flex-col gap-1.5"
             >
-              <span className="text-xs text-muted-foreground">{active.file}</span>
+              <span className="text-xs text-muted-foreground">
+                {"fileKey" in active ? t(active.fileKey) : active.file}
+              </span>
               <CommandBlock
                 value={active.build(url, apiKey)}
                 secret={secret}
-                label={`Copiar config do ${active.client}`}
+                label={t("setup.copyClientConfig", {
+                  client: "labelKey" in active ? t(active.labelKey) : active.client,
+                })}
               />
             </motion.div>
           )}

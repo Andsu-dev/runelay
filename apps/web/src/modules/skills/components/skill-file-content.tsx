@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "motion/react";
 import { Skeleton } from "@/components/ui/display/skeleton";
+import { translateError } from "@/lib/i18n";
 import { skillFileQuery } from "@/modules/skills/api/skills.api";
 
 interface SkillFileContentProps {
@@ -25,7 +26,7 @@ export function SkillFileContent({ slug, path }: SkillFileContentProps) {
         </motion.pre>
       ) : error ? (
         <p key="error" className="text-[13px] text-destructive">
-          {error.message}
+          {translateError(error)}
         </p>
       ) : (
         <motion.div key="loading" exit={{ opacity: 0 }} className="flex flex-col gap-2">

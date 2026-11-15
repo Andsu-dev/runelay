@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/ui/display/empty-state";
 import { FadeIn } from "@/components/ui/display/fade-in";
 import { Skeleton } from "@/components/ui/display/skeleton";
 import { UI_SPRING } from "@/components/ui/display/spring";
+import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { type MemoryListFilter, memoriesQuery } from "@/modules/memory/api/memories.api";
 import { MemoryRow } from "./memory-row";
@@ -17,6 +18,7 @@ interface MemoryListProps {
 }
 
 export function MemoryList({ filter }: MemoryListProps) {
+  const t = useT();
   const { data, isPending, isPlaceholderData, hasNextPage, isFetchingNextPage, fetchNextPage } = useInfiniteQuery({
     ...memoriesQuery(filter),
     placeholderData: keepPreviousData,
@@ -38,12 +40,8 @@ export function MemoryList({ filter }: MemoryListProps) {
     return (
       <EmptyState
         icon={Brain02Icon}
-        title={filter.query ? `Nenhuma memória com “${filter.query}”` : "Nenhuma memória aqui"}
-        description={
-          filter.query
-            ? "Tente outro termo. A busca olha nome, descrição e conteúdo."
-            : "Crie uma memória ou importe o vault com o CLI: bun run import."
-        }
+        title={filter.query ? t("memory.list.emptyQueryTitle", { query: filter.query }) : t("memory.list.emptyTitle")}
+        description={filter.query ? t("memory.list.emptyQueryDescription") : t("memory.list.emptyDescription")}
       />
     );
   }

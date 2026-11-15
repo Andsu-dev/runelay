@@ -1,12 +1,13 @@
 import { AnimatePresence, motion } from "motion/react";
 import { Popover as PopoverPrimitive } from "radix-ui";
-import { createContext, type ReactNode, use, useRef } from "react";
+import { createContext, type ReactNode, type RefObject, use, useRef } from "react";
 import { cn } from "@/lib/utils";
 
 interface PopoverProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  trigger: ReactNode;
+  trigger?: ReactNode;
+  anchorRef?: RefObject<HTMLElement | null>;
   children: ReactNode;
   align?: "start" | "center" | "end";
   side?: "top" | "right" | "bottom" | "left";
@@ -27,6 +28,7 @@ export function Popover({
   open,
   onOpenChange,
   trigger,
+  anchorRef,
   children,
   align = "start",
   side = "bottom",
@@ -42,7 +44,8 @@ export function Popover({
 }: PopoverProps) {
   const inherited = use(FitViewportContext);
   const fit = fitViewport ?? inherited;
-  const triggerRef = useRef<HTMLButtonElement>(null);
+  const ownTriggerRef = useRef<HTMLButtonElement>(null);
+  const triggerRef = anchorRef ?? ownTriggerRef;
   const keyboardRef = useRef(false);
   const insideRef = useRef(false);
 
@@ -76,9 +79,13 @@ export function Popover({
 
   return (
     <PopoverPrimitive.Root open={open} onOpenChange={onOpenChange} modal={modal}>
-      <PopoverPrimitive.Trigger ref={triggerRef} asChild>
-        {trigger}
-      </PopoverPrimitive.Trigger>
+      {anchorRef ? (
+        <PopoverPrimitive.Anchor virtualRef={anchorRef as RefObject<HTMLElement>} />
+      ) : (
+        <PopoverPrimitive.Trigger ref={ownTriggerRef} asChild>
+          {trigger}
+        </PopoverPrimitive.Trigger>
+      )}
 
       <AnimatePresence>
         {open && (

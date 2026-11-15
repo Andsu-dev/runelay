@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 interface MemoryLinkChipProps {
@@ -7,6 +8,7 @@ interface MemoryLinkChipProps {
 }
 
 export function MemoryLinkChip({ slug, broken = false }: MemoryLinkChipProps) {
+  const t = useT();
   const className = cn(
     "inline-flex min-h-8 items-center rounded-md px-2 font-mono text-[12px] transition-colors duration-200 sm:min-h-7",
     broken
@@ -16,7 +18,7 @@ export function MemoryLinkChip({ slug, broken = false }: MemoryLinkChipProps) {
 
   if (broken) {
     return (
-      <span className={className} title="Essa memória não existe">
+      <span className={className} title={t("memory.links.missing")}>
         [[{slug}]]
       </span>
     );

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/action/button";
 import { IconAction } from "@/components/ui/action/icon-action";
 import { Textarea } from "@/components/ui/form/textarea";
+import { translate, translateError, useT } from "@/lib/i18n";
 import { toast } from "@/lib/toast";
 import { skillQuery, updateSkill } from "@/modules/skills/api/skills.api";
 
@@ -14,6 +15,7 @@ interface SkillBodyProps {
 }
 
 export function SkillBody({ skill }: SkillBodyProps) {
+  const t = useT();
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(skill.body);
@@ -24,9 +26,9 @@ export function SkillBody({ skill }: SkillBodyProps) {
       queryClient.setQueryData(skillQuery(skill.slug).queryKey, updated);
       queryClient.invalidateQueries({ queryKey: ["skills", "list"] });
       setEditing(false);
-      toast("Habilidade salva.");
+      toast(translate("skills.body.saved"));
     },
-    onError: (error) => toast(error.message, "error"),
+    onError: (error) => toast(translateError(error), "error"),
   });
 
   const startEditing = () => {
@@ -38,7 +40,7 @@ export function SkillBody({ skill }: SkillBodyProps) {
     <section className="flex flex-col gap-2 rounded-xl bg-card p-4 sm:p-5">
       <header className="flex min-h-8 items-center gap-2">
         <h2 className="flex-1 text-[13px] font-semibold">SKILL.md</h2>
-        {!editing && <IconAction icon={Edit02Icon} label="Editar" onClick={startEditing} />}
+        {!editing && <IconAction icon={Edit02Icon} label={t("skills.body.edit")} onClick={startEditing} />}
       </header>
       <AnimatePresence initial={false} mode="wait">
         {editing ? (
@@ -62,10 +64,10 @@ export function SkillBody({ skill }: SkillBodyProps) {
             />
             <div className="flex justify-end gap-2">
               <Button type="button" variant="glass" onClick={() => setEditing(false)} disabled={save.isPending}>
-                Cancelar
+                {t("skills.body.cancel")}
               </Button>
               <Button type="submit" loading={save.isPending} disabled={draft === skill.body}>
-                Salvar
+                {t("skills.body.save")}
               </Button>
             </div>
           </motion.form>
@@ -78,7 +80,7 @@ export function SkillBody({ skill }: SkillBodyProps) {
             transition={{ duration: 0.18 }}
             className="max-h-[70dvh] overflow-auto rounded-lg bg-muted/50 p-4 font-mono text-[12px] leading-relaxed break-words whitespace-pre-wrap"
           >
-            {skill.body || "Sem conteúdo."}
+            {skill.body || t("skills.body.empty")}
           </motion.pre>
         )}
       </AnimatePresence>

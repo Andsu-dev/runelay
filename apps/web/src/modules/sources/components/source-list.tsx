@@ -3,6 +3,7 @@ import type { SourceView } from "@runelay/shared";
 import { AnimatePresence, motion } from "motion/react";
 import { EmptyState } from "@/components/ui/display/empty-state";
 import { UI_SPRING } from "@/components/ui/display/spring";
+import { useT } from "@/lib/i18n";
 import { SourceCard } from "./source-card";
 
 interface SourceListProps {
@@ -10,13 +11,11 @@ interface SourceListProps {
 }
 
 export function SourceList({ sources }: SourceListProps) {
+  const t = useT();
+
   if (sources.length === 0) {
     return (
-      <EmptyState
-        icon={PlugSocketIcon}
-        title="Nenhum conector instalado"
-        description="Instale pelo catálogo, adicione uma conexão personalizada ou importe a config do Claude, Codex, Grok ou Cursor."
-      />
+      <EmptyState icon={PlugSocketIcon} title={t("sources.empty.title")} description={t("sources.empty.description")} />
     );
   }
 

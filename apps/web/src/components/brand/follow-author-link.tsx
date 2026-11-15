@@ -1,5 +1,6 @@
 import { buttonVariants } from "@/components/ui/action/button";
 import { AUTHOR } from "@/constants/author.constants";
+import { useT } from "@/lib/i18n";
 import { XIcon } from "./x-icon";
 
 interface FollowAuthorLinkProps {
@@ -9,6 +10,8 @@ interface FollowAuthorLinkProps {
 }
 
 export function FollowAuthorLink({ variant = "default", size = "default", className }: FollowAuthorLinkProps) {
+  const t = useT();
+
   return (
     <a
       href={AUTHOR.url}
@@ -18,7 +21,7 @@ export function FollowAuthorLink({ variant = "default", size = "default", classN
       className={buttonVariants({ variant, size, className })}
     >
       <XIcon />
-      Seguir @{AUTHOR.handle}
+      {t("layout.ui.followAuthor", { handle: AUTHOR.handle })}
     </a>
   );
 }

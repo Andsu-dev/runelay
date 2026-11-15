@@ -7,10 +7,12 @@ import { Button } from "@/components/ui/action/button";
 import { Field } from "@/components/ui/form/field";
 import { Input } from "@/components/ui/form/input";
 import { authClient } from "@/lib/auth-client";
+import { useT } from "@/lib/i18n";
 import { queryClient } from "@/lib/query-client";
 import { toast } from "@/lib/toast";
 import { meQuery } from "@/modules/auth/api/session.api";
-import { LOGIN_COPY, SETUP_TOKEN_HINT } from "@/modules/auth/constants/login.constants";
+import { LOGIN_COPY } from "@/modules/auth/constants/login.constants";
+import { translateAuthError } from "@/modules/auth/utils/translate-auth-error";
 import { onboardingQuery } from "@/modules/onboarding/api/onboarding.api";
 
 const FIELD_SURFACE = "h-11 bg-card shadow-xs ring-1 ring-border/70 hover:bg-card dark:bg-card dark:hover:bg-card";
@@ -35,6 +37,7 @@ const isLocalPath = (path: string | undefined): path is string =>
   Boolean(path?.startsWith("/") && !path.startsWith("//"));
 
 export function LoginForm({ mode: requestedMode, setupToken, redirectTo, needsSetup = false }: LoginFormProps) {
+  const t = useT();
   const navigate = useNavigate();
   const router = useRouter();
   const [pending, setPending] = useState(false);
@@ -58,7 +61,7 @@ export function LoginForm({ mode: requestedMode, setupToken, redirectTo, needsSe
         : await authClient.signIn.email({ email, password });
     setPending(false);
     if (error) {
-      toast(error.message ?? copy.fallbackError, "error");
+      toast(translateAuthError(error.message), "error");
       return;
     }
     await queryClient.invalidateQueries({ queryKey: meQuery.queryKey });
@@ -94,8 +97,8 @@ export function LoginForm({ mode: requestedMode, setupToken, redirectTo, needsSe
               transition={{ duration: 0.22, ease: EASE_OUT }}
               className="flex flex-col gap-1 [grid-area:1/1]"
             >
-              <h1 className="text-xl font-semibold tracking-[-0.02em]">{copy.title}</h1>
-              <p className="text-[13px] text-muted-foreground">{copy.description}</p>
+              <h1 className="text-xl font-semibold tracking-[-0.02em]">{t(copy.title)}</h1>
+              <p className="text-[13px] text-muted-foreground">{t(copy.description)}</p>
             </motion.div>
           </AnimatePresence>
         </div>
@@ -112,22 +115,22 @@ export function LoginForm({ mode: requestedMode, setupToken, redirectTo, needsSe
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
               className="-m-1 overflow-hidden p-1"
             >
-              <Field label="Nome" className="pb-3">
+              <Field label={t("auth.fields.name")} className="pb-3">
                 <Input className={FIELD_SURFACE} name="name" required autoComplete="name" />
               </Field>
             </motion.div>
           )}
         </AnimatePresence>
         <div className="flex flex-col gap-3">
-          <Field label="E-mail">
+          <Field label={t("auth.fields.email")}>
             <Input className={FIELD_SURFACE} name="email" type="email" required autoComplete="email" />
           </Field>
           {needsSetup && !setupToken && (
-            <Field label="Token de primeiro acesso" hint={SETUP_TOKEN_HINT}>
+            <Field label={t("auth.fields.setupToken")} hint={t("auth.fields.setupTokenHint")}>
               <Input className={FIELD_SURFACE} name="setupToken" required autoComplete="off" spellCheck={false} />
             </Field>
           )}
-          <Field label="Senha" hint={mode === "signup" ? "Pelo menos 8 caracteres." : undefined}>
+          <Field label={t("auth.fields.password")} hint={mode === "signup" ? t("auth.fields.passwordHint") : undefined}>
             <Input
               className={FIELD_SURFACE}
               name="password"
@@ -141,18 +144,18 @@ export function LoginForm({ mode: requestedMode, setupToken, redirectTo, needsSe
       </div>
 
       <Button type="submit" size="lg" loading={pending}>
-        {copy.submit}
+        {t(copy.submit)}
       </Button>
 
       <p className={needsSetup ? "hidden" : "text-center text-[13px] text-muted-foreground"}>
-        {copy.switchPrompt}{" "}
+        {t(copy.switchPrompt)}{" "}
         <Link
           to="/login"
           search={{ mode: mode === "signup" ? "signin" : "signup", redirect: redirectTo }}
           replace
           className="font-medium text-foreground underline-offset-4 outline-none transition-colors duration-200 hover:underline focus-visible:underline"
         >
-          {copy.switch}
+          {t(copy.switch)}
         </Link>
       </p>
     </motion.form>

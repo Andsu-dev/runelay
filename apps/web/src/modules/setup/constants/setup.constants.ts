@@ -1,40 +1,35 @@
 import type { SetupStepDefinition } from "@/modules/setup/types/setup.types";
 
-export const KEY_PLACEHOLDER = "rnl_SUA_CHAVE";
-
 export const SETUP_STEPS: SetupStepDefinition[] = [
   {
     id: "source",
-    title: "Conecte suas contas",
-    description:
-      "Linear, GitHub, Notion e o resto entram uma vez aqui. O login fica cifrado no runelay, nunca no agente.",
-    doneSummary: "Contas conectadas.",
+    title: "setup.steps.source.title",
+    description: "setup.steps.source.description",
+    doneSummary: "setup.steps.source.doneSummary",
   },
   {
     id: "api_key",
-    title: "Crie uma chave de API",
-    description: "Uma chave por agente. Assim você revoga um sem derrubar os outros.",
-    doneSummary: "Chave criada.",
+    title: "setup.steps.apiKey.title",
+    description: "setup.steps.apiKey.description",
+    doneSummary: "setup.steps.apiKey.doneSummary",
   },
   {
     id: "agent",
-    title: "Ligue seus agentes",
-    description: "Escolha o cliente e cole a config. Todos passam a enxergar as mesmas contas.",
-    doneSummary: "Agentes ligados.",
+    title: "setup.steps.agent.title",
+    description: "setup.steps.agent.description",
+    doneSummary: "setup.steps.agent.doneSummary",
   },
   {
     id: "import",
-    title: "Traga sua memória e suas habilidades",
-    description:
-      "Lê as memórias do Claude Code e as skills de ~/.claude/skills e manda para esta organização. Rode dentro do repo do runelay, uma vez.",
-    doneSummary: "Contexto importado.",
+    title: "setup.steps.import.title",
+    description: "setup.steps.import.description",
+    doneSummary: "setup.steps.import.doneSummary",
   },
   {
     id: "sync",
-    title: "Mantenha o contexto em dia",
-    description:
-      "Grava um resumo curto no CLAUDE.md e nos AGENTS.md, entre marcadores. O resto o agente busca no MCP, e o que ele aprende volta como memória aqui.",
-    doneSummary: "Contexto sincronizado.",
+    title: "setup.steps.sync.title",
+    description: "setup.steps.sync.description",
+    doneSummary: "setup.steps.sync.doneSummary",
   },
 ];
 

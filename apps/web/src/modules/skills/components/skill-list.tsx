@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/ui/display/empty-state";
 import { FadeIn } from "@/components/ui/display/fade-in";
 import { Skeleton } from "@/components/ui/display/skeleton";
 import { UI_SPRING } from "@/components/ui/display/spring";
+import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { skillsQuery } from "@/modules/skills/api/skills.api";
 import { SkillRow } from "./skill-row";
@@ -17,6 +18,7 @@ interface SkillListProps {
 }
 
 export function SkillList({ query }: SkillListProps) {
+  const t = useT();
   const { data, isPending, isPlaceholderData, hasNextPage, isFetchingNextPage, fetchNextPage } = useInfiniteQuery({
     ...skillsQuery(query),
     placeholderData: keepPreviousData,
@@ -38,12 +40,8 @@ export function SkillList({ query }: SkillListProps) {
     return (
       <EmptyState
         icon={MagicWand01Icon}
-        title={query ? `Nenhuma habilidade com “${query}”` : "Nenhuma habilidade ainda"}
-        description={
-          query
-            ? "Tente outro termo. A busca olha nome, descrição e conteúdo."
-            : "Importe as pastas de SKILL.md com o CLI: bun run import."
-        }
+        title={query ? t("skills.list.emptyQueryTitle", { query }) : t("skills.list.emptyTitle")}
+        description={query ? t("skills.list.emptyQueryDescription") : t("skills.list.emptyDescription")}
       />
     );
   }

@@ -1,5 +1,6 @@
 import type { Page, SkillListItemView, SkillView } from "@runelay/shared";
 import { type InfiniteData, useMutation, useQueryClient } from "@tanstack/react-query";
+import { translate, translateError } from "@/lib/i18n";
 import { toast } from "@/lib/toast";
 import { skillQuery, updateSkill } from "@/modules/skills/api/skills.api";
 
@@ -30,11 +31,12 @@ export const useSkillToggle = (slug: string, name: string) => {
       if (detail) queryClient.setQueryData<SkillView>(detailKey, { ...detail, enabled });
       return { lists, detail };
     },
-    onSuccess: (skill) => toast(skill.enabled ? `${name} ativada.` : `${name} desativada.`),
+    onSuccess: (skill) =>
+      toast(translate(skill.enabled ? "skills.toggle.enabled" : "skills.toggle.disabled", { name })),
     onError: (error, _enabled, snapshot) => {
       for (const [key, data] of snapshot?.lists ?? []) queryClient.setQueryData(key, data);
       if (snapshot?.detail) queryClient.setQueryData(detailKey, snapshot.detail);
-      toast(error.message, "error");
+      toast(translateError(error), "error");
     },
   });
 };

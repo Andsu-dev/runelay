@@ -1,26 +1,27 @@
 import type { IconSvgElement } from "@hugeicons/react";
 import type { LinkOptions } from "@tanstack/react-router";
+import type { MessageKey } from "@/lib/i18n";
 
 export interface NavLinkItem {
-  label: string;
+  label: MessageKey;
   icon: IconSvgElement;
   link: LinkOptions;
 }
 
 export interface NavSoonItem {
-  label: string;
+  label: MessageKey;
   icon: IconSvgElement;
   soon: true;
 }
 
 export interface NavSection {
-  label: string;
+  label: MessageKey;
   items: (NavLinkItem | NavSoonItem)[];
 }
 
 export interface NavCategory {
   id: string;
-  label: string;
+  label: MessageKey;
   icon: IconSvgElement;
   link: LinkOptions;
   paths: string[];

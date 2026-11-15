@@ -1,7 +1,8 @@
 import type { DailyCallsView } from "@runelay/shared";
 import { motion } from "motion/react";
 import { UI_SPRING } from "@/components/ui/display/spring";
-import { formatDay, formatNumber } from "@/lib/format";
+import { formatDay } from "@/lib/format";
+import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 interface StackedDayBarProps {
@@ -13,9 +14,15 @@ interface StackedDayBarProps {
 }
 
 export function StackedDayBar({ day, peak, index, dimmed, onActivate }: StackedDayBarProps) {
+  const t = useT();
   const connectors = day.calls - day.context;
   const height = peak > 0 ? (day.calls / peak) * 100 : 0;
-  const label = `${formatDay(day.day)}: ${formatNumber(connectors)} chamadas de conectores, ${formatNumber(day.context)} de contexto, ${formatNumber(day.errors)} erros`;
+  const label = t("overview.daily.barLabel", {
+    day: formatDay(day.day),
+    connectors,
+    context: day.context,
+    errors: day.errors,
+  });
 
   return (
     <button

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { AuthorHandleLink } from "@/components/brand/author-handle-link";
 import { buttonVariants } from "@/components/ui/action/button";
 import { IconAction } from "@/components/ui/action/icon-action";
+import { useT } from "@/lib/i18n";
 import { readStorage, writeStorage } from "@/lib/storage";
 import { useSetupProgress } from "@/modules/setup/hooks/use-setup-progress";
 import { ProgressRing } from "./progress-ring";
@@ -18,6 +19,7 @@ interface GettingStartedCardProps {
 const EASE = [0.2, 0, 0, 1] as const;
 
 export function GettingStartedCard({ organizationId, onNavigate }: GettingStartedCardProps) {
+  const t = useT();
   const storageKey = `runelay-onboarding-dismissed:${organizationId}`;
   const [dismissed, setDismissed] = useState(() => readStorage(storageKey) === "true");
   const { currentStep, completed, total, finished, loaded } = useSetupProgress(organizationId);
@@ -43,7 +45,7 @@ export function GettingStartedCard({ organizationId, onNavigate }: GettingStarte
           <div className="flex flex-col gap-2.5 rounded-xl bg-card/70 p-3 ring-1 ring-border/60">
             <div className="flex items-center gap-2">
               <ProgressRing value={completed / Math.max(total, 1)} />
-              <span className="text-[13px] font-medium">Primeiros passos</span>
+              <span className="text-[13px] font-medium">{t("onboarding.title")}</span>
               <span className="ml-auto text-[11px] text-muted-foreground tabular-nums">
                 {completed}/{total}
               </span>
@@ -59,7 +61,7 @@ export function GettingStartedCard({ organizationId, onNavigate }: GettingStarte
                 className="flex flex-col gap-2.5"
               >
                 <p className="text-xs leading-relaxed text-muted-foreground">
-                  Próximo passo: {currentStep?.title.toLowerCase()}.
+                  {t("onboarding.nextStep", { step: currentStep ? t(currentStep.title).toLowerCase() : "" })}
                 </p>
                 <div className="flex items-center gap-1.5">
                   <Link
@@ -69,9 +71,9 @@ export function GettingStartedCard({ organizationId, onNavigate }: GettingStarte
                     className={buttonVariants({ size: "sm", className: "flex-1 gap-1.5" })}
                   >
                     <HugeiconsIcon icon={ArrowRight02Icon} size={15} strokeWidth={1.8} />
-                    Continuar
+                    {t("onboarding.continue")}
                   </Link>
-                  <IconAction icon={MinusSignIcon} label="Dispensar" variant="glass" onClick={dismiss} />
+                  <IconAction icon={MinusSignIcon} label={t("onboarding.dismiss")} variant="glass" onClick={dismiss} />
                 </div>
               </motion.div>
             </AnimatePresence>

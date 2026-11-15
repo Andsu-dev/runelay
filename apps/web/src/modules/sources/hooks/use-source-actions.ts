@@ -1,5 +1,6 @@
 import type { McpRemoteConfig, SourceView } from "@runelay/shared";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { translate, translateError } from "@/lib/i18n";
 import { openPendingTab, sendTab } from "@/lib/oauth-tab";
 import { toast } from "@/lib/toast";
 import {
@@ -32,11 +33,11 @@ export const useSourceActions = (name: string) => {
       patchList((sources) => sources.map((source) => (source.name === name ? { ...source, enabled } : source))),
     onSuccess: (updated) => {
       replaceInList(updated);
-      toast(updated.enabled ? `${name} ativada.` : `${name} pausada.`);
+      toast(translate(updated.enabled ? "sources.toasts.activated" : "sources.toasts.paused", { name }));
     },
     onError: (error, _enabled, previous) => {
       if (previous) queryClient.setQueryData(sourcesQuery.queryKey, previous);
-      toast(error.message, "error");
+      toast(translateError(error), "error");
     },
     onSettled: refreshSummary,
   });
@@ -44,10 +45,10 @@ export const useSourceActions = (name: string) => {
   const remove = useMutation({
     mutationFn: () => deleteSource(name),
     onMutate: () => patchList((sources) => sources.filter((source) => source.name !== name)),
-    onSuccess: () => toast(`${name} removida.`),
+    onSuccess: () => toast(translate("sources.toasts.removed", { name })),
     onError: (error, _input, previous) => {
       if (previous) queryClient.setQueryData(sourcesQuery.queryKey, previous);
-      toast(error.message, "error");
+      toast(translateError(error), "error");
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: sourcesQuery.queryKey });
@@ -61,9 +62,12 @@ export const useSourceActions = (name: string) => {
     onSuccess: (updated) => {
       replaceInList(updated);
       queryClient.setQueryData(["sources", name], updated);
-      toast(`${name}: ${STATUS_LABEL[updated.status].toLowerCase()}.`, updated.status === "ok" ? "success" : "info");
+      toast(
+        translate("sources.toasts.tested", { name, status: translate(STATUS_LABEL[updated.status]).toLowerCase() }),
+        updated.status === "ok" ? "success" : "info",
+      );
     },
-    onError: (error) => toast(error.message, "error"),
+    onError: (error) => toast(translateError(error), "error"),
     onSettled: refreshSummary,
   });
 
@@ -71,12 +75,12 @@ export const useSourceActions = (name: string) => {
     mutationFn: (_tab: Window | null) => startSourceOAuth(name),
     onSuccess: ({ authorizationUrl }, tab) => {
       if (sendTab(tab, authorizationUrl)) return;
-      toast(`${name} já está conectada.`);
+      toast(translate("sources.toasts.alreadyConnected", { name }));
       queryClient.invalidateQueries({ queryKey: sourcesQuery.queryKey });
     },
     onError: (error, tab) => {
       tab?.close();
-      toast(error.message, "error");
+      toast(translateError(error), "error");
     },
   });
 
@@ -88,10 +92,15 @@ export const useSourceActions = (name: string) => {
     onSuccess: (updated) => {
       replaceInList(updated);
       queryClient.setQueryData(["sources", name], updated);
-      if (updated.status === "ok") toast(`${name} conectada.`);
-      else toast(updated.error ?? `${name}: ${STATUS_LABEL[updated.status].toLowerCase()}.`, "error");
+      if (updated.status === "ok") toast(translate("sources.toasts.connected", { name }));
+      else
+        toast(
+          updated.error ??
+            translate("sources.toasts.tested", { name, status: translate(STATUS_LABEL[updated.status]).toLowerCase() }),
+          "error",
+        );
     },
-    onError: (error) => toast(error.message, "error"),
+    onError: (error) => toast(translateError(error), "error"),
     onSettled: () => {
       refreshSummary();
       queryClient.invalidateQueries({ queryKey: ["catalog"] });

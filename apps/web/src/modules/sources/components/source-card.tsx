@@ -4,11 +4,12 @@ import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { IconAction } from "@/components/ui/action/icon-action";
 import { Switch } from "@/components/ui/form/switch";
+import { ConfirmPopover } from "@/components/ui/overlay/confirm-popover";
+import { useT } from "@/lib/i18n";
 import { ConnectorIcon } from "@/modules/catalog/components/connector-icon";
 import { KIND_LABEL, STATUS_LABEL } from "@/modules/sources/constants/source.constants";
 import { useSourceActions } from "@/modules/sources/hooks/use-source-actions";
 import { sourceTarget } from "@/modules/sources/utils/source-target";
-import { DeleteSourceDialog } from "./delete-source-dialog";
 import { SourceConnectButton } from "./source-connect-button";
 import { SourceStatusDot } from "./source-status-dot";
 
@@ -17,6 +18,7 @@ interface SourceCardProps {
 }
 
 export function SourceCard({ source }: SourceCardProps) {
+  const t = useT();
   const { name, config, status, error, toolCount, enabled } = source;
   const { toggle, remove, test } = useSourceActions(name);
   const [confirming, setConfirming] = useState(false);
@@ -36,27 +38,36 @@ export function SourceCard({ source }: SourceCardProps) {
               {name}
             </Link>
             <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
-              {KIND_LABEL[config.kind]}
+              {t(KIND_LABEL[config.kind])}
             </span>
           </div>
           <span className="truncate text-xs text-muted-foreground">
-            {enabled ? STATUS_LABEL[status] : "Pausada"} · {toolCount} tools · {sourceTarget(config)}
+            {enabled ? t(STATUS_LABEL[status]) : t("sources.status.paused")} · {t.plural("sources.tools", toolCount)} ·{" "}
+            {sourceTarget(config)}
           </span>
         </div>
 
         <SourceConnectButton source={source} className="hidden sm:inline-flex" />
         <IconAction
           icon={RefreshIcon}
-          label="Testar conexão"
+          label={t("sources.test")}
           onClick={() => test.mutate()}
           spinning={test.isPending}
           disabled={test.isPending}
         />
-        <IconAction icon={Delete02Icon} label="Remover" tone="destructive" onClick={() => setConfirming(true)} />
+        <ConfirmPopover
+          open={confirming}
+          onOpenChange={setConfirming}
+          trigger={<IconAction icon={Delete02Icon} label={t("sources.remove")} tone="destructive" />}
+          title={t("sources.removeTitle", { name })}
+          description={t.plural("sources.removeDescription", toolCount)}
+          confirmLabel={t("sources.remove")}
+          onConfirm={() => remove.mutate()}
+        />
         <Switch
           checked={enabled}
           disabled={toggle.isPending}
-          label={enabled ? `Pausar ${name}` : `Ativar ${name}`}
+          label={enabled ? t("sources.pause", { name }) : t("sources.activate", { name })}
           onCheckedChange={(next) => toggle.mutate(next)}
         />
       </div>
@@ -64,14 +75,6 @@ export function SourceCard({ source }: SourceCardProps) {
       {error && enabled && <p className="text-xs break-words text-destructive">{error}</p>}
 
       <SourceConnectButton source={source} className="sm:hidden" />
-
-      <DeleteSourceDialog
-        name={name}
-        toolCount={toolCount}
-        open={confirming}
-        onOpenChange={setConfirming}
-        onConfirm={() => remove.mutate()}
-      />
     </div>
   );
 }

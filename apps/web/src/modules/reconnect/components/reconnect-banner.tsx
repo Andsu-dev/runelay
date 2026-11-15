@@ -4,9 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { UI_SPRING } from "@/components/ui/display/spring";
+import { useT } from "@/lib/i18n";
 import { needsAuthQuery } from "@/modules/sources/api/sources.api";
 
 export function ReconnectBanner() {
+  const t = useT();
   const { data } = useQuery(needsAuthQuery);
   const total = data?.length ?? 0;
   return (
@@ -25,8 +27,8 @@ export function ReconnectBanner() {
           >
             <span className="size-2 shrink-0 rounded-full bg-warning" />
             <span className="flex-1">
-              {total === 1 ? "1 conta pede login" : `${total} contas pedem login`}.{" "}
-              <span className="text-muted-foreground">Faça todos em sequência.</span>
+              {t.plural("reconnect.banner.pending", total)}.{" "}
+              <span className="text-muted-foreground">{t("reconnect.banner.hint")}</span>
             </span>
             <HugeiconsIcon
               icon={ArrowRight01Icon}

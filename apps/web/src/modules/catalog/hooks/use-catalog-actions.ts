@@ -1,6 +1,7 @@
 import type { CatalogConnectorView, CatalogView } from "@runelay/shared";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
+import { translate, translateError } from "@/lib/i18n";
 import { openPendingTab, sendTab } from "@/lib/oauth-tab";
 import { toast } from "@/lib/toast";
 import { installConnector } from "@/modules/catalog/api/catalog.api";
@@ -60,14 +61,15 @@ export const useCatalogActions = (connector: CatalogConnectorView) => {
     onMutate: () => markInstalled(true),
     onSuccess: ({ source, redirecting }) => {
       if (redirecting) return;
-      if (source.status === "ok" || connector.auth !== "api_key") return toast(`${connector.name} instalado.`);
-      toast(source.error ?? `O ${connector.name} não aceitou o token.`, "error");
+      if (source.status === "ok" || connector.auth !== "api_key")
+        return toast(translate("catalog.toasts.installed", { name: connector.name }));
+      toast(source.error ?? translate("catalog.toasts.tokenRejected", { name: connector.name }), "error");
       navigate({ to: "/connectors/$name", params: { name: source.name } });
     },
     onError: (error, { tab }, snapshot) => {
       tab?.close();
       restore(snapshot);
-      toast(error.message, "error");
+      toast(translateError(error), "error");
     },
     onSettled: refresh,
   });
@@ -75,21 +77,21 @@ export const useCatalogActions = (connector: CatalogConnectorView) => {
   const reconnect = useMutation({
     mutationFn: (tab: Window | null) => redirectToLogin(sourceName, tab),
     onSuccess: (redirecting) => {
-      if (!redirecting) toast(`${connector.name} já está conectado.`);
+      if (!redirecting) toast(translate("catalog.toasts.alreadyConnected", { name: connector.name }));
     },
     onError: (error, tab) => {
       tab?.close();
-      toast(error.message, "error");
+      toast(translateError(error), "error");
     },
   });
 
   const remove = useMutation({
     mutationFn: () => deleteSource(sourceName),
     onMutate: () => markInstalled(false),
-    onSuccess: () => toast(`${connector.name} removido.`),
+    onSuccess: () => toast(translate("catalog.toasts.removed", { name: connector.name })),
     onError: (error, _input, snapshot) => {
       restore(snapshot);
-      toast(error.message, "error");
+      toast(translateError(error), "error");
     },
     onSettled: refresh,
   });

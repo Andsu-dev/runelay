@@ -1,29 +1,35 @@
-export const LOGIN_COPY = {
+import type { MessageKey } from "@/lib/i18n";
+
+type LoginVariant = "signin" | "signup" | "setup";
+
+interface LoginCopy {
+  title: MessageKey;
+  description: MessageKey;
+  submit: MessageKey;
+  switchPrompt: MessageKey;
+  switch: MessageKey;
+}
+
+export const LOGIN_COPY: Record<LoginVariant, LoginCopy> = {
   signin: {
-    title: "Entrar",
-    description: "Suas conexões ficam aqui, iguais em todos os agentes.",
-    submit: "Entrar",
-    switchPrompt: "Primeira vez?",
-    switch: "Criar conta",
-    fallbackError: "O servidor não respondeu. Tente de novo em instantes.",
+    title: "auth.signin.title",
+    description: "auth.signin.description",
+    submit: "auth.signin.submit",
+    switchPrompt: "auth.signin.switchPrompt",
+    switch: "auth.signin.switch",
   },
   signup: {
-    title: "Criar conta",
-    description: "A primeira conta vira a dona deste runelay.",
-    submit: "Criar conta",
-    switchPrompt: "Já tem conta?",
-    switch: "Entrar",
-    fallbackError: "O servidor não respondeu. Tente de novo em instantes.",
+    title: "auth.signup.title",
+    description: "auth.signup.description",
+    submit: "auth.signup.submit",
+    switchPrompt: "auth.signup.switchPrompt",
+    switch: "auth.signup.switch",
   },
   setup: {
-    title: "Configurar este runelay",
-    description: "Crie a conta dona. Ela administra conexões, memória e chaves deste servidor.",
-    submit: "Criar conta dona",
-    switchPrompt: "",
-    switch: "",
-    fallbackError: "O servidor não respondeu. Tente de novo em instantes.",
+    title: "auth.setup.title",
+    description: "auth.setup.description",
+    submit: "auth.setup.submit",
+    switchPrompt: "auth.setup.switchPrompt",
+    switch: "auth.setup.switch",
   },
-} as const;
-
-export const SETUP_TOKEN_HINT =
-  "Aparece no fim da instalação e no servidor em ~/runelay/.env (RUNELAY_SETUP_TOKEN). Pode colar o link inteiro.";
+};

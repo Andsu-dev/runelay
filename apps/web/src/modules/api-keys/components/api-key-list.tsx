@@ -1,6 +1,7 @@
 import type { ApiKeyView } from "@runelay/shared";
 import { AnimatePresence, motion } from "motion/react";
 import { UI_SPRING } from "@/components/ui/display/spring";
+import { useT } from "@/lib/i18n";
 import { ApiKeyRow } from "./api-key-row";
 
 interface ApiKeyListProps {
@@ -8,12 +9,10 @@ interface ApiKeyListProps {
 }
 
 export function ApiKeyList({ apiKeys }: ApiKeyListProps) {
+  const t = useT();
+
   if (apiKeys.length === 0) {
-    return (
-      <div className="rounded-xl bg-card p-6 text-center text-sm text-muted-foreground">
-        Nenhuma chave ainda. Crie uma para cada agente que vai usar o runelay.
-      </div>
-    );
+    return <div className="rounded-xl bg-card p-6 text-center text-sm text-muted-foreground">{t("apiKeys.empty")}</div>;
   }
 
   return (

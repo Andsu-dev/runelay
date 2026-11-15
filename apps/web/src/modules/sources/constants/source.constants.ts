@@ -1,11 +1,12 @@
 import { ApiIcon, ComputerTerminal01Icon } from "@hugeicons/core-free-icons";
 import type { SourceKind, SourceStatus } from "@runelay/shared";
+import type { MessageKey } from "@/lib/i18n";
 
-export const STATUS_LABEL: Record<SourceStatus, string> = {
-  ok: "Conectado",
-  error: "Com erro",
-  needs_auth: "Precisa de login",
-  idle: "Não testado",
+export const STATUS_LABEL: Record<SourceStatus, MessageKey> = {
+  ok: "sources.status.ok",
+  error: "sources.status.error",
+  needs_auth: "sources.status.needs_auth",
+  idle: "sources.status.idle",
 };
 
 export const STATUS_DOT: Record<SourceStatus, string> = {
@@ -15,10 +16,10 @@ export const STATUS_DOT: Record<SourceStatus, string> = {
   idle: "bg-muted-foreground/40",
 };
 
-export const KIND_LABEL: Record<SourceKind, string> = {
-  mcp: "MCP remoto",
-  stdio: "Comando local",
-  openapi: "OpenAPI",
+export const KIND_LABEL: Record<SourceKind, MessageKey> = {
+  mcp: "sources.kind.mcp",
+  stdio: "sources.kind.stdio",
+  openapi: "sources.kind.openapi",
 };
 
 export const KIND_ICON = {
@@ -26,8 +27,8 @@ export const KIND_ICON = {
   openapi: ApiIcon,
 } satisfies Record<Exclude<SourceKind, "mcp">, unknown>;
 
-export const KIND_HINT: Record<SourceKind, string> = {
-  mcp: "URL de um servidor MCP. Se pedir login, o OAuth abre em seguida.",
-  stdio: "Comando que sobe um MCP na própria máquina do runelay.",
-  openapi: "Spec OpenAPI em JSON ou YAML. Cada operação vira uma tool.",
+export const KIND_HINT: Record<SourceKind, MessageKey> = {
+  mcp: "sources.kindHint.mcp",
+  stdio: "sources.kindHint.stdio",
+  openapi: "sources.kindHint.openapi",
 };

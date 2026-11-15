@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "motion/react";
 import { maskName, useNamesHidden } from "@/lib/hidden-names";
+import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 interface MaskedNameProps {
@@ -12,6 +13,7 @@ const BLURRED = { opacity: 0, filter: "blur(4px)" };
 const SHARP = { opacity: 1, filter: "blur(0px)", y: 0 };
 
 export function MaskedName({ value, className }: MaskedNameProps) {
+  const t = useT();
   const hidden = useNamesHidden();
 
   return (
@@ -20,7 +22,7 @@ export function MaskedName({ value, className }: MaskedNameProps) {
         {hidden ? (
           <motion.span
             key="masked"
-            aria-label="Nome escondido"
+            aria-label={t("layout.ui.hiddenName")}
             exit={{ ...BLURRED, y: -3, transition: { duration: 0.16 } }}
             className="truncate tracking-[0.12em]"
           >

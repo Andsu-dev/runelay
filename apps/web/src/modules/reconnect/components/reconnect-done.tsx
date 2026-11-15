@@ -3,6 +3,7 @@ import { motion } from "motion/react";
 import { buttonVariants } from "@/components/ui/action/button";
 import { PixelConfetti } from "@/components/ui/display/pixel-confetti";
 import { UI_SPRING } from "@/components/ui/display/spring";
+import { useT } from "@/lib/i18n";
 
 interface ReconnectDoneProps {
   connected: number;
@@ -10,10 +11,10 @@ interface ReconnectDoneProps {
 }
 
 export function ReconnectDone({ connected, skipped }: ReconnectDoneProps) {
-  const title = connected === 0 ? "Nenhum login pendente" : skipped ? "Quase tudo conectado" : "Tudo conectado";
-  const description = skipped
-    ? `${skipped === 1 ? "Uma conta ficou" : `${skipped} contas ficaram`} para depois. Ela aparece em Conectores quando você quiser.`
-    : "Seus agentes já enxergam essas contas pelo runelay.";
+  const t = useT();
+  const title =
+    connected === 0 ? t("reconnect.done.none") : skipped ? t("reconnect.done.almost") : t("reconnect.done.all");
+  const description = skipped ? t.plural("reconnect.done.skipped", skipped) : t("reconnect.done.ready");
 
   return (
     <motion.div
@@ -28,7 +29,7 @@ export function ReconnectDone({ connected, skipped }: ReconnectDoneProps) {
         <p className="text-[13px] text-pretty text-muted-foreground">{description}</p>
       </div>
       <Link to="/connectors" search={{ tab: "installed" }} className={buttonVariants({ variant: "glass", size: "sm" })}>
-        Ver conectores
+        {t("reconnect.done.viewConnectors")}
       </Link>
     </motion.div>
   );

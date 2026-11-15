@@ -3,6 +3,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import type { SourceView } from "@runelay/shared";
 import { AnimatePresence, motion } from "motion/react";
 import { UI_SPRING } from "@/components/ui/display/spring";
+import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { ConnectorIcon } from "@/modules/catalog/components/connector-icon";
 import { RECONNECT_ROW_LABEL, type ReconnectRowState } from "@/modules/reconnect/constants/reconnect.constants";
@@ -13,6 +14,7 @@ interface ReconnectRowProps {
 }
 
 export function ReconnectRow({ source, state }: ReconnectRowProps) {
+  const t = useT();
   const done = state === "connected";
   return (
     <div
@@ -33,7 +35,7 @@ export function ReconnectRow({ source, state }: ReconnectRowProps) {
             transition={UI_SPRING}
             className={cn("truncate text-xs", done ? "text-success" : "text-muted-foreground")}
           >
-            {RECONNECT_ROW_LABEL[state]}
+            {t(RECONNECT_ROW_LABEL[state])}
           </motion.span>
         </AnimatePresence>
       </div>

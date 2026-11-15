@@ -4,6 +4,7 @@ import { MaskedName } from "@/components/ui/display/masked-name";
 import { MonogramTile } from "@/components/ui/display/monogram-tile";
 import { Switch } from "@/components/ui/form/switch";
 import { maskName, useNamesHidden } from "@/lib/hidden-names";
+import { useT } from "@/lib/i18n";
 import { useSkillToggle } from "@/modules/skills/hooks/use-skill-toggle";
 
 interface SkillRowProps {
@@ -11,6 +12,7 @@ interface SkillRowProps {
 }
 
 export function SkillRow({ skill }: SkillRowProps) {
+  const t = useT();
   const toggle = useSkillToggle(skill.slug, skill.name);
   const hidden = useNamesHidden();
   const name = hidden ? maskName(skill.name) : skill.name;
@@ -33,7 +35,7 @@ export function SkillRow({ skill }: SkillRowProps) {
       <Switch
         checked={skill.enabled}
         disabled={toggle.isPending}
-        label={skill.enabled ? `Desativar ${name}` : `Ativar ${name}`}
+        label={t(skill.enabled ? "skills.detail.disable" : "skills.detail.enable", { name })}
         onCheckedChange={(next) => toggle.mutate(next)}
         className="relative z-10 mt-1.5"
       />

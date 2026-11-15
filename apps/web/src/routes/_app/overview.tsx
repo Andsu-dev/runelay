@@ -1,6 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { RouteError } from "@/components/ui/display/route-error";
+import { useT } from "@/lib/i18n";
 import { meQuery } from "@/modules/auth/api/session.api";
 import { activitySummaryQuery } from "@/modules/overview/api/activity.api";
 import { OverviewDashboard } from "@/modules/overview/components/overview-dashboard";
@@ -21,6 +22,7 @@ export const Route = createFileRoute("/_app/overview")({
 });
 
 function OverviewPage() {
+  const t = useT();
   const { data: me } = useSuspenseQuery(meQuery);
   const { data: activity } = useSuspenseQuery(activitySummaryQuery(RANGE_DAYS));
   const { data: sources } = useSuspenseQuery(sourcesSummaryQuery);
@@ -29,9 +31,11 @@ function OverviewPage() {
   return (
     <section className="flex flex-col gap-6">
       <header className="flex flex-col gap-0.5">
-        <h1 className="text-xl font-semibold tracking-[-0.02em]">Bem-vindo de volta, {firstName}</h1>
+        <h1 className="text-xl font-semibold tracking-[-0.02em]">
+          {t("overview.header.welcome", { name: firstName })}
+        </h1>
         <p className="text-[13px] text-muted-foreground">
-          Últimos {activity.days} dias em {me.organization.name}.
+          {t("overview.header.range", { days: activity.days, organization: me.organization.name })}
         </p>
       </header>
       <OverviewDashboard activity={activity} sources={sources} />

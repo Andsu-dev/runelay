@@ -2,6 +2,7 @@ import { ChartHistogramIcon } from "@hugeicons/core-free-icons";
 import type { DailyCallsView } from "@runelay/shared";
 import { useState } from "react";
 import { formatCompact, formatDay, formatNumber } from "@/lib/format";
+import { useT } from "@/lib/i18n";
 import { ChartTooltip } from "./chart-tooltip";
 import { DayTooltipContent } from "./day-tooltip-content";
 import { LegendItem } from "./legend-item";
@@ -13,6 +14,7 @@ interface DailyActivityWidgetProps {
 }
 
 export function DailyActivityWidget({ daily }: DailyActivityWidgetProps) {
+  const t = useT();
   const peak = Math.max(0, ...daily.map((day) => day.calls));
   const context = daily.reduce((sum, day) => sum + day.context, 0);
   const connectors = daily.reduce((sum, day) => sum + day.calls, 0) - context;
@@ -32,15 +34,15 @@ export function DailyActivityWidget({ daily }: DailyActivityWidgetProps) {
   return (
     <WidgetCard
       icon={ChartHistogramIcon}
-      title="Atividade por dia"
+      title={t("overview.daily.title")}
       meta={
         <span className="flex items-center gap-3">
-          <LegendItem color="var(--chart-1)" label="Conectores" value={formatNumber(connectors)} />
-          <LegendItem color="var(--chart-2)" label="Contexto" value={formatNumber(context)} />
+          <LegendItem color="var(--chart-1)" label={t("overview.kinds.connectors")} value={formatNumber(connectors)} />
+          <LegendItem color="var(--chart-2)" label={t("overview.kinds.context")} value={formatNumber(context)} />
         </span>
       }
     >
-      <figure className="flex flex-col gap-2" aria-label="Chamadas por dia">
+      <figure className="flex flex-col gap-2" aria-label={t("overview.daily.figure")}>
         <div className="relative">
           <span className="absolute top-0 left-0 text-[11px] text-muted-foreground tabular-nums">
             {formatCompact(peak)}

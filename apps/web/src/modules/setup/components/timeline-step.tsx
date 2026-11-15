@@ -3,6 +3,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { AnimatePresence, motion } from "motion/react";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/action/button";
+import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { TIMELINE_EASE } from "@/modules/setup/constants/setup.constants";
 import type { SetupStepState } from "@/modules/setup/types/setup.types";
@@ -20,6 +21,8 @@ interface TimelineStepProps {
 }
 
 export function TimelineStep({ step, open, last, onToggle, onComplete, body, action }: TimelineStepProps) {
+  const t = useT();
+
   return (
     <motion.li
       initial={{ opacity: 0, y: 10, filter: "blur(4px)" }}
@@ -46,7 +49,7 @@ export function TimelineStep({ step, open, last, onToggle, onComplete, body, act
               step.done && !open ? "text-muted-foreground" : "text-foreground",
             )}
           >
-            {step.title}
+            {t(step.title)}
           </span>
           {step.reachable && (
             <HugeiconsIcon
@@ -59,7 +62,7 @@ export function TimelineStep({ step, open, last, onToggle, onComplete, body, act
               )}
             />
           )}
-          {step.done && !open && <span className="ml-auto text-xs text-muted-foreground">{step.doneSummary}</span>}
+          {step.done && !open && <span className="ml-auto text-xs text-muted-foreground">{t(step.doneSummary)}</span>}
         </button>
 
         <AnimatePresence initial={false}>
@@ -78,13 +81,13 @@ export function TimelineStep({ step, open, last, onToggle, onComplete, body, act
                 transition={{ duration: 0.45, ease: TIMELINE_EASE }}
                 className="flex flex-col gap-4 pt-1.5"
               >
-                <p className="max-w-prose text-[13px] text-pretty text-muted-foreground">{step.description}</p>
+                <p className="max-w-prose text-[13px] text-pretty text-muted-foreground">{t(step.description)}</p>
                 {body}
                 <div className="flex flex-wrap items-center gap-2">
                   {action}
                   {!step.done && (
                     <Button variant="ghost" size="sm" onClick={onComplete}>
-                      Já fiz, próximo passo
+                      {t("setup.markDone")}
                     </Button>
                   )}
                 </div>

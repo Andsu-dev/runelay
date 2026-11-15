@@ -1,6 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { z } from "zod";
+import { translate } from "@/lib/i18n";
 import { meQuery } from "@/modules/auth/api/session.api";
 import { cliAuthRequestQuery } from "@/modules/cli/api/cli-auth.api";
 import { CliAuthorizeCard } from "@/modules/cli/components/cli-authorize-card";
@@ -14,7 +15,7 @@ export const Route = createFileRoute("/cli/authorize")({
   },
   loaderDeps: ({ search }) => ({ code: search.code }),
   loader: ({ context, deps }) => {
-    if (!deps.code) throw new Error("Abra o link que o runelay login mostrou no terminal.");
+    if (!deps.code) throw new Error(translate("cli.openLink"));
     return context.queryClient.ensureQueryData(cliAuthRequestQuery(deps.code));
   },
   errorComponent: CliAuthorizeError,

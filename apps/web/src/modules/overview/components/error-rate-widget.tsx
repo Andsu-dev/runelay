@@ -1,6 +1,7 @@
 import { Alert02Icon } from "@hugeicons/core-free-icons";
 import type { ActivitySummaryView } from "@runelay/shared";
-import { formatNumber, formatPercent } from "@/lib/format";
+import { formatPercent } from "@/lib/format";
+import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { ErrorDayStrip } from "./error-day-strip";
 import { StatValue } from "./stat-value";
@@ -11,17 +12,21 @@ interface ErrorRateWidgetProps {
 }
 
 export function ErrorRateWidget({ summary }: ErrorRateWidgetProps) {
+  const t = useT();
+
   return (
     <WidgetCard
       icon={Alert02Icon}
-      title="Taxa de erro"
-      meta={summary.averageMs === null ? undefined : `${formatNumber(Math.round(summary.averageMs))} ms em média`}
+      title={t("overview.errorRate.title")}
+      meta={
+        summary.averageMs === null ? undefined : t("overview.errorRate.average", { ms: Math.round(summary.averageMs) })
+      }
     >
       <StatValue
         value={formatPercent(summary.errorRate)}
         caption={
           <span className={cn(summary.errors > 0 && "text-destructive")}>
-            {summary.errors === 1 ? "1 chamada falhou" : `${formatNumber(summary.errors)} chamadas falharam`}
+            {t.plural("overview.errorRate.failed", summary.errors)}
           </span>
         }
       />

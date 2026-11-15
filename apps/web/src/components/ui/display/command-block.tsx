@@ -1,4 +1,5 @@
 import { CopyButton } from "@/components/ui/action/copy-button";
+import { useT } from "@/lib/i18n";
 
 interface CommandBlockProps {
   value: string;
@@ -19,7 +20,9 @@ const segmentsOf = (value: string, secret: string | null | undefined) => {
   });
 };
 
-export function CommandBlock({ value, secret, label = "Copiar comando" }: CommandBlockProps) {
+export function CommandBlock({ value, secret, label }: CommandBlockProps) {
+  const t = useT();
+
   return (
     <div className="flex items-start gap-2 rounded-lg bg-muted/60 py-1 pr-1 pl-3">
       <pre className="min-w-0 flex-1 overflow-x-auto py-1.5 font-mono text-[11px] leading-relaxed whitespace-pre-wrap break-all">
@@ -32,13 +35,13 @@ export function CommandBlock({ value, secret, label = "Copiar comando" }: Comman
                 <span aria-hidden className="select-none tracking-[0.08em] text-muted-foreground">
                   {MASK}
                 </span>
-                <span className="sr-only">chave oculta</span>
+                <span className="sr-only">{t("layout.ui.hiddenKey")}</span>
               </span>
             )}
           </span>
         ))}
       </pre>
-      <CopyButton value={value} label={label} />
+      <CopyButton value={value} label={label ?? t("common.actions.copyCommand")} />
     </div>
   );
 }

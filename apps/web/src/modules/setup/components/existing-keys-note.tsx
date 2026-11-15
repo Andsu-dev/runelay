@@ -1,6 +1,7 @@
 import type { ApiKeyView } from "@runelay/shared";
 import { CommandBlock } from "@/components/ui/display/command-block";
 import { formatDate } from "@/lib/format";
+import { useT } from "@/lib/i18n";
 
 interface ExistingKeysNoteProps {
   latest: ApiKeyView | null;
@@ -8,15 +9,20 @@ interface ExistingKeysNoteProps {
 }
 
 export function ExistingKeysNote({ latest, apiKey }: ExistingKeysNoteProps) {
+  const t = useT();
+
   if (apiKey) {
     return (
       <div className="flex flex-col gap-1.5">
         {latest && (
           <span className="text-xs text-muted-foreground">
-            {latest.name ?? "Sem nome"}, criada em {formatDate(latest.createdAt)}
+            {t("setup.keys.createdAt", {
+              name: latest.name ?? t("setup.keys.unnamed"),
+              date: formatDate(latest.createdAt),
+            })}
           </span>
         )}
-        <CommandBlock value={apiKey} secret={apiKey} label="Copiar chave" />
+        <CommandBlock value={apiKey} secret={apiKey} label={t("setup.keys.copyKey")} />
       </div>
     );
   }
@@ -25,13 +31,11 @@ export function ExistingKeysNote({ latest, apiKey }: ExistingKeysNoteProps) {
   return (
     <div className="flex flex-col gap-1 rounded-lg bg-muted/60 px-3 py-2.5 text-[13px]">
       <span>
-        A chave <span className="font-medium">{latest.name ?? "sem nome"}</span>{" "}
-        <code className="font-mono text-xs text-muted-foreground">{latest.start}…</code> foi criada antes do cofre e não
-        pode ser recuperada.
+        {t("setup.keys.legacyPrefix")}{" "}
+        <span className="font-medium">{latest.name ?? t("setup.keys.unnamedInline")}</span>{" "}
+        <code className="font-mono text-xs text-muted-foreground">{latest.start}…</code> {t("setup.keys.legacySuffix")}
       </span>
-      <span className="text-xs text-muted-foreground">
-        Crie outra: a partir de agora toda chave fica guardada cifrada.
-      </span>
+      <span className="text-xs text-muted-foreground">{t("setup.keys.legacyHint")}</span>
     </div>
   );
 }

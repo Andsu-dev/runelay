@@ -1,6 +1,7 @@
 import { Search01Icon, SidebarLeftIcon } from "@hugeicons/core-free-icons";
 import type { AuthUser } from "@runelay/shared";
 import { AnimatePresence, motion } from "motion/react";
+import { useT } from "@/lib/i18n";
 import { NAV_CATEGORIES } from "./nav-items";
 import { RailButton } from "./rail-button";
 import { RailLink } from "./rail-link";
@@ -18,16 +19,17 @@ interface IconRailProps {
 }
 
 export function IconRail({ user, collapsed, onExpand, onSearch }: IconRailProps) {
+  const t = useT();
   const activeCategory = useActiveCategory();
 
   return (
     <nav
-      aria-label="Categorias"
+      aria-label={t("layout.shell.categories")}
       className="sticky top-0 hidden h-dvh w-14 shrink-0 flex-col items-center gap-1 border-r border-border/60 bg-rail py-3 lg:flex"
     >
       <RailLogo />
       <div className="mt-3 flex flex-col items-center gap-1.5">
-        <RailButton icon={Search01Icon} label="Buscar (⌘K)" onClick={onSearch} />
+        <RailButton icon={Search01Icon} label={t("layout.shell.searchShortcut")} onClick={onSearch} />
         <span aria-hidden className="my-1.5 h-px w-5 bg-border/70" />
         {NAV_CATEGORIES.map((category) => (
           <RailLink key={category.id} category={category} active={category.id === activeCategory.id} />
@@ -42,7 +44,7 @@ export function IconRail({ user, collapsed, onExpand, onSearch }: IconRailProps)
               exit={{ opacity: 0, scale: 0.8 }}
               transition={{ duration: 0.2, ease: [0.2, 0, 0, 1] }}
             >
-              <RailButton icon={SidebarLeftIcon} label="Abrir painel" onClick={onExpand} />
+              <RailButton icon={SidebarLeftIcon} label={t("layout.shell.openPanel")} onClick={onExpand} />
             </motion.div>
           )}
         </AnimatePresence>

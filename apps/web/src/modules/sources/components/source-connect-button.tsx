@@ -1,6 +1,7 @@
 import type { SourceView } from "@runelay/shared";
 import { useState } from "react";
 import { Button } from "@/components/ui/action/button";
+import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { useSourceActions } from "@/modules/sources/hooks/use-source-actions";
 import { TokenDialog } from "./token-dialog";
@@ -11,6 +12,7 @@ interface SourceConnectButtonProps {
 }
 
 export function SourceConnectButton({ source, className }: SourceConnectButtonProps) {
+  const t = useT();
   const { name, config, status, enabled } = source;
   const { login, startLogin, saveToken } = useSourceActions(name);
   const [asking, setAsking] = useState(false);
@@ -27,7 +29,7 @@ export function SourceConnectButton({ source, className }: SourceConnectButtonPr
           onClick={() => setAsking(true)}
           className={cn(className)}
         >
-          {broken ? "Colar token" : "Trocar token"}
+          {broken ? t("sources.pasteToken") : t("sources.changeToken")}
         </Button>
         <TokenDialog
           name={name}
@@ -50,7 +52,7 @@ export function SourceConnectButton({ source, className }: SourceConnectButtonPr
       onClick={startLogin}
       className={className}
     >
-      {needsLogin ? "Fazer login" : "Reconectar"}
+      {needsLogin ? t("sources.login") : t("sources.reconnect")}
     </Button>
   );
 }

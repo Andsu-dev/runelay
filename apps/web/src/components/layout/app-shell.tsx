@@ -3,6 +3,7 @@ import { motion } from "motion/react";
 import { useCallback, useState } from "react";
 import { UI_SPRING } from "@/components/ui/display/spring";
 import { Sheet } from "@/components/ui/overlay/sheet";
+import { useT } from "@/lib/i18n";
 import { readStorage, writeStorage } from "@/lib/storage";
 import { meQuery } from "@/modules/auth/api/session.api";
 import { CommandDialog } from "@/modules/search/components/command-dialog";
@@ -17,6 +18,7 @@ const COLLAPSED_GAP = 8;
 const COLLAPSED_KEY = "runelay-panel-collapsed";
 
 export function AppShell() {
+  const t = useT();
   const { data: me } = useSuspenseQuery(meQuery);
   const [collapsed, setCollapsed] = useState(() => readStorage(COLLAPSED_KEY) === "true");
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -66,7 +68,7 @@ export function AppShell() {
         <RouteTransition />
       </main>
 
-      <Sheet open={drawerOpen} onOpenChange={setDrawerOpen} title="Menu" side="left" hideHeader>
+      <Sheet open={drawerOpen} onOpenChange={setDrawerOpen} title={t("layout.shell.menu")} side="left" hideHeader>
         <SidePanel scope="drawer" onNavigate={() => setDrawerOpen(false)} />
       </Sheet>
 

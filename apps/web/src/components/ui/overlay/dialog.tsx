@@ -3,6 +3,7 @@ import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
 import { AnimatePresence, motion } from "motion/react";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import type { KeyboardEvent, ReactNode } from "react";
+import { useT } from "@/lib/i18n";
 import { cue } from "@/lib/sound";
 import { cn } from "@/lib/utils";
 
@@ -48,6 +49,8 @@ export function Dialog({
   onKeyDown,
   onOpenAutoFocus,
 }: DialogProps) {
+  const t = useT();
+
   return (
     <DialogPrimitive.Root
       open={open}
@@ -121,7 +124,7 @@ export function Dialog({
                   )}
 
                   <DialogPrimitive.Close
-                    aria-label="Fechar"
+                    aria-label={t("common.actions.close")}
                     hidden={hideClose}
                     className="-mt-1 -mr-1 flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-md text-muted-foreground outline-none transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/30 sm:size-8 sm:min-h-0 sm:min-w-0"
                   >

@@ -3,6 +3,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { AnimatePresence, motion } from "motion/react";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import type { ReactNode } from "react";
+import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 interface SheetProps {
@@ -26,6 +27,7 @@ export function Sheet({
   hideHeader = false,
   contentClassName,
 }: SheetProps) {
+  const t = useT();
   const offscreen = side === "left" ? "-100%" : "100%";
 
   return (
@@ -71,7 +73,7 @@ export function Sheet({
                   </div>
                   <DialogPrimitive.Close className="-mr-1 flex size-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground pressable hover:bg-muted/60 hover:text-foreground">
                     <HugeiconsIcon icon={Cancel01Icon} size={16} />
-                    <span className="sr-only">Fechar</span>
+                    <span className="sr-only">{t("common.actions.close")}</span>
                   </DialogPrimitive.Close>
                 </div>
                 <div className="flex min-h-0 flex-1 flex-col">{children}</div>

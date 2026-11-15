@@ -5,9 +5,10 @@ import { Link } from "@tanstack/react-router";
 import { type ReactNode, useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/action/button";
 import { CommandBlock } from "@/components/ui/display/command-block";
+import { useT } from "@/lib/i18n";
 import { CreateApiKeyDialog } from "@/modules/api-keys/components/create-api-key-dialog";
 import { meQuery } from "@/modules/auth/api/session.api";
-import { contextCommands, KEY_PLACEHOLDER } from "@/modules/setup/constants/setup.constants";
+import { contextCommands } from "@/modules/setup/constants/setup.constants";
 import { useSetupKey } from "@/modules/setup/hooks/use-setup-key";
 import { useSetupProgress } from "@/modules/setup/hooks/use-setup-progress";
 import type { SetupStepId } from "@/modules/setup/types/setup.types";
@@ -17,13 +18,14 @@ import { SetupProgress } from "./setup-progress";
 import { TimelineStep } from "./timeline-step";
 
 export function SetupGuide() {
+  const t = useT();
   const { data: me } = useSuspenseQuery(meQuery);
   const [creating, setCreating] = useState(false);
   const { key: apiKey, latest } = useSetupKey();
   const { steps, activeId, markDone, toggle, completed, total } = useSetupProgress(me.organization.id, {
     api_key: apiKey !== null,
   });
-  const key = apiKey ?? KEY_PLACEHOLDER;
+  const key = apiKey ?? t("setup.keyPlaceholder");
   const commands = contextCommands(window.location.origin, key);
 
   const content: Record<SetupStepId, { body?: ReactNode; action?: ReactNode }> = {
@@ -31,7 +33,7 @@ export function SetupGuide() {
       action: (
         <Link to="/connectors" search={{ tab: "catalog" }} className={buttonVariants({ variant: "glass", size: "sm" })}>
           <HugeiconsIcon icon={Store01Icon} strokeWidth={1.6} />
-          Abrir catálogo
+          {t("setup.openCatalog")}
         </Link>
       ),
     },
@@ -44,7 +46,7 @@ export function SetupGuide() {
           action: (
             <Button size="sm" onClick={() => setCreating(true)}>
               <HugeiconsIcon icon={Key01Icon} strokeWidth={1.6} />
-              {steps.find((step) => step.id === "api_key")?.done ? "Criar outra chave" : "Criar chave"}
+              {t(steps.find((step) => step.id === "api_key")?.done ? "setup.createAnotherKey" : "setup.createKey")}
             </Button>
           ),
         },
