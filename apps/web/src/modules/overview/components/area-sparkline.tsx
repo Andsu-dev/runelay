@@ -22,8 +22,8 @@ const toPoints = (values: number[]) => {
 
 const smoothPath = (points: { x: number; y: number }[]) =>
   points.reduce((path, point, index) => {
-    if (index === 0) return `M ${point.x} ${point.y}`;
     const previous = points[index - 1];
+    if (!previous) return `M ${point.x} ${point.y}`;
     const middle = (previous.x + point.x) / 2;
     return `${path} C ${middle} ${previous.y} ${middle} ${point.y} ${point.x} ${point.y}`;
   }, "");
