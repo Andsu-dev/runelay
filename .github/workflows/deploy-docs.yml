@@ -1,6 +1,9 @@
 name: deploy-docs
 
 on:
+  push:
+    branches: [main]
+    paths: ["apps/docs/**", "CHANGELOG.md"]
   workflow_dispatch:
 
 permissions:
