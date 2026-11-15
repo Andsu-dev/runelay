@@ -466,7 +466,9 @@ details[data-state="open"] .chevron { transform: rotate(180deg); }
 .cmd.code { align-items: flex-start; }
 .cmd.code pre { flex: 1; min-width: 0; margin: 0; padding: 4px 0; overflow-x: auto; }
 .cmd.code code { white-space: pre; line-height: 1.6; }
-.guide-card.static .brow-icon { color: var(--muted-foreground); background: color-mix(in oklch, var(--foreground) 6%, transparent); }
+.guide-card .brow-icon.logo { width: 38px; height: 38px; border-radius: 10px; color: var(--foreground); background: color-mix(in oklch, var(--foreground) 7%, transparent); }
+.brow-icon.logo img { border-radius: 5px; }
+.bench-eyebrow .brow-icon.logo { width: 16px; height: 16px; border-radius: 4px; color: var(--foreground); background: none; }
 .guide .bcard .guide-card { background: color-mix(in oklch, var(--foreground) 4%, transparent); }
 .guide .bcard a.guide-card:hover { background: color-mix(in oklch, var(--foreground) 9%, transparent); }
 .guide .bcard .bcard-body + .guide-list, .guide .bcard .bcard-body + .cmd { margin-top: 14px; }

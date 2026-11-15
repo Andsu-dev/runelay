@@ -61,7 +61,7 @@ export const stats = (items) => `<div class="bstats" data-reveal>${items.map(([v
 export const links = (items) =>
   `<div class="guide-list">${items
     .map(([href, name, title, text]) => {
-      const inner = `<span class="brow-icon">${icon(name, 16)}</span><span class="guide-text"><strong>${title}</strong><small>${text}</small></span>`;
+      const inner = `${name.startsWith("<") ? name : `<span class="brow-icon">${icon(name, 16)}</span>`}<span class="guide-text"><strong>${title}</strong><small>${text}</small></span>`;
       return href ? `<a class="guide-card" href="${href}">${inner}<span class="guide-arrow">${icon("arrow", 16)}</span></a>` : `<div class="guide-card static">${inner}</div>`;
     })
     .join("")}</div>`;

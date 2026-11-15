@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { card, checks, code, escape, icon, jsonLd, links, plain, prose, steps } from "./blocks.mjs";
 import { EXISTING, INTEGRATION_PAGES, INTEGRATIONS_EN, PAGES } from "./content.mjs";
@@ -54,12 +54,13 @@ const related = (slugs, lang) =>
     }),
   )}</nav>`;
 
-const eyebrow = (page) => {
+const eyebrow = (page, mark) => {
+  if (mark) return `<p class="bench-eyebrow" data-reveal><span class="vs"><img src="/favicon.svg" width="16" height="16" alt="" />runelay</span><em>+</em><span class="vs">${mark[1]}${mark[0]}</span><span class="dot"></span>${page.eyebrow}</p>`;
   const versus = page.vs ? `<em>vs</em><span class="vs"><img src="${page.vs[1]}" width="16" height="16" alt="" />${page.vs[0]}</span>` : "";
   return `<p class="bench-eyebrow" data-reveal><span class="vs"><img src="/favicon.svg" width="16" height="16" alt="" />runelay</span>${versus}<span class="dot"></span>${page.eyebrow}</p>`;
 };
 
-const document = (slug, lang, page, relatedSlugs) => {
+const document = (slug, lang, page, relatedSlugs, mark) => {
   const { prefix, html, locale, og, copy, copied } = LANGS[lang];
   const url = `${ORIGIN}${prefix}/${slug}/`;
   const faq = page.faq?.length ? page.faq : null;
@@ -99,7 +100,7 @@ const document = (slug, lang, page, relatedSlugs) => {
 
     <main class="page bench-page guide">
       <section class="hero bench-hero">
-        ${eyebrow(page)}
+        ${eyebrow(page, mark)}
         <h1 data-reveal>${page.h1}</h1>
         <p class="lead" data-reveal>${page.lead}</p>
         ${page.hero ?? ""}
@@ -123,15 +124,26 @@ const document = (slug, lang, page, relatedSlugs) => {
 
 const source = readFileSync(CATALOG, "utf8");
 const sectionStarts = [...source.matchAll(/\n {4}id: "([^"]+)",\n {4}title: "([^"]+)",/g)].map((match) => ({ id: match[1], title: match[2], index: match.index }));
-const catalog = [...source.matchAll(/id: "([^"]+)",\s*name: "([^"]+)",\s*description: "([^"]+)",\s*url: "([^"]+)",\s*icon: [^\n]+,\s*auth: "([^"]+)",(?:\s*tokenUrl: "([^"]+)",)?/g)].map((match) => ({
+const BRANDS = JSON.parse(readFileSync("integration-icons.json", "utf8"));
+
+const logo = (id, key, size = 18) => {
+  const brand = BRANDS[key];
+  if (brand) return `<span class="brow-icon logo"><svg viewBox="0 0 24 24" width="${size}" height="${size}" aria-hidden="true"><path fill="${brand.color ?? "currentColor"}" d="${brand.path}"/></svg></span>`;
+  const file = ["svg", "png"].map((extension) => `logos/integrations/${id.replaceAll("_", "-")}.${extension}`).find((path) => existsSync(`public/${path}`));
+  if (!file) throw new Error(`no logo for ${id}`);
+  return `<span class="brow-icon logo"><img src="/${file}" width="${size + 2}" height="${size + 2}" alt="" loading="lazy" decoding="async" /></span>`;
+};
+
+const catalog = [...source.matchAll(/id: "([^"]+)",\s*name: "([^"]+)",\s*description: "([^"]+)",\s*url: "([^"]+)",\s*icon: ("[^"]+"|null),\s*auth: "([^"]+)",(?:\s*tokenUrl: "([^"]+)",)?/g)].map((match) => ({
   id: match[1],
   slug: match[1].replaceAll("_", "-"),
   name: match[2],
   pt: match[3],
   en: INTEGRATIONS_EN.descriptions[match[1]] ?? match[3],
   url: match[4],
-  auth: match[5],
-  tokenUrl: match[6],
+  logo: (size) => logo(match[1], match[5].replaceAll('"', ""), size),
+  auth: match[6],
+  tokenUrl: match[7],
   section: sectionStarts.findLast((section) => section.index < match.index).id,
 }));
 const expected = [...source.matchAll(/\n {8}id: "/g)].length;
@@ -187,7 +199,8 @@ const integration = (item) => {
     );
   return {
     slug: `integrations/${item.slug}`,
-    icon: "plug",
+    icon: item.logo(18),
+    mark: [name, item.logo(13)],
     related: ["integrations", "guides/share-mcp-across-agents", "docs/migrate"],
     en: {
       title: `${name} MCP for Claude Code, Cursor and Codex · Runelay`,
@@ -251,7 +264,7 @@ const hub = () => {
         card(
           "plug",
           lang === "en" ? (INTEGRATIONS_EN.sections[section.id] ?? section.title) : section.title,
-          links(catalog.filter((item) => item.section === section.id).map((item) => [INTEGRATION_PAGES.includes(item.id) ? `/integrations/${item.slug}/` : null, "plug", `${item.name} · ${AUTH[lang][item.auth]}`, item[lang]])),
+          links(catalog.filter((item) => item.section === section.id).map((item) => [INTEGRATION_PAGES.includes(item.id) ? `/integrations/${item.slug}/` : null, item.logo(18), `${item.name} · ${AUTH[lang][item.auth]}`, item[lang]])),
           false,
         ),
       )
@@ -374,6 +387,6 @@ for (const page of PAGES) registry.set(page.slug, { icon: page.icon, en: [page.e
 const generated = [...PAGES, hub(), ...catalog.filter((item) => INTEGRATION_PAGES.includes(item.id)).map(integration), changelog()];
 for (const page of generated) registry.set(page.slug, { icon: page.icon, en: [page.en.cardTitle, page.en.cardText], pt: [page.pt.cardTitle, page.pt.cardText] });
 
-for (const page of generated) for (const lang of ["en", "pt"]) document(page.slug, lang, page[lang], page.related);
+for (const page of generated) for (const lang of ["en", "pt"]) document(page.slug, lang, page[lang], page.related, page.mark);
 
 console.log(`generated ${generated.length * 2} pages`);
