@@ -11,7 +11,7 @@
   <img alt="SQLite" src="https://img.shields.io/badge/db-sqlite-0f80cc?style=flat-square&logo=sqlite&logoColor=white" />
 </p>
 
-<p align="center"><a href="https://bot.runelay.com">bot.runelay.com</a></p>
+<p align="center"><a href="https://runelay.com">runelay.com</a></p>
 
 <p align="center">
   Connect Linear, GitHub and Notion <b>once</b>. Bring the skills and memories you already have.<br />
@@ -67,14 +67,14 @@ flowchart LR
 ## 🚀 Quick start
 
 ```sh
-curl -fsSL bot.runelay.com/install | sh
+curl -fsSL runelay.com/install | sh
 ```
 
 That is it. The script creates `~/runelay`, writes a `.env` with a fresh `RUNELAY_SECRET`, pulls the image and starts it on `127.0.0.1:4312`. Open the link it prints, create your account and follow **Acesso → Configurar agentes**.
 
 ### Or the desktop app
 
-No Docker needed: grab runelay for [Mac (Apple silicon)](https://bot.runelay.com/download/mac), [Mac (Intel)](https://bot.runelay.com/download/mac-intel), [Windows](https://bot.runelay.com/download/windows) or [Linux](https://bot.runelay.com/download/linux) (AppImage, also for [arm64](https://bot.runelay.com/download/linux-arm)). The app runs the same server on `127.0.0.1:4312`, so the CLI and your agents find it on their own. Data lives in the app folder (`~/Library/Application Support/runelay` on Mac); the secret is kept in the system keychain when one is available.
+No Docker needed: grab runelay for [Mac (Apple silicon)](https://runelay.com/download/mac), [Mac (Intel)](https://runelay.com/download/mac-intel), [Windows](https://runelay.com/download/windows) or [Linux](https://runelay.com/download/linux) (AppImage, also for [arm64](https://runelay.com/download/linux-arm)). The app runs the same server on `127.0.0.1:4312`, so the CLI and your agents find it on their own. Data lives in the app folder (`~/Library/Application Support/runelay` on Mac); the secret is kept in the system keychain when one is available.
 
 The builds are not signed yet. On Mac, right-click the app and choose **Open** the first time. On Windows, choose **More info → Run anyway**. Keep the app running while your agents use it; quitting it stops the server.
 
@@ -83,7 +83,7 @@ The builds are not signed yet. On Mac, right-click the app and choose **Open** t
 On the computer where your agents live:
 
 ```sh
-curl -fsSL bot.runelay.com/cli | sh
+curl -fsSL runelay.com/cli | sh
 runelay migrate
 ```
 
@@ -102,7 +102,7 @@ runelay migrate
 Options go in front of `sh`:
 
 ```sh
-curl -fsSL bot.runelay.com/install \
+curl -fsSL runelay.com/install \
   | PUBLIC_URL=https://runelay.example.com RUNELAY_DIR=/opt/runelay RUNELAY_VERSION=v0.1.0 sh
 ```
 
@@ -249,7 +249,7 @@ headers = { Authorization = "Bearer rnl_..." }
 The `runelay` CLI runs on your computer, because that is where your agents keep their files. Install it, log in through the browser, done: no env vars, no keys to copy.
 
 ```sh
-curl -fsSL bot.runelay.com/cli | sh
+curl -fsSL runelay.com/cli | sh
 
 runelay login      # finds your server, opens the browser, saves this computer's key
 runelay status     # server, organization and what is stored in it
@@ -411,5 +411,5 @@ packages/
 <br />
 
 <p align="center">
-  MIT · made by <a href="https://x.com/andersonbrdev"><b>@andersonbrdev</b></a> · <a href="https://bot.runelay.com">bot.runelay.com</a>. Follow the build on X.
+  MIT · made by <a href="https://x.com/andersonbrdev"><b>@andersonbrdev</b></a> · <a href="https://runelay.com">runelay.com</a>. Follow the build on X.
 </p>

@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://bot.runelay.com/</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://bot.runelay.com/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://bot.runelay.com/pt-br/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://bot.runelay.com/" />
+    <loc>https://runelay.com/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://runelay.com/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://runelay.com/pt-br/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://runelay.com/" />
   </url>
   <url>
-    <loc>https://bot.runelay.com/pt-br/</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://bot.runelay.com/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://bot.runelay.com/pt-br/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://bot.runelay.com/" />
+    <loc>https://runelay.com/pt-br/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://runelay.com/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://runelay.com/pt-br/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://runelay.com/" />
   </url>
   <url>
-    <loc>https://bot.runelay.com/setup/</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://bot.runelay.com/setup/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://bot.runelay.com/pt-br/setup/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://bot.runelay.com/setup/" />
+    <loc>https://runelay.com/setup/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://runelay.com/setup/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://runelay.com/pt-br/setup/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://runelay.com/setup/" />
   </url>
   <url>
-    <loc>https://bot.runelay.com/pt-br/setup/</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://bot.runelay.com/setup/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://bot.runelay.com/pt-br/setup/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://bot.runelay.com/setup/" />
+    <loc>https://runelay.com/pt-br/setup/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://runelay.com/setup/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://runelay.com/pt-br/setup/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://runelay.com/setup/" />
   </url>
   <url>
-    <loc>https://bot.runelay.com/download/</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://bot.runelay.com/download/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://bot.runelay.com/pt-br/download/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://bot.runelay.com/download/" />
+    <loc>https://runelay.com/download/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://runelay.com/download/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://runelay.com/pt-br/download/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://runelay.com/download/" />
   </url>
   <url>
-    <loc>https://bot.runelay.com/pt-br/download/</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://bot.runelay.com/download/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://bot.runelay.com/pt-br/download/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://bot.runelay.com/download/" />
+    <loc>https://runelay.com/pt-br/download/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://runelay.com/download/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://runelay.com/pt-br/download/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://runelay.com/download/" />
   </url>
 </urlset>

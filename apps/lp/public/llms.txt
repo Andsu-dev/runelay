@@ -4,9 +4,9 @@
 
 ## Get started
 
-- [Download the desktop app](https://bot.runelay.com/download/): Mac (Apple silicon and Intel), Windows and Linux AppImage. Runs the server on `127.0.0.1:4312`.
-- [Set up step by step](https://bot.runelay.com/setup/): install the server with `curl -fsSL bot.runelay.com/install | sh`, then the CLI with `curl -fsSL bot.runelay.com/cli | sh`, then `runelay login`, `runelay migrate` and `runelay connect`.
-- [Agent setup prompt](https://bot.runelay.com/setup/): a ready prompt that lets an agent install and connect runelay for you.
+- [Download the desktop app](https://runelay.com/download/): Mac (Apple silicon and Intel), Windows and Linux AppImage. Runs the server on `127.0.0.1:4312`.
+- [Set up step by step](https://runelay.com/setup/): install the server with `curl -fsSL runelay.com/install | sh`, then the CLI with `curl -fsSL runelay.com/cli | sh`, then `runelay login`, `runelay migrate` and `runelay connect`.
+- [Agent setup prompt](https://runelay.com/setup/): a ready prompt that lets an agent install and connect runelay for you.
 
 ## Docs
 
@@ -22,4 +22,4 @@
 ## Optional
 
 - [Source code](https://github.com/Andsu-dev/runelay): Bun, Hono, SQLite, React.
-- [Página em português](https://bot.runelay.com/pt-br/)
+- [Página em português](https://runelay.com/pt-br/)

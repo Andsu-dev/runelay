@@ -1,7 +1,7 @@
 {
   "name": "runelay",
   "version": "0.3.2",
-  "homepage": "https://bot.runelay.com",
+  "homepage": "https://runelay.com",
   "devDependencies": {
     "@biomejs/biome": "2.6.7",
     "@types/bun": "latest",

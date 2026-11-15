@@ -9,20 +9,20 @@
     <meta property="og:site_name" content="runelay" />
     <meta property="og:title" content="Configurar o runelay · runelay" />
     <meta property="og:description" content="Instale o runelay no seu servidor, entre pela CLI e ligue todos os agentes. Passo a passo, ou deixe com o seu agente." />
-    <meta property="og:url" content="https://bot.runelay.com/pt-br/setup/" />
-    <meta property="og:image" content="https://bot.runelay.com/og-pt.png" />
+    <meta property="og:url" content="https://runelay.com/pt-br/setup/" />
+    <meta property="og:image" content="https://runelay.com/og-pt.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:locale" content="pt_BR" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@andersonbrdev" />
-    <meta name="twitter:image" content="https://bot.runelay.com/og-pt.png" />
+    <meta name="twitter:image" content="https://runelay.com/og-pt.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="canonical" href="https://bot.runelay.com/pt-br/setup/" />
-    <link rel="alternate" hreflang="en" href="https://bot.runelay.com/setup/" />
-    <link rel="alternate" hreflang="pt-BR" href="https://bot.runelay.com/pt-br/setup/" />
-    <link rel="alternate" hreflang="x-default" href="https://bot.runelay.com/setup/" />
+    <link rel="canonical" href="https://runelay.com/pt-br/setup/" />
+    <link rel="alternate" hreflang="en" href="https://runelay.com/setup/" />
+    <link rel="alternate" hreflang="pt-BR" href="https://runelay.com/pt-br/setup/" />
+    <link rel="alternate" hreflang="x-default" href="https://runelay.com/setup/" />
     <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="/styles.css" />
     <script>document.documentElement.classList.add("js");</script>
@@ -50,9 +50,9 @@
           </div>
           <template id="agent-prompt">Me ajude a configurar o runelay, um gateway MCP open-source que eu hospedo para que todos os meus agentes usem as mesmas contas, skills e memórias.
 
-Pergunte onde o runelay deve rodar: nesta máquina ou num servidor que eu acesso por SSH. Ele precisa de Docker. Instale lá com `curl -fsSL bot.runelay.com/install | sh` e me mostre o link de primeiro acesso que ele imprime, para eu criar a conta dona no navegador. Me lembre de guardar uma cópia do `~/runelay/.env`, que tem o RUNELAY_SECRET.
+Pergunte onde o runelay deve rodar: nesta máquina ou num servidor que eu acesso por SSH. Ele precisa de Docker. Instale lá com `curl -fsSL runelay.com/install | sh` e me mostre o link de primeiro acesso que ele imprime, para eu criar a conta dona no navegador. Me lembre de guardar uma cópia do `~/runelay/.env`, que tem o RUNELAY_SECRET.
 
-No meu computador, instale a CLI com `curl -fsSL bot.runelay.com/cli | sh` e rode `runelay login`. Espere enquanto eu aprovo o código no navegador.
+No meu computador, instale a CLI com `curl -fsSL runelay.com/cli | sh` e rode `runelay login`. Espere enquanto eu aprovo o código no navegador.
 
 Rode `runelay migrate` para trazer os servidores MCP, memórias, skills e instruções que eu já tenho. Resuma o que veio e o que ainda precisa de login na fila de reconexão do painel.
 
@@ -71,7 +71,7 @@ Docs: https://github.com/Andsu-dev/runelay#readme</template>
             <span class="step-number" aria-hidden="true">1</span>
             <h3>Instale o servidor</h3>
             <p>Em qualquer máquina com Docker: uma VPS, um servidor em casa ou este notebook.</p>
-            <div class="cmd"><code><span class="prompt">$</span>curl -fsSL bot.runelay.com/install | sh</code><button class="copy" type="button" data-copy="curl -fsSL bot.runelay.com/install | sh" data-copied="Copiado">Copiar</button></div>
+            <div class="cmd"><code><span class="prompt">$</span>curl -fsSL runelay.com/install | sh</code><button class="copy" type="button" data-copy="curl -fsSL runelay.com/install | sh" data-copied="Copiado">Copiar</button></div>
             <p class="after">Ele cria o <code>~/runelay/.env</code> com um <code>RUNELAY_SECRET</code> novo. Guarde uma cópia: sem ele as conexões não abrem.</p>
             <p class="after">Prefere sem Docker? <a href="/pt-br/download/">Baixe o app para Mac</a> e pule para o passo 3.</p>
           </li>
@@ -84,7 +84,7 @@ Docs: https://github.com/Andsu-dev/runelay#readme</template>
             <span class="step-number" aria-hidden="true">3</span>
             <h3>Instale a CLI no seu computador</h3>
             <p>É pela CLI que a sua máquina e os seus agentes falam com o runelay.</p>
-            <div class="cmd"><code><span class="prompt">$</span>curl -fsSL bot.runelay.com/cli | sh</code><button class="copy" type="button" data-copy="curl -fsSL bot.runelay.com/cli | sh" data-copied="Copiado">Copiar</button></div>
+            <div class="cmd"><code><span class="prompt">$</span>curl -fsSL runelay.com/cli | sh</code><button class="copy" type="button" data-copy="curl -fsSL runelay.com/cli | sh" data-copied="Copiado">Copiar</button></div>
           </li>
           <li data-reveal>
             <span class="step-number" aria-hidden="true">4</span>

@@ -9,26 +9,26 @@
     <meta property="og:site_name" content="runelay" />
     <meta property="og:title" content="runelay · One MCP gateway for all your AI agents" />
     <meta property="og:description" content="All your agents with the same accounts, skills and memories. One open-source MCP endpoint, on your computer or your server." />
-    <meta property="og:url" content="https://bot.runelay.com/" />
-    <meta property="og:image" content="https://bot.runelay.com/og.png" />
+    <meta property="og:url" content="https://runelay.com/" />
+    <meta property="og:image" content="https://runelay.com/og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:locale" content="en_US" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@andersonbrdev" />
-    <meta name="twitter:image" content="https://bot.runelay.com/og.png" />
+    <meta name="twitter:image" content="https://runelay.com/og.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="canonical" href="https://bot.runelay.com/" />
-    <link rel="alternate" hreflang="en" href="https://bot.runelay.com/" />
-    <link rel="alternate" hreflang="pt-BR" href="https://bot.runelay.com/pt-br/" />
-    <link rel="alternate" hreflang="x-default" href="https://bot.runelay.com/" />
+    <link rel="canonical" href="https://runelay.com/" />
+    <link rel="alternate" hreflang="en" href="https://runelay.com/" />
+    <link rel="alternate" hreflang="pt-BR" href="https://runelay.com/pt-br/" />
+    <link rel="alternate" hreflang="x-default" href="https://runelay.com/" />
     <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="/styles.css" />
     <script>document.documentElement.classList.add("js");</script>
     <script type="module" src="/main.js"></script>
 
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "runelay", "url": "https://bot.runelay.com/", "description": "All your agents with the same accounts, skills and memories. One open-source MCP endpoint, on your computer or your server.", "applicationCategory": "DeveloperApplication", "operatingSystem": "macOS, Windows, Linux, Docker", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "license": "https://opensource.org/licenses/MIT", "downloadUrl": "https://bot.runelay.com/download/", "softwareHelp": "https://github.com/Andsu-dev/runelay#readme", "author": {"@type": "Person", "name": "Anderson Medeiros", "url": "https://x.com/andersonbrdev"}, "image": "https://bot.runelay.com/og.png", "inLanguage": "en"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "runelay", "url": "https://runelay.com/", "description": "All your agents with the same accounts, skills and memories. One open-source MCP endpoint, on your computer or your server.", "applicationCategory": "DeveloperApplication", "operatingSystem": "macOS, Windows, Linux, Docker", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "license": "https://opensource.org/licenses/MIT", "downloadUrl": "https://runelay.com/download/", "softwareHelp": "https://github.com/Andsu-dev/runelay#readme", "author": {"@type": "Person", "name": "Anderson Medeiros", "url": "https://x.com/andersonbrdev", "sameAs": ["https://x.com/andersonbrdev", "https://github.com/Andsu-dev"]}, "image": "https://runelay.com/og.png", "inLanguage": "en", "sameAs": ["https://github.com/Andsu-dev/runelay", "https://x.com/andersonbrdev"], "codeRepository": "https://github.com/Andsu-dev/runelay"}</script>
     <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Which agents does it work with?", "acceptedAnswer": {"@type": "Answer", "text": "Any MCP client. And a single command imports the memories, skills and instructions you already have in Claude Code, Codex, Cursor, Grok, Gemini and OpenCode."}}, {"@type": "Question", "name": "Do I need Docker or a server?", "acceptedAnswer": {"@type": "Answer", "text": "No. Download the app for Mac, Windows or Linux and it runs on your computer. Want it always on, for every machine you use? Install it on a server with Docker in one command."}}, {"@type": "Question", "name": "Can I migrate in one click?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Run runelay migrate: it finds Claude Code, Codex, Cursor and Grok on your machine and brings everything over at once, with connections, memories, skills and instructions. Accounts your agent was already logged into arrive connected, and the ones that need a login go into a queue you clear on a single screen. Coming from Executor, it arrives as a connection that is already logged in."}}, {"@type": "Question", "name": "Do I need to pay for anything?", "acceptedAnswer": {"@type": "Answer", "text": "No. It is a free app (or one container) with SQLite. The only accounts involved are the ones you connect."}}, {"@type": "Question", "name": "Is it faster than a cloud service?", "acceptedAnswer": {"@type": "Answer", "text": "Calls go from your machine straight to Linear, GitHub or whoever, without passing through anyone else's infrastructure."}}]}</script>
   </head>
   <body>
@@ -51,9 +51,9 @@
         </div>
         <template id="agent-prompt">Help me set up runelay, an open-source MCP gateway I host myself so all my agents share the same accounts, skills and memory.
 
-Ask where runelay should run: this machine, or a server I can reach over SSH. It needs Docker. Install it there with `curl -fsSL bot.runelay.com/install | sh` and show me the first-access link it prints, so I can create the owner account in the browser. Remind me to back up `~/runelay/.env`, which holds RUNELAY_SECRET.
+Ask where runelay should run: this machine, or a server I can reach over SSH. It needs Docker. Install it there with `curl -fsSL runelay.com/install | sh` and show me the first-access link it prints, so I can create the owner account in the browser. Remind me to back up `~/runelay/.env`, which holds RUNELAY_SECRET.
 
-On my computer, install the CLI with `curl -fsSL bot.runelay.com/cli | sh` and run `runelay login`. Wait while I approve the code in the browser.
+On my computer, install the CLI with `curl -fsSL runelay.com/cli | sh` and run `runelay login`. Wait while I approve the code in the browser.
 
 Run `runelay migrate` to bring the MCP servers, memories, skills and instructions I already have. Summarize what came over and what still needs a login in the panel's reconnect queue.
 
@@ -118,7 +118,7 @@ Docs: https://github.com/Andsu-dev/runelay#readme</template>
             <span class="install-card-icon"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" d="M4.5 4.5h15a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1Zm0 9h15a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1ZM7 7.5h.01M7 16.5h.01"/></svg></span>
             <strong>Server</strong>
             <span class="install-card-text">Always on, for every machine you use.</span>
-            <div class="cmd"><code><span class="prompt">$</span>curl -fsSL bot.runelay.com/install | sh</code><button class="copy" type="button" data-copy="curl -fsSL bot.runelay.com/install | sh" data-copied="Copied">Copy</button></div>
+            <div class="cmd"><code><span class="prompt">$</span>curl -fsSL runelay.com/install | sh</code><button class="copy" type="button" data-copy="curl -fsSL runelay.com/install | sh" data-copied="Copied">Copy</button></div>
           </div>
         </div>
         <p class="note" data-reveal>then point your agents at <code>/v1/mcp</code> ✌️</p>
