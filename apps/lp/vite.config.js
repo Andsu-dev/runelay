@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
@@ -123,11 +123,13 @@ const sourceOf = (file) => {
 
 const lastModified = (file) => committed(file) || committed(sourceOf(file)) || today;
 
+const noindex = (file) => /<meta name="robots" content="noindex/.test(readFileSync(file, "utf8"));
+
 const sitemap = {
   name: "sitemap",
   apply: "build",
   generateBundle() {
-    const routes = new Map(pages.filter((file) => file.endsWith("index.html")).map((file) => [routeOf(file), file]));
+    const routes = new Map(pages.filter((file) => file.endsWith("index.html") && !noindex(file)).map((file) => [routeOf(file), file]));
     const urls = [...routes].map(([route, file]) => {
       const slug = slugOf(route);
       const alternates = [["en", slug], ["pt-BR", `/pt-br${slug}`], ["x-default", slug]]
