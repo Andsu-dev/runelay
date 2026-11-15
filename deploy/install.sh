@@ -49,7 +49,14 @@ else
 fi
 
 docker compose pull
-docker compose up -d
+if ! UP_LOG="$(docker compose up -d 2>&1)"; then
+  printf "%s\n" "$UP_LOG" >&2
+  case "$UP_LOG" in
+    *"address pools have been fully subnetted"*)
+      fail "O Docker ficou sem faixas de rede livres. Rode docker network prune -f e instale de novo." ;;
+  esac
+  fail "docker compose up falhou."
+fi
 
 say ""
 SETUP_TOKEN="$(grep '^RUNELAY_SETUP_TOKEN=' .env | cut -d= -f2-)"
