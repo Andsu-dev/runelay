@@ -6,6 +6,7 @@ const POLL_MS = 3000;
 const POLL_LIMIT = 100;
 
 export const DESKTOP_DOWNLOAD_URL = "https://runelay.com/download";
+export const CONTRIBUTE_URL = "https://github.com/sponsors/Andsu-dev";
 
 export const UPDATE_COMMAND = "cd ~/runelay && docker compose pull && docker compose up -d";
 

@@ -22,7 +22,8 @@
   <a href="#-quick-start"><b>Quick start</b></a> ·
   <a href="#-connect-your-agents"><b>Connect agents</b></a> ·
   <a href="#-reference"><b>Reference</b></a> ·
-  <a href="https://x.com/andersonbrdev"><b>Follow the build</b></a>
+  <a href="https://x.com/andersonbrdev"><b>Follow the build</b></a> ·
+  <a href="https://github.com/sponsors/Andsu-dev"><b>☕ Support</b></a>
 </p>
 
 <br />
@@ -407,6 +408,10 @@ packages/
 - Organization members and invites
 - Activity log per API key
 - Menu bar app for macOS (reconnect alerts)
+
+## ☕ Support runelay
+
+runelay is free, MIT licensed and built by one person. If it saves you time, sponsoring it on GitHub keeps it alive: [github.com/sponsors/Andsu-dev](https://github.com/sponsors/Andsu-dev).
 
 <br />
 
