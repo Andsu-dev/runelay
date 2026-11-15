@@ -4,8 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --port 5174",
-    "build": "vite build"
+    "dev": "node generate.mjs && vite --port 5174",
+    "build": "node generate.mjs && vite build",
+    "indexnow": "node indexnow.mjs"
   },
   "devDependencies": {
     "vite": "^8.2.1"
