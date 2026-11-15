@@ -17,3 +17,18 @@ export const RATE_LIMIT_WINDOW_MS = 60_000;
 export const MCP_PATH = "/v1/mcp";
 
 export const PROFILE_INVALID_MESSAGE = "Nome ou foto inválidos. A foto precisa ser uma imagem de até 400 KB.";
+
+export const ORGANIZATION_DATA_TABLES = [
+  "sources",
+  "tool_calls",
+  "memories",
+  "memory_versions",
+  "memory_links",
+  "memories_fts",
+  "skills",
+  "skill_files",
+  "skills_fts",
+  "api_key_secrets",
+  "audit_events",
+  "cli_auth_requests",
+] as const;

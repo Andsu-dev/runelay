@@ -5,6 +5,10 @@ export const settingsMessages = defineMessages(
     pages: {
       server: { title: "Servidor", description: "O servidor a que este painel está conectado." },
       profile: { title: "Perfil", description: "Como você aparece para quem divide a organização com você." },
+      organization: {
+        title: "Organização",
+        description: "Nome e imagem da organização em que você está agora.",
+      },
       preferences: { title: "Preferências", description: "Valem só para este aparelho." },
       about: { title: "Sobre", description: "A versão do runelay que você está usando." },
     },
@@ -97,6 +101,7 @@ export const settingsMessages = defineMessages(
     pages: {
       server: { title: "Server", description: "The server this panel is connected to." },
       profile: { title: "Profile", description: "How you appear to people who share the organization with you." },
+      organization: { title: "Organization", description: "Name and image of the organization you are in now." },
       preferences: { title: "Preferences", description: "They only apply to this device." },
       about: { title: "About", description: "The runelay version you're using." },
     },

@@ -1,11 +1,13 @@
-import { createOrganizationSchema, setActiveOrganizationSchema } from "@runelay/shared";
+import { createOrganizationSchema, setActiveOrganizationSchema, updateOrganizationSchema } from "@runelay/shared";
 import { Hono } from "hono";
 import { requireAccount, requireSession } from "@/modules/auth/middlewares/authenticate";
 import {
   createOrganization,
   describeMe,
   listOrganizations,
+  removeOrganization,
   switchOrganization,
+  updateOrganization,
 } from "@/modules/organizations/services/organization.service";
 import { respond } from "@/shared/http";
 import type { AccountEnv, SessionEnv } from "@/shared/types/app.types";
@@ -23,4 +25,8 @@ export const organizationsRoutes = new Hono<AccountEnv>()
   )
   .post("/active", validate("json", setActiveOrganizationSchema), async (c) =>
     respond(c, await switchOrganization(c.req.raw.headers, c.var.user, c.req.valid("json").organizationId)),
-  );
+  )
+  .patch("/:id", validate("json", updateOrganizationSchema), (c) =>
+    respond(c, updateOrganization(c.var.userId, c.req.param("id"), c.req.valid("json"))),
+  )
+  .delete("/:id", async (c) => respond(c, await removeOrganization(c.var.user, c.req.param("id"))));

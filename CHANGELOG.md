@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Settings: new Organization page to rename the organization, set its image and delete it. Deleting removes its connections, API keys, memories and skills, and is refused for a member's only organization.
+
 ## v0.4.1
 
 - Dashboard lists (top connectors, most used tools, recent skills and memories) stop growing and scroll inside their card.

@@ -49,7 +49,7 @@ export function OrganizationSwitcher({ me }: OrganizationSwitcherProps) {
                 transition={{ duration: 0.2, ease: [0.2, 0, 0, 1] }}
                 className="flex min-w-0 flex-1 items-center gap-2.5"
               >
-                <OrganizationTile name={active.name} seed={active.id} />
+                <OrganizationTile name={active.name} seed={active.id} logo={active.logo} />
                 <span className="min-w-0 flex-1 truncate text-[14px] font-medium">{active.name}</span>
               </motion.span>
             </AnimatePresence>

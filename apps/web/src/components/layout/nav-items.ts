@@ -1,6 +1,7 @@
 import {
   Activity01Icon,
   Brain02Icon,
+  Building03Icon,
   CheckmarkCircle02Icon,
   ComputerTerminal01Icon,
   DashboardSquare01Icon,
@@ -156,6 +157,11 @@ export const SETTINGS_CATEGORY = {
       items: [
         { label: "layout.nav.server", icon: ServerStack01Icon, link: linkOptions({ to: "/settings/server" }) },
         { label: "layout.nav.profile", icon: UserIcon, link: linkOptions({ to: "/settings/profile" }) },
+        {
+          label: "layout.nav.organization",
+          icon: Building03Icon,
+          link: linkOptions({ to: "/settings/organization" }),
+        },
         {
           label: "layout.nav.preferences",
           icon: SlidersHorizontalIcon,
