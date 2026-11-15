@@ -1,13 +1,15 @@
-import { ArrowLeft02Icon, RefreshIcon } from "@hugeicons/core-free-icons";
+import { ArrowLeft02Icon, PencilEdit02Icon, RefreshIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { SourceView } from "@runelay/shared";
 import { Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { IconAction } from "@/components/ui/action/icon-action";
 import { formatDate } from "@/lib/format";
 import { useT } from "@/lib/i18n";
 import { ConnectorIcon } from "@/modules/catalog/components/connector-icon";
 import { KIND_LABEL, STATUS_LABEL } from "@/modules/sources/constants/source.constants";
 import { useSourceActions } from "@/modules/sources/hooks/use-source-actions";
+import { RenameSourceDialog } from "./rename-source-dialog";
 import { SourceConnectButton } from "./source-connect-button";
 import { SourceEditor } from "./source-editor";
 import { SourceStatusDot } from "./source-status-dot";
@@ -21,6 +23,7 @@ export function SourceDetail({ source, oauthError }: SourceDetailProps) {
   const t = useT();
   const { name, config, status, error, toolCount, enabled, connectedAt } = source;
   const { test } = useSourceActions(name);
+  const [renaming, setRenaming] = useState(false);
   const loginError = status === "ok" ? undefined : oauthError;
 
   return (
@@ -40,6 +43,7 @@ export function SourceDetail({ source, oauthError }: SourceDetailProps) {
             <SourceStatusDot status={status} enabled={enabled} />
             <ConnectorIcon name={name} icon={source.icon} />
             <h1 className="truncate text-lg font-semibold">{name}</h1>
+            <IconAction icon={PencilEdit02Icon} label={t("sources.rename.action")} onClick={() => setRenaming(true)} />
             <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
               {t(KIND_LABEL[config.kind])}
             </span>
@@ -66,6 +70,7 @@ export function SourceDetail({ source, oauthError }: SourceDetailProps) {
       )}
 
       <SourceEditor key={source.updatedAt} source={source} />
+      <RenameSourceDialog key={name} name={name} open={renaming} onOpenChange={setRenaming} />
     </div>
   );
 }

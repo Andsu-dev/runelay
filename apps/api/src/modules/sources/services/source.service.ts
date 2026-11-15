@@ -1,5 +1,6 @@
 import {
   type CreateSourceInput,
+  fail,
   type ImportedOAuthInput,
   type ImportSourceInput,
   type ImportSourcesInput,
@@ -15,6 +16,7 @@ import {
   deleteSource,
   findSource,
   findSourceView,
+  renameSource,
   updateEnabled,
   updateOAuth,
   upsertSource,
@@ -49,16 +51,33 @@ export const updateSource = async (
   if (input.config) {
     const allowed = await checkSourcePolicy(input.config, actor);
     if (allowed.error) return allowed;
-    const saved = upsertSource(key.organizationId, { name: key.name, config: input.config });
+  }
+  const renamed = await renameTo(key, input.name);
+  if (renamed.error) return renamed;
+  const target = renamed.data;
+  if (input.config) {
+    const saved = upsertSource(target.organizationId, { name: target.name, config: input.config });
     if (saved.error) return saved;
   }
   if (input.enabled !== undefined) {
-    const toggled = updateEnabled(key, input.enabled);
+    const toggled = updateEnabled(target, input.enabled);
     if (toggled.error) return toggled;
   }
-  if (input.enabled === false) await disconnectSource(key);
-  else await connectSource(key);
-  return findSourceView(key);
+  const renameOnly = input.config === undefined && input.enabled === undefined;
+  if (input.enabled === false) await disconnectSource(target);
+  else if (!renameOnly || current.data.enabled) await connectSource(target);
+  return findSourceView(target);
+};
+
+const renameTo = async (key: SourceKey, name: string | undefined): Promise<Result<SourceKey>> => {
+  if (name === undefined || name === key.name) return ok(key);
+  const target = { organizationId: key.organizationId, name };
+  const taken = findSource(target);
+  if (!taken.error) return fail("ALREADY_EXISTS", `Já existe uma conexão chamada "${name}".`);
+  if (taken.error.code !== "SOURCE_NOT_FOUND") return taken;
+  await disconnectSource(key);
+  const renamed = renameSource(key, name);
+  return renamed.error ? renamed : ok(target);
 };
 
 export const testSource = async (key: SourceKey): Promise<Result<SourceView>> => {

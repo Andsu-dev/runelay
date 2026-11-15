@@ -185,6 +185,22 @@ export const updateEnabled = ({ organizationId, name }: SourceKey, enabled: bool
       .run(enabled ? 1 : 0, organizationId, name),
   );
 
+export const renameSource = ({ organizationId, name }: SourceKey, nextName: string) =>
+  write(
+    db.transaction(() => {
+      db.query(`UPDATE sources SET name = ?, updated_at = ${SQL_NOW} WHERE organization_id = ? AND name = ?`).run(
+        nextName,
+        organizationId,
+        name,
+      );
+      db.query("UPDATE tool_calls SET source = ? WHERE organization_id = ? AND source = ?").run(
+        nextName,
+        organizationId,
+        name,
+      );
+    }),
+  );
+
 export const deleteSource = ({ organizationId, name }: SourceKey) =>
   write(() => db.query("DELETE FROM sources WHERE organization_id = ? AND name = ?").run(organizationId, name));
 
