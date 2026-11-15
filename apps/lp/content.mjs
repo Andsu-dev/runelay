@@ -722,6 +722,126 @@ const migrate = {
   },
 };
 
+const DOCS_CUSTOM = "https://docs.runelay.com/custom-connectors";
+
+const customConnectors = {
+  slug: "custom-connectors",
+  icon: "hub",
+  related: ["integrations", "features/connections", "docs/migrate"],
+  en: {
+    title: "Custom MCP connectors: connect any MCP server or API · Runelay",
+    description: "Add any remote MCP server, local MCP command or OpenAPI spec to Runelay, an open source MCP gateway. One login, encrypted on your server, shared by Claude Code, Cursor, Codex and every other agent.",
+    eyebrow: "Connections · Custom",
+    h1: "Connect any MCP server or API",
+    lead: "The catalog is a shortcut, not a limit. Add a remote MCP server, a local command or an OpenAPI spec to Runelay, an open source MCP gateway, and every agent gets its tools through the same endpoint.",
+    cardTitle: "Custom connectors",
+    cardText: "Add any MCP server or API that isn't in the catalog.",
+    body: [
+      card(
+        "plug",
+        "Three ways in",
+        table(
+          ["What you give", "Good for"],
+          [
+            ["Remote MCP", "The server URL", "Public or internal MCP servers over HTTP"],
+            ["Local command", "A command, arguments and env vars", "MCP servers that run as a process, like <code>npx</code> packages"],
+            ["OpenAPI", "A spec in JSON or YAML", "Your own REST API, with no MCP server to write. Each operation becomes a tool."],
+          ],
+        ),
+      ),
+      card(
+        "shield",
+        "Sign-in that just works",
+        checks([
+          "Paste a remote MCP URL and Runelay detects whether it wants OAuth, a key in a header or nothing at all.",
+          "OAuth runs when you save. Tokens are stored encrypted and refreshed by Runelay.",
+          "Provider without automatic client registration, like Google? Use your own OAuth client: register <code>PUBLIC_URL/v1/oauth/callback</code> as the redirect URL and paste the Client ID and secret.",
+          "Headers, env vars and secrets are encrypted at rest with AES-256-GCM. Agents never see them.",
+        ]),
+      ),
+      card(
+        "hub",
+        "One login, every agent",
+        prose(
+          "The connection name becomes the tool prefix, so a connection named <code>billing</code> exposes tools like <code>billing.list_invoices</code>. Claude Code, Cursor, Codex and every other agent with a Runelay key find them with <code>search_tools</code> and run them with <code>call_tool</code>.",
+          "Already configured in an agent? <code>runelay import</code> turns the MCP servers in your agent configs into connections, or paste the config file in the panel.",
+        ),
+      ),
+      card(
+        "terminal",
+        "Add one",
+        steps([
+          ["Open the connectors in the panel", "Add a custom connection and pick the type: Remote MCP, Local command or OpenAPI."],
+          ["Name it and fill the fields", "URL, command or spec, plus headers or env vars if it needs a key."],
+          ["Save", "Runelay connects, signs in if needed and lists the tools. The full reference is in the <a href=\"" + DOCS_CUSTOM + "\" rel=\"noopener\">custom connectors docs</a>."],
+        ]),
+        false,
+      ),
+    ],
+    faq: [
+      ["Can Runelay reach a server on my private network?", "Yes, if you allow it. Requests to private, loopback and link-local addresses are blocked by default. Set RUNELAY_ALLOW_PRIVATE_URLS=true on the Runelay server to reach internal servers."],
+      ["Can I run a local MCP server with npx?", "Yes. The desktop app runs local commands with the tools installed on your computer. On a server they are off by default: set RUNELAY_ENABLE_STDIO=true, and only an owner or admin can create them. The Docker image ships without Node."],
+      ["Do my API keys reach the agents?", "No. Headers, env values and OAuth tokens stay on your server, encrypted with your RUNELAY_SECRET. Agents only hold their Runelay key."],
+    ],
+  },
+  pt: {
+    title: "Conector MCP personalizado: conecte qualquer servidor MCP ou API · Runelay",
+    description: "Adicione qualquer servidor MCP remoto, comando MCP local ou spec OpenAPI ao Runelay, gateway MCP open source. Um login, criptografado no seu servidor, compartilhado pelo Claude Code, Cursor, Codex e todos os outros agentes.",
+    eyebrow: "Conexões · Personalizado",
+    h1: "Conecte qualquer servidor MCP ou API",
+    lead: "O catálogo é um atalho, não um limite. Adicione um servidor MCP remoto, um comando local ou uma spec OpenAPI ao Runelay, gateway MCP open source, e todos os agentes recebem as tools pelo mesmo endpoint.",
+    cardTitle: "Conectores personalizados",
+    cardText: "Adicione qualquer servidor MCP ou API que não está no catálogo.",
+    body: [
+      card(
+        "plug",
+        "Três jeitos de conectar",
+        table(
+          ["O que você informa", "Serve para"],
+          [
+            ["MCP remoto", "A URL do servidor", "Servidores MCP públicos ou internos via HTTP"],
+            ["Comando local", "Um comando, argumentos e variáveis de ambiente", "Servidores MCP que rodam como processo, como pacotes <code>npx</code>"],
+            ["OpenAPI", "Uma spec em JSON ou YAML", "A sua própria API REST, sem escrever servidor MCP. Cada operação vira uma tool."],
+          ],
+        ),
+      ),
+      card(
+        "shield",
+        "Login sem complicação",
+        checks([
+          "Cole a URL de um MCP remoto e o Runelay detecta se ele pede OAuth, uma chave no header ou nada.",
+          "O OAuth roda quando você salva. Os tokens ficam criptografados e são renovados pelo Runelay.",
+          "Provedor sem registro automático de cliente, como o Google? Use o seu próprio cliente OAuth: cadastre <code>PUBLIC_URL/v1/oauth/callback</code> como URL de redirecionamento e cole o Client ID e o secret.",
+          "Headers, variáveis de ambiente e secrets ficam criptografados com AES-256-GCM. Os agentes nunca veem.",
+        ]),
+      ),
+      card(
+        "hub",
+        "Um login, todos os agentes",
+        prose(
+          "O nome da conexão vira o prefixo das tools, então uma conexão chamada <code>billing</code> expõe tools como <code>billing.list_invoices</code>. Claude Code, Cursor, Codex e qualquer outro agente com uma chave do Runelay encontram as tools com <code>search_tools</code> e executam com <code>call_tool</code>.",
+          "Já está configurado num agente? <code>runelay import</code> transforma em conexões os servidores MCP das configurações dos agentes, ou cole o arquivo de configuração no painel.",
+        ),
+      ),
+      card(
+        "terminal",
+        "Como adicionar",
+        steps([
+          ["Abra os conectores no painel", "Adicione uma conexão personalizada e escolha o tipo: MCP remoto, Comando local ou OpenAPI."],
+          ["Dê um nome e preencha os campos", "URL, comando ou spec, e headers ou variáveis de ambiente se ele pedir uma chave."],
+          ["Salve", "O Runelay conecta, faz login se precisar e lista as tools. A referência completa está na <a href=\"" + DOCS_CUSTOM + "\" rel=\"noopener\">documentação de conectores personalizados</a>."],
+        ]),
+        false,
+      ),
+    ],
+    faq: [
+      ["O Runelay alcança um servidor na minha rede privada?", "Sim, se você liberar. Requisições para endereços privados, de loopback e link-local são bloqueadas por padrão. Defina RUNELAY_ALLOW_PRIVATE_URLS=true no servidor do Runelay para alcançar servidores internos."],
+      ["Dá para rodar um servidor MCP local com npx?", "Sim. O app desktop roda comandos locais com as ferramentas instaladas no seu computador. Num servidor eles vêm desligados: defina RUNELAY_ENABLE_STDIO=true, e só um owner ou admin consegue criar. A imagem Docker não traz Node."],
+      ["As minhas chaves de API chegam aos agentes?", "Não. Headers, variáveis de ambiente e tokens OAuth ficam no seu servidor, criptografados com o seu RUNELAY_SECRET. Os agentes guardam só a chave do Runelay."],
+    ],
+  },
+};
+
 const UNKNOWN_EN = `Not found on the pages read on ${READ}`;
 const UNKNOWN_PT = "Não encontrado nas páginas lidas em 15 nov 2026";
 
@@ -978,7 +1098,7 @@ const runlayer = {
   },
 };
 
-export const PAGES = [claudeCode, cursor, codex, agentesChat, antigravity, grokbot, hermes, openclaw, mausbot, opencode, openbot, kimi, share, migrate, executor, runlayer];
+export const PAGES = [claudeCode, cursor, codex, agentesChat, antigravity, grokbot, hermes, openclaw, mausbot, opencode, openbot, kimi, share, migrate, customConnectors, executor, runlayer];
 
 export const EXISTING = {
   "self-hosted-mcp-gateway": { icon: "server", en: ["Self-hosted MCP gateway guide", "What it does, why self-host it and how to run one in a minute."], pt: ["Guia de MCP gateway self-hosted", "O que faz, por que hospedar e como rodar um em um minuto."] },
@@ -986,6 +1106,38 @@ export const EXISTING = {
   "mcp-gateway-vs-mcp-server": { icon: "hub", en: ["MCP gateway vs MCP server", "The difference in context, credentials and audit."], pt: ["MCP gateway vs MCP server", "A diferença em contexto, credenciais e auditoria."] },
   benchmark: { icon: "clock", en: ["Runelay vs Executor benchmark", "Tokens, latency, search and RAM, measured."], pt: ["Benchmark Runelay vs Executor", "Tokens, latência, busca e RAM, medidos."] },
   download: { icon: "import", en: ["Download Runelay", "Desktop app for Mac, Windows and Linux."], pt: ["Baixar o Runelay", "App desktop para Mac, Windows e Linux."] },
+};
+
+const google = ({ api, scopes, en, pt }) => {
+  const list = scopes.map((scope) => `<code>${scope}</code>`).join(", ");
+  return {
+    en: {
+      ...en,
+      aboutTitle: "Built into Runelay",
+      about: [`Runelay calls the ${api} itself with your Google token, with no third-party MCP server in between. <code>account_whoami</code> shows which Google account is connected.`],
+      groupsTitle: "Tools",
+      promptsTitle: "Try asking",
+      accessTitle: "How it signs in",
+      access: [
+        "<strong>Google OAuth through the Runelay broker.</strong> No Google Cloud project of your own; Runelay renews the token.",
+        `<strong>Scopes:</strong> ${list}, plus <code>openid</code>, <code>userinfo.email</code> and <code>userinfo.profile</code>.`,
+      ],
+      connection: ["Agents find these tools with <code>search_tools</code> and run them with <code>call_tool</code>, so they only enter the context when a task needs them."],
+    },
+    pt: {
+      ...pt,
+      aboutTitle: "Feito dentro do Runelay",
+      about: [`O Runelay chama a ${api} direto com o seu token do Google, sem servidor MCP de terceiros no meio. <code>account_whoami</code> mostra qual conta Google está conectada.`],
+      groupsTitle: "Tools",
+      promptsTitle: "Peça assim",
+      accessTitle: "Como entra",
+      access: [
+        "<strong>OAuth do Google pelo broker do Runelay.</strong> Sem projeto próprio no Google Cloud; o Runelay renova o token.",
+        `<strong>Escopos:</strong> ${list}, mais <code>openid</code>, <code>userinfo.email</code> e <code>userinfo.profile</code>.`,
+      ],
+      connection: ["Os agentes encontram essas tools com <code>search_tools</code> e executam com <code>call_tool</code>, então elas só entram no contexto quando a tarefa pede."],
+    },
+  };
 };
 
 export const INTEGRATION_EXTRAS = {
@@ -1059,6 +1211,556 @@ export const INTEGRATION_EXTRAS = {
       ctaLabel: "Conhecer a Conty",
     },
   },
+  github: {
+    en: {
+      description: "Connect GitHub to Runelay once and let Claude Code, Cursor, Codex and Grok read code, open issues and review pull requests through GitHub's official MCP server. OAuth with repo and read:user, token stays on your server.",
+      lead: "GitHub's official MCP server, behind your own Runelay endpoint. Log in once with OAuth and every agent can read repositories, work on issues and handle pull requests with your GitHub permissions.",
+      aboutTitle: "GitHub's own MCP server, shared by every agent",
+      about: [
+        "The catalog entry points at <code>api.githubcopilot.com/mcp/</code>, the remote MCP server GitHub maintains. Runelay does not wrap or rewrite its tools; it holds the token and forwards the calls.",
+        "GitHub groups the server's tools into toolsets. Its documented default set is context, repos, issues, pull requests and users, which covers the day-to-day work below.",
+      ],
+      groupsTitle: "What your agent can do on GitHub",
+      groups: [
+        ["Repositories and code", "Read files with <code>get_file_contents</code>, search with <code>search_code</code> and <code>search_repositories</code>, inspect history with <code>list_commits</code> and <code>get_commit</code>, and write with <code>create_branch</code>, <code>create_or_update_file</code> and <code>push_files</code>."],
+        ["Issues", "Find them with <code>list_issues</code> and <code>search_issues</code>, read one with <code>issue_read</code>, open or edit with <code>issue_write</code> and manage sub-issues with <code>sub_issue_write</code>."],
+        ["Pull requests", "List, search and read pull requests, open them with <code>create_pull_request</code>, update them, leave a review with <code>pull_request_review_write</code> and merge with <code>merge_pull_request</code>."],
+        ["Context", "<code>get_me</code> tells the agent who it is acting as, and <code>search_users</code> finds people by name."],
+      ],
+      promptsTitle: "Try asking",
+      prompts: [
+        "Summarize the open pull requests in my repo and say which ones are waiting on me.",
+        "Find where the rate limiter is defined in this repository and explain it.",
+        "Open an issue for the failing login redirect with the steps I just described.",
+      ],
+      faq: [
+        ["Can the agent push code or merge pull requests?", "Yes. The default toolsets include <code>push_files</code>, <code>create_or_update_file</code> and <code>merge_pull_request</code>, so the agent can write wherever your account can. If that is too much, connect with a fine-grained personal access token limited to the repositories and permissions you choose."],
+        ["Does it see my private repositories?", "With OAuth it does: the <code>repo</code> scope covers private repositories your account can reach. A fine-grained token narrows that to the repositories you select."],
+        ["Is this the same server Copilot uses?", "It is the remote GitHub MCP server at <code>api.githubcopilot.com/mcp/</code>, maintained by GitHub. Runelay connects to it from your server and keeps the token there."],
+      ],
+      accessTitle: "How it signs in",
+      access: [
+        "<strong>OAuth through the Runelay broker.</strong> You approve a GitHub OAuth app; no client of your own to register.",
+        "<strong>Scopes requested:</strong> <code>repo</code> and <code>read:user</code>. The agent can reach the repositories your GitHub account can reach, private ones included.",
+        "<strong>Prefer a token?</strong> Paste a GitHub personal access token instead, and its permissions set the limit.",
+      ],
+    },
+    pt: {
+      description: "Conecte o GitHub ao Runelay uma vez e deixe Claude Code, Cursor, Codex e Grok lerem código, abrirem issues e revisarem pull requests pelo servidor MCP oficial do GitHub. OAuth com repo e read:user, token no seu servidor.",
+      lead: "O servidor MCP oficial do GitHub, atrás do seu endpoint do Runelay. Faça login uma vez com OAuth e todo agente lê repositórios, trabalha em issues e cuida de pull requests com as suas permissões no GitHub.",
+      aboutTitle: "O MCP do próprio GitHub, compartilhado por todos os agentes",
+      about: [
+        "O item do catálogo aponta para <code>api.githubcopilot.com/mcp/</code>, o servidor MCP remoto mantido pelo GitHub. O Runelay não embrulha nem reescreve as tools; ele guarda o token e repassa as chamadas.",
+        "O GitHub agrupa as tools em toolsets. O conjunto padrão documentado é context, repos, issues, pull requests e users, que cobre o trabalho do dia a dia abaixo.",
+      ],
+      groupsTitle: "O que o seu agente faz no GitHub",
+      groups: [
+        ["Repositórios e código", "Lê arquivos com <code>get_file_contents</code>, busca com <code>search_code</code> e <code>search_repositories</code>, olha o histórico com <code>list_commits</code> e <code>get_commit</code>, e escreve com <code>create_branch</code>, <code>create_or_update_file</code> e <code>push_files</code>."],
+        ["Issues", "Encontra com <code>list_issues</code> e <code>search_issues</code>, lê uma com <code>issue_read</code>, abre ou edita com <code>issue_write</code> e cuida de sub-issues com <code>sub_issue_write</code>."],
+        ["Pull requests", "Lista, busca e lê pull requests, abre com <code>create_pull_request</code>, atualiza, deixa review com <code>pull_request_review_write</code> e faz merge com <code>merge_pull_request</code>."],
+        ["Contexto", "<code>get_me</code> diz em nome de quem o agente age, e <code>search_users</code> acha pessoas pelo nome."],
+      ],
+      promptsTitle: "Peça assim",
+      prompts: [
+        "Resuma os pull requests abertos do meu repo e diga quais estão esperando por mim.",
+        "Ache onde o rate limiter está definido neste repositório e me explique.",
+        "Abra uma issue para o redirect de login quebrado com os passos que acabei de descrever.",
+      ],
+      faq: [
+        ["O agente consegue fazer push ou merge de pull request?", "Sim. Os toolsets padrão incluem <code>push_files</code>, <code>create_or_update_file</code> e <code>merge_pull_request</code>, então o agente escreve onde a sua conta escreve. Se for demais, conecte com um token fine-grained limitado aos repositórios e permissões que você escolher."],
+        ["Ele vê os meus repositórios privados?", "Com OAuth, sim: o escopo <code>repo</code> cobre os repositórios privados que a sua conta alcança. Um token fine-grained reduz isso aos repositórios que você marcar."],
+        ["É o mesmo servidor que o Copilot usa?", "É o servidor MCP remoto do GitHub em <code>api.githubcopilot.com/mcp/</code>, mantido pelo GitHub. O Runelay se conecta a ele a partir do seu servidor e guarda o token lá."],
+      ],
+      accessTitle: "Como entra",
+      access: [
+        "<strong>OAuth pelo broker do Runelay.</strong> Você aprova um app OAuth do GitHub; não precisa registrar cliente próprio.",
+        "<strong>Escopos pedidos:</strong> <code>repo</code> e <code>read:user</code>. O agente alcança os repositórios que a sua conta do GitHub alcança, inclusive os privados.",
+        "<strong>Prefere token?</strong> Cole um token de acesso pessoal do GitHub no lugar, e as permissões dele viram o limite.",
+      ],
+    },
+  },
+  linear: {
+    en: {
+      description: "Connect Linear to Runelay once and let Claude Code, Cursor, Codex and Grok find, create and update issues, projects and comments through Linear's official MCP server. OAuth sign-in, token stays on your server.",
+      lead: "Linear's official MCP server, shared by every agent. Your agent turns notes into issues, comments on work in progress and reads where a project stands, all under your Linear account.",
+      aboutTitle: "Linear's own MCP server",
+      about: [
+        "The catalog entry points at <code>mcp.linear.app/mcp</code>, the remote server Linear runs. Linear describes it as tools for finding, creating and updating objects in Linear like issues, projects and comments.",
+        "Runelay keeps the token and exposes those tools behind your endpoint, so a new agent gets Linear the moment it points at Runelay.",
+      ],
+      groupsTitle: "What your agent can do in Linear",
+      groups: [
+        ["Issues", "Find issues, create new ones and update the ones that exist."],
+        ["Projects", "Look up projects and create or update them, for example from a planning document."],
+        ["Comments", "Add comments to issues while the agent works."],
+      ],
+      promptsTitle: "Try asking",
+      prompts: [
+        "Turn this planning doc into a Linear project with one issue per task.",
+        "Add a comment to the login bug issue with what I found in the logs.",
+        "Summarize what my team finished in the current cycle.",
+      ],
+      faq: [
+        ["Can I connect Linear read-only?", "Yes. Linear runs <code>mcp.linear.app/mcp/readonly</code>, which only exposes read tools. Add that URL as a custom connector instead of the catalog entry."],
+        ["Can I use a Linear API key instead of OAuth?", "Linear accepts an API key as a bearer token. Add <code>mcp.linear.app/mcp</code> as a custom connector with an <code>Authorization: Bearer</code> header holding the key."],
+        ["What about several Linear workspaces?", "Linear gives each workspace its own sign-in, so each workspace is its own connection."],
+      ],
+      accessTitle: "How it signs in",
+      access: [
+        "<strong>OAuth 2.1 with dynamic client registration.</strong> Runelay registers itself with Linear and opens the login; there is no app to create.",
+        "<strong>Scope:</strong> the server asks for <code>read write</code>, so the agent acts with your own access in the workspace you approve.",
+        "<strong>One workspace per connection.</strong> Linear gives each workspace its own sign-in.",
+      ],
+    },
+    pt: {
+      description: "Conecte o Linear ao Runelay uma vez e deixe Claude Code, Cursor, Codex e Grok buscarem, criarem e atualizarem issues, projetos e comentários pelo servidor MCP oficial do Linear. Login OAuth, token no seu servidor.",
+      lead: "O servidor MCP oficial do Linear, compartilhado por todos os agentes. O agente transforma anotações em issues, comenta no trabalho em andamento e lê como está um projeto, tudo na sua conta do Linear.",
+      aboutTitle: "O MCP do próprio Linear",
+      about: [
+        "O item do catálogo aponta para <code>mcp.linear.app/mcp</code>, o servidor remoto que o Linear roda. O Linear descreve o servidor como tools para encontrar, criar e atualizar objetos como issues, projetos e comentários.",
+        "O Runelay guarda o token e expõe essas tools atrás do seu endpoint, então um agente novo ganha o Linear assim que aponta para o Runelay.",
+      ],
+      groupsTitle: "O que o seu agente faz no Linear",
+      groups: [
+        ["Issues", "Encontra issues, cria novas e atualiza as que existem."],
+        ["Projetos", "Consulta projetos e cria ou atualiza, por exemplo a partir de um documento de planejamento."],
+        ["Comentários", "Adiciona comentários nas issues enquanto trabalha."],
+      ],
+      promptsTitle: "Peça assim",
+      prompts: [
+        "Transforme este documento de planejamento num projeto do Linear com uma issue por tarefa.",
+        "Comente na issue do bug de login o que eu achei nos logs.",
+        "Resuma o que o meu time terminou no ciclo atual.",
+      ],
+      faq: [
+        ["Dá para conectar o Linear só leitura?", "Sim. O Linear roda <code>mcp.linear.app/mcp/readonly</code>, que só expõe tools de leitura. Adicione essa URL como conector personalizado no lugar do item do catálogo."],
+        ["Posso usar uma chave de API do Linear em vez de OAuth?", "O Linear aceita a chave de API como bearer token. Adicione <code>mcp.linear.app/mcp</code> como conector personalizado com um header <code>Authorization: Bearer</code> com a chave."],
+        ["E se eu tiver vários workspaces do Linear?", "O Linear dá a cada workspace o próprio login, então cada workspace é uma conexão."],
+      ],
+      accessTitle: "Como entra",
+      access: [
+        "<strong>OAuth 2.1 com registro dinâmico de cliente.</strong> O Runelay se registra no Linear e abre o login; não tem app para criar.",
+        "<strong>Escopo:</strong> o servidor pede <code>read write</code>, então o agente age com o seu acesso no workspace que você aprovar.",
+        "<strong>Um workspace por conexão.</strong> O Linear dá a cada workspace o próprio login.",
+      ],
+    },
+  },
+  notion: {
+    en: {
+      description: "Connect Notion to Runelay once and let Claude Code, Cursor, Codex and Grok search your workspace, write pages and update databases through Notion's official MCP server. OAuth sign-in, token stays on your server.",
+      lead: "Notion's official MCP server behind your Runelay endpoint. Your agent searches the workspace, drafts and edits pages and keeps databases up to date, seeing only what you can see.",
+      aboutTitle: "Notion's own MCP server",
+      about: [
+        "The catalog entry points at <code>mcp.notion.com/mcp</code>, the hosted server Notion runs. Notion says that once you authorize it, the assistant can read and update content that you can access in the selected workspace.",
+        "Runelay holds that authorization, so you do it once instead of once per agent.",
+      ],
+      groupsTitle: "What your agent can do in Notion",
+      groups: [
+        ["Search and read", "Search the workspace and read pages, including meeting notes."],
+        ["Pages", "Draft documents, update their content and arrange pages."],
+        ["Databases", "Create trackers, update properties and organize views."],
+        ["Collaboration", "Add comments and suggest edits for someone to review."],
+      ],
+      promptsTitle: "Try asking",
+      prompts: [
+        "Find our onboarding checklist in Notion and list what is still unchecked.",
+        "Write a page with the notes from this conversation under the Engineering teamspace.",
+        "Set the status of every task due this week in the Roadmap database to In progress.",
+      ],
+      faq: [
+        ["Which pages can the agent reach?", "The content you can access in the workspace you picked when you approved the connection. Pages you cannot open, it cannot open either."],
+        ["Can a guest connect Notion?", "No. Notion only lets workspace members connect its MCP server."],
+        ["Is there a way without the browser login?", "On Business and Enterprise plans a workspace owner can create an MCP token. Add <code>mcp.notion.com/mcp</code> as a custom connector with that token in an <code>Authorization: Bearer</code> header."],
+      ],
+      accessTitle: "How it signs in",
+      access: [
+        "<strong>OAuth with dynamic client registration.</strong> Runelay opens Notion's consent screen and you pick the workspace.",
+        "<strong>Your permissions apply.</strong> The agent reaches the pages you can reach in that workspace.",
+        "<strong>Members only.</strong> Notion lets workspace members connect MCP; guests cannot.",
+      ],
+    },
+    pt: {
+      description: "Conecte o Notion ao Runelay uma vez e deixe Claude Code, Cursor, Codex e Grok buscarem no workspace, escreverem páginas e atualizarem bancos pelo servidor MCP oficial do Notion. Login OAuth, token no seu servidor.",
+      lead: "O servidor MCP oficial do Notion atrás do seu endpoint do Runelay. O agente busca no workspace, escreve e edita páginas e mantém os bancos em dia, vendo só o que você vê.",
+      aboutTitle: "O MCP do próprio Notion",
+      about: [
+        "O item do catálogo aponta para <code>mcp.notion.com/mcp</code>, o servidor hospedado pelo Notion. O Notion diz que, depois da autorização, o assistente lê e atualiza o conteúdo que você acessa no workspace escolhido.",
+        "O Runelay guarda essa autorização, então você faz uma vez em vez de uma vez por agente.",
+      ],
+      groupsTitle: "O que o seu agente faz no Notion",
+      groups: [
+        ["Busca e leitura", "Busca no workspace e lê páginas, inclusive notas de reunião."],
+        ["Páginas", "Escreve documentos, atualiza o conteúdo e organiza as páginas."],
+        ["Bancos de dados", "Cria trackers, atualiza propriedades e organiza visualizações."],
+        ["Colaboração", "Adiciona comentários e sugere edições para alguém revisar."],
+      ],
+      promptsTitle: "Peça assim",
+      prompts: [
+        "Ache o nosso checklist de onboarding no Notion e liste o que ainda não foi marcado.",
+        "Escreva uma página com as notas desta conversa no teamspace de Engenharia.",
+        "Mude para Em andamento o status de toda tarefa que vence esta semana no banco Roadmap.",
+      ],
+      faq: [
+        ["Quais páginas o agente alcança?", "O conteúdo que você acessa no workspace escolhido na aprovação. Página que você não abre, ele também não abre."],
+        ["Convidado consegue conectar o Notion?", "Não. O Notion só deixa membros do workspace conectarem o servidor MCP."],
+        ["Tem como entrar sem o login no navegador?", "Nos planos Business e Enterprise, o dono do workspace pode criar um token MCP. Adicione <code>mcp.notion.com/mcp</code> como conector personalizado com esse token num header <code>Authorization: Bearer</code>."],
+      ],
+      accessTitle: "Como entra",
+      access: [
+        "<strong>OAuth com registro dinâmico de cliente.</strong> O Runelay abre a tela de consentimento do Notion e você escolhe o workspace.",
+        "<strong>Valem as suas permissões.</strong> O agente alcança as páginas que você alcança naquele workspace.",
+        "<strong>Só membros.</strong> O Notion deixa membros do workspace conectarem o MCP; convidados não.",
+      ],
+    },
+  },
+  supabase: {
+    en: {
+      description: "Connect Supabase to Runelay once and let Claude Code, Cursor, Codex and Grok list tables, run SQL, apply migrations and read logs through Supabase's official MCP server. OAuth sign-in, token stays on your server.",
+      lead: "Supabase's official MCP server, shared by every agent. Your agent inspects the schema, runs SQL, applies migrations and checks logs and advisors without you copying a key into each tool.",
+      aboutTitle: "Supabase's own MCP server",
+      about: [
+        "The catalog entry points at <code>mcp.supabase.com/mcp</code>, the hosted server Supabase runs. It works across the projects of the account you log in with.",
+        "Supabase documents two URL options, <code>read_only=true</code> to run every query as a read-only Postgres user and <code>project_ref</code> to scope the server to one project. To use them, add that URL as a <a href=\"/custom-connectors/\">custom connector</a>.",
+      ],
+      groupsTitle: "What your agent can do in Supabase",
+      groups: [
+        ["Database", "<code>list_tables</code>, <code>list_extensions</code>, <code>list_migrations</code>, <code>apply_migration</code> and <code>execute_sql</code>."],
+        ["Debugging", "Read logs with <code>query_logs</code> and security and performance hints with <code>get_advisors</code>."],
+        ["Development", "<code>get_project_url</code>, <code>get_publishable_keys</code> and <code>generate_typescript_types</code>."],
+        ["Edge Functions", "<code>list_edge_functions</code>, <code>get_edge_function</code> and <code>deploy_edge_function</code>."],
+        ["Account", "List and read projects and organizations, create, pause or restore a project, with <code>get_cost</code> and <code>confirm_cost</code> before anything billable."],
+        ["Docs", "<code>search_docs</code> searches the Supabase documentation."],
+      ],
+      promptsTitle: "Try asking",
+      prompts: [
+        "List the tables in my staging project and show which ones have no primary key.",
+        "Write a migration that adds an index on orders.customer_id and apply it.",
+        "What do the advisors say about security in my production project?",
+      ],
+      faq: [
+        ["How do I keep the agent from changing my database?", "Add <code>mcp.supabase.com/mcp?read_only=true</code> as a custom connector. Supabase then runs every query as a read-only Postgres user."],
+        ["Can I limit it to one project?", "Yes, with the <code>project_ref</code> parameter in the URL. In that mode the account tools, such as listing and creating projects, are turned off."],
+        ["Does it handle branches?", "Supabase lists branching tools such as <code>create_branch</code> and <code>merge_branch</code> as experimental, and they need a paid plan."],
+      ],
+      accessTitle: "How it signs in",
+      access: [
+        "<strong>OAuth with dynamic client registration.</strong> Runelay opens the Supabase login; no personal access token or OAuth app to create.",
+        "<strong>Account-wide by default.</strong> The catalog URL reaches every project of the account, with write access. Use the read-only or project-scoped URL above when that is too much.",
+      ],
+    },
+    pt: {
+      description: "Conecte o Supabase ao Runelay uma vez e deixe Claude Code, Cursor, Codex e Grok listarem tabelas, rodarem SQL, aplicarem migrations e lerem logs pelo servidor MCP oficial do Supabase. Login OAuth, token no seu servidor.",
+      lead: "O servidor MCP oficial do Supabase, compartilhado por todos os agentes. O agente olha o schema, roda SQL, aplica migrations e confere logs e advisors sem você colar uma chave em cada ferramenta.",
+      aboutTitle: "O MCP do próprio Supabase",
+      about: [
+        "O item do catálogo aponta para <code>mcp.supabase.com/mcp</code>, o servidor hospedado pelo Supabase. Ele trabalha com os projetos da conta em que você faz login.",
+        "O Supabase documenta duas opções na URL: <code>read_only=true</code>, que roda toda query como um usuário Postgres só de leitura, e <code>project_ref</code>, que limita o servidor a um projeto. Para usar, adicione essa URL como <a href=\"/custom-connectors/\">conector personalizado</a>.",
+      ],
+      groupsTitle: "O que o seu agente faz no Supabase",
+      groups: [
+        ["Banco", "<code>list_tables</code>, <code>list_extensions</code>, <code>list_migrations</code>, <code>apply_migration</code> e <code>execute_sql</code>."],
+        ["Depuração", "Lê logs com <code>query_logs</code> e dicas de segurança e performance com <code>get_advisors</code>."],
+        ["Desenvolvimento", "<code>get_project_url</code>, <code>get_publishable_keys</code> e <code>generate_typescript_types</code>."],
+        ["Edge Functions", "<code>list_edge_functions</code>, <code>get_edge_function</code> e <code>deploy_edge_function</code>."],
+        ["Conta", "Lista e lê projetos e organizações, cria, pausa ou restaura um projeto, com <code>get_cost</code> e <code>confirm_cost</code> antes de qualquer coisa cobrada."],
+        ["Documentação", "<code>search_docs</code> busca na documentação do Supabase."],
+      ],
+      promptsTitle: "Peça assim",
+      prompts: [
+        "Liste as tabelas do meu projeto de staging e mostre quais não têm chave primária.",
+        "Escreva uma migration que cria um índice em orders.customer_id e aplique.",
+        "O que os advisors dizem de segurança no meu projeto de produção?",
+      ],
+      faq: [
+        ["Como impedir que o agente mude o meu banco?", "Adicione <code>mcp.supabase.com/mcp?read_only=true</code> como conector personalizado. O Supabase passa a rodar toda query como um usuário Postgres só de leitura."],
+        ["Dá para limitar a um projeto?", "Sim, com o parâmetro <code>project_ref</code> na URL. Nesse modo as tools de conta, como listar e criar projetos, ficam desligadas."],
+        ["Ele mexe com branches?", "O Supabase lista tools de branching como <code>create_branch</code> e <code>merge_branch</code> como experimentais, e elas pedem um plano pago."],
+      ],
+      accessTitle: "Como entra",
+      access: [
+        "<strong>OAuth com registro dinâmico de cliente.</strong> O Runelay abre o login do Supabase; não tem token pessoal nem app OAuth para criar.",
+        "<strong>Conta inteira por padrão.</strong> A URL do catálogo alcança todos os projetos da conta, com escrita. Use a URL só de leitura ou limitada a um projeto quando for demais.",
+      ],
+    },
+  },
+  firecrawl: {
+    en: {
+      description: "Connect Firecrawl to Runelay once with an API key and let Claude Code, Cursor, Codex and Grok search the web, scrape pages and parse documents through Firecrawl's hosted MCP server.",
+      lead: "Firecrawl's hosted MCP server gives your agents live web search and clean page content. Paste the API key once in Runelay and every agent can use it.",
+      aboutTitle: "Firecrawl's hosted MCP server",
+      about: [
+        "The catalog entry points at <code>mcp.firecrawl.dev/v2/mcp</code>. Runelay sends your Firecrawl API key with each call, so the key never sits in an agent's config file.",
+        "The tool list below comes from the server's own <code>tools/list</code>.",
+      ],
+      groupsTitle: "What your agent can do with Firecrawl",
+      groups: [
+        ["Search", "<code>firecrawl_search</code> searches the web for current facts and returns ranked results with highlights, with operators such as <code>site:</code> and quoted phrases."],
+        ["Scrape", "<code>firecrawl_scrape</code> reads one URL and returns markdown by default, or HTML, links, a screenshot or a targeted answer."],
+        ["Parse", "<code>firecrawl_parse</code> turns a document such as a PDF, Word file or spreadsheet into markdown, a summary or JSON that matches a schema."],
+        ["Map and crawl", "On an authenticated session, <code>firecrawl_map</code> lists a site's URLs and <code>firecrawl_crawl</code> collects a set of pages."],
+      ],
+      promptsTitle: "Try asking",
+      prompts: [
+        "Search for the latest release notes of Vite and summarize what changed.",
+        "Scrape the pricing page at example.com/pricing and give me the plans as a table.",
+        "Map the docs site at docs.example.com and list the pages about authentication.",
+      ],
+      faq: [
+        ["Does it fetch the page live?", "Firecrawl may serve recently indexed content. The agent can ask for a live fetch with <code>maxAge: 0</code>, or a smaller <code>maxAge</code> to bound how old the content can be."],
+        ["Can it read PDFs and Office files?", "Yes. <code>firecrawl_scrape</code> reads a PDF at a URL, and <code>firecrawl_parse</code> handles PDF, Word, RTF, OpenDocument and spreadsheet files."],
+        ["Where do I get the key?", "In the API keys page of your Firecrawl account. Paste it once in Runelay; agents never see it."],
+      ],
+      accessTitle: "How it signs in",
+      access: [
+        "<strong>API key.</strong> Create one at firecrawl.dev and paste it in the panel.",
+        "<strong>Billing stays with Firecrawl.</strong> Calls run on your Firecrawl account and its plan.",
+      ],
+    },
+    pt: {
+      description: "Conecte o Firecrawl ao Runelay uma vez com uma chave de API e deixe Claude Code, Cursor, Codex e Grok buscarem na web, lerem páginas e converterem documentos pelo servidor MCP hospedado do Firecrawl.",
+      lead: "O servidor MCP hospedado do Firecrawl dá aos agentes busca na web em tempo real e o conteúdo limpo das páginas. Cole a chave de API uma vez no Runelay e todo agente usa.",
+      aboutTitle: "O MCP hospedado do Firecrawl",
+      about: [
+        "O item do catálogo aponta para <code>mcp.firecrawl.dev/v2/mcp</code>. O Runelay envia a sua chave do Firecrawl em cada chamada, então a chave não fica no arquivo de configuração de nenhum agente.",
+        "A lista de tools abaixo vem do próprio <code>tools/list</code> do servidor.",
+      ],
+      groupsTitle: "O que o seu agente faz com o Firecrawl",
+      groups: [
+        ["Busca", "<code>firecrawl_search</code> busca na web fatos atuais e devolve resultados ordenados com trechos, com operadores como <code>site:</code> e frases entre aspas."],
+        ["Scrape", "<code>firecrawl_scrape</code> lê uma URL e devolve markdown por padrão, ou HTML, links, uma captura de tela ou uma resposta direcionada."],
+        ["Parse", "<code>firecrawl_parse</code> transforma um documento como PDF, Word ou planilha em markdown, num resumo ou em JSON que segue um schema."],
+        ["Map e crawl", "Numa sessão autenticada, <code>firecrawl_map</code> lista as URLs de um site e <code>firecrawl_crawl</code> coleta um conjunto de páginas."],
+      ],
+      promptsTitle: "Peça assim",
+      prompts: [
+        "Busque as notas da versão mais recente do Vite e resuma o que mudou.",
+        "Leia a página de preços em example.com/pricing e me dê os planos numa tabela.",
+        "Mapeie o site docs.example.com e liste as páginas sobre autenticação.",
+      ],
+      faq: [
+        ["Ele busca a página ao vivo?", "O Firecrawl pode servir conteúdo indexado há pouco. O agente pede uma leitura ao vivo com <code>maxAge: 0</code>, ou um <code>maxAge</code> menor para limitar a idade do conteúdo."],
+        ["Ele lê PDF e arquivo do Office?", "Sim. <code>firecrawl_scrape</code> lê um PDF numa URL, e <code>firecrawl_parse</code> trata PDF, Word, RTF, OpenDocument e planilhas."],
+        ["Onde pego a chave?", "Na página de chaves de API da sua conta do Firecrawl. Cole uma vez no Runelay; os agentes nunca veem."],
+      ],
+      accessTitle: "Como entra",
+      access: [
+        "<strong>Chave de API.</strong> Crie uma em firecrawl.dev e cole no painel.",
+        "<strong>A cobrança fica com o Firecrawl.</strong> As chamadas rodam na sua conta do Firecrawl e no plano dela.",
+      ],
+    },
+  },
+  google_calendar: google({
+    api: "Google Calendar API",
+    scopes: ["calendar", "calendar.events"],
+    en: {
+      description: "Connect Google Calendar to Runelay once and let Claude Code, Cursor, Codex and Grok list your calendars, read events and create or delete events. Google OAuth with the calendar scopes, token stays on your server.",
+      lead: "Your agents read the agenda and put events on it. Runelay ships its own Google Calendar tools and calls the Calendar API with the account you connect.",
+      groups: [
+        ["Calendars", "<code>list_calendars</code> returns every calendar on your list with its id and your access role."],
+        ["Read events", "<code>list_events</code> lists a calendar in start order, between two dates or matching a text query."],
+        ["Create events", "<code>create_event</code> takes timed or all-day events, with a time zone when the times have no offset, and returns the event link."],
+        ["Delete events", "<code>delete_event</code> removes an event from a calendar."],
+      ],
+      prompts: [
+        "What is on my primary calendar tomorrow?",
+        "Block Friday from 2pm to 4pm for focus time, São Paulo time.",
+        "Delete the dentist appointment next week.",
+      ],
+      faq: [
+        ["Can the agent change an existing event?", "Not today. The tools list, create and delete events; there is no update tool, so a change is a delete plus a new event."],
+        ["Which calendars does it see?", "Every calendar on your calendar list, shared ones included. <code>list_calendars</code> shows your access role on each."],
+        ["How do I make an all-day event?", "Pass dates as <code>YYYY-MM-DD</code>. The end date is exclusive, so a one-day event on the 10th ends on the 11th."],
+      ],
+    },
+    pt: {
+      description: "Conecte o Google Agenda ao Runelay uma vez e deixe Claude Code, Cursor, Codex e Grok listarem as agendas, lerem eventos e criarem ou apagarem eventos. OAuth do Google com os escopos de agenda, token no seu servidor.",
+      lead: "Os agentes leem a sua agenda e marcam eventos nela. O Runelay traz tools próprias do Google Agenda e chama a API do Calendar com a conta que você conectar.",
+      groups: [
+        ["Agendas", "<code>list_calendars</code> devolve todas as agendas da sua lista com o id e o seu nível de acesso."],
+        ["Ler eventos", "<code>list_events</code> lista uma agenda em ordem de início, entre duas datas ou por texto."],
+        ["Criar eventos", "<code>create_event</code> aceita eventos com horário ou de dia inteiro, com fuso quando o horário não traz offset, e devolve o link do evento."],
+        ["Apagar eventos", "<code>delete_event</code> tira um evento da agenda."],
+      ],
+      prompts: [
+        "O que tenho na agenda principal amanhã?",
+        "Bloqueie sexta das 14h às 16h para foco, horário de São Paulo.",
+        "Apague a consulta no dentista da semana que vem.",
+      ],
+      faq: [
+        ["O agente consegue alterar um evento existente?", "Hoje não. As tools listam, criam e apagam eventos; não há tool de edição, então mudar é apagar e criar de novo."],
+        ["Quais agendas ele vê?", "Todas as agendas da sua lista, inclusive as compartilhadas. <code>list_calendars</code> mostra o seu nível de acesso em cada uma."],
+        ["Como criar um evento de dia inteiro?", "Passe as datas como <code>YYYY-MM-DD</code>. A data final é exclusiva, então um evento só no dia 10 termina no dia 11."],
+      ],
+    },
+  }),
+  gmail: google({
+    api: "Gmail API",
+    scopes: ["gmail.send"],
+    en: {
+      description: "Connect Gmail to Runelay once and let Claude Code, Cursor, Codex and Grok send plain-text email from your account. Google OAuth with only the gmail.send scope: no inbox access, token stays on your server.",
+      lead: "Send email from your agents with the narrowest Gmail permission Google offers. The connection can send, and that is all it can do.",
+      groups: [
+        ["Send", "<code>send_email</code> sends a plain-text message from the connected account to one or more recipients, with optional cc."],
+        ["No reading", "The only Gmail scope requested is <code>gmail.send</code>. The agent cannot read, search or delete messages in your inbox."],
+      ],
+      prompts: [
+        "Email the summary of this pull request to ana@example.com.",
+        "Send the meeting notes to the three people on the invite, with me in cc.",
+        "Write a short status update for my manager and send it.",
+      ],
+      faq: [
+        ["Can the agent read my inbox?", "No. The connection only asks for <code>gmail.send</code>, which cannot read, search or delete mail."],
+        ["Can it send HTML or attachments?", "No. <code>send_email</code> sends plain text with to, cc, subject and body."],
+        ["Which address does the email come from?", "The Google account you connected. <code>account_whoami</code> shows which one it is."],
+      ],
+    },
+    pt: {
+      description: "Conecte o Gmail ao Runelay uma vez e deixe Claude Code, Cursor, Codex e Grok mandarem e-mail em texto pela sua conta. OAuth do Google só com o escopo gmail.send: sem acesso à caixa de entrada, token no seu servidor.",
+      lead: "Mande e-mail pelos agentes com a permissão mais estreita que o Google oferece no Gmail. A conexão envia, e é só isso que ela faz.",
+      groups: [
+        ["Enviar", "<code>send_email</code> manda uma mensagem em texto pela conta conectada para um ou mais destinatários, com cópia opcional."],
+        ["Sem leitura", "O único escopo do Gmail pedido é <code>gmail.send</code>. O agente não lê, não busca e não apaga mensagens da sua caixa."],
+      ],
+      prompts: [
+        "Mande o resumo deste pull request para ana@example.com.",
+        "Envie as notas da reunião para as três pessoas do convite, comigo em cópia.",
+        "Escreva uma atualização curta para o meu gestor e envie.",
+      ],
+      faq: [
+        ["O agente lê a minha caixa de entrada?", "Não. A conexão só pede <code>gmail.send</code>, que não lê, não busca e não apaga e-mail."],
+        ["Ele manda HTML ou anexo?", "Não. <code>send_email</code> manda texto puro com destinatário, cópia, assunto e corpo."],
+        ["De qual endereço o e-mail sai?", "Da conta Google que você conectou. <code>account_whoami</code> mostra qual é."],
+      ],
+    },
+  }),
+  google_docs: google({
+    api: "Google Docs API",
+    scopes: ["documents", "drive.file"],
+    en: {
+      description: "Connect Google Docs to Runelay once and let Claude Code, Cursor, Codex and Grok create documents, read their text and append to them. Google OAuth with the documents scope, token stays on your server.",
+      lead: "Your agents write straight into Google Docs: start a document, read one you point them at and keep adding to it.",
+      groups: [
+        ["Create", "<code>create_document</code> makes an empty Google Doc with a title and returns its id and URL."],
+        ["Read", "<code>read_document</code> returns a document's title and its plain text."],
+        ["Write", "<code>append_text</code> adds text to the end of the document body."],
+      ],
+      prompts: [
+        "Create a Google Doc called Release notes and write the changes from this branch in it.",
+        "Read the spec doc I just linked and list the open questions.",
+        "Append today's decisions to the end of our meeting notes doc.",
+      ],
+      faq: [
+        ["Can it edit the middle of a document?", "No. <code>append_text</code> writes at the end of the body. Rewriting a section is not supported yet."],
+        ["Does reading keep the formatting?", "<code>read_document</code> returns the title and the plain text, without styles."],
+        ["Can it open documents it did not create?", "Yes, if your account can open them. The <code>documents</code> scope covers your Google Docs, so pass the document id or link."],
+      ],
+    },
+    pt: {
+      description: "Conecte o Google Docs ao Runelay uma vez e deixe Claude Code, Cursor, Codex e Grok criarem documentos, lerem o texto e escreverem no final. OAuth do Google com o escopo documents, token no seu servidor.",
+      lead: "Os agentes escrevem direto no Google Docs: começam um documento, leem um que você indicar e continuam acrescentando.",
+      groups: [
+        ["Criar", "<code>create_document</code> cria um Google Doc vazio com título e devolve o id e a URL."],
+        ["Ler", "<code>read_document</code> devolve o título e o texto puro do documento."],
+        ["Escrever", "<code>append_text</code> acrescenta texto no fim do corpo do documento."],
+      ],
+      prompts: [
+        "Crie um Google Doc chamado Notas da versão e escreva nele as mudanças desta branch.",
+        "Leia o doc da spec que acabei de mandar e liste as perguntas em aberto.",
+        "Acrescente as decisões de hoje no fim do doc de notas da reunião.",
+      ],
+      faq: [
+        ["Ele edita o meio de um documento?", "Não. <code>append_text</code> escreve no fim do corpo. Reescrever um trecho ainda não é suportado."],
+        ["A leitura mantém a formatação?", "<code>read_document</code> devolve o título e o texto puro, sem estilos."],
+        ["Ele abre documentos que não criou?", "Sim, se a sua conta abre. O escopo <code>documents</code> cobre os seus Google Docs, então passe o id ou o link do documento."],
+      ],
+    },
+  }),
+  google_sheets: google({
+    api: "Google Sheets API",
+    scopes: ["spreadsheets", "drive.file"],
+    en: {
+      description: "Connect Google Sheets to Runelay once and let Claude Code, Cursor, Codex and Grok create spreadsheets, read ranges, overwrite cells and append rows. Google OAuth with the spreadsheets scope, token stays on your server.",
+      lead: "Your agents keep spreadsheets current: build a sheet from data, read a range in A1 notation and write or append rows.",
+      groups: [
+        ["Create", "<code>create_spreadsheet</code> makes a spreadsheet, optionally with a header row and rows already filled, and returns its URL."],
+        ["Read", "<code>get_values</code> reads a range in A1 notation, such as <code>Sheet1!A1:C10</code>."],
+        ["Overwrite", "<code>update_values</code> writes rows into a range, parsed as if you typed them, so formulas and dates work."],
+        ["Append", "<code>append_rows</code> adds rows after the last row of the table in a range."],
+      ],
+      prompts: [
+        "Create a spreadsheet with this week's open bugs: title, owner and priority.",
+        "Read Budget!A1:D20 and tell me which line is over plan.",
+        "Append today's signups to the Signups tab.",
+      ],
+      faq: [
+        ["Can it write formulas?", "Yes. Values are written as if typed, so <code>=SUM(B2:B9)</code> becomes a formula and dates become dates."],
+        ["Can it work on spreadsheets it did not create?", "Yes, if your account can open them. The <code>spreadsheets</code> scope covers your Google Sheets."],
+        ["What is A1 notation?", "The tab name plus a cell range, such as <code>Sheet1!A1:C10</code>. Every read and write takes a range like that."],
+      ],
+    },
+    pt: {
+      description: "Conecte o Google Sheets ao Runelay uma vez e deixe Claude Code, Cursor, Codex e Grok criarem planilhas, lerem intervalos, sobrescreverem células e acrescentarem linhas. OAuth do Google com o escopo spreadsheets, token no seu servidor.",
+      lead: "Os agentes mantêm planilhas em dia: montam uma planilha a partir de dados, leem um intervalo em notação A1 e escrevem ou acrescentam linhas.",
+      groups: [
+        ["Criar", "<code>create_spreadsheet</code> cria uma planilha, se quiser já com cabeçalho e linhas, e devolve a URL."],
+        ["Ler", "<code>get_values</code> lê um intervalo em notação A1, como <code>Sheet1!A1:C10</code>."],
+        ["Sobrescrever", "<code>update_values</code> grava linhas num intervalo como se você tivesse digitado, então fórmulas e datas funcionam."],
+        ["Acrescentar", "<code>append_rows</code> adiciona linhas depois da última linha da tabela num intervalo."],
+      ],
+      prompts: [
+        "Crie uma planilha com os bugs abertos da semana: título, responsável e prioridade.",
+        "Leia Orçamento!A1:D20 e diga qual linha passou do previsto.",
+        "Acrescente os cadastros de hoje na aba Cadastros.",
+      ],
+      faq: [
+        ["Ele escreve fórmulas?", "Sim. Os valores entram como se fossem digitados, então <code>=SOMA(B2:B9)</code> vira fórmula e datas viram datas."],
+        ["Ele mexe em planilhas que não criou?", "Sim, se a sua conta abre. O escopo <code>spreadsheets</code> cobre as suas planilhas do Google."],
+        ["O que é notação A1?", "O nome da aba mais um intervalo de células, como <code>Sheet1!A1:C10</code>. Toda leitura e escrita recebe um intervalo assim."],
+      ],
+    },
+  }),
+  google_drive: google({
+    api: "Google Drive API",
+    scopes: ["drive.file"],
+    en: {
+      description: "Connect Google Drive to Runelay once and let Claude Code, Cursor, Codex and Grok upload text files and list the files Runelay created. Google OAuth with only the drive.file scope, token stays on your server.",
+      lead: "Your agents save files to Google Drive without seeing the rest of it. The drive.file scope limits them to files Runelay created or that you opened with it.",
+      groups: [
+        ["Upload", "<code>create_file</code> uploads a text file, plain text by default or any text MIME type, and returns its id and link."],
+        ["List", "<code>list_files</code> lists files page by page, with an optional Drive search query."],
+        ["Limited by design", "With <code>drive.file</code>, the agent only sees files this app created or that you opened with it, not your whole Drive."],
+      ],
+      prompts: [
+        "Save this changelog as release-notes.md in my Drive.",
+        "List the files you created in my Drive this week.",
+        "Upload the CSV you just generated and give me the link.",
+      ],
+      faq: [
+        ["Can the agent see my whole Drive?", "No. <code>drive.file</code> only covers files this app created or that you opened with it."],
+        ["Can it upload images or PDFs?", "<code>create_file</code> takes the content as text, so it fits text formats such as markdown, CSV or JSON."],
+        ["Can it search?", "<code>list_files</code> accepts a Drive search query, still limited to the files it can see."],
+      ],
+    },
+    pt: {
+      description: "Conecte o Google Drive ao Runelay uma vez e deixe Claude Code, Cursor, Codex e Grok subirem arquivos de texto e listarem os arquivos criados pelo Runelay. OAuth do Google só com o escopo drive.file, token no seu servidor.",
+      lead: "Os agentes salvam arquivos no Google Drive sem enxergar o resto dele. O escopo drive.file limita o acesso aos arquivos que o Runelay criou ou que você abriu com ele.",
+      groups: [
+        ["Subir", "<code>create_file</code> sobe um arquivo de texto, texto puro por padrão ou qualquer tipo MIME de texto, e devolve o id e o link."],
+        ["Listar", "<code>list_files</code> lista os arquivos página por página, com uma busca do Drive opcional."],
+        ["Limitado de propósito", "Com <code>drive.file</code>, o agente só vê os arquivos que este app criou ou que você abriu com ele, não o Drive inteiro."],
+      ],
+      prompts: [
+        "Salve este changelog como release-notes.md no meu Drive.",
+        "Liste os arquivos que você criou no meu Drive esta semana.",
+        "Suba o CSV que você acabou de gerar e me passe o link.",
+      ],
+      faq: [
+        ["O agente vê o meu Drive inteiro?", "Não. <code>drive.file</code> só cobre arquivos que este app criou ou que você abriu com ele."],
+        ["Ele sobe imagem ou PDF?", "<code>create_file</code> recebe o conteúdo como texto, então serve para formatos de texto como markdown, CSV ou JSON."],
+        ["Ele busca?", "<code>list_files</code> aceita uma busca do Drive, ainda limitada aos arquivos que ele vê."],
+      ],
+    },
+  }),
 };
 
 export const INTEGRATIONS_EN = {

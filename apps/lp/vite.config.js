@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
@@ -28,7 +28,7 @@ const FOOTER = {
     columns: [
       ["Product", [["Download", "/download/"], ["Setup", "/setup/"], ["Integrations", "/integrations/"], ["Changelog", "/changelog/"], ["Benchmark", "/benchmark/"]]],
       ["Guides", [["All guides", "/guides/"], ["Share MCP across agents", "/guides/share-mcp-across-agents/"], ["runelay + Claude Code", "/guides/claude-code/"], ["runelay + Cursor", "/guides/cursor/"], ["runelay + Codex", "/guides/codex/"], ["runelay + agentes.chat", "/guides/agentes-chat/"], ["runelay + Antigravity", "/guides/antigravity/"], ["runelay + Grokbot", "/guides/grokbot/"], ["runelay + Hermes Agent", "/guides/hermes-agent/"], ["runelay + OpenClaw", "/guides/openclaw/"], ["runelay + MausBot", "/guides/mausbot/"], ["runelay + OpenCode", "/guides/opencode/"], ["runelay + OpenBot", "/guides/openbot/"], ["runelay + Kimi Code", "/guides/kimi-code/"], ["runelay migrate", "/docs/migrate/"]]],
-      ["Learn", [["Self-hosted MCP gateway", "/self-hosted-mcp-gateway/"], ["MCP gateway vs MCP server", "/mcp-gateway-vs-mcp-server/"], ["Composio alternative", "/composio-alternative/"], ["Executor alternative", "/executor-alternative/"], ["Runelay vs Runlayer", "/vs/runlayer/"]]],
+      ["Learn", [["Self-hosted MCP gateway", "/self-hosted-mcp-gateway/"], ["Custom connectors", "/custom-connectors/"], ["MCP gateway vs MCP server", "/mcp-gateway-vs-mcp-server/"], ["Composio alternative", "/composio-alternative/"], ["Executor alternative", "/executor-alternative/"], ["Runelay vs Runlayer", "/vs/runlayer/"]]],
       ["Project", [["GitHub", REPO], ["Docs", "https://docs.runelay.com"], ["Releases", `${REPO}/releases`], ["llms.txt", "/llms.txt"], ["Privacy", "/privacy/"], ["Terms", "/terms/"]]],
     ],
   },
@@ -41,7 +41,7 @@ const FOOTER = {
     columns: [
       ["Produto", [["Baixar", "/download/"], ["Configurar", "/setup/"], ["Integrações", "/integrations/"], ["Changelog", "/changelog/"], ["Benchmark", "/benchmark/"]]],
       ["Guias", [["Todos os guias", "/guides/"], ["Compartilhar MCP entre agentes", "/guides/share-mcp-across-agents/"], ["runelay + Claude Code", "/guides/claude-code/"], ["runelay + Cursor", "/guides/cursor/"], ["runelay + Codex", "/guides/codex/"], ["runelay + agentes.chat", "/guides/agentes-chat/"], ["runelay + Antigravity", "/guides/antigravity/"], ["runelay + Grokbot", "/guides/grokbot/"], ["runelay + Hermes Agent", "/guides/hermes-agent/"], ["runelay + OpenClaw", "/guides/openclaw/"], ["runelay + MausBot", "/guides/mausbot/"], ["runelay + OpenCode", "/guides/opencode/"], ["runelay + OpenBot", "/guides/openbot/"], ["runelay + Kimi Code", "/guides/kimi-code/"], ["runelay migrate", "/docs/migrate/"]]],
-      ["Entenda", [["MCP gateway self-hosted", "/self-hosted-mcp-gateway/"], ["MCP gateway vs MCP server", "/mcp-gateway-vs-mcp-server/"], ["Alternativa ao Composio", "/composio-alternative/"], ["Alternativa ao Executor", "/executor-alternative/"], ["Runelay vs Runlayer", "/vs/runlayer/"]]],
+      ["Entenda", [["MCP gateway self-hosted", "/self-hosted-mcp-gateway/"], ["Conectores personalizados", "/custom-connectors/"], ["MCP gateway vs MCP server", "/mcp-gateway-vs-mcp-server/"], ["Alternativa ao Composio", "/composio-alternative/"], ["Alternativa ao Executor", "/executor-alternative/"], ["Runelay vs Runlayer", "/vs/runlayer/"]]],
       ["Projeto", [["GitHub", REPO], ["Documentação", "https://docs.runelay.com"], ["Releases", `${REPO}/releases`], ["llms.txt", "/llms.txt"], ["Privacidade", "/privacy/"], ["Termos", "/terms/"]]],
     ],
   },
@@ -123,11 +123,13 @@ const sourceOf = (file) => {
 
 const lastModified = (file) => committed(file) || committed(sourceOf(file)) || today;
 
+const noindex = (file) => /<meta name="robots" content="noindex/.test(readFileSync(file, "utf8"));
+
 const sitemap = {
   name: "sitemap",
   apply: "build",
   generateBundle() {
-    const routes = new Map(pages.filter((file) => file.endsWith("index.html")).map((file) => [routeOf(file), file]));
+    const routes = new Map(pages.filter((file) => file.endsWith("index.html") && !noindex(file)).map((file) => [routeOf(file), file]));
     const urls = [...routes].map(([route, file]) => {
       const slug = slugOf(route);
       const alternates = [["en", slug], ["pt-BR", `/pt-br${slug}`], ["x-default", slug]]
