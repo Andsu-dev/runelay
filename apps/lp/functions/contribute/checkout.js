@@ -52,5 +52,7 @@ export const onRequestPost = async ({ request, env }) => {
 
   const url = result.body?.data?.url;
   if (!result.ok || typeof url !== "string" || !url.startsWith("https://")) return Response.redirect(`${page}#error`, 303);
-  return Response.redirect(url, 303);
+  const checkoutUrl = new URL(url);
+  checkoutUrl.searchParams.set("skip_address", "true");
+  return Response.redirect(checkoutUrl.toString(), 303);
 };
