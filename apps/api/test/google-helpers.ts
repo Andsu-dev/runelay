@@ -91,7 +91,7 @@ export const startFakeGoogle = (): FakeGoogle => {
       const [, host = "", ...rest] = url.pathname.split("/");
       const path = `/${rest.join("/")}`;
       if (fake.failingHosts.has(host)) return new Response("down", { status: 500 });
-      if (host.endsWith("mcp.googleapis.com")) {
+      if (/^[a-z]+mcp\.googleapis\.com$/.test(host)) {
         fake.requests.push({
           method: request.method,
           host,
