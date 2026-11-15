@@ -4,7 +4,8 @@ export const setupMessages = defineMessages(
   {
     page: {
       title: "Configurar agentes",
-      description: "Cinco passos para o Claude, o Codex, o Cursor e o Grok usarem as mesmas contas e o mesmo contexto.",
+      description:
+        "Poucos passos para o Claude, o Codex, o Cursor e o Grok usarem as mesmas contas e o mesmo contexto.",
     },
     keyPlaceholder: "rnl_SUA_CHAVE",
     progress: "{completed} de {total}",
@@ -14,6 +15,12 @@ export const setupMessages = defineMessages(
     createAnotherKey: "Criar outra chave",
     copyClientConfig: "Copiar config do {client}",
     steps: {
+      desktop: {
+        title: "Deixe o runelay sempre ligado",
+        description:
+          "Os agentes só acham o runelay com o app rodando. Com esta opção ele abre junto com o computador, e fechar a janela o deixa na bandeja em vez de encerrar.",
+        doneSummary: "Abre com o computador.",
+      },
       source: {
         title: "Conecte suas contas",
         description:
@@ -63,7 +70,7 @@ export const setupMessages = defineMessages(
   {
     page: {
       title: "Set up agents",
-      description: "Five steps so Claude, Codex, Cursor and Grok share the same accounts and the same context.",
+      description: "A few steps so Claude, Codex, Cursor and Grok share the same accounts and the same context.",
     },
     keyPlaceholder: "rnl_YOUR_KEY",
     progress: "{completed} of {total}",
@@ -73,6 +80,12 @@ export const setupMessages = defineMessages(
     createAnotherKey: "Create another key",
     copyClientConfig: "Copy {client} config",
     steps: {
+      desktop: {
+        title: "Keep runelay always on",
+        description:
+          "Agents only find runelay while the app is running. With this option it opens with your computer, and closing the window keeps it in the tray instead of quitting.",
+        doneSummary: "Opens with the computer.",
+      },
       source: {
         title: "Connect your accounts",
         description:

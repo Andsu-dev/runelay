@@ -6,4 +6,6 @@ contextBridge.exposeInMainWorld("runelayDesktop", {
   switchServer: (id) => ipcRenderer.invoke("runelay:switch-server", id),
   renameServer: (id, name) => ipcRenderer.invoke("runelay:rename-server", id, name),
   removeServer: (id) => ipcRenderer.invoke("runelay:remove-server", id),
+  getStartup: () => ipcRenderer.invoke("runelay:get-startup"),
+  setStartup: (enabled) => ipcRenderer.invoke("runelay:set-startup", enabled),
 });

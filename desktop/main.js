@@ -1,8 +1,20 @@
 import { spawn } from "node:child_process";
 import { randomBytes, randomUUID } from "node:crypto";
 import { createWriteStream, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
-import { app, BrowserWindow, dialog, ipcMain, Menu, nativeTheme, safeStorage, shell } from "electron";
+import { dirname, join } from "node:path";
+import {
+  app,
+  BrowserWindow,
+  dialog,
+  ipcMain,
+  Menu,
+  Notification,
+  nativeImage,
+  nativeTheme,
+  safeStorage,
+  shell,
+  Tray,
+} from "electron";
 
 const PORT = 4312;
 const ORIGIN = `http://127.0.0.1:${PORT}`;
@@ -17,6 +29,9 @@ const MAX_NAME_LENGTH = 60;
 const MAX_ID_LENGTH = 64;
 const PLAIN_HTTP_HOSTS = new Set(["localhost", "127.0.0.1"]);
 const LOCAL_SERVER = Object.freeze({ id: "local", name: "Este computador", kind: "local" });
+const HIDDEN_FLAG = "--hidden";
+const TRAY_ICON_SIZE = { darwin: 18, win32: 16, linux: 22 };
+const TRAY_PLACE = process.platform === "darwin" ? "na barra de menus" : "na bandeja do sistema";
 
 const ERRORS = {
   invalidUrl: "Endereço inválido. Use algo como https://runelay.exemplo.com.",
@@ -29,6 +44,8 @@ const ERRORS = {
   renameLocal: "O servidor deste computador não pode ser renomeado.",
   removeLocal: "O servidor deste computador não pode ser removido.",
   removeActive: "Troque para outro servidor antes de remover este.",
+  startupRemote: "Abrir com o computador só vale para o servidor deste computador.",
+  startupFailed: "Não consegui mudar a inicialização com o sistema.",
 };
 
 let server = null;
@@ -39,6 +56,8 @@ let home = null;
 let activeOrigin = null;
 let failurePromptOpen = false;
 let handoff = null;
+let tray = null;
+let pendingEntry = null;
 
 const SERVER = process.platform === "win32" ? "runelay-server.exe" : "runelay-server";
 
@@ -80,6 +99,64 @@ const securePreferences = (preload) => ({
 });
 
 const configPath = () => join(app.getPath("userData"), "config.json");
+
+const prefsPath = () => join(app.getPath("userData"), "desktop-prefs.json");
+
+const readPrefs = () => {
+  try {
+    const stored = JSON.parse(readFileSync(prefsPath(), "utf8"));
+    return stored && typeof stored === "object" && !Array.isArray(stored) ? stored : {};
+  } catch {
+    return {};
+  }
+};
+
+const writePrefs = (patch) => {
+  mkdirSync(app.getPath("userData"), { recursive: true });
+  writeFileSync(prefsPath(), JSON.stringify({ ...readPrefs(), ...patch }, null, 2), { mode: 0o600 });
+};
+
+const launchArgs = () => (app.isPackaged ? [HIDDEN_FLAG] : [app.getAppPath(), HIDDEN_FLAG]);
+
+const autostartPath = () =>
+  join(process.env.XDG_CONFIG_HOME || join(app.getPath("home"), ".config"), "autostart", "runelay.desktop");
+
+const quoteExec = (value) =>
+  `"${value
+    .replace(/["`$\\]/g, (char) => `\\${char}`)
+    .replace(/\\/g, "\\\\")
+    .replace(/%/g, "%%")}"`;
+
+const autostartEntry = () =>
+  [
+    "[Desktop Entry]",
+    "Type=Application",
+    "Name=runelay",
+    `Exec=${[process.env.APPIMAGE ?? process.execPath, ...launchArgs()].map(quoteExec).join(" ")}`,
+    "Terminal=false",
+    "X-GNOME-Autostart-enabled=true",
+    "",
+  ].join("\n");
+
+const readOpenAtLogin = () => {
+  try {
+    if (process.platform === "linux") return existsSync(autostartPath());
+    return app.getLoginItemSettings({ args: launchArgs() }).openAtLogin;
+  } catch {
+    return false;
+  }
+};
+
+const writeOpenAtLogin = (enabled) => {
+  if (process.platform !== "linux") return app.setLoginItemSettings({ openAtLogin: enabled, args: launchArgs() });
+  const file = autostartPath();
+  if (!enabled) return rmSync(file, { force: true });
+  mkdirSync(dirname(file), { recursive: true });
+  writeFileSync(file, autostartEntry(), { mode: 0o644 });
+};
+
+const openedHidden = () =>
+  process.argv.includes(HIDDEN_FLAG) || (process.platform === "darwin" && app.getLoginItemSettings().wasOpenedAtLogin);
 
 const parseServerUrl = (raw) => {
   let parsed;
@@ -159,6 +236,10 @@ const activeServer = () => config.servers.find((entry) => entry.id === config.ac
 const findServer = (id) => config.servers.find((entry) => entry.id === id) ?? null;
 
 const findByUrl = (url) => config?.servers.find((entry) => entry.url === url) ?? null;
+
+const isLocalActive = () => Boolean(config) && activeServer().kind === "local";
+
+const runsInBackground = () => isLocalActive() && Boolean(tray);
 
 const isRunelayServer = async (base) => {
   const signal = AbortSignal.timeout(PROBE_TIMEOUT_MS);
@@ -328,6 +409,23 @@ const registerBridge = () => {
       if (id === config.active) return { error: ERRORS.removeActive };
       saveConfig({ ...config, servers: config.servers.filter((entry) => entry.id !== id) });
       return { error: null };
+    }),
+  );
+  ipcMain.handle(
+    "runelay:get-startup",
+    guard(() => ({ supported: isLocalActive(), openAtLogin: readOpenAtLogin() })),
+  );
+  ipcMain.handle(
+    "runelay:set-startup",
+    guard((enabled) => {
+      if (typeof enabled !== "boolean") return { error: ERRORS.invalidRequest, openAtLogin: readOpenAtLogin() };
+      if (!isLocalActive()) return { error: ERRORS.startupRemote, openAtLogin: readOpenAtLogin() };
+      try {
+        writeOpenAtLogin(enabled);
+      } catch {
+        return { error: ERRORS.startupFailed, openAtLogin: readOpenAtLogin() };
+      }
+      return { error: null, openAtLogin: readOpenAtLogin() };
     }),
   );
 };
@@ -532,6 +630,48 @@ const completeHandoff = async () => {
   chooser?.destroy();
 };
 
+const showWindow = async () => {
+  if (window && !window.isDestroyed()) {
+    if (window.isMinimized()) window.restore();
+    window.show();
+    window.focus();
+    return;
+  }
+  if (!home) return;
+  const entry = pendingEntry ?? home;
+  pendingEntry = null;
+  await createWindow(entry);
+};
+
+const trayIcon = () =>
+  nativeImage.createFromPath(appFile("build", "icon.png")).resize({
+    width: TRAY_ICON_SIZE[process.platform] ?? 22,
+    height: TRAY_ICON_SIZE[process.platform] ?? 22,
+  });
+
+const createTray = () => {
+  if (tray) return;
+  tray = new Tray(trayIcon());
+  tray.setToolTip("runelay");
+  tray.setContextMenu(
+    Menu.buildFromTemplate([
+      { label: "Abrir runelay", click: () => showWindow() },
+      { type: "separator" },
+      { label: "Sair", click: () => app.quit() },
+    ]),
+  );
+  tray.on("click", () => showWindow());
+};
+
+const notifyBackground = () => {
+  if (readPrefs().backgroundNoticeShown || !Notification.isSupported()) return;
+  writePrefs({ backgroundNoticeShown: true });
+  new Notification({
+    title: "runelay",
+    body: `O runelay continua rodando em segundo plano para os seus agentes. Para sair de vez, use Sair no ícone ${TRAY_PLACE}.`,
+  }).show();
+};
+
 const fail = (message) => {
   dialog.showErrorBox("runelay não abriu", message);
   app.quit();
@@ -544,7 +684,7 @@ const openRemote = async () => {
   await completeHandoff();
 };
 
-const openLocal = async () => {
+const openLocal = async (hidden) => {
   if (await healthy()) {
     return fail(`Já tem um runelay rodando em ${ORIGIN}. Feche o outro (ou o container do Docker) e abra de novo.`);
   }
@@ -560,13 +700,20 @@ const openLocal = async () => {
   }
   home = ORIGIN;
   activeOrigin = ORIGIN;
-  await createWindow(await firstScreen(secrets));
+  createTray();
+  const entry = await firstScreen(secrets);
+  if (hidden) {
+    pendingEntry = entry;
+    return;
+  }
+  await createWindow(entry);
   await completeHandoff();
 };
 
 if (!app.requestSingleInstanceLock()) app.quit();
 
 app.on("second-instance", () => {
+  if (!window && !chooser && runsInBackground()) return showWindow();
   const target = window ?? (chooser?.isVisible() ? chooser : null);
   if (target?.isMinimized()) target.restore();
   target?.focus();
@@ -576,17 +723,19 @@ app.whenReady().then(async () => {
   if (!app.isPackaged && process.platform === "darwin") app.dock?.setIcon(devIcon());
   Menu.setApplicationMenu(buildMenu());
   registerBridge();
-  config = readConfig() ?? (await chooseServer());
+  const stored = readConfig();
+  config = stored ?? (await chooseServer());
   Menu.setApplicationMenu(buildMenu());
   if (activeServer().kind === "remote") return openRemote();
-  return openLocal();
+  return openLocal(Boolean(stored) && openedHidden());
 });
 
 app.on("activate", async () => {
-  if (!window && home) await createWindow(home);
+  if (!window && home) await showWindow();
 });
 
 app.on("window-all-closed", () => {
+  if (runsInBackground()) return notifyBackground();
   if (process.platform !== "darwin") app.quit();
 });
 

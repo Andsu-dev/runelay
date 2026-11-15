@@ -2,6 +2,12 @@ import type { SetupStepDefinition } from "@/modules/setup/types/setup.types";
 
 export const SETUP_STEPS: SetupStepDefinition[] = [
   {
+    id: "desktop",
+    title: "setup.steps.desktop.title",
+    description: "setup.steps.desktop.description",
+    doneSummary: "setup.steps.desktop.doneSummary",
+  },
+  {
     id: "source",
     title: "setup.steps.source.title",
     description: "setup.steps.source.description",
