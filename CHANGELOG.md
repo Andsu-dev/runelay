@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.5.1
+
+### Connections
+
+- Google connections work out of the box: runelay's real Google client ID is now the default, so `RUNELAY_GOOGLE_CLIENT_ID` is only needed when you run your own broker. In v0.5.0 the default was a placeholder and the Google login failed.
+- Google Calendar asks for `calendar` instead of `calendar.calendarlist.readonly`, matching the scopes registered for runelay's Google app.
+
 ## v0.5.0
 
 ### Connections
