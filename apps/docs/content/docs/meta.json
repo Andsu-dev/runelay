@@ -1,0 +1,27 @@
+{
+  "title": "runelay",
+  "pages": [
+    "---Get started---",
+    "index",
+    "quickstart",
+    "self-hosting",
+    "desktop-app",
+    "connect-agents",
+    "---Guides---",
+    "migrate",
+    "cli",
+    "connections",
+    "integrations",
+    "memories-and-skills",
+    "---Reference---",
+    "mcp-tools",
+    "rest-api",
+    "security",
+    "operations",
+    "development",
+    "---Help---",
+    "troubleshooting",
+    "faq",
+    "changelog"
+  ]
+}

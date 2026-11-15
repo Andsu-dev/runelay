@@ -55,9 +55,9 @@ export const setupMessages = defineMessages(
     celebration: {
       dialogTitle: "Setup concluído",
       title: "Parabéns, você completou o setup!",
-      description:
-        "Seus agentes agora usam as mesmas contas, as mesmas habilidades e a mesma memória. O que um aprende, todos sabem.",
-      follow: "Novidades do runelay saem primeiro por lá.",
+      description: "Seus agentes agora dividem contas, habilidades e memória. Se o runelay te ajudou, apoie o projeto.",
+      supportAction: "Apoie o projeto",
+      follow: "Seguir no X",
     },
   },
   {
@@ -114,9 +114,9 @@ export const setupMessages = defineMessages(
     celebration: {
       dialogTitle: "Setup complete",
       title: "Congrats, you finished the setup!",
-      description:
-        "Your agents now share the same accounts, the same skills and the same memory. What one learns, they all know.",
-      follow: "runelay news shows up there first.",
+      description: "Your agents now share accounts, skills and memory. If runelay helped you, support the project.",
+      supportAction: "Support the project",
+      follow: "Follow on X",
     },
   },
 );

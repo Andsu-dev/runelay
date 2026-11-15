@@ -168,7 +168,20 @@
     border-color: var(--border);
   }
   button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
   [role="menuitem"],
+  [role="menuitemcheckbox"],
+  [role="menuitemradio"],
+  [role="option"],
+  [role="tab"],
+  [role="switch"],
+  [role="checkbox"],
+  [role="radio"],
+  label[for],
+  label:has(
+    input:not([type="text"], [type="number"], [type="email"], [type="password"], [type="search"], [type="url"])
+  ),
+  select,
   summary {
     cursor: pointer;
   }

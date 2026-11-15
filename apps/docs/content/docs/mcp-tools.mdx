@@ -1,0 +1,27 @@
+---
+title: MCP tools
+description: The tools runelay exposes to every agent at /v1/mcp.
+icon: Wrench
+---
+
+| Tool | What it does |
+|---|---|
+| `list_connections` | Every connection with status and tool count. |
+| `search_tools` | Search tools across all connections (`source.tool`). |
+| `call_tool` | Call one tool with arguments. |
+| `execute` | Run JavaScript that chains tools inside a WebAssembly sandbox. |
+| `search_context` | Full-text search across memories and skills. |
+| `read_memory` / `write_memory` | Read a memory, or create and update one (versioned). |
+| `read_skill` / `read_skill_file` | Read a skill and its files. |
+
+## execute
+
+`execute` lets an agent chain several calls in one round trip:
+
+```js
+await tools.linear.list_issues({...})
+```
+
+Code runs in QuickJS compiled to WebAssembly: a fresh sandbox per run with no filesystem, network, process or timers, 32 MB of memory and CPU and wall-clock limits. Tools cross the boundary as JSON only. Turn it off with `RUNELAY_ENABLE_EXECUTE=false` if you only want single `call_tool` calls.
+
+Agents never receive credentials: `list_connections` shows headers and env values as `••••••`.
