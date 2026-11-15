@@ -199,7 +199,7 @@ details[data-state="open"] .chevron { transform: rotate(180deg); }
 .cta .button-solid { height: 44px; padding: 0 20px; font-size: 15px; }
 .button-dashed {
   display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 16px 0 10px;
-  font: inherit; font-size: 15px; font-weight: 500; color: var(--foreground); cursor: pointer;
+  font: inherit; font-size: 15px; font-weight: 500; color: var(--foreground); text-decoration: none; cursor: pointer;
   background: transparent; border: 1.5px dashed color-mix(in oklch, var(--foreground) 28%, transparent); border-radius: var(--radius);
   transition: border-color 0.2s, background 0.2s, transform 0.15s var(--ease-out);
 }
@@ -317,6 +317,25 @@ details[data-state="open"] .chevron { transform: rotate(180deg); }
   opacity: 0; pointer-events: none; transform: translate(-50%, 4px); transition: opacity 0.16s, transform 0.16s var(--ease-out);
 }
 .os-logo:hover::after, .os-logo:focus-visible::after { opacity: 1; transform: translate(-50%, 0); }
+
+.lost { position: relative; padding-top: 96px; }
+.lost-grid { position: absolute; inset: -40px -50vw 0; z-index: -1; pointer-events: none;
+  background-image: linear-gradient(color-mix(in oklch, var(--foreground) 5%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in oklch, var(--foreground) 5%, transparent) 1px, transparent 1px);
+  background-size: 44px 44px; mask-image: radial-gradient(560px 360px at 50% 30%, #000, transparent 75%); }
+.lost-code { display: flex; justify-content: center; align-items: center; gap: 0.06em; font-size: clamp(120px, 28vw, 200px); line-height: 1; letter-spacing: -0.06em; font-weight: 800; }
+.lost-moon { position: relative; display: inline-block; width: 0.78em; height: 0.78em; margin: 0 0.04em; }
+.lost-moon i { position: absolute; top: 0; width: 50%; height: 100%; background: linear-gradient(135deg, var(--foreground), color-mix(in oklch, var(--foreground) 55%, var(--background))); }
+.lost-moon i:first-child { left: -0.04em; border-radius: 999px 0 0 999px; transform: translateY(0.06em); animation: drift-left 3.2s var(--ease-out) infinite alternate; }
+.lost-moon i:last-child { right: -0.04em; border-radius: 0 999px 999px 0; transform: translateY(-0.06em); animation: drift-right 3.2s var(--ease-out) infinite alternate; }
+@keyframes drift-left { to { transform: translate(-0.08em, 0.12em) rotate(-6deg); } }
+@keyframes drift-right { to { transform: translate(0.08em, -0.12em) rotate(6deg); } }
+.lost-note { margin-top: 6px; font-size: 26px; }
+.lost-terminal { max-width: 440px; margin: 32px auto 0; }
+.lost-terminal code { font-size: 13px; }
+.caret { display: inline-block; width: 8px; height: 15px; margin-left: 4px; vertical-align: -2px; background: currentColor; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.lost .cta { margin-top: 32px; }
+@media (prefers-reduced-motion: reduce) { .lost-moon i, .caret { animation: none; } }
 
 .footer { max-width: 640px; margin: 0 auto; padding: 32px 16px 48px; display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 13px; color: var(--muted-foreground); }
 .lang { display: flex; gap: 4px; padding: 3px; border-radius: 999px; background: var(--muted); }

@@ -35,7 +35,7 @@ export default defineConfig({
   build: {
     target: "es2022",
     rollupOptions: {
-      input: { en: "index.html", ptBr: "pt-br/index.html", setup: "setup/index.html", ptBrSetup: "pt-br/setup/index.html", download: "download/index.html", ptBrDownload: "pt-br/download/index.html" },
+      input: { en: "index.html", ptBr: "pt-br/index.html", setup: "setup/index.html", ptBrSetup: "pt-br/setup/index.html", download: "download/index.html", ptBrDownload: "pt-br/download/index.html", notFound: "404.html" },
     },
   },
 });
