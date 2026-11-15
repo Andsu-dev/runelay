@@ -51,7 +51,11 @@ export function AppShell() {
 
       <motion.aside
         initial={false}
-        animate={{ width: collapsed ? COLLAPSED_GAP : PANEL_WIDTH, opacity: collapsed ? 0 : 1 }}
+        animate={
+          collapsed
+            ? { width: COLLAPSED_GAP, opacity: 0, transitionEnd: { visibility: "hidden" } }
+            : { width: PANEL_WIDTH, opacity: 1, visibility: "visible" }
+        }
         transition={UI_SPRING}
         aria-hidden={collapsed || undefined}
         inert={collapsed || undefined}

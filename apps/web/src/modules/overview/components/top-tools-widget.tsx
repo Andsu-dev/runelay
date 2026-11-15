@@ -21,7 +21,7 @@ export function TopToolsWidget({ items }: TopToolsWidgetProps) {
       {items.length === 0 ? (
         <p className="text-[13px] text-muted-foreground">{t("overview.topTools.empty")}</p>
       ) : (
-        <ol className="flex flex-col gap-0.5">
+        <ol className="flex flex-col gap-0.5 max-h-80 overflow-y-auto overscroll-contain -mr-2 pr-2 [scrollbar-width:thin]">
           {items.map((item, index) => {
             const source = item.name.split(".")[0] ?? item.name;
             return (

@@ -21,7 +21,7 @@ export function TopConnectorsWidget({ items }: TopConnectorsWidgetProps) {
       {items.length === 0 ? (
         <p className="text-[13px] text-muted-foreground">{t("overview.topConnectors.empty")}</p>
       ) : (
-        <ul className="flex flex-col gap-3">
+        <ul className="flex flex-col gap-3 max-h-80 overflow-y-auto overscroll-contain -mr-2 pr-2 [scrollbar-width:thin]">
           {items.map((item) => (
             <RankedBarRow
               key={item.name}
