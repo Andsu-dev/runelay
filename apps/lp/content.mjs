@@ -33,6 +33,29 @@ const ANTIGRAVITY = `{
   }
 }`;
 
+const HERMES = `mcp_servers:
+  runelay:
+    url: "${ENDPOINT}"
+    headers:
+      Authorization: "Bearer rnl_..."`;
+
+const OPENCLAW = `openclaw mcp set runelay '{"url":"${ENDPOINT}","transport":"streamable-http","headers":{"Authorization":"Bearer \${RUNELAY_KEY}"}}'`;
+
+const OPENCODE = `{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "runelay": {
+      "type": "remote",
+      "url": "${ENDPOINT}",
+      "oauth": false,
+      "headers": { "Authorization": "Bearer rnl_..." }
+    }
+  }
+}`;
+
+const OPENBOT = `Server URL   ${ENDPOINT}
+Header       Authorization: Bearer rnl_...`;
+
 const agentLogo = (file, fill = "currentColor") =>
   `<span class="brow-icon logo">${readFileSync(`public/logos/${file}.svg`, "utf8").replace(/\s?fill="[^"]*"/, "").replace("<svg ", `<svg width="20" height="20" fill="${fill}" aria-hidden="true" `)}</span>`;
 const LOGOS = {
@@ -41,6 +64,11 @@ const LOGOS = {
   Codex: agentLogo("codex"),
   Antigravity: `<span class="brow-icon logo">${readFileSync("public/logos/antigravity.svg", "utf8").replace("<svg ", '<svg width="20" height="20" aria-hidden="true" ')}</span>`,
   Grokbot: '<span class="brow-icon logo"><img src="/logos/grokbot.png" width="20" height="20" alt="" loading="lazy" decoding="async" /></span>',
+  "Hermes Agent": '<span class="brow-icon logo"><img src="/logos/hermes.png" width="20" height="20" alt="" loading="lazy" decoding="async" /></span>',
+  OpenClaw: '<span class="brow-icon logo"><img src="/logos/openclaw.png" width="20" height="20" alt="" loading="lazy" decoding="async" /></span>',
+  MausBot: '<span class="brow-icon logo"><img src="/logos/mausbot.png" width="20" height="20" alt="" loading="lazy" decoding="async" /></span>',
+  OpenCode: '<span class="brow-icon logo"><img src="/logos/opencode.png" width="20" height="20" alt="" loading="lazy" decoding="async" /></span>',
+  OpenBot: '<span class="brow-icon logo"><img src="/logos/openbot.png" width="20" height="20" alt="" loading="lazy" decoding="async" /></span>',
 };
 
 const INSTALL = "curl -fsSL runelay.com/install | sh";
@@ -49,11 +77,12 @@ const CLI = "curl -fsSL runelay.com/cli | sh";
 const agentGuide = ({ slug, agent, configEn, configPt, whereEn = "", wherePt = "", snippet, cliEn, cliPt, restartEn, restartPt, keepEn, keepPt, pushEn, pushPt, migrateEn, migratePt, faqEn, faqPt }) => ({
   slug,
   icon: LOGOS[agent],
+  mark: [agent, LOGOS[agent]],
   related: ["guides/share-mcp-across-agents", "docs/migrate", "integrations"],
   en: {
     title: `${agent} MCP setup with Runelay, an open source MCP gateway`,
     description: `Connect ${agent} to Runelay, an open source MCP gateway: one HTTP endpoint, one key, and the same accounts, skills and memories your other agents use.`,
-    eyebrow: `Guide · ${agent}`,
+    eyebrow: "Guide",
     h1: `Connect ${agent} to Runelay`,
     lead: `Runelay, an open source MCP gateway, gives ${agent} one endpoint for every account you connected. Add it once and ${agent} sees the same tools, skills and memories as your other agents.`,
     cardTitle: `${agent} setup`,
@@ -101,7 +130,7 @@ const agentGuide = ({ slug, agent, configEn, configPt, whereEn = "", wherePt = "
   pt: {
     title: `Configurar MCP no ${agent} com o Runelay, gateway MCP open source`,
     description: `Conecte o ${agent} ao Runelay, gateway MCP open source: um endpoint HTTP, uma chave e as mesmas contas, skills e memórias dos seus outros agentes.`,
-    eyebrow: `Guia · ${agent}`,
+    eyebrow: "Guia",
     h1: `Conecte o ${agent} ao Runelay`,
     lead: `O Runelay, gateway MCP open source, dá ao ${agent} um endpoint para todas as contas que você conectou. Adicione uma vez e o ${agent} enxerga as mesmas tools, skills e memórias dos seus outros agentes.`,
     cardTitle: `Configurar o ${agent}`,
@@ -244,10 +273,120 @@ const grokbot = agentGuide({
   faqPt: [["Um projeto pode ter a própria configuração?", "Sim. O Grok também lê [mcp_servers] do .grok/config.toml dentro de um repositório, e um servidor do projeto com o mesmo nome substitui o global inteiro."]],
 });
 
+const REMOTE_EN = "These bots usually run on a server so they can answer in chat around the clock, and a server cannot reach <code>127.0.0.1</code> on your laptop. Run Runelay on the same server, or anywhere the bot can reach over HTTPS. ";
+const REMOTE_PT = "Esses bots costumam rodar num servidor para responder no chat o tempo todo, e um servidor não alcança o <code>127.0.0.1</code> do seu notebook. Rode o Runelay no mesmo servidor, ou em um lugar que o bot alcance por HTTPS. ";
+
+const noCliEn = (agent) => ["No CLI shortcut yet", `<code>runelay connect</code> writes Claude Code, Codex, Cursor and Grok, not ${agent}. Add Runelay by hand once; the key stays valid until you revoke it in the panel.`];
+const noCliPt = (agent) => ["Ainda sem atalho na CLI", `<code>runelay connect</code> escreve no Claude Code, Codex, Cursor e Grok, não no ${agent}. Adicione o Runelay à mão uma vez; a chave vale até você revogar no painel.`];
+const noMigrateEn = (agent) => `<code>runelay migrate</code> does not read ${agent} yet, so its MCP servers and logins stay where they are. Add the remote servers you use in the Runelay panel by URL and ${agent} reaches them through the endpoint.`;
+const noMigratePt = (agent) => `<code>runelay migrate</code> ainda não lê o ${agent}, então os servidores MCP e os logins dele ficam onde estão. Adicione no painel do Runelay, pela URL, os servidores remotos que você usa e o ${agent} chega neles pelo endpoint.`;
+const noPushEn = (agent) => `<code>runelay push</code> and <code>runelay pull</code> do not touch ${agent} files either. Memories and skills reach it through the endpoint, with <code>search_context</code>, <code>read_memory</code> and <code>read_skill</code>.`;
+const noPushPt = (agent) => `<code>runelay push</code> e <code>runelay pull</code> também não mexem nos arquivos do ${agent}. Memórias e skills chegam pelo endpoint, com <code>search_context</code>, <code>read_memory</code> e <code>read_skill</code>.`;
+
+const hermes = agentGuide({
+  slug: "guides/hermes-agent",
+  agent: "Hermes Agent",
+  configEn: "Add it to <code>~/.hermes/config.yaml</code>",
+  configPt: "Adicione ao <code>~/.hermes/config.yaml</code>",
+  whereEn: `${REMOTE_EN}Hermes reads remote MCP servers from <code>mcp_servers</code>, with the key in <code>headers</code>. `,
+  wherePt: `${REMOTE_PT}O Hermes lê servidores MCP remotos em <code>mcp_servers</code>, com a chave em <code>headers</code>. `,
+  snippet: HERMES,
+  cliEn: noCliEn("Hermes Agent"),
+  cliPt: noCliPt("Hermes Agent"),
+  restartEn: ["Reload the servers", "Run <code>/reload-mcp</code> in a Hermes session, or restart Hermes. A running messaging gateway (<code>hermes gateway run</code>) picks up the change on its own within about a minute. The Runelay tools show up as <code>mcp_runelay_*</code>."],
+  restartPt: ["Recarregue os servidores", "Rode <code>/reload-mcp</code> numa sessão do Hermes, ou reinicie o Hermes. Um gateway de mensagens rodando (<code>hermes gateway run</code>) pega a mudança sozinho em cerca de um minuto. As tools do Runelay aparecem como <code>mcp_runelay_*</code>."],
+  migrateEn: noMigrateEn("Hermes Agent"),
+  migratePt: noMigratePt("Hermes Agent"),
+  pushEn: noPushEn("Hermes Agent"),
+  pushPt: noPushPt("Hermes Agent"),
+  faqEn: [["Can I hide some Runelay tools from Hermes?", "Yes. Add a tools block to the runelay entry with include or exclude, the same way you filter any MCP server in Hermes."]],
+  faqPt: [["Posso esconder algumas tools do Runelay no Hermes?", "Sim. Adicione um bloco tools na entrada runelay com include ou exclude, do mesmo jeito que você filtra qualquer servidor MCP no Hermes."]],
+});
+
+const openclaw = agentGuide({
+  slug: "guides/openclaw",
+  agent: "OpenClaw",
+  configEn: "Save it with <code>openclaw mcp set</code>",
+  configPt: "Salve com <code>openclaw mcp set</code>",
+  whereEn: `${REMOTE_EN}The command writes a Streamable HTTP server under <code>mcp.servers</code> in the OpenClaw config. Set <code>RUNELAY_KEY</code> to your <code>rnl_</code> key in the Gateway's environment, so the key stays out of the config file. `,
+  wherePt: `${REMOTE_PT}O comando grava um servidor Streamable HTTP em <code>mcp.servers</code> na configuração do OpenClaw. Defina <code>RUNELAY_KEY</code> com a sua chave <code>rnl_</code> no ambiente do Gateway, para a chave ficar fora do arquivo de configuração. `,
+  snippet: OPENCLAW,
+  cliEn: noCliEn("OpenClaw"),
+  cliPt: noCliPt("OpenClaw"),
+  restartEn: ["Restart the Gateway and check", `Run <code>openclaw gateway restart</code> so the agents pick up the new server, then <code>openclaw mcp probe runelay</code> to open a live connection and list the Runelay tools.`, cmd("openclaw gateway restart && openclaw mcp probe runelay")],
+  restartPt: ["Reinicie o Gateway e confira", `Rode <code>openclaw gateway restart</code> para os agentes pegarem o servidor novo, e depois <code>openclaw mcp probe runelay</code> para abrir uma conexão real e listar as tools do Runelay.`, cmd("openclaw gateway restart && openclaw mcp probe runelay")],
+  migrateEn: noMigrateEn("OpenClaw"),
+  migratePt: noMigratePt("OpenClaw"),
+  pushEn: noPushEn("OpenClaw"),
+  pushPt: noPushPt("OpenClaw"),
+  faqEn: [["Why streamable-http?", "OpenClaw falls back to SSE when transport is missing. The Runelay endpoint speaks Streamable HTTP, so set it explicitly."]],
+  faqPt: [["Por que streamable-http?", "Sem transport o OpenClaw cai no SSE. O endpoint do Runelay fala Streamable HTTP, então declare isso explicitamente."]],
+});
+
+const mausbot = agentGuide({
+  slug: "guides/mausbot",
+  agent: "MausBot",
+  configEn: "Paste it in <strong>Plugins → MCP servers → Add server</strong>",
+  configPt: "Cole em <strong>Plugins → MCP servers → Add server</strong>",
+  whereEn: "MausBot reads a <code>claude mcp add</code> command and fills the address and the <code>Authorization</code> header for you. Under <strong>Edit details</strong> it is a <strong>Connect to a URL</strong> server over Streamable HTTP. ",
+  wherePt: "O MausBot lê um comando <code>claude mcp add</code> e preenche sozinho o endereço e o header <code>Authorization</code>. Em <strong>Edit details</strong> ele aparece como servidor <strong>Connect to a URL</strong> em Streamable HTTP. ",
+  snippet: CLAUDE,
+  cliEn: noCliEn("MausBot"),
+  cliPt: noCliPt("MausBot"),
+  restartEn: ["Pick which bots get it", "MausBot tests the server when you add it and turns it on when the tools load. Bots that use every enabled server get Runelay on their next task, with no restart. Bots with their own selection need runelay added under <strong>Bot access</strong>."],
+  restartPt: ["Escolha quais bots recebem", "O MausBot testa o servidor ao adicionar e liga quando as tools carregam. Bots que usam todos os servidores ligados recebem o Runelay na próxima tarefa, sem reiniciar. Bots com seleção própria precisam do runelay em <strong>Bot access</strong>."],
+  migrateEn: noMigrateEn("MausBot"),
+  migratePt: noMigratePt("MausBot"),
+  pushEn: noPushEn("MausBot"),
+  pushPt: noPushPt("MausBot"),
+  faqEn: [["Do all my MausBot bots share the same Runelay?", "Yes, when they use the same server entry. Each bot then sees the same connections, skills and memories as Claude Code or Codex outside MausBot."]],
+  faqPt: [["Todos os meus bots do MausBot usam o mesmo Runelay?", "Sim, quando usam a mesma entrada de servidor. Cada bot enxerga as mesmas conexões, skills e memórias do Claude Code ou do Codex fora do MausBot."]],
+});
+
+const opencode = agentGuide({
+  slug: "guides/opencode",
+  agent: "OpenCode",
+  configEn: "Add it to <code>~/.config/opencode/opencode.json</code>",
+  configPt: "Adicione ao <code>~/.config/opencode/opencode.json</code>",
+  whereEn: "OpenCode reads MCP servers from the <code>mcp</code> key. A remote server is <code>type: \"remote\"</code>, and <code>oauth: false</code> tells OpenCode to use the key in <code>headers</code> instead of starting a browser sign-in. An <code>opencode.json</code> inside a repo covers one project. ",
+  wherePt: "O OpenCode lê servidores MCP na chave <code>mcp</code>. Um servidor remoto é <code>type: \"remote\"</code>, e <code>oauth: false</code> diz ao OpenCode para usar a chave de <code>headers</code> em vez de abrir um login no navegador. Um <code>opencode.json</code> dentro de um repositório vale para um projeto. ",
+  snippet: OPENCODE,
+  cliEn: noCliEn("OpenCode"),
+  cliPt: noCliPt("OpenCode"),
+  restartEn: ["Open a new session and check", "OpenCode connects to MCP servers when it starts. Open a new session, or run <code>opencode mcp list</code> to see Runelay connected.", cmd("opencode mcp list")],
+  restartPt: ["Abra uma sessão nova e confira", "O OpenCode conecta nos servidores MCP quando inicia. Abra uma sessão nova, ou rode <code>opencode mcp list</code> para ver o Runelay conectado.", cmd("opencode mcp list")],
+  migrateEn: "<code>runelay migrate</code> reads the MCP servers in <code>~/.config/opencode/opencode.json</code>, so the remote servers you already use there move to Runelay and every agent shares them.",
+  migratePt: "<code>runelay migrate</code> lê os servidores MCP do <code>~/.config/opencode/opencode.json</code>, então os servidores remotos que você já usa ali vão para o Runelay e todos os agentes passam a compartilhá-los.",
+  pushEn: "<code>runelay push</code> sends <code>~/.config/opencode/skills</code> and <code>~/.config/opencode/AGENTS.md</code>, so Claude Code and Codex read the same skills and instructions.",
+  pushPt: "<code>runelay push</code> envia <code>~/.config/opencode/skills</code> e o <code>~/.config/opencode/AGENTS.md</code>, e assim o Claude Code e o Codex leem as mesmas skills e instruções.",
+  faqEn: [["Why oauth: false?", "OpenCode tries OAuth on every remote server unless oauth is false. Runelay authenticates with the rnl_ key in the Authorization header, so there is nothing to sign in to."]],
+  faqPt: [["Por que oauth: false?", "O OpenCode tenta OAuth em todo servidor remoto, a menos que oauth seja false. O Runelay autentica com a chave rnl_ no header Authorization, então não há login para fazer."]],
+});
+
+const openbot = agentGuide({
+  slug: "guides/openbot",
+  agent: "OpenBot",
+  configEn: "Add it in <strong>MCP servers → Connect a custom MCP</strong>",
+  configPt: "Adicione em <strong>MCP servers → Connect a custom MCP</strong>",
+  whereEn: "Fill <strong>Server URL</strong> with the endpoint, then <strong>Add header</strong> with <code>Authorization</code> as the key and <code>Bearer rnl_...</code> as the value, and run <strong>Test</strong>. OpenBot keeps the server for the whole computer and masks the header value in the panel. ",
+  wherePt: "Preencha <strong>Server URL</strong> com o endpoint, depois <strong>Add header</strong> com <code>Authorization</code> como chave e <code>Bearer rnl_...</code> como valor, e rode <strong>Test</strong>. O OpenBot guarda o servidor para o computador inteiro e esconde o valor do header no painel. ",
+  snippet: OPENBOT,
+  cliEn: noCliEn("OpenBot"),
+  cliPt: noCliPt("OpenBot"),
+  restartEn: ["Start a new session", "OpenBot hands its MCP servers to each agent when a session starts, whether the agent runs Claude Code, Codex, Grok or OpenCode underneath. Start a new session and every agent sees the Runelay tools."],
+  restartPt: ["Comece uma sessão nova", "O OpenBot entrega os servidores MCP a cada agente quando a sessão começa, seja o agente Claude Code, Codex, Grok ou OpenCode por baixo. Comece uma sessão nova e todos os agentes enxergam as tools do Runelay."],
+  migrateEn: noMigrateEn("OpenBot"),
+  migratePt: noMigratePt("OpenBot"),
+  pushEn: noPushEn("OpenBot"),
+  pushPt: noPushPt("OpenBot"),
+  faqEn: [["Does OpenBot write Runelay into each agent's config?", "No. OpenBot writes no agent config files. It passes the server to each agent at session start, so one entry covers all of them."]],
+  faqPt: [["O OpenBot escreve o Runelay na configuração de cada agente?", "Não. O OpenBot não escreve arquivos de configuração dos agentes. Ele passa o servidor a cada agente no início da sessão, então uma entrada vale para todos."]],
+});
+
 const share = {
   slug: "guides/share-mcp-across-agents",
   icon: "hub",
-  related: ["guides/claude-code", "guides/cursor", "guides/codex", "guides/antigravity", "guides/grokbot", "docs/migrate"],
+  related: ["guides/claude-code", "guides/cursor", "guides/codex", "guides/antigravity", "guides/grokbot", "guides/hermes-agent", "guides/openclaw", "guides/mausbot", "guides/opencode", "guides/openbot", "docs/migrate"],
   en: {
     title: "Share MCP servers across Claude Code, Cursor and Codex · Runelay",
     description: "How to share one MCP setup between Claude Code, Cursor and Codex with Runelay, an open source MCP gateway: one login per account, one endpoint, the same tools, skills and memories.",
@@ -306,6 +445,11 @@ const share = {
           ["/guides/codex/", LOGOS["Codex"], "Codex", "One block in ~/.codex/config.toml."],
           ["/guides/antigravity/", LOGOS["Antigravity"], "Antigravity", "One block in mcp_config.json, added by hand."],
           ["/guides/grokbot/", LOGOS["Grokbot"], "Grokbot", "One block in ~/.grok/config.toml."],
+          ["/guides/hermes-agent/", LOGOS["Hermes Agent"], "Hermes Agent", "One block in ~/.hermes/config.yaml."],
+          ["/guides/openclaw/", LOGOS["OpenClaw"], "OpenClaw", "One openclaw mcp set command."],
+          ["/guides/mausbot/", LOGOS["MausBot"], "MausBot", "One pasted command in Plugins."],
+          ["/guides/opencode/", LOGOS["OpenCode"], "OpenCode", "One block in opencode.json."],
+          ["/guides/openbot/", LOGOS["OpenBot"], "OpenBot", "One custom MCP in the panel."],
         ]),
       ),
     ],
@@ -374,6 +518,11 @@ const share = {
           ["/guides/codex/", LOGOS["Codex"], "Codex", "Um bloco no ~/.codex/config.toml."],
           ["/guides/antigravity/", LOGOS["Antigravity"], "Antigravity", "Um bloco no mcp_config.json, adicionado à mão."],
           ["/guides/grokbot/", LOGOS["Grokbot"], "Grokbot", "Um bloco no ~/.grok/config.toml."],
+          ["/guides/hermes-agent/", LOGOS["Hermes Agent"], "Hermes Agent", "Um bloco no ~/.hermes/config.yaml."],
+          ["/guides/openclaw/", LOGOS["OpenClaw"], "OpenClaw", "Um comando openclaw mcp set."],
+          ["/guides/mausbot/", LOGOS["MausBot"], "MausBot", "Um comando colado em Plugins."],
+          ["/guides/opencode/", LOGOS["OpenCode"], "OpenCode", "Um bloco no opencode.json."],
+          ["/guides/openbot/", LOGOS["OpenBot"], "OpenBot", "Um MCP custom no painel."],
         ]),
       ),
     ],
@@ -766,7 +915,7 @@ const runlayer = {
   },
 };
 
-export const PAGES = [claudeCode, cursor, codex, antigravity, grokbot, share, migrate, executor, runlayer];
+export const PAGES = [claudeCode, cursor, codex, antigravity, grokbot, hermes, openclaw, mausbot, opencode, openbot, share, migrate, executor, runlayer];
 
 export const EXISTING = {
   "self-hosted-mcp-gateway": { icon: "server", en: ["Self-hosted MCP gateway guide", "What it does, why self-host it and how to run one in a minute."], pt: ["Guia de MCP gateway self-hosted", "O que faz, por que hospedar e como rodar um em um minuto."] },

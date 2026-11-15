@@ -393,4 +393,21 @@ for (const page of generated) registry.set(page.slug, { icon: page.icon, en: [pa
 
 for (const page of generated) for (const lang of ["en", "pt"]) document(page.slug, lang, page[lang], page.related, page.mark);
 
+const HOME_READS = ["self-hosted-mcp-gateway", "composio-alternative", "mcp-gateway-vs-mcp-server", "guides/share-mcp-across-agents", "docs/migrate", "executor-alternative"];
+
+const homeGuides = (lang) => {
+  const base = LANGS[lang].prefix;
+  const agents = PAGES.filter((page) => page.mark)
+    .map((page) => `<a class="agent-tile" href="${base}/${page.slug}/">${page.mark[1]}<span>${page.mark[0]}</span></a>`)
+    .join("");
+  const reads = links(HOME_READS.map((slug) => [`${base}/${slug}/`, registry.get(slug).icon, ...registry.get(slug)[lang]]));
+  return `<div class="agent-tiles" data-reveal>${agents}</div><div class="guides page-section home-guides" data-reveal>${reads}</div>`;
+};
+
+for (const lang of ["en", "pt"]) {
+  const file = LANGS[lang].home;
+  const html = readFileSync(file, "utf8");
+  writeFileSync(file, html.replace(/<!-- home-guides -->[\s\S]*?<!-- \/home-guides -->/, `<!-- home-guides -->${homeGuides(lang)}<!-- /home-guides -->`));
+}
+
 console.log(`generated ${generated.length * 2} pages`);

@@ -253,6 +253,11 @@ const agentLinks = (lang) => {
     ["guides/cursor", "Cursor"],
     ["guides/antigravity", "Antigravity"],
     ["guides/grokbot", "Grokbot"],
+    ["guides/hermes-agent", "Hermes Agent"],
+    ["guides/openclaw", "OpenClaw"],
+    ["guides/mausbot", "MausBot"],
+    ["guides/opencode", "OpenCode"],
+    ["guides/openbot", "OpenBot"],
   ];
   return `<p class="feature-links"><span>${label}:</span> ${items.map(([slug, name]) => `<a href="/${slug}/">${name}</a>`).join(" · ")}</p>`;
 };
