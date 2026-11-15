@@ -1,10 +1,19 @@
 # Changelog
 
-## Unreleased
+## v0.4.3
+
+### Panel
 
 - Settings: new Organization page to rename the organization, set its image and delete it. Deleting removes its connections, API keys, memories and skills, and is refused while it is your only organization or a member has no other one.
-- Catalog: Cloudflare (full account API, next to Cloudflare Docs) and Buffer (API key) are in the catalog.
 - Connections can be renamed from their detail page. The login, the config and the call history move to the new name; agents see the tools under the new prefix.
+
+### Catalog
+
+- Cloudflare (full account API, next to Cloudflare Docs) and Buffer (API key) are in the catalog.
+
+### Docs
+
+- Every docs page has its own share image.
 
 ## v0.4.2
 
