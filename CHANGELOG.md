@@ -2,6 +2,11 @@
 
 ## v0.6.1
 
+### Catalog
+
+- Conty (OAuth) is the featured connector, highlighted at the top of the catalog: agents run creator campaigns from the brief to the sales report.
+- Firecrawl (API key) is in the catalog: web search, scraping and site crawling for every agent.
+
 ### Connections
 
 - Google Calendar, Docs, Sheets and Slides now use Google's REST APIs with runelay's own tools. Google's MCP servers for those services require enrollment in the Google Workspace Developer Preview Program.

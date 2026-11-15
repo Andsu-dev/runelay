@@ -63,6 +63,25 @@ test("installs a catalog item and marks it installed", async () => {
   expect(items(listed.data)[0]).toMatchObject({ installed: true, sourceName: "linear", status: "error" });
 });
 
+test("Conty is the featured OAuth connector and the only featured item", async () => {
+  const { data } = await body<CatalogView>(await call("/v1/catalog", { cookie: account.cookie }));
+  const featured = items(data).filter((item) => item.featured);
+  expect(featured.map((item) => item.id)).toEqual(["conty"]);
+  expect(featured[0]).toMatchObject({
+    url: "https://mcp.appconty.com/mcp",
+    icon: "/logos/conty.png",
+    auth: "oauth",
+    tokenUrl: null,
+  });
+  expect(
+    items(data)
+      .filter((item) => item.id !== "conty")
+      .every((item) => item.featured === false),
+  ).toBe(true);
+  const catalog = JSON.parse(CATALOG_BY_URL_HASH) as Record<string, { icon: string; auth: string }>;
+  expect(catalog[hashUrl("https://mcp.appconty.com/mcp")]).toMatchObject({ icon: "/logos/conty.png", auth: "oauth" });
+});
+
 test("rejects unknown catalog ids", async () => {
   const response = await call("/v1/catalog/install", { method: "POST", cookie: account.cookie, json: { id: "nope" } });
   expect(response.status).toBe(404);
@@ -126,7 +145,13 @@ test("a pasted GitHub token keeps working without the broker", async () => {
 
 test("Google is one catalog item per service: Agenda and Gmail are popular, the rest lead the work section", () => {
   const popular = CATALOG.find((section) => section.id === "popular");
-  expect(popular?.items.slice(0, 4).map((item) => item.id)).toEqual(["linear", "github", "google_calendar", "gmail"]);
+  expect(popular?.items.slice(0, 5).map((item) => item.id)).toEqual([
+    "conty",
+    "linear",
+    "github",
+    "google_calendar",
+    "gmail",
+  ]);
   const work = CATALOG.find((section) => section.id === "work");
   const workGoogle = work?.items.filter((item) => item.googleService) ?? [];
   expect(work?.items.slice(0, workGoogle.length)).toEqual(workGoogle);
