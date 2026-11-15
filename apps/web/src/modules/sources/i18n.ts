@@ -49,6 +49,9 @@ export const sourcesMessages = defineMessages(
       env: "Variáveis de ambiente",
       envHint: "Uma por linha, CHAVE=valor.",
       headersHint: "Um por linha, Nome: valor. Ficam cifrados.",
+      authOAuth: "Login por OAuth: a janela de login abre ao salvar",
+      authHeader: "Esse servidor pede uma chave no header",
+      addHeaders: "Adicionar headers",
     },
     add: {
       title: "Nova conexão",
@@ -139,6 +142,9 @@ export const sourcesMessages = defineMessages(
       env: "Environment variables",
       envHint: "One per line, KEY=value.",
       headersHint: "One per line, Name: value. Stored encrypted.",
+      authOAuth: "OAuth sign-in: the login window opens when you save",
+      authHeader: "This server asks for a key in a header",
+      addHeaders: "Add headers",
     },
     add: {
       title: "New connection",

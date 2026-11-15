@@ -62,16 +62,20 @@ export const updateSourceSchema = z
 export const importedOAuthSchema = z
   .object({
     clientId: z.string().min(1).max(500),
-    clientSecret: z.string().max(2000).optional(),
+    clientSecret: z.string().max(20_000).optional(),
     accessToken: z.string().max(20_000).optional(),
     refreshToken: z.string().max(20_000).optional(),
     expiresAt: z.number().int().positive().optional(),
-    scope: z.string().max(2000).optional(),
+    scope: z.string().max(20_000).optional(),
     tokenType: z.string().max(40).optional(),
   })
   .refine((oauth) => Boolean(oauth.accessToken || oauth.refreshToken), "Envie accessToken ou refreshToken");
 
 export const importSourceSchema = createSourceSchema.extend({ oauth: importedOAuthSchema.optional() });
+
+export const sourceAuthKindSchema = z.enum(["oauth", "header", "none", "unknown"]);
+
+export const detectSourceAuthSchema = z.object({ url: z.url() });
 
 export const listSourcesSchema = z.object({ status: sourceStatusSchema.optional() });
 
