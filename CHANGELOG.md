@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.3.1
+
+### Overview
+
+- Calls to memories, skills, context search, tool search and the connection list now count as activity, so the overview no longer stays on "Nenhuma chamada ainda" for agents that mostly read context.
+- New charts: daily activity split into connectors and context, usage by type, top connectors with their logos, recent skills and recent memories, and a 30-day error strip.
+- One tooltip per chart that follows the hovered bar or segment.
+- KPI numbers roll into place when the page opens.
+
 ## v0.3.0
 
 ### Desktop app
