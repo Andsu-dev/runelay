@@ -1,0 +1,74 @@
+---
+title: CLI
+description: The runelay CLI brings the context on your computer to your server.
+icon: Terminal
+---
+
+The `runelay` CLI runs on your computer, because that is where your agents keep their files. Install it, log in through the browser, done: no env vars, no keys to copy.
+
+## Install
+
+```sh
+curl -fsSL runelay.com/cli | sh
+```
+
+The installer puts the binary in `~/.runelay/bin` and adds it to your shell `PATH`. Change the folder with `RUNELAY_INSTALL_DIR` and pin a release with `RUNELAY_VERSION=v0.2.0`.
+
+## Commands
+
+| Command | What it does |
+|---|---|
+| `runelay migrate` | Brings everything from your agents at once, with accounts already connected. `--yes` skips the confirmation, `--replace` leaves only runelay in the agents. |
+| `runelay login [url]` | Logs in to the server through the browser and saves this computer's key. |
+| `runelay status` | Shows the server, the organization and what is stored in it. |
+| `runelay open` | Opens the web dashboard in the browser. |
+| `runelay push` | Sends memories, skills and global instructions from every installed agent. |
+| `runelay pull` | Writes the brief into `CLAUDE.md` and `AGENTS.md` and new skills into `~/.claude/skills`. |
+| `runelay sync` | `push`, then `pull`. |
+| `runelay connect` | Registers the runelay MCP in Claude Code, Codex, Cursor and Grok. |
+| `runelay import` | Turns the MCP servers configured in your agents into connections. |
+| `runelay logout` | Revokes this computer's key and clears the config. |
+| `runelay help` | Shows the help. |
+| `runelay --version` | Prints the CLI version. |
+
+See [Quickstart](/quickstart#migrate-in-one-command) for what `migrate` does in detail.
+
+## Login
+
+`runelay login` looks for `PUBLIC_URL` in `~/runelay/.env` (what the installer writes), then for `http://localhost:4312`, and asks before using what it found. You can also pass the address:
+
+```sh
+runelay login https://runelay.example.com
+```
+
+The browser shows a code: check it matches the terminal and approve. The key shows up in the panel as `CLI <device>` and is saved in `~/.config/runelay/config.json` (mode `600`, `XDG_CONFIG_HOME` respected).
+
+`runelay open` uses the same server: `RUNELAY_URL` if set, then the saved config, then `http://localhost:4312`. If it cannot open a browser, it prints the URL.
+
+## Push
+
+`runelay push` reads:
+
+| Agent | Skills | Memory and instructions |
+|---|---|---|
+| Claude Code | `~/.claude/skills` | `~/.claude/projects/*/memory`, `~/.claude/CLAUDE.md` |
+| Agents (universal) | `~/.agents/skills` | |
+| Codex | `~/.codex/skills` | `~/.codex/memories`, `~/.codex/AGENTS.md` |
+| Cursor | `~/.cursor/skills`, `~/.cursor/skills-cursor` | |
+| Grok | `~/.grok/skills` | `~/.grok/AGENTS.md` |
+| Gemini | `~/.gemini/skills` | `~/.gemini/GEMINI.md` |
+| OpenCode | `~/.config/opencode/skills` | `~/.config/opencode/AGENTS.md` |
+
+Duplicates are merged (first one wins). Memories listed under `## Regras de ouro` in a `MEMORY.md`, and global instruction files, come in pinned.
+
+## Pull
+
+`runelay pull` only touches the block between `<!-- runelay:start -->` and `<!-- runelay:end -->`. Everything else in your files stays as it is. The brief tells agents to save new facts with `write_memory`, so memory flows back to runelay instead of local files.
+
+Enabled skills you do not have in any agent folder are written to `~/.claude/skills/<slug>/` with a `.runelay` marker. Later pulls update only marked folders and `push` skips them. A folder without the marker is yours and is never overwritten.
+
+## CI and env vars
+
+`RUNELAY_URL` and `RUNELAY_API_KEY` override the saved config, so a pipeline can run `runelay push` with a key created in the panel.
+
+Inside a clone of the repo, `bun run import-context`, `sync-context`, `install-clients` and `import` still work and map to `push`, `pull`, `connect` and `import`.

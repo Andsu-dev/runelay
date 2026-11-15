@@ -3,18 +3,40 @@ name: release
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release, e.g. v0.4.2 (needs a matching ## heading in CHANGELOG.md)"
+        required: true
 
 permissions:
   contents: write
   packages: write
 
+env:
+  TAG: ${{ inputs.version || github.ref_name }}
+
 jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Create the tag
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          grep -qx "## $TAG" CHANGELOG.md || { echo "CHANGELOG.md has no ## $TAG section"; exit 1; }
+          git tag "$TAG"
+          git push origin "$TAG"
+
   image:
+    needs: tag
     runs-on: ubuntu-latest
     env:
       HAS_DOCKERHUB: ${{ secrets.DOCKERHUB_TOKEN != '' }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.TAG }}
 
       - uses: docker/setup-qemu-action@v4
       - uses: docker/setup-buildx-action@v4
@@ -38,8 +60,8 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/runelay
             ${{ vars.DOCKERHUB_USERNAME && format('{0}/runelay', vars.DOCKERHUB_USERNAME) || '' }}
           tags: |
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{version}},value=${{ env.TAG }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ env.TAG }}
             type=raw,value=latest
 
       - uses: docker/build-push-action@v7
@@ -53,9 +75,12 @@ jobs:
           cache-to: type=gha,mode=max
 
   cli:
+    needs: tag
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.TAG }}
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - run: bun run build:cli
@@ -65,6 +90,7 @@ jobs:
           path: dist/cli/
 
   desktop:
+    needs: tag
     strategy:
       matrix:
         include:
@@ -77,6 +103,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.TAG }}
       - uses: oven-sh/setup-bun@v2
       - uses: actions/setup-node@v7
         with:
@@ -101,6 +129,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.TAG }}
       - uses: actions/download-artifact@v8
         with:
           name: cli
@@ -115,6 +145,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           sed "s#ghcr.io/andsu-dev/runelay#ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/runelay#" deploy/compose.yaml > compose.yaml
-          awk -v tag="## $GITHUB_REF_NAME" '$0 == tag {found=1; next} /^## / && found {exit} found' CHANGELOG.md > release-notes.md
-          gh release create "$GITHUB_REF_NAME" deploy/install.sh deploy/install-cli.sh compose.yaml dist/cli/runelay-* dist/desktop/* \
-            --title "runelay $GITHUB_REF_NAME" --notes-file release-notes.md --verify-tag
+          awk -v tag="## $TAG" '$0 == tag {found=1; next} /^## / && found {exit} found' CHANGELOG.md > release-notes.md
+          gh release create "$TAG" deploy/install.sh deploy/install-cli.sh compose.yaml dist/cli/runelay-* dist/desktop/* \
+            --title "runelay $TAG" --notes-file release-notes.md --verify-tag

@@ -2,12 +2,14 @@ import type { z } from "zod";
 import type { CatalogAuth } from "../catalog/catalog.types";
 import type {
   createSourceSchema,
+  detectSourceAuthSchema,
   importedOAuthSchema,
   importSourceSchema,
   importSourcesSchema,
   listSourcesSchema,
   mcpRemoteConfigSchema,
   openApiConfigSchema,
+  sourceAuthKindSchema,
   sourceConfigSchema,
   sourceStatusSchema,
   stdioConfigSchema,
@@ -26,6 +28,8 @@ export type ImportSourcesInput = z.infer<typeof importSourcesSchema>;
 export type ImportSourceInput = z.infer<typeof importSourceSchema>;
 export type ImportedOAuthInput = z.infer<typeof importedOAuthSchema>;
 export type ListSourcesInput = z.infer<typeof listSourcesSchema>;
+export type SourceAuthKind = z.infer<typeof sourceAuthKindSchema>;
+export type DetectSourceAuthInput = z.infer<typeof detectSourceAuthSchema>;
 
 export interface SourceView {
   name: string;
@@ -60,4 +64,8 @@ export interface SourcesSummaryView {
   total: number;
   tools: number;
   attention: number;
+}
+
+export interface SourceAuthDetectionView {
+  auth: SourceAuthKind;
 }

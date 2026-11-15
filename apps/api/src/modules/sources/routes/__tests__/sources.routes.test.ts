@@ -302,6 +302,19 @@ describe("import", () => {
   });
 });
 
+describe("detect auth", () => {
+  const detect = async (url: string) => {
+    const response = await call("/v1/sources/detect-auth", { method: "POST", json: { url }, cookie: account.cookie });
+    return (await body<{ auth: string }>(response)).data.auth;
+  };
+
+  test("tells open, oauth and unreachable servers apart", async () => {
+    expect(await detect(open.mcpUrl)).toBe("none");
+    expect(await detect(locked.mcpUrl)).toBe("oauth");
+    expect(await detect(closedUrl())).toBe("unknown");
+  });
+});
+
 describe("oauth start", () => {
   test("refuses oauth for non mcp sources", async () => {
     const response = await call("/v1/sources/inline_api/oauth", { method: "POST", cookie: account.cookie });
