@@ -196,14 +196,6 @@ export const CATALOG: CatalogSection[] = [
         auth: "oauth",
       },
       {
-        id: "buffer",
-        name: "Buffer",
-        description: "Posts agendados, ideias e métricas das redes sociais.",
-        url: "https://mcp.buffer.com/mcp",
-        icon: "buffer",
-        auth: "oauth",
-      },
-      {
         id: "webflow",
         name: "Webflow",
         description: "Sites, páginas e coleções do CMS.",

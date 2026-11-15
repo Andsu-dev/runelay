@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Catalog: Cloudflare (full account API, next to Cloudflare Docs) and Buffer are one-click connectors.
+- Catalog: Cloudflare (full account API, next to Cloudflare Docs) is a one-click connector.
 
 ## v0.4.1
 
