@@ -129,3 +129,18 @@ test("Google logins ask for a refresh token", async () => {
   await provider.redirectToAuthorization(new URL("https://login.example.test/authorize?client_id=x"));
   expect(redirected?.searchParams.has("access_type")).toBe(false);
 });
+
+test("Google logins drop the resource parameter and other providers keep it", async () => {
+  let redirected: URL | undefined;
+  const provider = createOAuthProvider(key(), (url) => {
+    redirected = url;
+  });
+  const resource = "resource=https%3A%2F%2Fmcp.test%2Fmcp";
+  await provider.redirectToAuthorization(
+    new URL(`https://accounts.google.com/o/oauth2/v2/auth?client_id=x&${resource}`),
+  );
+  expect(redirected?.searchParams.has("resource")).toBe(false);
+  expect(redirected?.searchParams.get("client_id")).toBe("x");
+  await provider.redirectToAuthorization(new URL(`https://login.example.test/authorize?client_id=x&${resource}`));
+  expect(redirected?.searchParams.get("resource")).toBe("https://mcp.test/mcp");
+});

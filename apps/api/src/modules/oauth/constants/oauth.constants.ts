@@ -16,6 +16,8 @@ export const BROKER_AUTHORIZATION_PARAMS: Record<OAuthBrokerProvider, Record<str
   google: { access_type: "offline", prompt: "consent" },
 };
 
+export const AUTHORIZATION_HOSTS_WITHOUT_RESOURCE = new Set(["accounts.google.com"]);
+
 export const AUTHORIZATION_PARAMS_BY_HOST: Record<string, Record<string, string>> = {
   "accounts.google.com": BROKER_AUTHORIZATION_PARAMS.google,
 };

@@ -1,6 +1,7 @@
 import type { OAuthClientProvider } from "@modelcontextprotocol/sdk/client/auth.js";
 import { env } from "@/config/env";
 import {
+  AUTHORIZATION_HOSTS_WITHOUT_RESOURCE,
   AUTHORIZATION_PARAMS_BY_HOST,
   OAUTH_CALLBACK_PATH,
   OAUTH_CLIENT_NAME,
@@ -35,6 +36,7 @@ const withProviderParams = (url: URL) => {
   for (const [name, value] of Object.entries(AUTHORIZATION_PARAMS_BY_HOST[url.hostname] ?? {})) {
     rewritten.searchParams.set(name, value);
   }
+  if (AUTHORIZATION_HOSTS_WITHOUT_RESOURCE.has(url.hostname)) rewritten.searchParams.delete("resource");
   return rewritten;
 };
 
