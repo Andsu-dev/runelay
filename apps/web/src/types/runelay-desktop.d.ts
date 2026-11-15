@@ -14,6 +14,7 @@ export interface DesktopServerList {
 
 export interface DesktopStartup {
   supported: boolean;
+  local?: boolean;
   openAtLogin: boolean;
 }
 

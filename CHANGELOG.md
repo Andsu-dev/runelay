@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Desktop app
+
+- "Open when the computer starts" also works when the app is pointed at a remote server. With it on, the app opens hidden in the tray and closing the window keeps it there; with it off, nothing changes for remote servers.
+
 ## v0.6.2
 
 ### Desktop app
