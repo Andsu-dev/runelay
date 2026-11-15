@@ -1,7 +1,12 @@
 import { afterEach, beforeAll, describe, expect, spyOn, test } from "bun:test";
+import { type MeView, PROFILE_IMAGE_MAX_LENGTH } from "@runelay/shared";
 import { env } from "@/config/env";
 import { db } from "@/db/connection";
-import { SETUP_TOKEN_REQUIRED_MESSAGE, SIGNUP_CLOSED_MESSAGE } from "@/modules/auth/constants/auth.constants";
+import {
+  PROFILE_INVALID_MESSAGE,
+  SETUP_TOKEN_REQUIRED_MESSAGE,
+  SIGNUP_CLOSED_MESSAGE,
+} from "@/modules/auth/constants/auth.constants";
 import { auth } from "@/modules/auth/lib/better-auth";
 import { isSetupToken, SETUP_TOKEN, setupUrl } from "@/modules/auth/lib/setup-token";
 import {
@@ -183,6 +188,56 @@ describe("middlewares", () => {
     expect(blocked.status).toBe(429);
     expect(blocked.headers.get("retry-after")).toBe("60");
     expect((await body(blocked)).error?.code).toBe("RATE_LIMITED");
+  });
+});
+
+describe("profile update", () => {
+  const photo = "data:image/jpeg;base64,/9j/4AAQSkZJRg==";
+  const updateUser = (account: TestAccount, json: unknown) =>
+    call("/v1/auth/update-user", { method: "POST", cookie: account.cookie, json });
+  const meOf = async (account: TestAccount) =>
+    (await body<MeView>(await call("/v1/me", { cookie: account.cookie }))).data;
+
+  test("me starts without a photo", async () => {
+    const account = await signUp("Sem Foto");
+    expect((await meOf(account)).user.image).toBeNull();
+  });
+
+  test("updates the name and photo and exposes them on me", async () => {
+    const account = await signUp("Perfil");
+    const response = await updateUser(account, { name: "  Novo Nome  ", image: photo });
+    expect(response.status).toBe(200);
+    const { user } = await meOf(account);
+    expect(user.name).toBe("Novo Nome");
+    expect(user.image).toBe(photo);
+  });
+
+  test("removes the photo with null", async () => {
+    const account = await signUp("Remover Foto");
+    await updateUser(account, { image: photo });
+    expect((await updateUser(account, { image: null })).status).toBe(200);
+    expect((await meOf(account)).user.image).toBeNull();
+  });
+
+  test("rejects a photo over the size cap", async () => {
+    const account = await signUp("Foto Grande");
+    const oversized = `data:image/jpeg;base64,${"A".repeat(PROFILE_IMAGE_MAX_LENGTH)}`;
+    const response = await updateUser(account, { image: oversized });
+    expect(response.status).toBe(400);
+    expect(await response.text()).toContain(PROFILE_INVALID_MESSAGE);
+    expect((await meOf(account)).user.image).toBeNull();
+  });
+
+  test("rejects a photo that is not an image data url and an empty name", async () => {
+    const account = await signUp("Inválido");
+    expect((await updateUser(account, { image: "data:text/html;base64,PGgxPg==" })).status).toBe(400);
+    expect((await updateUser(account, { image: "javascript:alert(1)" })).status).toBe(400);
+    expect((await updateUser(account, { name: "   " })).status).toBe(400);
+    expect((await meOf(account)).user.name).toBe("Inválido");
+  });
+
+  test("requires a session", async () => {
+    expect((await call("/v1/auth/update-user", { method: "POST", json: { name: "Anônimo" } })).status).toBe(401);
   });
 });
 

@@ -1,4 +1,5 @@
 import { apiKey } from "@better-auth/api-key";
+import { updateProfileSchema } from "@runelay/shared";
 import { betterAuth } from "better-auth";
 import { APIError } from "better-auth/api";
 import { organization } from "better-auth/plugins/organization";
@@ -7,6 +8,7 @@ import { db } from "@/db/connection";
 import {
   API_KEY_PREFIX,
   AUTH_BASE_PATH,
+  PROFILE_INVALID_MESSAGE,
   SETUP_TOKEN_REQUIRED_MESSAGE,
   SIGNUP_CLOSED_MESSAGE,
 } from "@/modules/auth/constants/auth.constants";
@@ -43,6 +45,13 @@ export const auth = betterAuth({
         after: async (user) => {
           const created = ensurePersonalOrganization(user.id);
           if (created.error) throw new APIError("INTERNAL_SERVER_ERROR", { message: created.error.message });
+        },
+      },
+      update: {
+        before: async (user) => {
+          const profile = updateProfileSchema.safeParse(user);
+          if (!profile.success) throw new APIError("BAD_REQUEST", { message: PROFILE_INVALID_MESSAGE });
+          return { data: profile.data.name === undefined ? user : { ...user, name: profile.data.name } };
         },
       },
     },

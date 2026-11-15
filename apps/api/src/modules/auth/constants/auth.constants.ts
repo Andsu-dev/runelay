@@ -15,3 +15,5 @@ export const SETUP_TOKEN_REQUIRED_MESSAGE =
 export const RATE_LIMIT_WINDOW_MS = 60_000;
 
 export const MCP_PATH = "/v1/mcp";
+
+export const PROFILE_INVALID_MESSAGE = "Nome ou foto inválidos. A foto precisa ser uma imagem de até 400 KB.";

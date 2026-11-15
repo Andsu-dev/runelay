@@ -86,7 +86,7 @@ test("cannot switch to an organization the user is not a member of", async () =>
 });
 
 test("describeMe forbids an organization outside the memberships", () => {
-  const user = { id: account.userId, email: account.email, name: "Organizações" };
+  const user = { id: account.userId, email: account.email, name: "Organizações", image: null };
   expect(describeMe(user, "missing").error?.code).toBe("FORBIDDEN");
 });
 
@@ -114,7 +114,7 @@ test("createOrganization maps better-auth failures to STORAGE_FAILED", async () 
 });
 
 test("switchOrganization maps better-auth failures to STORAGE_FAILED", async () => {
-  const user = { id: account.userId, email: account.email, name: "Organizações" };
+  const user = { id: account.userId, email: account.email, name: "Organizações", image: null };
   const spy = spyOn(auth.api, "setActiveOrganization").mockRejectedValueOnce(new Error("boom"));
   try {
     const result = await switchOrganization(new Headers(), user, account.organizationId);

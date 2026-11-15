@@ -24,8 +24,11 @@ export const sessionOf = async (
 ): Promise<{ user: AuthUser; organizationId: string | null } | null> => {
   const session = await auth.api.getSession({ headers }).catch(() => null);
   if (!session) return null;
-  const { id, email, name } = session.user;
-  return { user: { id, email, name }, organizationId: session.session.activeOrganizationId ?? null };
+  const { id, email, name, image } = session.user;
+  return {
+    user: { id, email, name, image: image ?? null },
+    organizationId: session.session.activeOrganizationId ?? null,
+  };
 };
 
 export const activeOrganizationOf = (userId: string, organizationId: string | null): Result<string> => {

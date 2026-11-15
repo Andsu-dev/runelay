@@ -3,6 +3,7 @@ export type * from "./activity/activity.types";
 export * from "./api-keys/api-key.schema";
 export type * from "./api-keys/api-key.types";
 export * from "./auth/auth.constants";
+export * from "./auth/auth.schema";
 export type * from "./auth/auth.types";
 export * from "./catalog/catalog.schema";
 export type * from "./catalog/catalog.types";
