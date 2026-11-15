@@ -1,5 +1,8 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import tailwindcss from "@tailwindcss/vite";
+import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import { jsonLd, plain } from "./blocks.mjs";
 
@@ -8,7 +11,7 @@ const REPO = "https://github.com/Andsu-dev/runelay";
 
 const pages = readdirSync(".", { recursive: true })
   .map((file) => file.replaceAll("\\", "/"))
-  .filter((file) => /(^|\/)(index|404)\.html$/.test(file) && !/^(dist|node_modules|public)\//.test(file))
+  .filter((file) => /(^|\/)(index|404)\.html$/.test(file) && !/^(dist|node_modules|public|showcase)\//.test(file))
   .sort();
 
 const routeOf = (file) => `/${file.replace(/index\.html$/, "")}`;
@@ -24,7 +27,7 @@ const FOOTER = {
     credit: "MIT license · Made by",
     columns: [
       ["Product", [["Download", "/download/"], ["Setup", "/setup/"], ["Integrations", "/integrations/"], ["Changelog", "/changelog/"], ["Benchmark", "/benchmark/"]]],
-      ["Guides", [["Share MCP across agents", "/guides/share-mcp-across-agents/"], ["Claude Code", "/guides/claude-code/"], ["Cursor", "/guides/cursor/"], ["Codex", "/guides/codex/"], ["runelay migrate", "/docs/migrate/"]]],
+      ["Guides", [["Share MCP across agents", "/guides/share-mcp-across-agents/"], ["Claude Code", "/guides/claude-code/"], ["Cursor", "/guides/cursor/"], ["Codex", "/guides/codex/"], ["Antigravity", "/guides/antigravity/"], ["Grokbot", "/guides/grokbot/"], ["runelay migrate", "/docs/migrate/"]]],
       ["Learn", [["Self-hosted MCP gateway", "/self-hosted-mcp-gateway/"], ["MCP gateway vs MCP server", "/mcp-gateway-vs-mcp-server/"], ["Composio alternative", "/composio-alternative/"], ["Executor alternative", "/executor-alternative/"], ["Runelay vs Runlayer", "/vs/runlayer/"]]],
       ["Project", [["GitHub", REPO], ["Docs", "https://docs.runelay.com"], ["Releases", `${REPO}/releases`], ["llms.txt", "/llms.txt"]]],
     ],
@@ -37,7 +40,7 @@ const FOOTER = {
     credit: "Licença MIT · Feito por",
     columns: [
       ["Produto", [["Baixar", "/download/"], ["Configurar", "/setup/"], ["Integrações", "/integrations/"], ["Changelog", "/changelog/"], ["Benchmark", "/benchmark/"]]],
-      ["Guias", [["Compartilhar MCP entre agentes", "/guides/share-mcp-across-agents/"], ["Claude Code", "/guides/claude-code/"], ["Cursor", "/guides/cursor/"], ["Codex", "/guides/codex/"], ["runelay migrate", "/docs/migrate/"]]],
+      ["Guias", [["Compartilhar MCP entre agentes", "/guides/share-mcp-across-agents/"], ["Claude Code", "/guides/claude-code/"], ["Cursor", "/guides/cursor/"], ["Codex", "/guides/codex/"], ["Antigravity", "/guides/antigravity/"], ["Grokbot", "/guides/grokbot/"], ["runelay migrate", "/docs/migrate/"]]],
       ["Entenda", [["MCP gateway self-hosted", "/self-hosted-mcp-gateway/"], ["MCP gateway vs MCP server", "/mcp-gateway-vs-mcp-server/"], ["Alternativa ao Composio", "/composio-alternative/"], ["Alternativa ao Executor", "/executor-alternative/"], ["Runelay vs Runlayer", "/vs/runlayer/"]]],
       ["Projeto", [["GitHub", REPO], ["Documentação", "https://docs.runelay.com"], ["Releases", `${REPO}/releases`], ["llms.txt", "/llms.txt"]]],
     ],
@@ -171,7 +174,11 @@ const inlineCss = {
 
 export default defineConfig({
   appType: "mpa",
-  plugins: [cleanUrls, chrome, sitemap, inlineCss],
+  plugins: [cleanUrls, chrome, sitemap, inlineCss, react(), tailwindcss()],
+  resolve: {
+    alias: { "@": fileURLToPath(new URL("../web/src", import.meta.url)) },
+    dedupe: ["react", "react-dom", "@tanstack/react-query", "@tanstack/react-router"],
+  },
   build: {
     target: "es2022",
     rollupOptions: { input: pages },
