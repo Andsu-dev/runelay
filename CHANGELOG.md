@@ -1,5 +1,30 @@
 # Changelog
 
+## v0.4.2
+
+### Panel
+
+- Adding a remote MCP now detects how it signs in. OAuth servers (Figma, Linear, GitHub Copilot) say the login opens on save and hide the Headers field; servers that need a key say so.
+- "☕ Support the project" in the profile menu and on the setup celebration, opening GitHub Sponsors.
+
+### API
+
+- `POST /v1/sources/detect-auth`: classifies a remote MCP as `oauth`, `header`, `none` or `unknown` from its `WWW-Authenticate` challenge or OAuth protected resource metadata.
+- Imported OAuth accounts accept a `clientSecret` and `scope` up to 20,000 characters, so `runelay migrate` no longer fails with "Too big: expected string to have <=2000 characters".
+- CLI login codes are drawn with `crypto.randomInt`.
+
+### CLI
+
+- `runelay open` opens the dashboard in the browser.
+
+### Install
+
+- When Docker has no free address pools, the installer explains how to recover (`docker network prune -f`) instead of stopping with the raw error.
+
+### Docs
+
+- New docs site at [docs.runelay.com](https://docs.runelay.com): quickstart, self-hosting, CLI, integrations, migrate guides, troubleshooting, FAQ and more.
+
 ## v0.4.1
 
 - Dashboard lists (top connectors, most used tools, recent skills and memories) stop growing and scroll inside their card.
