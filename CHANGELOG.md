@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Catalog: Cloudflare (full account API, next to Cloudflare Docs) and Buffer are one-click connectors.
+
 ## v0.4.1
 
 - Dashboard lists (top connectors, most used tools, recent skills and memories) stop growing and scroll inside their card.

@@ -86,6 +86,14 @@ export const CATALOG: CatalogSection[] = [
         auth: "oauth",
       },
       {
+        id: "cloudflare",
+        name: "Cloudflare",
+        description: "Workers, DNS, R2, D1 e o resto da conta pela API.",
+        url: "https://mcp.cloudflare.com/mcp",
+        icon: "cloudflare",
+        auth: "oauth",
+      },
+      {
         id: "cloudflare_docs",
         name: "Cloudflare Docs",
         description: "Busca na documentação da Cloudflare.",
@@ -185,6 +193,14 @@ export const CATALOG: CatalogSection[] = [
         description: "Envio de e-mails, domínios e contatos.",
         url: "https://mcp.resend.com/mcp",
         icon: "resend",
+        auth: "oauth",
+      },
+      {
+        id: "buffer",
+        name: "Buffer",
+        description: "Posts agendados, ideias e métricas das redes sociais.",
+        url: "https://mcp.buffer.com/mcp",
+        icon: "buffer",
         auth: "oauth",
       },
       {
