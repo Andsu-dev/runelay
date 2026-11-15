@@ -1,0 +1,25 @@
+# runelay
+
+> runelay is an open-source, self-hosted MCP gateway. It gives Claude Code, Codex, Cursor, Grok and any MCP client the same connected accounts, skills and shared memory through one endpoint (`/v1/mcp`). It runs as a desktop app (Mac, Windows, Linux) or as one Docker container with SQLite. MIT licensed, free, no third-party cloud.
+
+## Get started
+
+- [Download the desktop app](https://bot.runelay.com/download/): Mac (Apple silicon and Intel), Windows and Linux AppImage. Runs the server on `127.0.0.1:4312`.
+- [Set up step by step](https://bot.runelay.com/setup/): install the server with `curl -fsSL bot.runelay.com/install | sh`, then the CLI with `curl -fsSL bot.runelay.com/cli | sh`, then `runelay login`, `runelay migrate` and `runelay connect`.
+- [Agent setup prompt](https://bot.runelay.com/setup/): a ready prompt that lets an agent install and connect runelay for you.
+
+## Docs
+
+- [README](https://raw.githubusercontent.com/Andsu-dev/runelay/main/README.md): full documentation, configuration, environment variables, security model, MCP tools and REST API.
+- [Changelog](https://raw.githubusercontent.com/Andsu-dev/runelay/main/CHANGELOG.md): what changed in each release.
+- [Releases](https://github.com/Andsu-dev/runelay/releases): installers, CLI binaries and `compose.yaml`.
+
+## MCP tools
+
+- `list_connections`, `search_tools`, `call_tool`, `execute`: find and call tools from every connected account; `execute` chains calls in a sandboxed JavaScript runtime.
+- `search_context`, `read_memory`, `write_memory`, `read_skill`, `read_skill_file`: shared memory and skills across agents.
+
+## Optional
+
+- [Source code](https://github.com/Andsu-dev/runelay): Bun, Hono, SQLite, React.
+- [Página em português](https://bot.runelay.com/pt-br/)

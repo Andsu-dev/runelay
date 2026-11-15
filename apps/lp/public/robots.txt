@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bot.runelay.com/sitemap.xml
