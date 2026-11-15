@@ -13,8 +13,8 @@ import { auth } from "@/modules/auth/lib/better-auth";
 import {
   deleteOrganizationRows,
   findMembership,
-  hasStrandedMember,
   listMemberships,
+  listStrandedMembers,
   slugTaken,
   updateOrganizationRow,
 } from "@/modules/auth/repositories/membership.repository";
@@ -80,9 +80,10 @@ export const removeOrganization = async (user: AuthUser, organizationId: string)
   const membership = findMembership(user.id, organizationId);
   if (membership.error) return membership;
   if (membership.data?.role !== "owner") return fail("FORBIDDEN");
-  const stranded = hasStrandedMember(organizationId);
+  const stranded = listStrandedMembers(organizationId);
   if (stranded.error) return stranded;
-  if (stranded.data) return fail("LAST_ORGANIZATION");
+  if (stranded.data.includes(user.id)) return fail("LAST_ORGANIZATION");
+  if (stranded.data.length > 0) return fail("MEMBERS_WITHOUT_ORGANIZATION");
   const sources = listSources(organizationId);
   if (sources.error) return sources;
   await Promise.all(sources.data.map((source) => disconnectSource({ organizationId, name: source.name })));

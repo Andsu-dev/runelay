@@ -97,21 +97,19 @@ export const updateOrganizationRow = (organizationId: string, patch: UpdateOrgan
     return null;
   }, "STORAGE_FAILED");
 
-export const hasStrandedMember = (organizationId: string): Result<boolean> => {
-  const row = attemptSync(
+export const listStrandedMembers = (organizationId: string): Result<string[]> =>
+  attemptSync(
     () =>
       db
         .query<{ userId: string }, [string]>(
           `SELECT m.userId FROM member m
            WHERE m.organizationId = ?1
-             AND NOT EXISTS (SELECT 1 FROM member o WHERE o.userId = m.userId AND o.organizationId != ?1)
-           LIMIT 1`,
+             AND NOT EXISTS (SELECT 1 FROM member o WHERE o.userId = m.userId AND o.organizationId != ?1)`,
         )
-        .get(organizationId),
+        .all(organizationId)
+        .map((row) => row.userId),
     "STORAGE_FAILED",
   );
-  return row.error ? row : ok(row.data !== null);
-};
 
 export const deleteOrganizationRows = (organizationId: string): Result<null> =>
   attemptSync(

@@ -8,7 +8,11 @@ export const ERROR_CATALOG = {
   SOURCE_NOT_FOUND: { status: 404, message: "Conexão não encontrada." },
   ORGANIZATION_REQUIRED: { status: 403, message: "Escolha uma organização para continuar." },
   FORBIDDEN: { status: 403, message: "Você não tem acesso a esta organização." },
-  LAST_ORGANIZATION: { status: 409, message: "Não dá para excluir a única organização de um membro." },
+  LAST_ORGANIZATION: { status: 409, message: "Esta é a sua única organização." },
+  MEMBERS_WITHOUT_ORGANIZATION: {
+    status: 409,
+    message: "Alguns membros não têm outra organização. Remova-os antes de excluir.",
+  },
   MEMORY_NOT_FOUND: { status: 404, message: "Memória não encontrada." },
   SKILL_NOT_FOUND: { status: 404, message: "Habilidade não encontrada." },
   SKILL_FILE_NOT_FOUND: { status: 404, message: "Arquivo da habilidade não encontrado." },

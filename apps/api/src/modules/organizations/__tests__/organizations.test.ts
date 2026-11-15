@@ -241,3 +241,17 @@ test("refuses to delete the only organization of a member", async () => {
   expect(response.status).toBe(409);
   expect((await body(response)).error?.code).toBe("LAST_ORGANIZATION");
 });
+
+test("refuses to delete when another member has no other organization", async () => {
+  const owner = await signUp("Dona sozinha");
+  const team = await createTeam(owner);
+  db.query("INSERT INTO member (id, organizationId, userId, role, createdAt) VALUES (?, ?, ?, 'member', ?)").run(
+    crypto.randomUUID(),
+    team.id,
+    crypto.randomUUID(),
+    new Date().toISOString(),
+  );
+  const response = await call(`/v1/organizations/${team.id}`, { method: "DELETE", cookie: owner.cookie });
+  expect(response.status).toBe(409);
+  expect((await body(response)).error?.code).toBe("MEMBERS_WITHOUT_ORGANIZATION");
+});
