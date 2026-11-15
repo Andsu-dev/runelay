@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Open-source, self-hosted Composio alternative · runelay</title>
+    <meta name="description" content="runelay is a free, open-source, self-hosted alternative to Composio for AI agents: OAuth tokens on your own server, no per-seat price, shared memory and skills across Claude Code, Codex and Cursor." />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="runelay" />
+    <meta property="og:title" content="Open-source, self-hosted Composio alternative · runelay" />
+    <meta property="og:description" content="runelay is a free, open-source, self-hosted alternative to Composio for AI agents: OAuth tokens on your own server, no per-seat price, shared memory and skills across Claude Code, Codex and Cursor." />
+    <meta property="og:url" content="https://runelay.com/composio-alternative/" />
+    <meta property="og:image" content="https://runelay.com/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@andersonbrdev" />
+    <meta name="twitter:image" content="https://runelay.com/og.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="canonical" href="https://runelay.com/composio-alternative/" />
+    <link rel="alternate" hreflang="en" href="https://runelay.com/composio-alternative/" />
+    <link rel="alternate" hreflang="pt-BR" href="https://runelay.com/pt-br/composio-alternative/" />
+    <link rel="alternate" hreflang="x-default" href="https://runelay.com/composio-alternative/" />
+    <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is runelay really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. It is MIT licensed, self-hosted and has no paid tier, seat price or call limit."}},{"@type":"Question","name":"Can I self-host Composio instead?","acceptedAnswer":{"@type":"Answer","text":"Self-hosting Composio is an Enterprise arrangement. runelay is built to be self-hosted from day one: one desktop app or one Docker container with SQLite."}},{"@type":"Question","name":"Does runelay have as many integrations?","acceptedAnswer":{"@type":"Answer","text":"No. It ships around 25 curated MCP servers with one-click OAuth, and adds anything else through a remote MCP, a local MCP or an OpenAPI spec."}},{"@type":"Question","name":"Where are my OAuth tokens stored?","acceptedAnswer":{"@type":"Answer","text":"On your server only, encrypted with AES-256-GCM using your RUNELAY_SECRET."}}]}</script>
+    <script>document.documentElement.classList.add("js");</script>
+    <script type="module" src="/main.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/"><img src="/favicon.svg" width="36" height="36" alt="" />runelay</a>
+      <nav class="nav-links" aria-label="Main"><a href="/setup/" class="nav-secondary">Setup</a><a href="/#about" class="nav-secondary">About</a><a href="/benchmark/" class="nav-secondary">Benchmark</a><a href="/download/">Download</a>
+      <a class="button-solid small" href="https://github.com/Andsu-dev/runelay"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.6 18.3 5 18.3 5c.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"/></svg>GitHub</a></nav>
+    </header>
+
+    <main class="page guide">
+      <section class="hero">
+        <h1 data-reveal>The open-source, self-hosted Composio alternative</h1>
+        <p class="lead" data-reveal>Composio is a solid managed platform. If you would rather keep OAuth tokens on your own server, pay nothing per seat and share memory across agents, runelay is the shortcut.</p>
+      </section>
+
+      <section>
+        <h2 data-reveal>runelay vs Composio at a glance</h2>
+        <div class="compare" data-reveal><table><thead><tr><th></th><th class="us"><span class="vendor"><img src="/favicon.svg" alt="" />runelay</span></th><th><span class="vendor"><img src="/logos/composio.png" width="20" height="20" alt="" loading="lazy" decoding="async" />Composio</span></th></tr></thead><tbody><tr><th>Runs on</th><td class="us">Your computer or server</td><td>Composio’s cloud</td></tr><tr><th>Self-hosting</th><td class="us">Free, one container</td><td>Enterprise arrangement</td></tr><tr><th>Price</th><td class="us">Free, MIT</td><td>$18 per seat</td></tr><tr><th>Where tokens live</th><td class="us">Your server, your key</td><td>Composio’s cloud</td></tr><tr><th>Open source</th><td class="us"><span class="yes">✓</span></td><td><span class="no">—</span></td></tr><tr><th>Memory across agents</th><td class="us"><span class="yes">✓</span></td><td><span class="no">—</span></td></tr><tr><th>Skills served to agents</th><td class="us"><span class="yes">✓</span></td><td><span class="no">—</span></td></tr><tr><th>Imports your agent setup</th><td class="us"><span class="yes">✓</span></td><td><span class="no">—</span></td></tr><tr><th>Integrations</th><td class="us">~25 curated + any MCP or OpenAPI</td><td>Large managed catalog</td></tr></tbody></table></div>
+      </section>
+
+      <section>
+        <h2 data-reveal>When runelay is the better fit</h2>
+        <ul class="todo"><li data-reveal><span class="check" aria-hidden="true"></span><span><strong>Your own agents.</strong> Claude Code, Codex, Cursor and Grok sharing the same accounts, skills and memory.</span></li><li data-reveal><span class="check" aria-hidden="true"></span><span><strong>Data that cannot leave.</strong> Tokens and audit log stay on infrastructure you control.</span></li><li data-reveal><span class="check" aria-hidden="true"></span><span><strong>No budget line.</strong> No seats to count and no call limits.</span></li><li data-reveal><span class="check" aria-hidden="true"></span><span><strong>Low context cost.</strong> 1,045 tokens at connect for 125 tools. <a href="/benchmark/">See the benchmark</a>.</span></li></ul>
+      </section>
+
+      <section>
+        <h2 data-reveal>When Composio is the better fit</h2>
+        <p data-reveal>Pick Composio if you want a large catalog of integrations managed for you, you are building a product that authenticates your own end users, or you do not want to run anything at all. Different jobs, both good tools.</p>
+      </section>
+
+      <section>
+        <h2 data-reveal>Switching takes a few minutes</h2>
+        <ol class="steps"><li data-reveal><span class="step-number" aria-hidden="true">1</span><h3>Install runelay</h3><p>On your computer or on any server with Docker.</p><div class="cmd"><code><span class="prompt">$</span>curl -fsSL runelay.com/install | sh</code><button class="copy" type="button" data-copy="curl -fsSL runelay.com/install | sh" data-copied="Copied">Copy</button></div></li><li data-reveal><span class="step-number" aria-hidden="true">2</span><h3>Import what your agents already have</h3><p>Accounts they were logged into arrive connected, the rest go into one reconnect queue.</p><div class="cmd"><code><span class="prompt">$</span>runelay migrate</code><button class="copy" type="button" data-copy="runelay migrate" data-copied="Copied">Copy</button></div></li><li data-reveal><span class="step-number" aria-hidden="true">3</span><h3>Keep a Composio endpoint during the move</h3><p>runelay accepts any remote MCP URL, so a Composio endpoint can sit behind it until you replace it.</p></li></ol>
+      </section>
+
+      <section class="faq">
+        <h2 data-reveal>Questions</h2>
+        <details data-reveal>
+          <summary>Is runelay really free?<svg class="chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer"><p>Yes. It is MIT licensed, self-hosted and has no paid tier, seat price or call limit.</p></div>
+        </details>
+        <details data-reveal>
+          <summary>Can I self-host Composio instead?<svg class="chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer"><p>Self-hosting Composio is an Enterprise arrangement. runelay is built to be self-hosted from day one: one desktop app or one Docker container with SQLite.</p></div>
+        </details>
+        <details data-reveal>
+          <summary>Does runelay have as many integrations?<svg class="chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer"><p>No. It ships around 25 curated MCP servers with one-click OAuth, and adds anything else through a remote MCP, a local MCP or an OpenAPI spec.</p></div>
+        </details>
+        <details data-reveal>
+          <summary>Where are my OAuth tokens stored?<svg class="chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer"><p>On your server only, encrypted with AES-256-GCM using your <code>RUNELAY_SECRET</code>.</p></div>
+        </details>
+      </section>
+
+      <section>
+        <div class="bench-cta" data-reveal>
+          <strong>Try it on your machine</strong>
+          <span class="cta"><a class="button-solid small" href="/download/"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M8 2.5v8m0 0 3-3m-3 3-3-3M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Download runelay</a><a class="button-dashed small" href="/setup/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" d="M4.5 4.5h15a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1Zm0 9h15a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1ZM7 7.5h.01M7 16.5h.01"/></svg>Install on your server</a></span>
+        </div>
+        <nav class="related" aria-label="Keep reading" data-reveal><span>Keep reading</span><a href="/self-hosted-mcp-gateway/">Self-hosted MCP gateway guide →</a><a href="/mcp-gateway-vs-mcp-server/">MCP gateway vs MCP server →</a></nav>
+      </section>
+    </main>
+    <footer class="footer">
+      <span>MIT · runelay</span>
+      <nav class="lang" aria-label="Language">
+        <a href="/composio-alternative/" hreflang="en" aria-label="English" title="English" aria-current="page">🇺🇸</a>
+        <a href="/pt-br/composio-alternative/" hreflang="pt-BR" aria-label="Português" title="Português">🇧🇷</a>
+      </nav>
+    </footer>
+  </body>
+</html>

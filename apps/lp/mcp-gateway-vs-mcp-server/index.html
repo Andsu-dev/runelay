@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>MCP gateway vs MCP server: the difference · runelay</title>
+    <meta name="description" content="An MCP server exposes the tools of one app. An MCP gateway sits in front of many servers so your agents connect once. Context cost, credentials, security and when you need each." />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="runelay" />
+    <meta property="og:title" content="MCP gateway vs MCP server: the difference · runelay" />
+    <meta property="og:description" content="An MCP server exposes the tools of one app. An MCP gateway sits in front of many servers so your agents connect once. Context cost, credentials, security and when you need each." />
+    <meta property="og:url" content="https://runelay.com/mcp-gateway-vs-mcp-server/" />
+    <meta property="og:image" content="https://runelay.com/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@andersonbrdev" />
+    <meta name="twitter:image" content="https://runelay.com/og.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="canonical" href="https://runelay.com/mcp-gateway-vs-mcp-server/" />
+    <link rel="alternate" hreflang="en" href="https://runelay.com/mcp-gateway-vs-mcp-server/" />
+    <link rel="alternate" hreflang="pt-BR" href="https://runelay.com/pt-br/mcp-gateway-vs-mcp-server/" />
+    <link rel="alternate" hreflang="x-default" href="https://runelay.com/mcp-gateway-vs-mcp-server/" />
+    <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is an MCP gateway also an MCP server?","acceptedAnswer":{"@type":"Answer","text":"Yes. It speaks MCP to your agents and acts as an MCP client to the servers behind it."}},{"@type":"Question","name":"Does a gateway add latency?","acceptedAnswer":{"@type":"Answer","text":"Barely. A tool call through runelay takes 6.6 ms median on localhost, on top of the upstream server’s own time."}},{"@type":"Question","name":"Can a gateway run local stdio MCP servers?","acceptedAnswer":{"@type":"Answer","text":"Yes. runelay runs local MCP servers next to remote ones and OpenAPI specs."}},{"@type":"Question","name":"Do I have to change my agents?","acceptedAnswer":{"@type":"Answer","text":"No. Point them at one endpoint, /v1/mcp, with their own key. runelay connect does it for you."}}]}</script>
+    <script>document.documentElement.classList.add("js");</script>
+    <script type="module" src="/main.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/"><img src="/favicon.svg" width="36" height="36" alt="" />runelay</a>
+      <nav class="nav-links" aria-label="Main"><a href="/setup/" class="nav-secondary">Setup</a><a href="/#about" class="nav-secondary">About</a><a href="/benchmark/" class="nav-secondary">Benchmark</a><a href="/download/">Download</a>
+      <a class="button-solid small" href="https://github.com/Andsu-dev/runelay"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.6 18.3 5 18.3 5c.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"/></svg>GitHub</a></nav>
+    </header>
+
+    <main class="page guide">
+      <section class="hero">
+        <h1 data-reveal>MCP gateway vs MCP server</h1>
+        <p class="lead" data-reveal>An MCP server exposes the tools of one app. An MCP gateway sits in front of many servers so every agent connects once. Here is when you need each.</p>
+      </section>
+
+      <section>
+        <h2 data-reveal>The short version</h2>
+        <div class="compare" data-reveal><table><thead><tr><th></th><th class="us">MCP gateway</th><th>MCP server</th></tr></thead><tbody><tr><th>What it is</th><td class="us">One endpoint in front of many servers</td><td>Tools of one app, like GitHub</td></tr><tr><th>Agents connect</th><td class="us">Once</td><td>Once per server, per agent</td></tr><tr><th>Context at connect</th><td class="us">A few tools, 1,045 tokens for 125</td><td>Every schema, 3,548 for GitHub alone</td></tr><tr><th>Credentials</th><td class="us">Stored once, encrypted</td><td>Set up in every client</td></tr><tr><th>Revoking one agent</th><td class="us">Revoke its key</td><td>Rotate every credential</td></tr><tr><th>Audit</th><td class="us">Every call in one log</td><td>Per server, if any</td></tr><tr><th>Examples</th><td class="us">runelay, Executor, Composio</td><td>GitHub, Linear, Notion MCP</td></tr></tbody></table></div>
+      </section>
+
+      <section>
+        <h2 data-reveal>How they fit together</h2>
+        <p data-reveal>A gateway does not replace MCP servers, it is built on them. To your agent it is one MCP server. Behind it, it acts as a client to every upstream server, OpenAPI spec or local process you connect, and keeps their credentials.</p>
+        <p data-reveal>In runelay the agent sees <code>search_tools</code>, <code>call_tool</code> and <code>execute</code> to find and chain calls, plus <code>search_context</code>, <code>read_memory</code> and <code>read_skill</code> for shared context. Schemas load only for the tools it actually uses.</p>
+      </section>
+
+      <section>
+        <h2 data-reveal>One MCP server is enough when</h2>
+        <ul class="todo"><li data-reveal><span class="check" aria-hidden="true"></span><span><strong>You use one agent</strong> and one or two apps.</span></li><li data-reveal><span class="check" aria-hidden="true"></span><span><strong>Context is not tight.</strong> A single server adds a few thousand tokens and that is fine.</span></li><li data-reveal><span class="check" aria-hidden="true"></span><span><strong>Logging in again is no big deal</strong> when you switch tools.</span></li></ul>
+      </section>
+
+      <section>
+        <h2 data-reveal>You need a gateway when</h2>
+        <ul class="todo"><li data-reveal><span class="check" aria-hidden="true"></span><span><strong>You run several agents.</strong> Claude Code, Codex and Cursor should see the same accounts.</span></li><li data-reveal><span class="check" aria-hidden="true"></span><span><strong>You connect many apps.</strong> Eleven servers direct cost 44,434 tokens at connect, 42x more than through runelay.</span></li><li data-reveal><span class="check" aria-hidden="true"></span><span><strong>Security matters.</strong> One key per agent, encrypted tokens and one audit log.</span></li><li data-reveal><span class="check" aria-hidden="true"></span><span><strong>Context should travel.</strong> Memory and skills shared across every agent.</span></li></ul>
+      </section>
+
+      <section class="faq">
+        <h2 data-reveal>Questions</h2>
+        <details data-reveal>
+          <summary>Is an MCP gateway also an MCP server?<svg class="chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer"><p>Yes. It speaks MCP to your agents and acts as an MCP client to the servers behind it.</p></div>
+        </details>
+        <details data-reveal>
+          <summary>Does a gateway add latency?<svg class="chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer"><p>Barely. A tool call through runelay takes 6.6 ms median on localhost, on top of the upstream server’s own time.</p></div>
+        </details>
+        <details data-reveal>
+          <summary>Can a gateway run local stdio MCP servers?<svg class="chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer"><p>Yes. runelay runs local MCP servers next to remote ones and OpenAPI specs.</p></div>
+        </details>
+        <details data-reveal>
+          <summary>Do I have to change my agents?<svg class="chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer"><p>No. Point them at one endpoint, <code>/v1/mcp</code>, with their own key. <code>runelay connect</code> does it for you.</p></div>
+        </details>
+      </section>
+
+      <section>
+        <div class="bench-cta" data-reveal>
+          <strong>Try it on your machine</strong>
+          <span class="cta"><a class="button-solid small" href="/download/"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M8 2.5v8m0 0 3-3m-3 3-3-3M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Download runelay</a><a class="button-dashed small" href="/setup/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" d="M4.5 4.5h15a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1Zm0 9h15a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1ZM7 7.5h.01M7 16.5h.01"/></svg>Install on your server</a></span>
+        </div>
+        <nav class="related" aria-label="Keep reading" data-reveal><span>Keep reading</span><a href="/self-hosted-mcp-gateway/">Self-hosted MCP gateway guide →</a><a href="/composio-alternative/">Composio alternative →</a></nav>
+      </section>
+    </main>
+    <footer class="footer">
+      <span>MIT · runelay</span>
+      <nav class="lang" aria-label="Language">
+        <a href="/mcp-gateway-vs-mcp-server/" hreflang="en" aria-label="English" title="English" aria-current="page">🇺🇸</a>
+        <a href="/pt-br/mcp-gateway-vs-mcp-server/" hreflang="pt-BR" aria-label="Português" title="Português">🇧🇷</a>
+      </nav>
+    </footer>
+  </body>
+</html>

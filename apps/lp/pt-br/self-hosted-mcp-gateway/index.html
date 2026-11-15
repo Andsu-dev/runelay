@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>MCP gateway self-hosted: o guia prático · runelay</title>
+    <meta name="description" content="O que é um MCP gateway self-hosted, por que ele ganha de ligar cada agente em cada servidor MCP, o que conferir antes de escolher e como rodar o runelay na sua máquina ou servidor em um minuto." />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="runelay" />
+    <meta property="og:title" content="MCP gateway self-hosted: o guia prático · runelay" />
+    <meta property="og:description" content="O que é um MCP gateway self-hosted, por que ele ganha de ligar cada agente em cada servidor MCP, o que conferir antes de escolher e como rodar o runelay na sua máquina ou servidor em um minuto." />
+    <meta property="og:url" content="https://runelay.com/pt-br/self-hosted-mcp-gateway/" />
+    <meta property="og:image" content="https://runelay.com/og-pt.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@andersonbrdev" />
+    <meta name="twitter:image" content="https://runelay.com/og-pt.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="canonical" href="https://runelay.com/pt-br/self-hosted-mcp-gateway/" />
+    <link rel="alternate" hreflang="en" href="https://runelay.com/self-hosted-mcp-gateway/" />
+    <link rel="alternate" hreflang="pt-BR" href="https://runelay.com/pt-br/self-hosted-mcp-gateway/" />
+    <link rel="alternate" hreflang="x-default" href="https://runelay.com/self-hosted-mcp-gateway/" />
+    <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Preciso de servidor para ter um MCP gateway self-hosted?","acceptedAnswer":{"@type":"Answer","text":"Não. O app de desktop roda o runelay no seu computador em 127.0.0.1:4312. Servidor com Docker faz sentido quando você quer ele sempre ligado, para toda máquina que usa."}},{"@type":"Question","name":"O runelay roda algum modelo?","acceptedAnswer":{"@type":"Answer","text":"Não. Quem pensa é o seu agente. O runelay é onde ele encontra tools, skills e memória."}},{"@type":"Question","name":"Quais agentes podem usar?","acceptedAnswer":{"@type":"Answer","text":"Qualquer cliente MCP: Claude Code, Codex, Cursor, Grok, Antigravity e outros. Todos apontam para o mesmo endpoint /v1/mcp."}},{"@type":"Question","name":"E se eu perder o RUNELAY_SECRET?","acceptedAnswer":{"@type":"Answer","text":"Ele criptografa conexões, tokens OAuth e chaves. Sem ele você reconecta tudo, então faça backup do ~/runelay/.env."}}]}</script>
+    <script>document.documentElement.classList.add("js");</script>
+    <script type="module" src="/main.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/pt-br/"><img src="/favicon.svg" width="36" height="36" alt="" />runelay</a>
+      <nav class="nav-links" aria-label="Principal"><a href="/pt-br/setup/" class="nav-secondary">Setup</a><a href="/pt-br/#sobre" class="nav-secondary">Sobre</a><a href="/pt-br/benchmark/" class="nav-secondary">Benchmark</a><a href="/pt-br/download/">Baixar</a>
+      <a class="button-solid small" href="https://github.com/Andsu-dev/runelay"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.6 18.3 5 18.3 5c.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"/></svg>GitHub</a></nav>
+    </header>
+
+    <main class="page guide">
+      <section class="hero">
+        <h1 data-reveal>MCP gateway self-hosted, o guia prático</h1>
+        <p class="lead" data-reveal>Um endpoint MCP no seu computador ou servidor, na frente de toda conta, skill e memória que seus agentes usam. O que é, quando você precisa e como rodar um.</p>
+      </section>
+
+      <section>
+        <h2 data-reveal>O que um MCP gateway faz</h2>
+        <p data-reveal>Sem gateway, cada agente se conecta sozinho a cada servidor MCP. Cada servidor manda a lista inteira de tools na conexão, então 11 servidores custam <strong>44.434 tokens</strong> antes do primeiro prompt, e você faz login no Linear uma vez por agente.</p>
+        <p data-reveal>O gateway fica no meio. Seus agentes conectam uma vez, o gateway guarda as credenciais e, em vez de 125 schemas, expõe poucas tools para buscar e chamar sob demanda. No runelay isso dá <strong>1.045 tokens</strong> na conexão, <a href="/pt-br/benchmark/">medido</a>.</p>
+      </section>
+
+      <section>
+        <h2 data-reveal>Por que hospedar você mesmo</h2>
+        <ul class="todo"><li data-reveal><span class="check" aria-hidden="true"></span><span><strong>Os tokens ficam com você.</strong> Tokens OAuth e chaves de API moram no seu servidor, criptografados com AES-256-GCM e uma chave que só você tem.</span></li><li data-reveal><span class="check" aria-hidden="true"></span><span><strong>Sem preço por assento.</strong> Sem limite de chamadas e sem plano para estourar. O runelay é MIT e gratuito.</span></li><li data-reveal><span class="check" aria-hidden="true"></span><span><strong>Local primeiro.</strong> Roda em <code>127.0.0.1</code> como app de desktop, ou em qualquer servidor com Docker.</span></li><li data-reveal><span class="check" aria-hidden="true"></span><span><strong>Toda chamada auditada.</strong> Um log para todos os agentes, uma chave por agente, revoga uma sem mexer nas outras.</span></li><li data-reveal><span class="check" aria-hidden="true"></span><span><strong>Código que você lê.</strong> Bun, Hono e SQLite num repositório só.</span></li></ul>
+      </section>
+
+      <section>
+        <h2 data-reveal>O que conferir antes de escolher</h2>
+        <ul class="todo"><li data-reveal><span class="check" aria-hidden="true"></span><span>OAuth em um clique para os apps que você usa de verdade, mais MCP remoto, MCP local e specs OpenAPI.</span></li><li data-reveal><span class="check" aria-hidden="true"></span><span>Pouco contexto na conexão, com schemas carregados só quando precisa.</span></li><li data-reveal><span class="check" aria-hidden="true"></span><span>Criptografia em repouso para conexões e chaves, e proteção contra requisições a endereços privados.</span></li><li data-reveal><span class="check" aria-hidden="true"></span><span>Uma chave por agente, para uma chave vazada ficar a um clique de ser revogada.</span></li><li data-reveal><span class="check" aria-hidden="true"></span><span>Um jeito de importar o que seus agentes já têm em vez de começar do zero.</span></li></ul>
+      </section>
+
+      <section>
+        <h2 data-reveal>Rode o runelay em um minuto</h2>
+        <ol class="steps"><li data-reveal><span class="step-number" aria-hidden="true">1</span><h3>Instale o servidor</h3><p>Em qualquer máquina com Docker. Ele mostra um link de primeiro acesso para criar a conta dona.</p><div class="cmd"><code><span class="prompt">$</span>curl -fsSL runelay.com/install | sh</code><button class="copy" type="button" data-copy="curl -fsSL runelay.com/install | sh" data-copied="Copiado">Copiar</button></div></li><li data-reveal><span class="step-number" aria-hidden="true">2</span><h3>Instale a CLI</h3><p>No seu computador, depois aprove o código de login no navegador.</p><div class="cmd"><code><span class="prompt">$</span>curl -fsSL runelay.com/cli | sh &amp;&amp; runelay login</code><button class="copy" type="button" data-copy="curl -fsSL runelay.com/cli | sh &amp;&amp; runelay login" data-copied="Copiado">Copiar</button></div></li><li data-reveal><span class="step-number" aria-hidden="true">3</span><h3>Traga o que você tem e conecte os agentes</h3><p>O <code>migrate</code> importa servidores MCP, memórias, skills e instruções do Claude Code, Codex, Cursor e Grok.</p><div class="cmd"><code><span class="prompt">$</span>runelay migrate &amp;&amp; runelay connect</code><button class="copy" type="button" data-copy="runelay migrate &amp;&amp; runelay connect" data-copied="Copiado">Copiar</button></div></li></ol>
+        <div class="callout" data-reveal><span class="callout-icon" aria-hidden="true">💡</span><p>Sem servidor? <a href="/pt-br/download/">Baixe o app de desktop</a> para Mac, Windows ou Linux. Ele roda o mesmo gateway no seu computador, sem Docker.</p></div>
+      </section>
+
+      <section class="faq">
+        <h2 data-reveal>Perguntas</h2>
+        <details data-reveal>
+          <summary>Preciso de servidor para ter um MCP gateway self-hosted?<svg class="chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer"><p>Não. O app de desktop roda o runelay no seu computador em <code>127.0.0.1:4312</code>. Servidor com Docker faz sentido quando você quer ele sempre ligado, para toda máquina que usa.</p></div>
+        </details>
+        <details data-reveal>
+          <summary>O runelay roda algum modelo?<svg class="chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer"><p>Não. Quem pensa é o seu agente. O runelay é onde ele encontra tools, skills e memória.</p></div>
+        </details>
+        <details data-reveal>
+          <summary>Quais agentes podem usar?<svg class="chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer"><p>Qualquer cliente MCP: Claude Code, Codex, Cursor, Grok, Antigravity e outros. Todos apontam para o mesmo endpoint <code>/v1/mcp</code>.</p></div>
+        </details>
+        <details data-reveal>
+          <summary>E se eu perder o RUNELAY_SECRET?<svg class="chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer"><p>Ele criptografa conexões, tokens OAuth e chaves. Sem ele você reconecta tudo, então faça backup do <code>~/runelay/.env</code>.</p></div>
+        </details>
+      </section>
+
+      <section>
+        <div class="bench-cta" data-reveal>
+          <strong>Teste na sua máquina</strong>
+          <span class="cta"><a class="button-solid small" href="/pt-br/download/"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M8 2.5v8m0 0 3-3m-3 3-3-3M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Baixar o runelay</a><a class="button-dashed small" href="/pt-br/setup/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" d="M4.5 4.5h15a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1Zm0 9h15a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1ZM7 7.5h.01M7 16.5h.01"/></svg>Instalar no seu servidor</a></span>
+        </div>
+        <nav class="related" aria-label="Continue lendo" data-reveal><span>Continue lendo</span><a href="/pt-br/composio-alternative/">Alternativa ao Composio →</a><a href="/pt-br/mcp-gateway-vs-mcp-server/">MCP gateway vs MCP server →</a></nav>
+      </section>
+    </main>
+    <footer class="footer">
+      <span>MIT · runelay</span>
+      <nav class="lang" aria-label="Idioma">
+        <a href="/self-hosted-mcp-gateway/" hreflang="en" aria-label="English" title="English">🇺🇸</a>
+        <a href="/pt-br/self-hosted-mcp-gateway/" hreflang="pt-BR" aria-label="Português" title="Português" aria-current="page">🇧🇷</a>
+      </nav>
+    </footer>
+  </body>
+</html>

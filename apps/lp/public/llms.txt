@@ -10,7 +10,13 @@
 
 ## Benchmark
 
-- [runelay vs Executor, measured](https://runelay.com/benchmark/): same 11 MCP servers (125 tools), self-hosted Docker. runelay uses 1,045 context tokens at connect vs 2,729, tool calls are 10x faster (6.6 ms vs 68 ms median), search is 60x faster, idle RAM is 8.4x lower. Executor has the smaller image.
+- [runelay vs Executor, measured](https://runelay.com/benchmark/): same 11 MCP servers (125 tools), self-hosted Docker. runelay uses 1,045 context tokens at connect vs 2,729, tool calls are 10x faster (6.6 ms vs 68 ms median), search is 60x faster, idle RAM is 8.4x lower. Since runelay 0.3.3 the Docker image is a 66 MB download vs 80 MB for Executor.
+
+## Guides
+
+- [Self-hosted MCP gateway, the practical guide](https://runelay.com/self-hosted-mcp-gateway/): what an MCP gateway does, why self-host it, what to check before picking one and how to run runelay in a minute.
+- [Open-source, self-hosted Composio alternative](https://runelay.com/composio-alternative/): runelay vs Composio side by side, when each one fits and how to switch with `runelay migrate`.
+- [MCP gateway vs MCP server](https://runelay.com/mcp-gateway-vs-mcp-server/): the difference in context cost, credentials, revocation and audit, and when you need a gateway.
 
 ## Docs
 

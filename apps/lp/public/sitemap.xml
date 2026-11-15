@@ -48,4 +48,40 @@
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://runelay.com/pt-br/benchmark/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://runelay.com/benchmark/" />
   </url>
+  <url>
+    <loc>https://runelay.com/self-hosted-mcp-gateway/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://runelay.com/self-hosted-mcp-gateway/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://runelay.com/pt-br/self-hosted-mcp-gateway/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://runelay.com/self-hosted-mcp-gateway/" />
+  </url>
+  <url>
+    <loc>https://runelay.com/pt-br/self-hosted-mcp-gateway/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://runelay.com/self-hosted-mcp-gateway/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://runelay.com/pt-br/self-hosted-mcp-gateway/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://runelay.com/self-hosted-mcp-gateway/" />
+  </url>
+  <url>
+    <loc>https://runelay.com/composio-alternative/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://runelay.com/composio-alternative/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://runelay.com/pt-br/composio-alternative/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://runelay.com/composio-alternative/" />
+  </url>
+  <url>
+    <loc>https://runelay.com/pt-br/composio-alternative/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://runelay.com/composio-alternative/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://runelay.com/pt-br/composio-alternative/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://runelay.com/composio-alternative/" />
+  </url>
+  <url>
+    <loc>https://runelay.com/mcp-gateway-vs-mcp-server/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://runelay.com/mcp-gateway-vs-mcp-server/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://runelay.com/pt-br/mcp-gateway-vs-mcp-server/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://runelay.com/mcp-gateway-vs-mcp-server/" />
+  </url>
+  <url>
+    <loc>https://runelay.com/pt-br/mcp-gateway-vs-mcp-server/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://runelay.com/mcp-gateway-vs-mcp-server/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://runelay.com/pt-br/mcp-gateway-vs-mcp-server/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://runelay.com/mcp-gateway-vs-mcp-server/" />
+  </url>
 </urlset>

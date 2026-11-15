@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>MCP gateway vs MCP server: a diferença · runelay</title>
+    <meta name="description" content="Um MCP server expõe as tools de um app. Um MCP gateway fica na frente de vários servidores para seus agentes conectarem uma vez só. Custo de contexto, credenciais, segurança e quando usar cada um." />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="runelay" />
+    <meta property="og:title" content="MCP gateway vs MCP server: a diferença · runelay" />
+    <meta property="og:description" content="Um MCP server expõe as tools de um app. Um MCP gateway fica na frente de vários servidores para seus agentes conectarem uma vez só. Custo de contexto, credenciais, segurança e quando usar cada um." />
+    <meta property="og:url" content="https://runelay.com/pt-br/mcp-gateway-vs-mcp-server/" />
+    <meta property="og:image" content="https://runelay.com/og-pt.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@andersonbrdev" />
+    <meta name="twitter:image" content="https://runelay.com/og-pt.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="canonical" href="https://runelay.com/pt-br/mcp-gateway-vs-mcp-server/" />
+    <link rel="alternate" hreflang="en" href="https://runelay.com/mcp-gateway-vs-mcp-server/" />
+    <link rel="alternate" hreflang="pt-BR" href="https://runelay.com/pt-br/mcp-gateway-vs-mcp-server/" />
+    <link rel="alternate" hreflang="x-default" href="https://runelay.com/mcp-gateway-vs-mcp-server/" />
+    <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Um MCP gateway também é um MCP server?","acceptedAnswer":{"@type":"Answer","text":"Sim. Ele fala MCP com seus agentes e age como cliente MCP dos servidores que estão atrás dele."}},{"@type":"Question","name":"O gateway adiciona latência?","acceptedAnswer":{"@type":"Answer","text":"Quase nada. Uma chamada pelo runelay leva 6,6 ms de mediana em localhost, somada ao tempo do próprio servidor de origem."}},{"@type":"Question","name":"Um gateway roda servidores MCP locais (stdio)?","acceptedAnswer":{"@type":"Answer","text":"Sim. O runelay roda MCP local ao lado de MCP remoto e specs OpenAPI."}},{"@type":"Question","name":"Preciso mudar meus agentes?","acceptedAnswer":{"@type":"Answer","text":"Não. Aponte para um endpoint, /v1/mcp, cada um com a sua chave. O runelay connect faz isso por você."}}]}</script>
+    <script>document.documentElement.classList.add("js");</script>
+    <script type="module" src="/main.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/pt-br/"><img src="/favicon.svg" width="36" height="36" alt="" />runelay</a>
+      <nav class="nav-links" aria-label="Principal"><a href="/pt-br/setup/" class="nav-secondary">Setup</a><a href="/pt-br/#sobre" class="nav-secondary">Sobre</a><a href="/pt-br/benchmark/" class="nav-secondary">Benchmark</a><a href="/pt-br/download/">Baixar</a>
+      <a class="button-solid small" href="https://github.com/Andsu-dev/runelay"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.6 18.3 5 18.3 5c.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"/></svg>GitHub</a></nav>
+    </header>
+
+    <main class="page guide">
+      <section class="hero">
+        <h1 data-reveal>MCP gateway vs MCP server</h1>
+        <p class="lead" data-reveal>Um MCP server expõe as tools de um app. Um MCP gateway fica na frente de vários servidores para cada agente conectar uma vez só. Veja quando usar cada um.</p>
+      </section>
+
+      <section>
+        <h2 data-reveal>Em resumo</h2>
+        <div class="compare" data-reveal><table><thead><tr><th></th><th class="us">MCP gateway</th><th>MCP server</th></tr></thead><tbody><tr><th>O que é</th><td class="us">Um endpoint na frente de vários servidores</td><td>As tools de um app, como o GitHub</td></tr><tr><th>Agentes conectam</th><td class="us">Uma vez</td><td>Uma vez por servidor, por agente</td></tr><tr><th>Contexto na conexão</th><td class="us">Poucas tools, 1.045 tokens para 125</td><td>Todo schema, 3.548 só no GitHub</td></tr><tr><th>Credenciais</th><td class="us">Guardadas uma vez, criptografadas</td><td>Configuradas em cada cliente</td></tr><tr><th>Revogar um agente</th><td class="us">Revoga a chave dele</td><td>Troca toda credencial</td></tr><tr><th>Auditoria</th><td class="us">Toda chamada num log só</td><td>Por servidor, quando existe</td></tr><tr><th>Exemplos</th><td class="us">runelay, Executor, Composio</td><td>MCP do GitHub, Linear, Notion</td></tr></tbody></table></div>
+      </section>
+
+      <section>
+        <h2 data-reveal>Como os dois se encaixam</h2>
+        <p data-reveal>O gateway não substitui servidores MCP, ele é construído em cima deles. Para o seu agente ele é um servidor MCP. Por trás, ele age como cliente de cada servidor, spec OpenAPI ou processo local que você conecta, e guarda as credenciais deles.</p>
+        <p data-reveal>No runelay o agente vê <code>search_tools</code>, <code>call_tool</code> e <code>execute</code> para achar e encadear chamadas, mais <code>search_context</code>, <code>read_memory</code> e <code>read_skill</code> para o contexto compartilhado. Os schemas só carregam para as tools que ele usa de fato.</p>
+      </section>
+
+      <section>
+        <h2 data-reveal>Um MCP server basta quando</h2>
+        <ul class="todo"><li data-reveal><span class="check" aria-hidden="true"></span><span><strong>Você usa um agente</strong> e um ou dois apps.</span></li><li data-reveal><span class="check" aria-hidden="true"></span><span><strong>O contexto não está apertado.</strong> Um servidor soma alguns milhares de tokens e tudo bem.</span></li><li data-reveal><span class="check" aria-hidden="true"></span><span><strong>Fazer login de novo não incomoda</strong> quando você troca de ferramenta.</span></li></ul>
+      </section>
+
+      <section>
+        <h2 data-reveal>Você precisa de um gateway quando</h2>
+        <ul class="todo"><li data-reveal><span class="check" aria-hidden="true"></span><span><strong>Roda vários agentes.</strong> Claude Code, Codex e Cursor deveriam ver as mesmas contas.</span></li><li data-reveal><span class="check" aria-hidden="true"></span><span><strong>Conecta muitos apps.</strong> Onze servidores diretos custam 44.434 tokens na conexão, 42x mais que pelo runelay.</span></li><li data-reveal><span class="check" aria-hidden="true"></span><span><strong>Segurança importa.</strong> Uma chave por agente, tokens criptografados e um log de auditoria.</span></li><li data-reveal><span class="check" aria-hidden="true"></span><span><strong>O contexto precisa viajar.</strong> Memória e skills compartilhadas entre todos os agentes.</span></li></ul>
+      </section>
+
+      <section class="faq">
+        <h2 data-reveal>Perguntas</h2>
+        <details data-reveal>
+          <summary>Um MCP gateway também é um MCP server?<svg class="chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer"><p>Sim. Ele fala MCP com seus agentes e age como cliente MCP dos servidores que estão atrás dele.</p></div>
+        </details>
+        <details data-reveal>
+          <summary>O gateway adiciona latência?<svg class="chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer"><p>Quase nada. Uma chamada pelo runelay leva 6,6 ms de mediana em localhost, somada ao tempo do próprio servidor de origem.</p></div>
+        </details>
+        <details data-reveal>
+          <summary>Um gateway roda servidores MCP locais (stdio)?<svg class="chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer"><p>Sim. O runelay roda MCP local ao lado de MCP remoto e specs OpenAPI.</p></div>
+        </details>
+        <details data-reveal>
+          <summary>Preciso mudar meus agentes?<svg class="chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer"><p>Não. Aponte para um endpoint, <code>/v1/mcp</code>, cada um com a sua chave. O <code>runelay connect</code> faz isso por você.</p></div>
+        </details>
+      </section>
+
+      <section>
+        <div class="bench-cta" data-reveal>
+          <strong>Teste na sua máquina</strong>
+          <span class="cta"><a class="button-solid small" href="/pt-br/download/"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M8 2.5v8m0 0 3-3m-3 3-3-3M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Baixar o runelay</a><a class="button-dashed small" href="/pt-br/setup/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" d="M4.5 4.5h15a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1Zm0 9h15a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1ZM7 7.5h.01M7 16.5h.01"/></svg>Instalar no seu servidor</a></span>
+        </div>
+        <nav class="related" aria-label="Continue lendo" data-reveal><span>Continue lendo</span><a href="/pt-br/self-hosted-mcp-gateway/">Guia de MCP gateway self-hosted →</a><a href="/pt-br/composio-alternative/">Alternativa ao Composio →</a></nav>
+      </section>
+    </main>
+    <footer class="footer">
+      <span>MIT · runelay</span>
+      <nav class="lang" aria-label="Idioma">
+        <a href="/mcp-gateway-vs-mcp-server/" hreflang="en" aria-label="English" title="English">🇺🇸</a>
+        <a href="/pt-br/mcp-gateway-vs-mcp-server/" hreflang="pt-BR" aria-label="Português" title="Português" aria-current="page">🇧🇷</a>
+      </nav>
+    </footer>
+  </body>
+</html>
