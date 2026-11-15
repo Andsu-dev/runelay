@@ -60,7 +60,7 @@ const footer = (route) => {
         <div class="footer-brand">
           <div class="footer-about"><a class="brand" href="${localized("/", pt)}"><img src="/favicon.svg" width="36" height="36" alt="" />runelay</a>
           <p>${copy.blurb}</p></div>
-          <a class="footer-contribute" href="${localized("/contribute/", pt)}"><span class="cup" aria-hidden="true">☕</span>${copy.contribute}</a>
+          <a class="footer-contribute" href="https://github.com/sponsors/Andsu-dev" target="_blank" rel="noreferrer"><span class="cup" aria-hidden="true">☕</span>${copy.contribute}</a>
         </div>
         <nav class="footer-nav" aria-label="${copy.nav}">${copy.columns.map(column).join("")}</nav>
         <div class="footer-bottom">
