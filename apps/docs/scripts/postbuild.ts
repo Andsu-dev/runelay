@@ -16,4 +16,12 @@ for (const slug of slugs) {
   await writeFile(file, Buffer.from(await response.arrayBuffer()));
 }
 
-console.log(`og: ${slugs.length} images`);
+const SITE = "https://docs.runelay.com";
+const urls = slugs.map((slug) => `${SITE}${slug === "index" ? "/" : `/${slug}/`}`);
+await writeFile(
+  "dist/client/sitemap.xml",
+  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((url) => `  <url><loc>${url}</loc></url>`).join("\n")}\n</urlset>\n`,
+);
+await writeFile("dist/client/robots.txt", `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n`);
+
+console.log(`postbuild: ${slugs.length} share images, sitemap and robots.txt`);
