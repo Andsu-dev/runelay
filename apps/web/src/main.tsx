@@ -6,6 +6,7 @@ import { createRoot } from "react-dom/client";
 import { queryClient } from "@/lib/query-client";
 import { startSound } from "@/lib/sound";
 import { routeTree } from "@/routeTree.gen";
+import "slot-text/style.css";
 import "@/styles.css";
 
 const router = createRouter({

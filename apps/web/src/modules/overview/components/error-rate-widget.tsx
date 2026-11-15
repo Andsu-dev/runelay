@@ -2,6 +2,7 @@ import { Alert02Icon } from "@hugeicons/core-free-icons";
 import type { ActivitySummaryView } from "@runelay/shared";
 import { formatNumber, formatPercent } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { ErrorDayStrip } from "./error-day-strip";
 import { StatValue } from "./stat-value";
 import { WidgetCard } from "./widget-card";
 
@@ -24,6 +25,9 @@ export function ErrorRateWidget({ summary }: ErrorRateWidgetProps) {
           </span>
         }
       />
+      <div className="mt-auto">
+        <ErrorDayStrip daily={summary.daily} />
+      </div>
     </WidgetCard>
   );
 }
