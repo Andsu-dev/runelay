@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.4
+
+- Running `runelay migrate` again no longer touches connections that already work. Before, a second import could replace fresh tokens with stale ones from an agent, or reset a token header added in the panel, and the connection asked for login again.
+
 ## v0.3.3
 
 - The Docker image is about 4x smaller: a two-stage build ships one compiled server binary, the panel and a minimal Debian, with no Node or `node_modules`. Download drops from about 278 MB to about 66 MB, and idle RAM from about 86 MiB to about 52 MiB in our test.
