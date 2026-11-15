@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.4.0
+
+### Panel
+
+- New Activity page: every call your agents made through runelay, live. Stats for the last 7 days, filters by agent, connector and status, search, and a timeline grouped by day with each agent's logo, the connector, the tool, duration and time.
+- Sidebar sections collapse like an accordion and remember their state.
+- No more elastic overscroll on the page.
+- Removed the "Soon" placeholders for Tools and organization Settings.
+
+### API
+
+- `GET /v1/activity/calls`: paginated tool calls with filters by agent key, connector, status and search, all on the server.
+
 ## v0.3.5
 
 - `runelay pull` fetches skills in batches of 50 through a new `POST /v1/skills/export`, instead of one request per skill and per file. Pulling many new skills no longer hits the per-key rate limit and blocks the agents that share the key.
