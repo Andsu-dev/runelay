@@ -491,6 +491,123 @@ describe("token", () => {
   });
 });
 
+describe("github", () => {
+  const GITHUB_ENV: BrokerEnv = { ...ENV, GITHUB_CLIENT_ID: "gh-client-id", GITHUB_CLIENT_SECRET: "gh-client-secret" };
+  const githubLocal = encode({ r: LOCAL, s: "github" });
+  const githubRemote = encode({ r: REMOTE, s: "github" });
+  const githubToken = (body: Record<string, string>, env: BrokerEnv = GITHUB_ENV, fetchFn?: BrokerFetch) =>
+    post("/github/token", new URLSearchParams(body), FORM, env, fetchFn);
+
+  test("redirects loopback callbacks straight back", async () => {
+    const response = await get(`/github/callback?code=gh-code&state=${githubLocal}`, GITHUB_ENV);
+    expect(response.status).toBe(302);
+    const target = location(response);
+    expect(target.origin + target.pathname).toBe(LOCAL);
+    expect(target.searchParams.get("code")).toBe("gh-code");
+    expect(target.searchParams.get("state")).toBe("github");
+  });
+
+  test("asks remote instances for confirmation and posts back to the github callback", async () => {
+    const response = await get(`/github/callback?code=gh-code&state=${githubRemote}`, GITHUB_ENV);
+    expect(response.status).toBe(200);
+    expect(response.headers.get("location")).toBeNull();
+    const page = await response.text();
+    expect(page).toContain('<form method="POST" action="/github/callback">');
+    expect(hiddenFields(page)).toEqual({ code: "gh-code", state: githubRemote });
+    const confirmed = await post(
+      "/github/callback",
+      new URLSearchParams({ code: "gh-code", state: githubRemote, decision: "continue" }),
+      FORM,
+      GITHUB_ENV,
+    );
+    expect(confirmed.status).toBe(302);
+    const target = location(confirmed);
+    expect(target.origin + target.pathname).toBe(REMOTE);
+    expect(target.searchParams.get("code")).toBe("gh-code");
+    expect(target.searchParams.get("state")).toBe("github");
+  });
+
+  test("rejects an invalid state", async () => {
+    const response = await get("/github/callback?code=gh-code&state=nope", GITHUB_ENV);
+    expect(response.status).toBe(400);
+  });
+
+  test("exchanges a code with the github secrets and asks for json", async () => {
+    const fake = upstream(200, { access_token: "gho_x", refresh_token: "ghr_x", token_type: "bearer" });
+    const response = await githubToken(
+      {
+        grant_type: "authorization_code",
+        code: "gh-code",
+        code_verifier: "verifier",
+        client_id: "spoofed",
+        redirect_uri: "https://evil.example.com/cb",
+        scope: "repo",
+      },
+      GITHUB_ENV,
+      fake.fetchFn,
+    );
+    expect(response.status).toBe(200);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(await response.json()).toEqual({ access_token: "gho_x", refresh_token: "ghr_x", token_type: "bearer" });
+    expect(fake.calls[0]?.url).toBe("https://github.com/login/oauth/access_token");
+    expect(new Headers(fake.calls[0]?.init.headers).get("accept")).toBe("application/json");
+    expect(Object.fromEntries(fake.form())).toEqual({
+      grant_type: "authorization_code",
+      code: "gh-code",
+      code_verifier: "verifier",
+      client_id: "gh-client-id",
+      client_secret: "gh-client-secret",
+      redirect_uri: `${ORIGIN}/github/callback`,
+    });
+  });
+
+  test("refreshes without scope or redirect uri", async () => {
+    const fake = upstream(200, { access_token: "gho_y", refresh_token: "ghr_y" });
+    const response = await githubToken(
+      {
+        grant_type: "refresh_token",
+        refresh_token: "ghr_x",
+        scope: "repo",
+        redirect_uri: "https://evil.example.com/cb",
+      },
+      GITHUB_ENV,
+      fake.fetchFn,
+    );
+    expect(response.status).toBe(200);
+    expect(Object.fromEntries(fake.form())).toEqual({
+      grant_type: "refresh_token",
+      refresh_token: "ghr_x",
+      client_id: "gh-client-id",
+      client_secret: "gh-client-secret",
+    });
+  });
+
+  test("passes errors github sends with status 200 through untouched", async () => {
+    const payload = {
+      error: "bad_refresh_token",
+      error_description: "The refresh token passed is incorrect or expired.",
+    };
+    const fake = upstream(200, payload);
+    const response = await githubToken(
+      { grant_type: "refresh_token", refresh_token: "ghr_x" },
+      GITHUB_ENV,
+      fake.fetchFn,
+    );
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual(payload);
+  });
+
+  test("fails closed when the github secrets are missing", async () => {
+    for (const env of [ENV, { ...ENV, GITHUB_CLIENT_ID: "gh-client-id" }]) {
+      const fake = upstream();
+      const response = await githubToken({ grant_type: "refresh_token", refresh_token: "rt" }, env, fake.fetchFn);
+      expect(response.status).toBe(500);
+      expect(((await response.json()) as { error: string }).error).toBe("server_error");
+      expect(fake.calls).toHaveLength(0);
+    }
+  });
+});
+
 describe("rate limiting", () => {
   test("limits callbacks per ip", async () => {
     const fake = limiter(2);
@@ -555,7 +672,7 @@ describe("rate limiting", () => {
 describe("routing", () => {
   test("answers 404 for unknown providers, actions and paths", async () => {
     const paths = [
-      "/github/callback",
+      "/gitlab/callback",
       "/constructor/callback",
       "/google/other",
       "/google/constructor",
