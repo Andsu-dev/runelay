@@ -169,7 +169,9 @@ if (showcases.length) {
   for (const host of showcases) {
     const mount = () => load().then((module) => module.mount(host));
     if (host.dataset.showcase === "hero") {
-      mount();
+      const idle = () => (window.requestIdleCallback ?? setTimeout)(mount);
+      if (document.readyState === "complete") idle();
+      else addEventListener("load", idle, { once: true });
       continue;
     }
     inView(host, () => void load(), { margin: "0px 0px 600px 0px" });
