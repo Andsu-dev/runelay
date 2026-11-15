@@ -36,10 +36,15 @@ const VIEW_SELECT = `SELECT s.name, s.config, s.oauth, s.status, s.error, s.tool
 const decryptView = ({ oauth: sealedOAuth, ...row }: SourceViewRow): Result<SourceView> => {
   const config = unseal<SourceConfig>(row.config);
   if (config.error) return config;
-  const view = { ...row, config: config.data, enabled: row.enabled === 1 };
-  if (config.data.kind !== "google") return ok(view);
   const oauth = unseal<OAuthState>(sealedOAuth);
   if (oauth.error) return oauth;
+  const view = {
+    ...row,
+    config: config.data,
+    enabled: row.enabled === 1,
+    oauthClientId: oauth.data.customClient?.clientId ?? null,
+  };
+  if (config.data.kind !== "google") return ok(view);
   const granted = oauth.data.google?.scopes ?? [];
   return ok({
     ...view,

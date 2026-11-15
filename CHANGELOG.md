@@ -16,6 +16,10 @@
 - Agents call them as `<connection>.<service>_<tool>` (for example `gmail.gmail_send_email`), plus `account_whoami` on each. Restricted scopes, such as reading Gmail or full Drive access, are not requested.
 - GitHub signs in with one click through the broker (scopes `repo` and `read:user`). Its tokens expire and are refreshed automatically. Pasting a token still works.
 
+### Panel
+
+- Remote MCP connections can use your own OAuth client: paste a Client ID and, if the service gives one, a Client secret when adding or editing a connection. This is the way in for services without automatic client registration, such as Google. The secret is stored encrypted and never sent back to the panel.
+
 ### Broker
 
 - The broker supports GitHub at `/github/callback` and `/github/token`.

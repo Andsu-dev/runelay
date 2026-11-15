@@ -1,5 +1,5 @@
 import type { OAuthClientInformationMixed, OAuthTokens } from "@modelcontextprotocol/sdk/shared/auth.js";
-import type { SourceConfig, SourceStatus, SourceView } from "@runelay/shared";
+import type { OAuthClientInput, SourceConfig, SourceStatus, SourceView } from "@runelay/shared";
 import type { GoogleOAuthState } from "@/modules/google/types/google.types";
 import type { OAuthBroker } from "@/modules/oauth/types/oauth.types";
 
@@ -10,6 +10,7 @@ export interface OAuthState {
   imported?: boolean;
   broker?: OAuthBroker;
   google?: GoogleOAuthState;
+  customClient?: OAuthClientInput;
 }
 
 export interface SourceKey {
@@ -33,7 +34,7 @@ export interface SourceRow extends Omit<Source, "config" | "oauth" | "enabled"> 
   enabled: 0 | 1;
 }
 
-export interface SourceViewRow extends Omit<SourceView, "config" | "enabled" | "google"> {
+export interface SourceViewRow extends Omit<SourceView, "config" | "enabled" | "google" | "oauthClientId"> {
   config: string;
   oauth: string;
   enabled: 0 | 1;

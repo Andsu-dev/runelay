@@ -45,3 +45,5 @@ export const GOOGLE_SERVICE_LABEL: Record<GoogleService, MessageKey> = {
   forms: "sources.google.services.forms",
   meet: "sources.google.services.meet",
 };
+
+export const OAUTH_CALLBACK_PATH = "/v1/oauth/callback";

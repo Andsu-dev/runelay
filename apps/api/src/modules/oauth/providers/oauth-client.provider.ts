@@ -1,6 +1,12 @@
 import type { OAuthClientProvider } from "@modelcontextprotocol/sdk/client/auth.js";
 import { env } from "@/config/env";
-import { OAUTH_CALLBACK_PATH, OAUTH_CLIENT_NAME } from "@/modules/oauth/constants/oauth.constants";
+import {
+  AUTHORIZATION_HOSTS_WITHOUT_RESOURCE,
+  AUTHORIZATION_PARAMS_BY_HOST,
+  OAUTH_CALLBACK_PATH,
+  OAUTH_CLIENT_NAME,
+  TOKEN_URLS_WITHOUT_RESOURCE,
+} from "@/modules/oauth/constants/oauth.constants";
 import {
   brokerAuthorizationUrl,
   brokerCallbackUrl,
@@ -20,7 +26,33 @@ const CLEARED_BY_SCOPE: Record<"all" | "client" | "tokens" | "verifier" | "disco
   discovery: {},
 };
 
-export const createOAuthFetch = (key: SourceKey) => brokerFetch(findSource(key).data?.oauth.broker);
+const customClientInformation = (oauth: OAuthState | undefined) =>
+  oauth?.customClient && {
+    client_id: oauth.customClient.clientId,
+    ...(oauth.customClient.clientSecret ? { client_secret: oauth.customClient.clientSecret } : {}),
+  };
+
+const withProviderParams = (url: URL) => {
+  const rewritten = new URL(url);
+  for (const [name, value] of Object.entries(AUTHORIZATION_PARAMS_BY_HOST[url.hostname] ?? {})) {
+    rewritten.searchParams.set(name, value);
+  }
+  if (AUTHORIZATION_HOSTS_WITHOUT_RESOURCE.has(url.hostname)) rewritten.searchParams.delete("resource");
+  return rewritten;
+};
+
+const withoutResource = (init?: RequestInit): RequestInit | undefined => {
+  if (!(init?.body instanceof URLSearchParams) && typeof init?.body !== "string") return init;
+  const body = new URLSearchParams(init.body);
+  body.delete("resource");
+  return { ...init, body };
+};
+
+export const createOAuthFetch = (key: SourceKey): ReturnType<typeof brokerFetch> => {
+  const send = brokerFetch(findSource(key).data?.oauth.broker);
+  return (input, init) =>
+    send(input, TOKEN_URLS_WITHOUT_RESOURCE.has(new URL(input).href) ? withoutResource(init) : init);
+};
 
 export const createOAuthProvider = (key: SourceKey, onRedirect?: (url: URL) => void): OAuthClientProvider => {
   const oauth = () => findSource(key).data?.oauth;
@@ -39,9 +71,10 @@ export const createOAuthProvider = (key: SourceKey, onRedirect?: (url: URL) => v
       token_endpoint_auth_method: "none",
     },
     state: () => (broker ? encodeBrokerState(key.name) : key.name),
-    clientInformation: () => (broker ? { client_id: broker.clientId } : oauth()?.client),
+    clientInformation: () =>
+      broker ? { client_id: broker.clientId } : (customClientInformation(oauth()) ?? oauth()?.client),
     saveClientInformation: (client) => {
-      if (!broker) save({ client });
+      if (!broker && !oauth()?.customClient) save({ client });
     },
     tokens: () => oauth()?.tokens,
     saveTokens: (tokens) => {
@@ -49,7 +82,8 @@ export const createOAuthProvider = (key: SourceKey, onRedirect?: (url: URL) => v
       save({ tokens: tokens.refresh_token || !previous ? tokens : { ...tokens, refresh_token: previous } });
       markConnected(key);
     },
-    redirectToAuthorization: (url) => onRedirect?.(broker ? brokerAuthorizationUrl(url, broker) : url),
+    redirectToAuthorization: (url) =>
+      onRedirect?.(broker ? brokerAuthorizationUrl(url, broker) : withProviderParams(url)),
     saveCodeVerifier: (verifier) => save({ verifier }),
     codeVerifier: () => oauth()?.verifier ?? "",
     invalidateCredentials: (scope) => save(CLEARED_BY_SCOPE[scope]),

@@ -60,16 +60,31 @@ export const sourceNameSchema = z
       .refine((name) => !RESERVED_SOURCE_NAMES.includes(name), "Esse nome é reservado"),
   );
 
+export const oauthClientSchema = z.object({
+  clientId: z.string().trim().min(1).max(500),
+  clientSecret: z.string().trim().min(1).max(20_000).optional(),
+});
+
 export const createSourceSchema = z.object({
   name: sourceNameSchema,
   config: sourceConfigSchema,
+  oauthClient: oauthClientSchema.optional(),
 });
 
 export const updateSourceSchema = z
-  .object({ name: sourceNameSchema.optional(), config: sourceConfigSchema.optional(), enabled: z.boolean().optional() })
+  .object({
+    name: sourceNameSchema.optional(),
+    config: sourceConfigSchema.optional(),
+    enabled: z.boolean().optional(),
+    oauthClient: oauthClientSchema.nullable().optional(),
+  })
   .refine(
-    (body) => body.name !== undefined || body.config !== undefined || body.enabled !== undefined,
-    "Envie name, config ou enabled",
+    (body) =>
+      body.name !== undefined ||
+      body.config !== undefined ||
+      body.enabled !== undefined ||
+      body.oauthClient !== undefined,
+    "Envie name, config, enabled ou oauthClient",
   );
 
 export const importedOAuthSchema = z
@@ -84,7 +99,9 @@ export const importedOAuthSchema = z
   })
   .refine((oauth) => Boolean(oauth.accessToken || oauth.refreshToken), "Envie accessToken ou refreshToken");
 
-export const importSourceSchema = createSourceSchema.extend({ oauth: importedOAuthSchema.optional() });
+export const importSourceSchema = createSourceSchema
+  .omit({ oauthClient: true })
+  .extend({ oauth: importedOAuthSchema.optional() });
 
 export const sourceAuthKindSchema = z.enum(["oauth", "header", "none", "unknown"]);
 

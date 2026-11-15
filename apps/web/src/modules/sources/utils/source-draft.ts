@@ -1,8 +1,18 @@
-import type { GoogleConfig, SourceConfig } from "@runelay/shared";
+import type { GoogleConfig, OAuthClientInput, SourceConfig, SourceView } from "@runelay/shared";
 import type { DraftKind, SourceDraft } from "@/modules/sources/schemas/source-draft.schema";
 import { formatKeyValueLines } from "@/modules/sources/utils/key-value-lines";
 
-const EMPTY_DRAFT: SourceDraft = { kind: "mcp", url: "", command: "", spec: "", baseUrl: "", headers: "", env: "" };
+const EMPTY_DRAFT: SourceDraft = {
+  kind: "mcp",
+  url: "",
+  command: "",
+  spec: "",
+  baseUrl: "",
+  headers: "",
+  env: "",
+  oauthClientId: "",
+  oauthClientSecret: "",
+};
 
 export const emptyDraft = (kind: DraftKind = "mcp"): SourceDraft => ({ ...EMPTY_DRAFT, kind });
 
@@ -25,4 +35,22 @@ export const draftFromConfig = (config: Exclude<SourceConfig, GoogleConfig>): So
     };
   }
   return { ...EMPTY_DRAFT, url: config.url, headers: formatKeyValueLines(config.headers, ": ") };
+};
+
+export const draftFromSource = (source: SourceView, config: Exclude<SourceConfig, GoogleConfig>): SourceDraft => ({
+  ...draftFromConfig(config),
+  oauthClientId: source.oauthClientId ?? "",
+});
+
+export const oauthClientFromDraft = (draft: SourceDraft): OAuthClientInput | undefined => {
+  const clientId = draft.oauthClientId.trim();
+  const clientSecret = draft.oauthClientSecret.trim();
+  if (draft.kind !== "mcp" || !clientId) return undefined;
+  return { clientId, ...(clientSecret ? { clientSecret } : {}) };
+};
+
+export const oauthClientChange = (draft: SourceDraft, current: string | null): OAuthClientInput | null | undefined => {
+  const next = oauthClientFromDraft(draft);
+  if (!next) return current ? null : undefined;
+  return next.clientId === current && !next.clientSecret ? undefined : next;
 };

@@ -11,6 +11,8 @@ export const sourceDraftSchema = z
     baseUrl: z.string().trim(),
     headers: z.string(),
     env: z.string(),
+    oauthClientId: z.string(),
+    oauthClientSecret: z.string(),
   })
   .transform((draft): z.input<typeof sourceConfigSchema> => {
     const headers = parseKeyValueLines(draft.headers, ":");
