@@ -988,8 +988,6 @@ export const EXISTING = {
   download: { icon: "import", en: ["Download Runelay", "Desktop app for Mac, Windows and Linux."], pt: ["Baixar o Runelay", "App desktop para Mac, Windows e Linux."] },
 };
 
-export const INTEGRATION_PAGES = ["linear", "github", "notion"];
-
 export const INTEGRATIONS_EN = {
   sections: { popular: "Popular", dev: "For development", work: "Work and content" },
   descriptions: {
