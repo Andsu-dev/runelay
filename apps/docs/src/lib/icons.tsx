@@ -2,41 +2,46 @@ import { icons } from "lucide-react";
 import { createElement, type ReactNode } from "react";
 import brands from "../../../lp/integration-icons.json";
 
-const SVG_FILES = import.meta.glob<string>("../logos/*.svg", { query: "?raw", import: "default", eager: true });
-
-const TINT: Record<string, string> = { claude: "#D97757", codex: "currentColor", cursor: "currentColor" };
-
+const SIZE = 16;
 const LUMA_DARK = 0.35;
+const SVG_LOGOS = new Set(["antigravity", "canva", "claude", "codex", "cursor", "gemini", "stripe"]);
+const MONO_LOGOS = new Set(["codex", "cursor"]);
 
 const isDark = (hex: string) => {
   const value = Number.parseInt(hex.slice(1), 16);
   return (0.299 * (value >> 16) + 0.587 * ((value >> 8) & 255) + 0.114 * (value & 255)) / 255 < LUMA_DARK;
 };
 
-const BOX = { display: "inline-flex", width: 16, height: 16, flexShrink: 0 } as const;
+const brandIcon = (color: string | null, path: string) => (
+  <svg viewBox="0 0 24 24" width={SIZE} height={SIZE} aria-hidden="true">
+    <path fill={color && !isDark(color) ? color : "currentColor"} d={path} />
+  </svg>
+);
 
-const frame = (child: ReactNode) => <span style={BOX}>{child}</span>;
+const monoIcon = (src: string) => (
+  <span
+    aria-hidden="true"
+    style={{
+      display: "inline-block",
+      width: SIZE,
+      height: SIZE,
+      flexShrink: 0,
+      backgroundColor: "currentColor",
+      mask: `url(${src}) center / contain no-repeat`,
+      WebkitMask: `url(${src}) center / contain no-repeat`,
+    }}
+  />
+);
 
-const rawSvg = (name: string) => {
-  const markup = SVG_FILES[`../logos/${name}.svg`];
-  if (!markup) return null;
-  const tint = TINT[name];
-  const sized = markup.replace(/<svg[^>]*>/, (tag) => tag.replace(/\s(width|height)="[^"]*"/g, "").replace("<svg ", '<svg width="16" height="16" '));
-  const svg = tint ? sized.replace(/\s?fill="[^"]*"/, "").replace("<svg ", `<svg fill="${tint}" `) : sized;
-  return <span style={BOX} dangerouslySetInnerHTML={{ __html: svg }} />;
-};
+const imageIcon = (src: string) => (
+  <img src={src} width={SIZE} height={SIZE} alt="" style={{ flexShrink: 0, borderRadius: 3 }} />
+);
 
 const logo = (name: string): ReactNode => {
   const brand = (brands as Record<string, { color: string | null; path: string }>)[name];
-  if (brand) {
-    const fill = brand.color && !isDark(brand.color) ? brand.color : "currentColor";
-    return frame(
-      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-        <path fill={fill} d={brand.path} />
-      </svg>,
-    );
-  }
-  return rawSvg(name) ?? frame(<img src={`/logos/${name}.png`} width={16} height={16} alt="" style={{ borderRadius: 3 }} />);
+  if (brand) return brandIcon(brand.color, brand.path);
+  const src = `/logos/${name}.${SVG_LOGOS.has(name) ? "svg" : "png"}`;
+  return MONO_LOGOS.has(name) ? monoIcon(src) : imageIcon(src);
 };
 
 export const resolveIcon = (icon: string | undefined): ReactNode => {
