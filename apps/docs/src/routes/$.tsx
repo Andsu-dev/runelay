@@ -29,6 +29,13 @@ export const Route = createFileRoute("/$")({
       ? [
           { title: loaderData.title === "Introduction" ? "runelay docs" : `${loaderData.title} | runelay docs` },
           { name: "description", content: loaderData.description },
+          {
+            property: "og:title",
+            content: loaderData.title === "Introduction" ? "runelay docs" : `${loaderData.title} | runelay docs`,
+          },
+          { property: "og:description", content: loaderData.description },
+          { property: "og:image", content: loaderData.ogImage },
+          { name: "twitter:image", content: loaderData.ogImage },
         ]
       : [],
   }),
@@ -46,6 +53,7 @@ const loader = createServerFn({ method: "GET" })
       title: page.data.title,
       description: page.data.description ?? "",
       markdownUrl: page.url === "/" ? "/index.md" : `${page.url}.md`,
+      ogImage: `https://docs.runelay.com/og${page.url === "/" ? "/index" : page.url}.png`,
       pageTree: await source.serializePageTree(source.getPageTree()),
     };
   });

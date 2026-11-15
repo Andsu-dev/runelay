@@ -14,6 +14,7 @@ import { Route as LlmsFullDottxtRouteImport } from './routes/llms-full[.]txt'
 import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
 import { Route as Char123Char125DotmdRouteImport } from './routes/{$}[.]md'
 import { Route as ApiSearchRouteImport } from './routes/api/search'
+import { Route as OgChar123Char125DotpngRouteImport } from './routes/og/{$}[.]png'
 
 const SplatRoute = SplatRouteImport.update({
   id: '/$',
@@ -40,6 +41,11 @@ const ApiSearchRoute = ApiSearchRouteImport.update({
   path: '/api/search',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OgChar123Char125DotpngRoute = OgChar123Char125DotpngRouteImport.update({
+  id: '/og/{$}.png',
+  path: '/og/{$}.png',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/$': typeof SplatRoute
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/llms.txt': typeof LlmsDottxtRoute
   '/{$}.md': typeof Char123Char125DotmdRoute
   '/api/search': typeof ApiSearchRoute
+  '/og/{$}.png': typeof OgChar123Char125DotpngRoute
 }
 export interface FileRoutesByTo {
   '/$': typeof SplatRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/llms.txt': typeof LlmsDottxtRoute
   '/{$}.md': typeof Char123Char125DotmdRoute
   '/api/search': typeof ApiSearchRoute
+  '/og/{$}.png': typeof OgChar123Char125DotpngRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,12 +70,25 @@ export interface FileRoutesById {
   '/llms.txt': typeof LlmsDottxtRoute
   '/{$}.md': typeof Char123Char125DotmdRoute
   '/api/search': typeof ApiSearchRoute
+  '/og/{$}.png': typeof OgChar123Char125DotpngRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/$' | '/llms-full.txt' | '/llms.txt' | '/{$}.md' | '/api/search'
+  fullPaths:
+    | '/$'
+    | '/llms-full.txt'
+    | '/llms.txt'
+    | '/{$}.md'
+    | '/api/search'
+    | '/og/{$}.png'
   fileRoutesByTo: FileRoutesByTo
-  to: '/$' | '/llms-full.txt' | '/llms.txt' | '/{$}.md' | '/api/search'
+  to:
+    | '/$'
+    | '/llms-full.txt'
+    | '/llms.txt'
+    | '/{$}.md'
+    | '/api/search'
+    | '/og/{$}.png'
   id:
     | '__root__'
     | '/$'
@@ -75,6 +96,7 @@ export interface FileRouteTypes {
     | '/llms.txt'
     | '/{$}.md'
     | '/api/search'
+    | '/og/{$}.png'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -83,6 +105,7 @@ export interface RootRouteChildren {
   LlmsDottxtRoute: typeof LlmsDottxtRoute
   Char123Char125DotmdRoute: typeof Char123Char125DotmdRoute
   ApiSearchRoute: typeof ApiSearchRoute
+  OgChar123Char125DotpngRoute: typeof OgChar123Char125DotpngRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -122,6 +145,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSearchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/og/{$}.png': {
+      id: '/og/{$}.png'
+      path: '/og/{$}.png'
+      fullPath: '/og/{$}.png'
+      preLoaderRoute: typeof OgChar123Char125DotpngRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -131,6 +161,7 @@ const rootRouteChildren: RootRouteChildren = {
   LlmsDottxtRoute: LlmsDottxtRoute,
   Char123Char125DotmdRoute: Char123Char125DotmdRoute,
   ApiSearchRoute: ApiSearchRoute,
+  OgChar123Char125DotpngRoute: OgChar123Char125DotpngRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
