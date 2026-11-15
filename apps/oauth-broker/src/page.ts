@@ -3,7 +3,7 @@ export type Locale = "en" | "pt";
 const COPY = {
   en: {
     confirmTitle: "Confirm your runelay",
-    heading: (host: string) => `This login is going to <strong>${host}</strong>.`,
+    heading: "This login is going to",
     question: "Is this your runelay?",
     hint: "Only continue if you started this login and you recognize this address. Otherwise, cancel.",
     continue: "Continue",
@@ -13,7 +13,7 @@ const COPY = {
   },
   pt: {
     confirmTitle: "Confirme seu runelay",
-    heading: (host: string) => `Este login vai para <strong>${host}</strong>.`,
+    heading: "Este login vai para",
     question: "Este é o seu runelay?",
     hint: "Só continue se foi você que iniciou este login e reconhece este endereço. Se não, cancele.",
     continue: "Continuar",
@@ -35,7 +35,6 @@ main{width:100%;max-width:400px;background:var(--card);border-radius:20px;paddin
 .mark .bottom{animation:bottom .6s cubic-bezier(.22,1,.36,1) .1s both}
 .brand{margin:0 0 28px;font-weight:600;letter-spacing:-.02em;color:var(--fg)}
 h1{font-size:19px;line-height:1.4;font-weight:600;letter-spacing:-.01em;margin:0 0 14px;overflow-wrap:anywhere}
-h1 strong{font-weight:600}
 .origin{display:block;font:14px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--soft);border-radius:12px;padding:12px 14px;margin:0 0 20px;overflow-wrap:anywhere}
 p{margin:0 0 8px;color:var(--muted);text-wrap:pretty}
 .question{color:var(--fg);font-weight:600;margin-bottom:6px}
@@ -89,7 +88,7 @@ export const confirmPage = (locale: Locale, action: string, target: URL, fields:
   return document(
     locale,
     copy.confirmTitle,
-    `<h1>${copy.heading(escapeHtml(target.host))}</h1><code class="origin">${escapeHtml(target.origin)}</code><p class="question">${copy.question}</p><p class="hint">${copy.hint}</p><form method="POST" action="${escapeHtml(action)}">${hidden}<div class="actions"><button class="primary" type="submit" name="decision" value="continue">${copy.continue}</button><button class="link" type="submit" name="decision" value="cancel">${copy.cancel}</button></div></form>`,
+    `<h1>${copy.heading}</h1><code class="origin">${escapeHtml(target.origin)}</code><p class="question">${copy.question}</p><p class="hint">${copy.hint}</p><form method="POST" action="${escapeHtml(action)}">${hidden}<div class="actions"><button class="primary" type="submit" name="decision" value="continue">${copy.continue}</button><button class="link" type="submit" name="decision" value="cancel">${copy.cancel}</button></div></form>`,
   );
 };
 

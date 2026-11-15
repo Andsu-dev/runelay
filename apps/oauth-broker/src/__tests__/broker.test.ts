@@ -134,7 +134,7 @@ describe("callback interstitial for remote instances", () => {
     expect(response.headers.get("location")).toBeNull();
     expect(response.headers.get("content-type")).toBe("text/html; charset=utf-8");
     const page = await response.text();
-    expect(page).toContain("This login is going to <strong>runelay.example.com</strong>.");
+    expect(page).toContain("<h1>This login is going to</h1>");
     expect(page).toContain('<code class="origin">https://runelay.example.com</code>');
     expect(page).toContain("Is this your runelay?");
     expect(page).toContain('<form method="POST" action="/google/callback">');
@@ -161,7 +161,6 @@ describe("callback interstitial for remote instances", () => {
       "form-action 'self' https://runelay.example.com:8443;",
     );
     const page = await response.text();
-    expect(page).toContain("<strong>runelay.example.com:8443</strong>");
     expect(page).toContain("https://runelay.example.com:8443</code>");
   });
 
@@ -187,7 +186,7 @@ describe("callback interstitial for remote instances", () => {
   test("shows the IDN host in punycode", async () => {
     const state = encode({ r: "https://rúnelay.example.com/v1/oauth/callback", s: "x" });
     const page = await (await get(`/google/callback?code=c&state=${state}`)).text();
-    expect(page).toContain("<strong>xn--rnelay-pya.example.com</strong>");
+    expect(page).toContain('<code class="origin">https://xn--rnelay-pya.example.com</code>');
     expect(page).not.toContain("rúnelay");
   });
 
@@ -197,7 +196,7 @@ describe("callback interstitial for remote instances", () => {
     });
     const page = await response.text();
     expect(page).toContain('<html lang="pt-BR">');
-    expect(page).toContain("Este login vai para <strong>runelay.example.com</strong>.");
+    expect(page).toContain("<h1>Este login vai para</h1>");
     expect(page).toContain("Continuar");
   });
 
