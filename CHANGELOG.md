@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.5
+
+- `runelay pull` fetches skills in batches of 50 through a new `POST /v1/skills/export`, instead of one request per skill and per file. Pulling many new skills no longer hits the per-key rate limit and blocks the agents that share the key.
+
 ## v0.3.4
 
 - Running `runelay migrate` again no longer touches connections that already work. Before, a second import could replace fresh tokens with stale ones from an agent, or reset a token header added in the panel, and the connection asked for login again.
