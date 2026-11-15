@@ -56,8 +56,11 @@ export const createSourceSchema = z.object({
 });
 
 export const updateSourceSchema = z
-  .object({ config: sourceConfigSchema.optional(), enabled: z.boolean().optional() })
-  .refine((body) => body.config !== undefined || body.enabled !== undefined, "Envie config ou enabled");
+  .object({ name: sourceNameSchema.optional(), config: sourceConfigSchema.optional(), enabled: z.boolean().optional() })
+  .refine(
+    (body) => body.name !== undefined || body.config !== undefined || body.enabled !== undefined,
+    "Envie name, config ou enabled",
+  );
 
 export const importedOAuthSchema = z
   .object({

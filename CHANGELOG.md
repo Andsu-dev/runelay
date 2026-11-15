@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Connections can be renamed from their detail page. The login, the config and the call history move to the new name; agents see the tools under the new prefix.
+
 ## v0.4.1
 
 - Dashboard lists (top connectors, most used tools, recent skills and memories) stop growing and scroll inside their card.

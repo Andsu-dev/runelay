@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import type { ImportView, OAuthStartView, SourcesSummaryView, SourceView } from "@runelay/shared";
+import { db } from "@/db/connection";
 import { findSource } from "@/modules/sources/repositories/source.repository";
 import { body, call, createApiKey, signUp, type TestAccount } from "../../../../../test/helpers";
 import {
@@ -328,5 +329,49 @@ describe("oauth start", () => {
     await create("oauth_down", { kind: "mcp", url: down });
     const response = await call("/v1/sources/oauth_down/oauth", { method: "POST", cookie: account.cookie });
     expect((await body(response)).error?.code).toBe("OAUTH_FAILED");
+  });
+});
+
+describe("rename", () => {
+  const rename = (name: string, next: string) =>
+    call(`/v1/sources/${name}`, { method: "PATCH", cookie: account.cookie, json: { name: next } });
+
+  test("renames a source, keeps it connected and carries its history", async () => {
+    await create("rename_from", { kind: "mcp", url: open.mcpUrl });
+    db.query(
+      "INSERT INTO tool_calls (organization_id, source, tool, ok, duration_ms) VALUES (?, 'rename_from', 'echo', 1, 5)",
+    ).run(account.organizationId);
+    const response = await rename("rename_from", "Rename To!");
+    expect(response.status).toBe(200);
+    const { data } = await body<SourceView>(response);
+    expect(data).toMatchObject({ name: "rename_to", status: "ok" });
+    expect((await call("/v1/sources/rename_from", { cookie: account.cookie })).status).toBe(404);
+    expect((await call("/v1/sources/rename_to", { cookie: account.cookie })).status).toBe(200);
+    const calls = db
+      .query<{ total: number }, [string]>(
+        "SELECT COUNT(*) AS total FROM tool_calls WHERE organization_id = ? AND source = 'rename_to'",
+      )
+      .get(account.organizationId);
+    expect(calls?.total).toBe(1);
+  });
+
+  test("refuses a name that is already in use or reserved", async () => {
+    await create("rename_taken", { kind: "mcp", url: open.mcpUrl });
+    const taken = await rename("rename_to", "rename_taken");
+    expect(taken.status).toBe(409);
+    expect((await body(taken)).error?.code).toBe("ALREADY_EXISTS");
+    expect((await rename("rename_to", "summary")).status).toBe(400);
+    expect((await call("/v1/sources/rename_to", { cookie: account.cookie })).status).toBe(200);
+  });
+
+  test("renaming to the same name changes nothing", async () => {
+    const response = await rename("rename_to", "rename_to");
+    expect((await body<SourceView>(response)).data.name).toBe("rename_to");
+  });
+
+  test("a paused source stays paused after a rename", async () => {
+    await call("/v1/sources/rename_taken", { method: "PATCH", cookie: account.cookie, json: { enabled: false } });
+    const response = await rename("rename_taken", "rename_paused");
+    expect((await body<SourceView>(response)).data).toMatchObject({ name: "rename_paused", enabled: false });
   });
 });
