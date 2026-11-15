@@ -21,3 +21,6 @@
 
 /llms.txt
   Content-Type: text/plain; charset=utf-8
+
+/shots/*
+  Cache-Control: public, max-age=604800
