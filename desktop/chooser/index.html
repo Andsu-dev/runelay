@@ -1,0 +1,735 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com"
+    />
+    <meta name="color-scheme" content="light dark" />
+    <title>runelay</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&display=swap" />
+    <style>
+      :root {
+        --background: oklch(0.995 0 0);
+        --foreground: oklch(0.17 0.003 260);
+        --card: oklch(1 0 0);
+        --muted: oklch(0.955 0.001 260);
+        --muted-foreground: oklch(0.52 0.006 260);
+        --accent: oklch(0.94 0.002 260);
+        --destructive: oklch(0.58 0.19 25);
+        --primary-foreground: oklch(0.99 0 0);
+        --input: oklch(0.9 0.002 260);
+        --ring: oklch(0.17 0.003 260);
+        --app-icon: oklch(0.13 0.003 260);
+        --button-top: oklch(0.34 0.004 260);
+        --button-bottom: oklch(0.16 0.003 260);
+        --button-edge: oklch(0.1 0.002 260);
+        --button-highlight: oklch(1 0 0 / 0.24);
+        --button-glow: oklch(0.17 0.003 260 / 0.28);
+        --sheen: oklch(1 0 0 / 0.28);
+        --silver-from: oklch(0.99 0 0);
+        --silver-to: oklch(0.72 0.015 260);
+        --radius: 0.625rem;
+        --elevation-xs: 0 1px 2px oklch(0 0 0 / 0.04);
+        --elevation-lg: 0 8px 24px oklch(0 0 0 / 0.12);
+        --card-hover: var(--muted);
+        --card-selected: var(--card);
+        --field: color-mix(in oklch, var(--muted) 60%, transparent);
+        --field-hover: var(--muted);
+        --ease: cubic-bezier(0.2, 0, 0, 1);
+        --default-font-stack: "Inter", ui-sans-serif, system-ui, sans-serif;
+        color-scheme: light;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --background: oklch(0.155 0.002 260);
+          --foreground: oklch(0.97 0.001 260);
+          --card: oklch(0.19 0.003 260);
+          --muted: oklch(0.24 0.003 260);
+          --muted-foreground: oklch(0.66 0.008 260);
+          --accent: oklch(0.26 0.003 260);
+          --destructive: oklch(0.68 0.17 25);
+          --primary-foreground: oklch(0.155 0.002 260);
+          --input: oklch(0.3 0.003 260);
+          --ring: oklch(0.97 0.001 260);
+          --button-top: oklch(1 0 0);
+          --button-bottom: oklch(0.84 0.004 260);
+          --button-edge: oklch(1 0 0 / 0.55);
+          --button-highlight: oklch(1 0 0 / 0.95);
+          --button-glow: oklch(1 0 0 / 0.16);
+          --sheen: oklch(1 0 0 / 0.55);
+          --silver-from: oklch(1 0 0);
+          --silver-to: oklch(0.7 0.018 260);
+          --elevation-xs: 0 0 0 1px oklch(1 0 0 / 0.05);
+          --elevation-lg: 0 8px 24px oklch(0 0 0 / 0.5), 0 0 0 1px oklch(1 0 0 / 0.06);
+          --card-hover: color-mix(in oklch, var(--card) 50%, var(--muted));
+          --card-selected: color-mix(in oklch, var(--card) 30%, var(--muted));
+          --field: color-mix(in oklch, var(--input) 40%, transparent);
+          --field-hover: color-mix(in oklch, var(--input) 60%, transparent);
+          color-scheme: dark;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+      }
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 56px 40px 40px;
+        background-color: var(--background);
+        color: var(--foreground);
+        font-family: var(--default-font-stack);
+        font-size: 14px;
+        line-height: 1.5;
+        font-feature-settings: "cv01", "cv02", "cv11", "ss03";
+        letter-spacing: -0.006em;
+        -webkit-font-smoothing: antialiased;
+        -webkit-user-select: none;
+        user-select: none;
+        cursor: default;
+      }
+      ::selection {
+        background-color: var(--foreground);
+        color: var(--background);
+      }
+      :focus {
+        outline: none;
+      }
+      :focus-visible {
+        outline: 1.5px solid color-mix(in oklch, var(--ring) 28%, transparent);
+        outline-offset: 1px;
+      }
+      button,
+      input {
+        font: inherit;
+        color: inherit;
+        letter-spacing: inherit;
+        -webkit-app-region: no-drag;
+      }
+      button:not(:disabled) {
+        cursor: pointer;
+      }
+      svg {
+        display: block;
+        flex-shrink: 0;
+      }
+      .drag {
+        position: fixed;
+        inset: 0 0 auto;
+        height: 44px;
+        -webkit-app-region: drag;
+      }
+      .column {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+        width: 100%;
+        max-width: 400px;
+      }
+      .intro {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        text-align: center;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .app-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius);
+        background-color: var(--app-icon);
+        box-shadow: var(--elevation-lg);
+      }
+      .app-icon svg {
+        width: 22px;
+        height: 22px;
+        overflow: visible;
+      }
+      .heading {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 600;
+        line-height: 1.3;
+        letter-spacing: -0.02em;
+      }
+      .heading p {
+        margin: 0;
+        font-size: 13px;
+        color: var(--muted-foreground);
+      }
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .card {
+        border-radius: calc(var(--radius) + 4px);
+        background-color: var(--card);
+        box-shadow: var(--elevation-xs);
+        transition:
+          background-color 200ms var(--ease),
+          box-shadow 200ms var(--ease),
+          scale 200ms var(--ease),
+          opacity 200ms var(--ease);
+      }
+      .option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        padding: 14px 14px 14px 12px;
+        border: 0;
+        border-radius: calc(var(--radius) + 4px);
+        text-align: left;
+      }
+      button.card {
+        border: 0;
+      }
+      .remote .option {
+        background: transparent;
+      }
+      .options[data-busy] .card:not([data-selected]) {
+        opacity: 0.5;
+      }
+      button.card:not(:disabled):hover,
+      .remote:has(.option:not(:disabled):hover) {
+        background-color: var(--card-hover);
+      }
+      button.card:not(:disabled):active,
+      .remote:has(.option:not(:disabled):active) {
+        scale: 0.99;
+      }
+      .card[data-selected],
+      button.card[data-selected]:not(:disabled):hover,
+      .remote[data-selected]:has(.option:not(:disabled):hover) {
+        background-color: var(--card-selected);
+        box-shadow: var(--elevation-lg);
+      }
+      .icon-tile {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: calc(var(--radius) - 2px);
+        background-color: var(--muted);
+        color: var(--foreground);
+        transition: background-color 200ms var(--ease);
+      }
+      button.card:not(:disabled):hover .icon-tile,
+      .remote:has(.option:not(:disabled):hover) .icon-tile,
+      .card[data-selected] .icon-tile {
+        background-color: var(--accent);
+      }
+      .icon-tile svg {
+        width: 18px;
+        height: 18px;
+      }
+      .copy {
+        display: flex;
+        flex: 1;
+        min-width: 0;
+        flex-direction: column;
+        gap: 1px;
+      }
+      .copy strong {
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .copy span {
+        font-size: 13px;
+        color: var(--muted-foreground);
+      }
+      .trail {
+        display: grid;
+        place-items: center;
+        width: 20px;
+        height: 20px;
+        color: var(--muted-foreground);
+      }
+      .trail > svg {
+        grid-area: 1 / 1;
+        width: 16px;
+        height: 16px;
+        transition:
+          translate 200ms var(--ease),
+          rotate 200ms var(--ease),
+          opacity 150ms var(--ease);
+      }
+      button.card:not(:disabled):hover .chevron {
+        translate: 2px 0;
+      }
+      .remote[data-open="true"] .chevron {
+        rotate: 90deg;
+      }
+      .trail .check {
+        opacity: 0;
+        scale: 0.6;
+        color: var(--foreground);
+        transition:
+          opacity 150ms var(--ease),
+          scale 200ms var(--ease);
+      }
+      [data-selected] .trail .chevron {
+        opacity: 0;
+      }
+      [data-selected] .trail .check {
+        opacity: 1;
+        scale: 1;
+      }
+      .spinner {
+        animation: spin 900ms linear infinite;
+      }
+      .panel {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 280ms var(--ease);
+      }
+      .remote[data-open="true"] .panel {
+        grid-template-rows: 1fr;
+      }
+      .panel-clip {
+        min-height: 0;
+        overflow: hidden;
+      }
+      .panel-body {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 0 14px 14px 60px;
+        opacity: 0;
+        translate: 0 -4px;
+        transition:
+          opacity 200ms var(--ease),
+          translate 280ms var(--ease);
+      }
+      .remote[data-open="true"] .panel-body {
+        opacity: 1;
+        translate: 0 0;
+      }
+      form {
+        display: flex;
+        gap: 8px;
+        margin: 0;
+        padding: 2px;
+      }
+      input {
+        flex: 1;
+        min-width: 0;
+        height: 36px;
+        padding: 4px 12px;
+        border: 1px solid transparent;
+        border-radius: calc(var(--radius) - 2px);
+        background-color: var(--field);
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.015);
+        font-size: 14px;
+        -webkit-user-select: text;
+        user-select: text;
+        transition:
+          color 200ms var(--ease),
+          box-shadow 200ms var(--ease),
+          background-color 200ms var(--ease);
+      }
+      input::placeholder {
+        color: var(--muted-foreground);
+        transition: opacity 200ms;
+      }
+      input:focus::placeholder {
+        opacity: 0.6;
+      }
+      input:hover:not(:disabled) {
+        background-color: var(--field-hover);
+      }
+      input:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 2px color-mix(in oklch, var(--ring) 30%, transparent);
+      }
+      input[aria-invalid="true"] {
+        box-shadow: 0 0 0 2px var(--destructive);
+        animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+      }
+      input:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+      .button {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        display: inline-flex;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        height: 36px;
+        padding: 0 14px;
+        border: 0;
+        border-radius: var(--radius);
+        font-size: 13px;
+        font-weight: 500;
+        white-space: nowrap;
+        color: var(--primary-foreground);
+        background-image: linear-gradient(to bottom, var(--button-top), var(--button-bottom));
+        box-shadow:
+          inset 0 1px 0 var(--button-highlight),
+          0 0 0 1px var(--button-edge),
+          0 1px 2px oklch(0 0 0 / 0.18),
+          0 8px 20px -8px var(--button-glow);
+        transition:
+          color 200ms var(--ease),
+          box-shadow 200ms var(--ease),
+          filter 200ms var(--ease),
+          scale 200ms var(--ease);
+      }
+      .button:not(:disabled):hover {
+        box-shadow:
+          inset 0 1px 0 var(--button-highlight),
+          0 0 0 1px var(--button-edge),
+          0 1px 2px oklch(0 0 0 / 0.18),
+          0 10px 28px -8px var(--button-glow);
+        filter: brightness(1.04);
+      }
+      .button:not(:disabled):active {
+        scale: 0.97;
+      }
+      .button:focus-visible {
+        outline: 2px solid color-mix(in oklch, var(--ring) 25%, transparent);
+        outline-offset: 2px;
+      }
+      .button:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+      .button[data-loading] {
+        cursor: progress;
+        opacity: 0.8;
+      }
+      .button::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background-image: linear-gradient(105deg, transparent 30%, var(--sheen) 48%, transparent 66%);
+        transform: translateX(-120%);
+        opacity: 0;
+        transition:
+          transform 650ms var(--ease),
+          opacity 200ms ease-out;
+      }
+      .button:not(:disabled):hover::after {
+        transform: translateX(120%);
+        opacity: 1;
+      }
+      .button .spinner {
+        display: none;
+        width: 16px;
+        height: 16px;
+      }
+      .button[data-loading] .spinner {
+        display: block;
+      }
+      .error {
+        margin: 0;
+        padding: 0 2px;
+        font-size: 13px;
+        color: var(--destructive);
+        -webkit-user-select: text;
+        user-select: text;
+      }
+      .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .continue {
+        width: 100%;
+        height: 40px;
+        padding: 0 20px;
+      }
+      .success {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        text-align: center;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition:
+          opacity 260ms var(--ease) 140ms,
+          visibility 0s linear 400ms;
+      }
+      .success svg {
+        width: 56px;
+        height: 56px;
+        color: var(--foreground);
+      }
+      .success .ring {
+        stroke-dasharray: 139;
+        stroke-dashoffset: 139;
+        transition: stroke-dashoffset 420ms var(--ease) 160ms;
+        transform: rotate(-90deg);
+        transform-origin: center;
+      }
+      .success .tick {
+        stroke-dasharray: 30;
+        stroke-dashoffset: 30;
+        transition: stroke-dashoffset 260ms var(--ease) 480ms;
+      }
+      .success-copy {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        translate: 0 6px;
+        transition: translate 360ms var(--ease) 360ms;
+      }
+      .success-copy strong {
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
+      .success-copy span {
+        font-size: 13px;
+        color: var(--muted-foreground);
+      }
+      .column {
+        transition:
+          opacity 200ms var(--ease),
+          scale 260ms var(--ease);
+      }
+      [data-state="success"] .column {
+        opacity: 0;
+        scale: 0.98;
+        pointer-events: none;
+      }
+      [data-state="success"] .success {
+        opacity: 1;
+        visibility: visible;
+        transition:
+          opacity 260ms var(--ease) 140ms,
+          visibility 0s;
+      }
+      [data-state="success"] .success .ring,
+      [data-state="success"] .success .tick {
+        stroke-dashoffset: 0;
+      }
+      [data-state="success"] .success-copy {
+        translate: 0 0;
+      }
+      [data-state="leaving"] {
+        opacity: 0;
+        transition: opacity 200ms var(--ease);
+      }
+      .error:empty {
+        display: none;
+      }
+      .reveal {
+        opacity: 0;
+        translate: 0 8px;
+        transition:
+          opacity 300ms var(--ease),
+          translate 300ms var(--ease);
+        transition-delay: calc(var(--i) * 40ms);
+      }
+      .ready .reveal {
+        opacity: 1;
+        translate: 0 0;
+      }
+      @keyframes spin {
+        to {
+          rotate: 360deg;
+        }
+      }
+      @keyframes shake {
+        10%,
+        90% {
+          translate: -1px 0;
+        }
+        20%,
+        80% {
+          translate: 2px 0;
+        }
+        30%,
+        50%,
+        70% {
+          translate: -3px 0;
+        }
+        40%,
+        60% {
+          translate: 3px 0;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          transition-duration: 1ms !important;
+          transition-delay: 0ms !important;
+          animation-duration: 1ms !important;
+          animation-iteration-count: 1 !important;
+        }
+        .reveal,
+        .panel-body,
+        .success-copy {
+          translate: 0 0;
+        }
+        .column,
+        .success,
+        [data-state="success"] .success {
+          transition-duration: 150ms !important;
+        }
+        .success .ring,
+        .success .tick {
+          stroke-dashoffset: 0;
+        }
+        .button::after {
+          display: none;
+        }
+        .spinner {
+          animation: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="drag" aria-hidden="true"></div>
+    <div class="column">
+      <header class="intro">
+        <div class="brand reveal" style="--i: 0" role="img" aria-label="runelay">
+          <span class="app-icon">
+            <svg viewBox="226 216 572 592" aria-hidden="true">
+              <defs>
+                <linearGradient id="logo-silver" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="var(--silver-from)" />
+                  <stop offset="1" stop-color="var(--silver-to)" />
+                </linearGradient>
+              </defs>
+              <path d="M492 285A256 256 0 0 0 492 797Z" fill="url(#logo-silver)" />
+              <path d="M532 226A256 256 0 0 1 532 738Z" fill="url(#logo-silver)" />
+            </svg>
+          </span>
+        </div>
+        <div class="heading reveal" style="--i: 1">
+          <h1 data-i18n="title">Onde o runelay vai rodar?</h1>
+          <p data-i18n="subtitle">Dá para adicionar outros e trocar depois pelo menu Servidor.</p>
+        </div>
+      </header>
+      <main class="options">
+        <button class="card option reveal" id="local" type="button" aria-pressed="false" style="--i: 2">
+          <span class="icon-tile">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14 21H16M14 21C13.1716 21 12.5 20.3284 12.5 19.5V17L12 17M14 21H10M10 21H8M10 21C10.8284 21 11.5 20.3284 11.5 19.5V17L12 17M12 17V21" />
+              <path d="M16 3H8C5.17157 3 3.75736 3 2.87868 3.87868C2 4.75736 2 6.17157 2 9V11C2 13.8284 2 15.2426 2.87868 16.1213C3.75736 17 5.17157 17 8 17H16C18.8284 17 20.2426 17 21.1213 16.1213C22 15.2426 22 13.8284 22 11V9C22 6.17157 22 4.75736 21.1213 3.87868C20.2426 3 18.8284 3 16 3Z" />
+            </svg>
+          </span>
+          <span class="copy">
+            <strong data-i18n="localTitle">Rodar neste computador</strong>
+            <span data-i18n="localDescription">O servidor roda aqui mesmo, sem nada para configurar.</span>
+          </span>
+          <span class="trail" aria-hidden="true">
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9.00005 6C9.00005 6 15 10.4189 15 12C15 13.5812 9 18 9 18" />
+            </svg>
+            <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 14L8.5 17.5L19 6.5" />
+            </svg>
+          </span>
+        </button>
+        <section class="card remote reveal" id="remote-card" data-open="false" style="--i: 3">
+          <button class="option" id="remote-toggle" type="button" aria-pressed="false" aria-expanded="false" aria-controls="remote-panel">
+            <span class="icon-tile">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M19 4H5C4.06812 4 3.60218 4 3.23463 4.15224C2.74458 4.35523 2.35523 4.74458 2.15224 5.23463C2 5.60218 2 6.06812 2 7C2 7.93188 2 8.39782 2.15224 8.76537C2.35523 9.25542 2.74458 9.64477 3.23463 9.84776C3.60218 10 4.06812 10 5 10H19C19.9319 10 20.3978 10 20.7654 9.84776C21.2554 9.64477 21.6448 9.25542 21.8478 8.76537C22 8.39782 22 7.93188 22 7C22 6.06812 22 5.60218 21.8478 5.23463C21.6448 4.74458 21.2554 4.35523 20.7654 4.15224C20.3978 4 19.9319 4 19 4Z" />
+                <path d="M19 14H5C4.06812 14 3.60218 14 3.23463 14.1522C2.74458 14.3552 2.35523 14.7446 2.15224 15.2346C2 15.6022 2 16.0681 2 17C2 17.9319 2 18.3978 2.15224 18.7654C2.35523 19.2554 2.74458 19.6448 3.23463 19.8478C3.60218 20 4.06812 20 5 20H19C19.9319 20 20.3978 20 20.7654 19.8478C21.2554 19.6448 21.6448 19.2554 21.8478 18.7654C22 18.3978 22 17.9319 22 17C22 16.0681 22 15.6022 21.8478 15.2346C21.6448 14.7446 21.2554 14.3552 20.7654 14.1522C20.3978 14 19.9319 14 19 14Z" />
+                <path d="M6.125 7H6M6.25 7C6.25 7.13807 6.13807 7.25 6 7.25C5.86193 7.25 5.75 7.13807 5.75 7C5.75 6.86193 5.86193 6.75 6 6.75C6.13807 6.75 6.25 6.86193 6.25 7Z" />
+                <path d="M10.125 7H10M10.25 7C10.25 7.13807 10.1381 7.25 10 7.25C9.86193 7.25 9.75 7.13807 9.75 7C9.75 6.86193 9.86193 6.75 10 6.75C10.1381 6.75 10.25 6.86193 10.25 7Z" />
+                <path d="M6.125 17H6M6.25 17C6.25 17.1381 6.13807 17.25 6 17.25C5.86193 17.25 5.75 17.1381 5.75 17C5.75 16.8619 5.86193 16.75 6 16.75C6.13807 16.75 6.25 16.8619 6.25 17Z" />
+                <path d="M10.125 17H10M10.25 17C10.25 17.1381 10.1381 17.25 10 17.25C9.86193 17.25 9.75 17.1381 9.75 17C9.75 16.8619 9.86193 16.75 10 16.75C10.1381 16.75 10.25 16.8619 10.25 17Z" />
+              </svg>
+            </span>
+            <span class="copy">
+              <strong data-i18n="remoteTitle">Conectar a um servidor</strong>
+              <span data-i18n="remoteDescription">Use um runelay que já roda em outra máquina ou na nuvem.</span>
+            </span>
+            <span class="trail" aria-hidden="true">
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9.00005 6C9.00005 6 15 10.4189 15 12C15 13.5812 9 18 9 18" />
+              </svg>
+              <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 14L8.5 17.5L19 6.5" />
+              </svg>
+            </span>
+          </button>
+          <div class="panel" id="remote-panel" inert>
+            <div class="panel-clip">
+              <div class="panel-body">
+                <form id="remote" novalidate>
+                  <input
+                    id="url"
+                    type="url"
+                    inputmode="url"
+                    autocomplete="url"
+                    spellcheck="false"
+                    placeholder="https://runelay.exemplo.com"
+                    aria-label="Endereço do servidor"
+                    aria-describedby="error"
+                  />
+                </form>
+                <p class="error" id="error" role="alert"></p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+      <div class="actions reveal" style="--i: 4">
+        <p class="error" id="general-error" role="alert"></p>
+        <button class="button continue" id="continue" type="button" disabled>
+          <svg class="spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+            <path d="M12 3V6" /><path d="M12 18V21" /><path d="M21 12L18 12" /><path d="M6 12L3 12" />
+            <path d="M18.3635 5.63672L16.2422 7.75804" /><path d="M7.75804 16.2422L5.63672 18.3635" />
+            <path d="M18.3635 18.3635L16.2422 16.2422" /><path d="M7.75804 7.75804L5.63672 5.63672" />
+          </svg>
+          <span id="continue-label" data-i18n="continue">Continuar</span>
+        </button>
+      </div>
+    </div>
+    <div class="success" id="success" aria-live="polite">
+      <svg viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle class="ring" cx="28" cy="28" r="22" />
+        <path class="tick" d="M18.5 28.5L25 35L38 21.5" />
+      </svg>
+      <div class="success-copy">
+        <strong id="success-title"></strong>
+        <span id="success-detail"></span>
+      </div>
+    </div>
+    <script src="chooser.js"></script>
+  </body>
+</html>
