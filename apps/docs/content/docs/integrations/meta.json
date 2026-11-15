@@ -4,6 +4,7 @@
   "pages": [
     "index",
     "---Popular---",
+    "conty",
     "linear",
     "github",
     "notion",
@@ -21,6 +22,7 @@
     "prisma",
     "deepwiki",
     "context7",
+    "firecrawl",
     "huggingface",
     "---Work and content---",
     "google",
