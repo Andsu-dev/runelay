@@ -108,7 +108,13 @@ export const importSources = async (
     "config" in input ? parseClientConfig(input.config, {}) : ok(input.sources);
   if (parsed.error) return parsed;
   const checks = await Promise.all(parsed.data.map((source) => checkSourcePolicy(source.config, actor)));
-  const allowed = parsed.data.filter((_, index) => !checks[index]?.error);
+  const permitted = parsed.data.filter((_, index) => !checks[index]?.error);
+  const alreadyConnected = new Set(
+    permitted
+      .filter((source) => findSourceView({ organizationId, name: source.name }).data?.status === "ok")
+      .map((source) => source.name),
+  );
+  const allowed = permitted.filter((source) => !alreadyConnected.has(source.name));
   const skipped = parsed.data.flatMap((source, index) => {
     const reason = checks[index]?.error?.message;
     return reason ? [{ name: source.name, reason }] : [];
@@ -120,8 +126,8 @@ export const importSources = async (
   if (saved.error) return saved;
   const results = await Promise.all(allowed.map((source) => importOne(organizationId, source)));
   return ok({
-    imported: allowed.map((source) => source.name),
-    connected: allowed.filter((_, index) => results[index]).map((source) => source.name),
+    imported: permitted.map((source) => source.name),
+    connected: [...alreadyConnected, ...allowed.filter((_, index) => results[index]).map((source) => source.name)],
     skipped,
   });
 };

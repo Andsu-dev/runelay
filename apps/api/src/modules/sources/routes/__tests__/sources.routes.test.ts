@@ -270,6 +270,27 @@ describe("import", () => {
     expect(data).toEqual({ imported: ["from_file"], connected: ["from_file"], skipped: [] });
   });
 
+  test("keeps a connected source untouched when it is imported again", async () => {
+    const again = await call("/v1/sources/import", {
+      method: "POST",
+      cookie: account.cookie,
+      json: {
+        sources: [
+          {
+            name: "from_file",
+            config: { kind: "mcp", url: locked.mcpUrl },
+            oauth: { clientId: "stale", refreshToken: "stale", expiresAt: 1 },
+          },
+        ],
+      },
+    });
+    const { data } = await body<ImportView>(again);
+    expect(data).toEqual({ imported: ["from_file"], connected: ["from_file"], skipped: [] });
+    const stored = findSource({ organizationId: account.organizationId, name: "from_file" });
+    expect(stored.data?.config).toMatchObject({ url: open.mcpUrl });
+    expect(stored.data?.oauth.imported).toBeUndefined();
+  });
+
   test("rejects an invalid client config file", async () => {
     const response = await call("/v1/sources/import", {
       method: "POST",
