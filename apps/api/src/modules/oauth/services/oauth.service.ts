@@ -1,10 +1,9 @@
 import { auth } from "@modelcontextprotocol/sdk/client/auth.js";
 import { attempt, fail, type McpRemoteConfig, type OAuthStartView, ok, type Result } from "@runelay/shared";
 import { connectSource } from "@/modules/connectors/services/connection.service";
-import { createOAuthProvider } from "@/modules/oauth/providers/oauth-client.provider";
+import { createOAuthFetch, createOAuthProvider } from "@/modules/oauth/providers/oauth-client.provider";
 import { findSource, updateOAuth } from "@/modules/sources/repositories/source.repository";
 import type { SourceKey } from "@/modules/sources/types/source.types";
-import { guardedFetch } from "@/modules/sources/utils/guarded-fetch";
 
 const findRemoteConfig = (key: SourceKey): Result<McpRemoteConfig> => {
   const source = findSource(key);
@@ -29,7 +28,7 @@ export const startLogin = async (key: SourceKey): Promise<Result<OAuthStartView>
     authorizationUrl = url.toString();
   });
   const result = await attempt(
-    () => auth(provider, { serverUrl: config.data.url, fetchFn: guardedFetch }),
+    () => auth(provider, { serverUrl: config.data.url, fetchFn: createOAuthFetch(key) }),
     "OAUTH_FAILED",
   );
   if (result.error && /HTTP 403/.test(result.error.message)) {
@@ -54,7 +53,11 @@ export const completeLogin = async (key: SourceKey, code: string): Promise<Resul
   if (alreadyConnected(key)) return ok(null);
   const result = await attempt(
     () =>
-      auth(createOAuthProvider(key), { serverUrl: config.data.url, authorizationCode: code, fetchFn: guardedFetch }),
+      auth(createOAuthProvider(key), {
+        serverUrl: config.data.url,
+        authorizationCode: code,
+        fetchFn: createOAuthFetch(key),
+      }),
     "OAUTH_FAILED",
   );
   if (result.error) return result;

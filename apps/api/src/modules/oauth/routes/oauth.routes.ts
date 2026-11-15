@@ -2,10 +2,11 @@ import { Hono } from "hono";
 import { requireSession } from "@/modules/auth/middlewares/authenticate";
 import { OAUTH_DONE_PATH } from "@/modules/oauth/constants/oauth.constants";
 import { completeLogin } from "@/modules/oauth/services/oauth.service";
+import { decodeOAuthState } from "@/modules/oauth/utils/oauth-broker";
 import type { SessionEnv } from "@/shared/types/app.types";
 
 export const oauthRoutes = new Hono<SessionEnv>().get("/callback", requireSession, async (c) => {
-  const name = c.req.query("state") ?? "";
+  const name = decodeOAuthState(c.req.query("state") ?? "");
   const code = c.req.query("code");
   const target = new URL(`${OAUTH_DONE_PATH}/${encodeURIComponent(name)}`, c.req.url);
   target.searchParams.set("oauth", "done");

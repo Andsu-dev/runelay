@@ -1,5 +1,9 @@
+import { env } from "@/config/env";
 import type { CatalogSection } from "@/modules/catalog/types/catalog.types";
+import { GOOGLE_BROKER_CLIENT_ID } from "@/modules/oauth/constants/oauth.constants";
 import { hashUrl } from "@/modules/sources/utils/url-hash";
+
+const GOOGLE_CLIENT_ID = env.RUNELAY_GOOGLE_CLIENT_ID || GOOGLE_BROKER_CLIENT_ID;
 
 export const CATALOG: CatalogSection[] = [
   {
@@ -163,6 +167,48 @@ export const CATALOG: CatalogSection[] = [
     id: "work",
     title: "Trabalho e conteúdo",
     items: [
+      {
+        id: "google_calendar",
+        name: "Google Agenda",
+        description: "Eventos, agendas e horários livres.",
+        url: "https://calendarmcp.googleapis.com/mcp/v1",
+        icon: "googlecalendar",
+        auth: "oauth",
+        broker: {
+          provider: "google",
+          clientId: GOOGLE_CLIENT_ID,
+          scopes: [
+            "https://www.googleapis.com/auth/calendar.events",
+            "https://www.googleapis.com/auth/calendar.calendarlist.readonly",
+          ],
+        },
+      },
+      {
+        id: "google_docs",
+        name: "Google Docs",
+        description: "Leia, crie e edite documentos.",
+        url: "https://docsmcp.googleapis.com/mcp/v1",
+        icon: "googledocs",
+        auth: "oauth",
+        broker: {
+          provider: "google",
+          clientId: GOOGLE_CLIENT_ID,
+          scopes: ["https://www.googleapis.com/auth/documents"],
+        },
+      },
+      {
+        id: "google_sheets",
+        name: "Google Sheets",
+        description: "Planilhas, abas e células.",
+        url: "https://sheetsmcp.googleapis.com/mcp/v1",
+        icon: "googlesheets",
+        auth: "oauth",
+        broker: {
+          provider: "google",
+          clientId: GOOGLE_CLIENT_ID,
+          scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+        },
+      },
       {
         id: "asana",
         name: "Asana",

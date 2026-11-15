@@ -1,11 +1,13 @@
 import type { OAuthClientInformationMixed, OAuthTokens } from "@modelcontextprotocol/sdk/shared/auth.js";
 import type { SourceConfig, SourceStatus, SourceView } from "@runelay/shared";
+import type { OAuthBroker } from "@/modules/oauth/types/oauth.types";
 
 export interface OAuthState {
   client?: OAuthClientInformationMixed;
   tokens?: OAuthTokens;
   verifier?: string;
   imported?: boolean;
+  broker?: OAuthBroker;
 }
 
 export interface SourceKey {

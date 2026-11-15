@@ -7,9 +7,8 @@ import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { attempt, errorMessage, fail, type McpRemoteConfig, ok, type Result, type StdioConfig } from "@runelay/shared";
 import { CLIENT_INFO } from "@/modules/connectors/constants/connector.constants";
 import type { Connection, Tool } from "@/modules/connectors/types/connector.types";
-import { createOAuthProvider } from "@/modules/oauth/providers/oauth-client.provider";
+import { createOAuthFetch, createOAuthProvider } from "@/modules/oauth/providers/oauth-client.provider";
 import type { SourceKey } from "@/modules/sources/types/source.types";
-import { guardedFetch } from "@/modules/sources/utils/guarded-fetch";
 
 const unwrapToolResult = (result: CallToolResult): Result<unknown> => {
   const text = result.content.flatMap((part) => (part.type === "text" ? [part.text] : [])).join("\n");
@@ -54,7 +53,7 @@ export const connectMcpRemote = async (key: SourceKey, config: McpRemoteConfig):
   const options = {
     authProvider: createOAuthProvider(key),
     requestInit: { headers: config.headers },
-    fetch: guardedFetch,
+    fetch: createOAuthFetch(key),
   };
   const client = new Client(CLIENT_INFO);
   try {

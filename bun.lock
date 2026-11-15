@@ -80,6 +80,10 @@
         "vite": "^8.2.1",
       },
     },
+    "apps/oauth-broker": {
+      "name": "@runelay/oauth-broker",
+      "version": "0.4.3",
+    },
     "apps/web": {
       "name": "@runelay/web",
       "version": "0.4.3",
@@ -482,6 +486,8 @@
     "@runelay/docs": ["@runelay/docs@workspace:apps/docs"],
 
     "@runelay/lp": ["@runelay/lp@workspace:apps/lp"],
+
+    "@runelay/oauth-broker": ["@runelay/oauth-broker@workspace:apps/oauth-broker"],
 
     "@runelay/shared": ["@runelay/shared@workspace:packages/shared"],
 

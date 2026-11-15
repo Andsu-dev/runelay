@@ -1,0 +1,7 @@
+{
+  "name": "runelay-oauth-broker",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-01",
+  "workers_dev": false,
+  "routes": [{ "pattern": "auth.runelay.com", "custom_domain": true }]
+}
