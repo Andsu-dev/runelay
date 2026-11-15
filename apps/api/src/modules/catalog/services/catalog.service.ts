@@ -33,6 +33,7 @@ export const listCatalog = (organizationId: string, query?: string): Result<Cata
         return {
           ...item,
           tokenUrl: item.tokenUrl ?? null,
+          featured: item.featured ?? false,
           installed: Boolean(source),
           sourceName: source?.name ?? null,
           status: source?.status ?? null,
