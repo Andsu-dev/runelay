@@ -18,7 +18,7 @@ export function OrganizationOption({ organization, active, onSelect }: Organizat
       aria-current={active || undefined}
       className="flex min-h-11 w-full items-center gap-2.5 rounded-lg px-2 text-left text-[13px] font-medium transition-colors duration-150 hover:bg-foreground/[0.06] sm:min-h-9"
     >
-      <OrganizationTile name={organization.name} seed={organization.id} />
+      <OrganizationTile name={organization.name} seed={organization.id} logo={organization.logo} />
       <span className="min-w-0 flex-1 truncate">{organization.name}</span>
       <HugeiconsIcon
         icon={Tick02Icon}

@@ -1,4 +1,10 @@
-import type { CreateOrganizationInput, MeView, OrganizationView, SetActiveOrganizationInput } from "@runelay/shared";
+import type {
+  CreateOrganizationInput,
+  MeView,
+  OrganizationView,
+  SetActiveOrganizationInput,
+  UpdateOrganizationInput,
+} from "@runelay/shared";
 import { api } from "@/lib/api-client";
 
 export const createOrganization = (input: CreateOrganizationInput) =>
@@ -6,3 +12,8 @@ export const createOrganization = (input: CreateOrganizationInput) =>
 
 export const setActiveOrganization = (input: SetActiveOrganizationInput) =>
   api.post<MeView>("/organizations/active", input);
+
+export const updateOrganization = (organizationId: string, input: UpdateOrganizationInput) =>
+  api.patch<OrganizationView>(`/organizations/${organizationId}`, input);
+
+export const deleteOrganization = (organizationId: string) => api.delete<MeView>(`/organizations/${organizationId}`);

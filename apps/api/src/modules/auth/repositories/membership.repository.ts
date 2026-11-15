@@ -1,6 +1,13 @@
-import { attemptSync, type OrganizationRole, type OrganizationView, ok, type Result } from "@runelay/shared";
+import {
+  attemptSync,
+  type OrganizationRole,
+  type OrganizationView,
+  ok,
+  type Result,
+  type UpdateOrganizationInput,
+} from "@runelay/shared";
 import { db } from "@/db/connection";
-import { PERSONAL_ORGANIZATION_NAME } from "@/modules/auth/constants/auth.constants";
+import { ORGANIZATION_DATA_TABLES, PERSONAL_ORGANIZATION_NAME } from "@/modules/auth/constants/auth.constants";
 import { slugify } from "@/modules/auth/utils/slugify";
 import { SQL_NOW } from "@/shared/constants/sql.constants";
 
@@ -80,3 +87,47 @@ export const findMembership = (userId: string, organizationId: string): Result<O
   );
   return row.error ? row : ok(row.data);
 };
+
+export const updateOrganizationRow = (organizationId: string, patch: UpdateOrganizationInput): Result<null> =>
+  attemptSync(() => {
+    if (patch.name !== undefined)
+      db.query("UPDATE organization SET name = ? WHERE id = ?").run(patch.name, organizationId);
+    if (patch.logo !== undefined)
+      db.query("UPDATE organization SET logo = ? WHERE id = ?").run(patch.logo, organizationId);
+    return null;
+  }, "STORAGE_FAILED");
+
+export const listStrandedMembers = (organizationId: string): Result<string[]> =>
+  attemptSync(
+    () =>
+      db
+        .query<{ userId: string }, [string]>(
+          `SELECT m.userId FROM member m
+           WHERE m.organizationId = ?1
+             AND NOT EXISTS (SELECT 1 FROM member o WHERE o.userId = m.userId AND o.organizationId != ?1)`,
+        )
+        .all(organizationId)
+        .map((row) => row.userId),
+    "STORAGE_FAILED",
+  );
+
+export const deleteOrganizationRows = (organizationId: string): Result<null> =>
+  attemptSync(
+    db.transaction(() => {
+      for (const table of ORGANIZATION_DATA_TABLES)
+        db.query(`DELETE FROM ${table} WHERE organization_id = ?`).run(organizationId);
+      db.query("DELETE FROM apikey WHERE referenceId = ?").run(organizationId);
+      db.query(
+        `UPDATE session SET activeOrganizationId = (
+           SELECT m.organizationId FROM member m
+           WHERE m.userId = session.userId AND m.organizationId != ?1
+           ORDER BY m.createdAt LIMIT 1
+         ) WHERE activeOrganizationId = ?1`,
+      ).run(organizationId);
+      db.query("DELETE FROM invitation WHERE organizationId = ?").run(organizationId);
+      db.query("DELETE FROM member WHERE organizationId = ?").run(organizationId);
+      db.query("DELETE FROM organization WHERE id = ?").run(organizationId);
+      return null;
+    }),
+    "STORAGE_FAILED",
+  );

@@ -27,6 +27,7 @@ import { Route as AppMemoryIndexRouteImport } from './routes/_app/memory/index'
 import { Route as AppMemorySlugRouteImport } from './routes/_app/memory/$slug'
 import { Route as AppSettingsIndexRouteImport } from './routes/_app/settings/index'
 import { Route as AppSettingsAboutRouteImport } from './routes/_app/settings/about'
+import { Route as AppSettingsOrganizationRouteImport } from './routes/_app/settings/organization'
 import { Route as AppSettingsPreferencesRouteImport } from './routes/_app/settings/preferences'
 import { Route as AppSettingsProfileRouteImport } from './routes/_app/settings/profile'
 import { Route as AppSettingsServerRouteImport } from './routes/_app/settings/server'
@@ -122,6 +123,11 @@ const AppSettingsAboutRoute = AppSettingsAboutRouteImport.update({
   path: '/about',
   getParentRoute: () => AppSettingsRoute,
 } as any)
+const AppSettingsOrganizationRoute = AppSettingsOrganizationRouteImport.update({
+  id: '/organization',
+  path: '/organization',
+  getParentRoute: () => AppSettingsRoute,
+} as any)
 const AppSettingsPreferencesRoute = AppSettingsPreferencesRouteImport.update({
   id: '/preferences',
   path: '/preferences',
@@ -163,6 +169,7 @@ export interface FileRoutesByFullPath {
   '/connectors/reconnect': typeof AppConnectorsReconnectRoute
   '/memory/$slug': typeof AppMemorySlugRoute
   '/settings/about': typeof AppSettingsAboutRoute
+  '/settings/organization': typeof AppSettingsOrganizationRoute
   '/settings/preferences': typeof AppSettingsPreferencesRoute
   '/settings/profile': typeof AppSettingsProfileRoute
   '/settings/server': typeof AppSettingsServerRoute
@@ -186,6 +193,7 @@ export interface FileRoutesByTo {
   '/connectors/reconnect': typeof AppConnectorsReconnectRoute
   '/memory/$slug': typeof AppMemorySlugRoute
   '/settings/about': typeof AppSettingsAboutRoute
+  '/settings/organization': typeof AppSettingsOrganizationRoute
   '/settings/preferences': typeof AppSettingsPreferencesRoute
   '/settings/profile': typeof AppSettingsProfileRoute
   '/settings/server': typeof AppSettingsServerRoute
@@ -212,6 +220,7 @@ export interface FileRoutesById {
   '/_app/connectors/reconnect': typeof AppConnectorsReconnectRoute
   '/_app/memory/$slug': typeof AppMemorySlugRoute
   '/_app/settings/about': typeof AppSettingsAboutRoute
+  '/_app/settings/organization': typeof AppSettingsOrganizationRoute
   '/_app/settings/preferences': typeof AppSettingsPreferencesRoute
   '/_app/settings/profile': typeof AppSettingsProfileRoute
   '/_app/settings/server': typeof AppSettingsServerRoute
@@ -238,6 +247,7 @@ export interface FileRouteTypes {
     | '/connectors/reconnect'
     | '/memory/$slug'
     | '/settings/about'
+    | '/settings/organization'
     | '/settings/preferences'
     | '/settings/profile'
     | '/settings/server'
@@ -261,6 +271,7 @@ export interface FileRouteTypes {
     | '/connectors/reconnect'
     | '/memory/$slug'
     | '/settings/about'
+    | '/settings/organization'
     | '/settings/preferences'
     | '/settings/profile'
     | '/settings/server'
@@ -286,6 +297,7 @@ export interface FileRouteTypes {
     | '/_app/connectors/reconnect'
     | '/_app/memory/$slug'
     | '/_app/settings/about'
+    | '/_app/settings/organization'
     | '/_app/settings/preferences'
     | '/_app/settings/profile'
     | '/_app/settings/server'
@@ -433,6 +445,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSettingsAboutRouteImport
       parentRoute: typeof AppSettingsRoute
     }
+    '/_app/settings/organization': {
+      id: '/_app/settings/organization'
+      path: '/organization'
+      fullPath: '/settings/organization'
+      preLoaderRoute: typeof AppSettingsOrganizationRouteImport
+      parentRoute: typeof AppSettingsRoute
+    }
     '/_app/settings/preferences': {
       id: '/_app/settings/preferences'
       path: '/preferences'
@@ -473,6 +492,7 @@ declare module '@tanstack/react-router' {
 
 interface AppSettingsRouteChildren {
   AppSettingsAboutRoute: typeof AppSettingsAboutRoute
+  AppSettingsOrganizationRoute: typeof AppSettingsOrganizationRoute
   AppSettingsPreferencesRoute: typeof AppSettingsPreferencesRoute
   AppSettingsProfileRoute: typeof AppSettingsProfileRoute
   AppSettingsServerRoute: typeof AppSettingsServerRoute
@@ -481,6 +501,7 @@ interface AppSettingsRouteChildren {
 
 const AppSettingsRouteChildren: AppSettingsRouteChildren = {
   AppSettingsAboutRoute: AppSettingsAboutRoute,
+  AppSettingsOrganizationRoute: AppSettingsOrganizationRoute,
   AppSettingsPreferencesRoute: AppSettingsPreferencesRoute,
   AppSettingsProfileRoute: AppSettingsProfileRoute,
   AppSettingsServerRoute: AppSettingsServerRoute,
