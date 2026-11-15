@@ -199,7 +199,7 @@ OAuth callbacks go to `PUBLIC_URL/v1/oauth/callback`, so `PUBLIC_URL` must be th
 | `RUNELAY_UPDATER_URL` | set by `compose.yaml` | Where the updater listens. |
 | `ALLOW_SIGNUP` | `false` | Keep signups open after the first account. |
 | `RUNELAY_ENABLE_EXECUTE` | `true` | Enables the sandboxed `execute` tool. See Security. |
-| `RUNELAY_ENABLE_STDIO` | `false` | Enables local MCP servers by command. See Security. |
+| `RUNELAY_ENABLE_STDIO` | `false` | Enables local MCP servers by command. See Security. The Docker image ships without Node, so commands like `npx` need the desktop app or a custom image. |
 | `RUNELAY_ALLOW_PRIVATE_URLS` | `false` | Allows connections to private network addresses. |
 | `RUNELAY_RATE_LIMIT_PER_MINUTE` | `240` | Requests per minute allowed for each API key. |
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | empty | Enables "Sign in with GitHub" on the panel. |
