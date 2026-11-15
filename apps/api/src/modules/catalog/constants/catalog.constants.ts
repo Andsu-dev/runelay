@@ -177,10 +177,7 @@ export const CATALOG: CatalogSection[] = [
         broker: {
           provider: "google",
           clientId: GOOGLE_CLIENT_ID,
-          scopes: [
-            "https://www.googleapis.com/auth/calendar.events",
-            "https://www.googleapis.com/auth/calendar",
-          ],
+          scopes: ["https://www.googleapis.com/auth/calendar.events", "https://www.googleapis.com/auth/calendar"],
         },
       },
       {
