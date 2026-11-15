@@ -47,9 +47,9 @@ curl -fsSL runelay.com/cli | sh
 runelay migrate
 ```
 
-`migrate` logs in through the browser if needed, then reads Claude Code, Codex, Cursor, Grok, Gemini and OpenCode: MCP servers, memories, skills and global instructions. It shows a summary per agent, asks once and sends everything.
+`migrate` logs in through the browser if needed, then reads Claude Code, Codex, Cursor, Grokbot, Gemini and OpenCode: MCP servers, memories, skills and global instructions. It shows a summary per agent, asks once and sends everything.
 
-- **Comes connected:** OAuth accounts the agent already logged into. runelay reads the tokens Grok keeps in `~/.grok/mcp_credentials.json` and, on macOS, the ones Codex and Claude Code keep in the Keychain (macOS may ask for permission). Servers that authenticate with headers come connected too.
+- **Comes connected:** OAuth accounts the agent already logged into. runelay reads the tokens Grokbot keeps in `~/.grok/mcp_credentials.json` and, on macOS, the ones Codex and Claude Code keep in the Keychain (macOS may ask for permission). Servers that authenticate with headers come connected too.
 - **Asks for login:** everything else, including Cursor accounts (Cursor encrypts its tokens). At the end the CLI opens `/connectors/reconnect`, a queue that walks you through the remaining logins one tab at a time.
 - **Stays on the agent:** local command servers (stdio). Add them from the panel if you want them in runelay.
 - **Token rotation:** many providers rotate the refresh token on use. Once runelay refreshes it, the old agent may ask you to log in again. Run with `--replace` to remove the migrated MCPs from the agents and leave only runelay.

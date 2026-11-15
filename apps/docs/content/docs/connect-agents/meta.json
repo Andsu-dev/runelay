@@ -1,0 +1,18 @@
+{
+  "title": "Connect agents",
+  "icon": "Plug",
+  "pages": [
+    "index",
+    "claude-code",
+    "codex",
+    "cursor",
+    "grok",
+    "antigravity",
+    "hermes-agent",
+    "openclaw",
+    "mausbot",
+    "opencode",
+    "openbot",
+    "kimi-code"
+  ]
+}

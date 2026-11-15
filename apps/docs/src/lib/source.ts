@@ -1,7 +1,7 @@
 import { llms, loader } from "fumadocs-core/source";
-import { lucideIconsPlugin } from "fumadocs-core/source/lucide-icons";
 import { applyMdxPreset } from "fumadocs-mdx/config";
 import { defineDocs } from "fumadocs-mdx/macro";
+import { resolveIcon } from "./icons";
 
 interface MarkdownTree {
   children: { type: string; depth?: number }[];
@@ -25,7 +25,7 @@ export const docs = defineDocs({
 export const source = loader({
   source: docs.toFumadocsSource(),
   baseUrl: "/",
-  plugins: [lucideIconsPlugin()],
+  icon: resolveIcon,
 });
 
 export const docsLlms = llms(source, {
