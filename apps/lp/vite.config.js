@@ -18,6 +18,7 @@ const localized = (slug, pt) => (pt ? `/pt-br${slug}` : slug);
 const FOOTER = {
   en: {
     blurb: "Runelay is an open source MCP gateway. One endpoint gives every agent the same accounts, skills and memories, on your computer or your server.",
+    contribute: "Contribute",
     nav: "Footer",
     language: "Language",
     credit: "MIT license · Made by",
@@ -30,6 +31,7 @@ const FOOTER = {
   },
   pt: {
     blurb: "Runelay é um gateway MCP open source. Um endpoint dá a todos os agentes as mesmas contas, skills e memórias, no seu computador ou no seu servidor.",
+    contribute: "Contribuir",
     nav: "Rodapé",
     language: "Idioma",
     credit: "Licença MIT · Feito por",
@@ -58,6 +60,7 @@ const footer = (route) => {
         <div class="footer-brand">
           <div class="footer-about"><a class="brand" href="${localized("/", pt)}"><img src="/favicon.svg" width="36" height="36" alt="" />runelay</a>
           <p>${copy.blurb}</p></div>
+          <a class="footer-contribute" href="${localized("/contribute/", pt)}"><span class="cup" aria-hidden="true">☕</span>${copy.contribute}</a>
         </div>
         <nav class="footer-nav" aria-label="${copy.nav}">${copy.columns.map(column).join("")}</nav>
         <div class="footer-bottom">

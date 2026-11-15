@@ -67,3 +67,26 @@ if (versionSlots.length) {
     })
     .catch(() => null);
 }
+
+const contribute = document.querySelector("[data-contribute]");
+if (contribute) {
+  const custom = contribute.querySelector("input[name=custom]");
+  const total = contribute.querySelector("[data-total]");
+  const radios = [...contribute.querySelectorAll("input[name=amount]")];
+  const fallback = radios.find((radio) => radio.defaultChecked);
+  const sync = () => {
+    const picked = radios.find((radio) => radio.checked);
+    const reais = custom.value || (picked ? Number(picked.value) / 100 : "");
+    total.textContent = reais ? ` R$ ${reais}` : "";
+  };
+  custom.addEventListener("input", () => {
+    for (const radio of radios) radio.checked = false;
+    if (!custom.value && fallback) fallback.checked = true;
+    sync();
+  });
+  for (const radio of radios)
+    radio.addEventListener("change", () => {
+      custom.value = "";
+      sync();
+    });
+}
