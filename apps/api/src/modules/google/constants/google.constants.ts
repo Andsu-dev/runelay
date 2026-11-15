@@ -56,15 +56,9 @@ export const GOOGLE_SERVICE_LABELS: Record<GoogleService, string> = {
   meet: "Meet",
 };
 
-export const GOOGLE_MCP_URLS: Partial<Record<GoogleService, string>> = {
-  calendar: "https://calendarmcp.googleapis.com/mcp/v1",
-  docs: "https://docsmcp.googleapis.com/mcp/v1",
-  sheets: "https://sheetsmcp.googleapis.com/mcp/v1",
-  slides: "https://slidesmcp.googleapis.com/mcp/v1",
-};
-
 export const GOOGLE_API = {
   userinfo: "https://openidconnect.googleapis.com/v1/userinfo",
+  calendar: "https://www.googleapis.com/calendar/v3",
   docs: "https://docs.googleapis.com/v1/documents",
   sheets: "https://sheets.googleapis.com/v4/spreadsheets",
   slides: "https://slides.googleapis.com/v1/presentations",

@@ -44,7 +44,8 @@ const run = (name: string, args: Record<string, unknown> = {}) => {
 const json = (body: string) => JSON.parse(body) as Record<string, unknown>;
 
 test("every REST tool has a described input schema", () => {
-  for (const tool of [...tools.values()].filter((candidate) => !candidate.description.startsWith("List from"))) {
+  expect(tools.size).toBe(21);
+  for (const tool of tools.values()) {
     expect(tool.source).toBe("google");
     expect(tool.description).toMatch(/Scopes?: /);
     expect(tool.inputSchema).toMatchObject({ type: "object" });
@@ -154,6 +155,386 @@ test("slides_create_presentation creates slides with title and body and drops th
   expect((await run("slides_create_presentation", { title: "D", slides: [{ title: "a" }] })).error).toBeTruthy();
   google.routes.set("POST slides.googleapis.com/v1/presentations", () => ({ status: 403 }));
   expect((await run("slides_create_presentation", { title: "D" })).error).toBeTruthy();
+});
+
+test("calendar_list_calendars maps the calendar list", async () => {
+  google.routes.set("GET www.googleapis.com/calendar/v3/users/me/calendarList", () => ({
+    body: {
+      items: [
+        { id: "primary", summary: "Ana", primary: true, accessRole: "owner", timeZone: "America/Sao_Paulo" },
+        { id: "team@group.calendar.google.com" },
+      ],
+    },
+  }));
+  expect((await run("calendar_list_calendars")).data).toEqual({
+    calendars: [
+      { id: "primary", summary: "Ana", primary: true, accessRole: "owner", timeZone: "America/Sao_Paulo" },
+      { id: "team@group.calendar.google.com", summary: null, primary: false, accessRole: null, timeZone: null },
+    ],
+  });
+  expect(google.last()).toMatchObject({ method: "GET", path: "/calendar/v3/users/me/calendarList" });
+  google.routes.set("GET www.googleapis.com/calendar/v3/users/me/calendarList", () => ({ body: {} }));
+  expect((await run("calendar_list_calendars")).data).toEqual({ calendars: [] });
+  google.routes.set("GET www.googleapis.com/calendar/v3/users/me/calendarList", () => ({ status: 403 }));
+  expect((await run("calendar_list_calendars")).error?.code).toBe("TOOL_FAILED");
+});
+
+test("calendar_list_events lists single events ordered by start time", async () => {
+  google.routes.set("GET www.googleapis.com/calendar/v3/calendars/primary/events", () => ({
+    body: {
+      nextPageToken: "next",
+      items: [
+        {
+          id: "e1",
+          summary: "Daily",
+          status: "confirmed",
+          htmlLink: "https://calendar/e1",
+          start: { dateTime: "2026-11-16T09:00:00-03:00" },
+          end: { dateTime: "2026-11-16T09:15:00-03:00" },
+          attendees: [{ email: "ana@example.com", responseStatus: "accepted" }, {}],
+        },
+        { id: "e2" },
+      ],
+    },
+  }));
+  const result = await run("calendar_list_events", {
+    timeMin: "2026-11-16T00:00:00-03:00",
+    timeMax: "2026-11-17T00:00:00Z",
+    q: "Daily",
+  });
+  expect(result.data).toEqual({
+    nextPageToken: "next",
+    events: [
+      {
+        id: "e1",
+        summary: "Daily",
+        description: null,
+        location: null,
+        status: "confirmed",
+        start: { dateTime: "2026-11-16T09:00:00-03:00" },
+        end: { dateTime: "2026-11-16T09:15:00-03:00" },
+        attendees: [
+          { email: "ana@example.com", responseStatus: "accepted" },
+          { email: null, responseStatus: null },
+        ],
+        htmlLink: "https://calendar/e1",
+      },
+      {
+        id: "e2",
+        summary: null,
+        description: null,
+        location: null,
+        status: null,
+        start: null,
+        end: null,
+        attendees: [],
+        htmlLink: null,
+      },
+    ],
+  });
+  const list = google.last();
+  expect(list).toMatchObject({ method: "GET", path: "/calendar/v3/calendars/primary/events" });
+  expect(Object.fromEntries(list.query)).toEqual({
+    singleEvents: "true",
+    orderBy: "startTime",
+    timeMin: "2026-11-16T00:00:00-03:00",
+    timeMax: "2026-11-17T00:00:00Z",
+    q: "Daily",
+    maxResults: "25",
+  });
+
+  google.routes.set("GET www.googleapis.com/calendar/v3/calendars/team%40group.calendar.google.com/events", () => ({
+    body: {},
+  }));
+  expect(
+    (
+      await run("calendar_list_events", {
+        calendarId: "team@group.calendar.google.com",
+        maxResults: 5,
+        pageToken: "p2",
+      })
+    ).data,
+  ).toEqual({ events: [], nextPageToken: null });
+  expect(google.last().query.get("maxResults")).toBe("5");
+  expect(google.last().query.get("pageToken")).toBe("p2");
+  expect((await run("calendar_list_events", { maxResults: 251 })).error?.code).toBe("INVALID_INPUT");
+  expect((await run("calendar_list_events", { timeMin: "amanhã" })).error?.code).toBe("INVALID_INPUT");
+  google.routes.set("GET www.googleapis.com/calendar/v3/calendars/primary/events", () => ({ status: 404 }));
+  expect((await run("calendar_list_events")).error?.code).toBe("TOOL_FAILED");
+});
+
+test("calendar_create_event sends timed and all-day events", async () => {
+  google.routes.set("POST www.googleapis.com/calendar/v3/calendars/primary/events", () => ({
+    body: { id: "e9", htmlLink: "https://calendar/e9" },
+  }));
+  const timed = await run("calendar_create_event", {
+    summary: "Kickoff",
+    description: "Pauta",
+    location: "Sala 1",
+    start: "2026-11-20T10:00:00",
+    end: "2026-11-20T11:00:00",
+    timeZone: "America/Sao_Paulo",
+    attendees: ["ana@example.com"],
+  });
+  expect(timed.data).toEqual({ id: "e9", htmlLink: "https://calendar/e9" });
+  expect(google.last()).toMatchObject({ method: "POST", contentType: "application/json" });
+  expect(json(google.last().body)).toEqual({
+    summary: "Kickoff",
+    description: "Pauta",
+    location: "Sala 1",
+    start: { dateTime: "2026-11-20T10:00:00", timeZone: "America/Sao_Paulo" },
+    end: { dateTime: "2026-11-20T11:00:00", timeZone: "America/Sao_Paulo" },
+    attendees: [{ email: "ana@example.com" }],
+  });
+
+  google.routes.set("POST www.googleapis.com/calendar/v3/calendars/primary/events", () => ({ body: { id: "e10" } }));
+  const allDay = await run("calendar_create_event", {
+    summary: "Feriado",
+    start: "2026-11-20",
+    end: "2026-11-21T00:00:00-03:00",
+  });
+  expect(allDay.data).toEqual({ id: "e10", htmlLink: null });
+  expect(json(google.last().body)).toEqual({
+    summary: "Feriado",
+    start: { date: "2026-11-20" },
+    end: { dateTime: "2026-11-21T00:00:00-03:00" },
+  });
+  expect((await run("calendar_create_event", { summary: "x", start: "amanhã", end: "2026-11-21" })).error?.code).toBe(
+    "INVALID_INPUT",
+  );
+  expect(
+    (await run("calendar_create_event", { summary: "x", start: "2026-11-20", end: "2026-11-21", attendees: ["ana"] }))
+      .error?.code,
+  ).toBe("INVALID_INPUT");
+  google.routes.set("POST www.googleapis.com/calendar/v3/calendars/primary/events", () => ({
+    status: 400,
+    body: { error: { message: "Invalid start time." } },
+  }));
+  expect(
+    (await run("calendar_create_event", { summary: "x", start: "2026-11-20", end: "2026-11-21" })).error?.message,
+  ).toBe("Google: Invalid start time.");
+});
+
+test("calendar_delete_event deletes the event", async () => {
+  google.routes.set("DELETE www.googleapis.com/calendar/v3/calendars/primary/events/e1", () => ({ text: "" }));
+  expect((await run("calendar_delete_event", { eventId: "e1" })).data).toEqual({ deleted: true, eventId: "e1" });
+  expect(google.last()).toMatchObject({ method: "DELETE", path: "/calendar/v3/calendars/primary/events/e1" });
+  google.routes.set("DELETE www.googleapis.com/calendar/v3/calendars/primary/events/e1", () => ({ status: 410 }));
+  expect((await run("calendar_delete_event", { eventId: "e1" })).error?.code).toBe("TOOL_FAILED");
+  expect((await run("calendar_delete_event", {})).error?.code).toBe("INVALID_INPUT");
+});
+
+test("docs_read_document returns the title and plain text", async () => {
+  google.routes.set("GET docs.googleapis.com/v1/documents/doc1", () => ({
+    body: {
+      documentId: "doc1",
+      title: "Ata",
+      body: {
+        content: [
+          { sectionBreak: {} },
+          { paragraph: { elements: [{ textRun: { content: "Olá " } }, { textRun: { content: "mundo\n" } }] } },
+          { paragraph: { elements: [{ inlineObjectElement: {} }, { textRun: {} }] } },
+          { paragraph: {} },
+          { paragraph: { elements: [{ textRun: { content: "Fim\n" } }] } },
+        ],
+      },
+    },
+  }));
+  expect((await run("docs_read_document", { documentId: "doc1" })).data).toEqual({
+    documentId: "doc1",
+    title: "Ata",
+    url: "https://docs.google.com/document/d/doc1/edit",
+    text: "Olá mundo\nFim\n",
+  });
+  expect(google.last()).toMatchObject({ method: "GET", path: "/v1/documents/doc1" });
+  google.routes.set("GET docs.googleapis.com/v1/documents/doc2", () => ({ body: { documentId: "doc2" } }));
+  expect((await run("docs_read_document", { documentId: "doc2" })).data).toMatchObject({ title: null, text: "" });
+  google.routes.set("GET docs.googleapis.com/v1/documents/doc2", () => ({ status: 404 }));
+  expect((await run("docs_read_document", { documentId: "doc2" })).error?.code).toBe("TOOL_FAILED");
+});
+
+test("docs_append_text inserts the text at the end of the body", async () => {
+  expect((await run("docs_append_text", { documentId: "doc1", text: "Nova linha\n" })).data).toEqual({
+    documentId: "doc1",
+    url: "https://docs.google.com/document/d/doc1/edit",
+  });
+  const update = google.last();
+  expect(update).toMatchObject({ method: "POST", path: "/v1/documents/doc1:batchUpdate" });
+  expect(json(update.body)).toEqual({
+    requests: [{ insertText: { text: "Nova linha\n", endOfSegmentLocation: {} } }],
+  });
+  google.routes.set("POST docs.googleapis.com/v1/documents/doc1:batchUpdate", () => ({ status: 400 }));
+  expect((await run("docs_append_text", { documentId: "doc1", text: "x" })).error?.code).toBe("TOOL_FAILED");
+  expect((await run("docs_append_text", { documentId: "doc1", text: "" })).error?.code).toBe("INVALID_INPUT");
+});
+
+test("sheets_get_values reads a range", async () => {
+  google.routes.set("GET sheets.googleapis.com/v4/spreadsheets/s1/values/Vendas!A1%3AB2", () => ({
+    body: {
+      range: "Vendas!A1:B2",
+      values: [
+        ["Nome", "Total"],
+        ["Ana", "3"],
+      ],
+    },
+  }));
+  expect((await run("sheets_get_values", { spreadsheetId: "s1", range: "Vendas!A1:B2" })).data).toEqual({
+    range: "Vendas!A1:B2",
+    values: [
+      ["Nome", "Total"],
+      ["Ana", "3"],
+    ],
+  });
+  expect(google.last()).toMatchObject({ method: "GET" });
+  expect(decodeURIComponent(google.last().path)).toBe("/v4/spreadsheets/s1/values/Vendas!A1:B2");
+  google.routes.set("GET sheets.googleapis.com/v4/spreadsheets/s1/values/Vazia", () => ({ body: {} }));
+  expect((await run("sheets_get_values", { spreadsheetId: "s1", range: "Vazia" })).data).toEqual({
+    range: "Vazia",
+    values: [],
+  });
+  google.routes.set("GET sheets.googleapis.com/v4/spreadsheets/s1/values/Vazia", () => ({ status: 400 }));
+  expect((await run("sheets_get_values", { spreadsheetId: "s1", range: "Vazia" })).error?.code).toBe("TOOL_FAILED");
+});
+
+test("sheets_update_values overwrites a range as user entered", async () => {
+  google.routes.set("PUT sheets.googleapis.com/v4/spreadsheets/s1/values/A1%3AB1", () => ({
+    body: { updatedRange: "Sheet1!A1:B1", updatedRows: 1, updatedCells: 2 },
+  }));
+  const result = await run("sheets_update_values", { spreadsheetId: "s1", range: "A1:B1", rows: [["=1+1", true]] });
+  expect(result.data).toEqual({ updatedRange: "Sheet1!A1:B1", updatedRows: 1, updatedCells: 2 });
+  const update = google.last();
+  expect(update.method).toBe("PUT");
+  expect(update.query.get("valueInputOption")).toBe("USER_ENTERED");
+  expect(json(update.body)).toEqual({ values: [["=1+1", true]] });
+  google.routes.set("PUT sheets.googleapis.com/v4/spreadsheets/s1/values/A1%3AB1", () => ({ body: {} }));
+  expect((await run("sheets_update_values", { spreadsheetId: "s1", range: "A1:B1", rows: [["a"]] })).data).toEqual({
+    updatedRange: null,
+    updatedRows: 0,
+    updatedCells: 0,
+  });
+  expect((await run("sheets_update_values", { spreadsheetId: "s1", range: "A1", rows: [] })).error?.code).toBe(
+    "INVALID_INPUT",
+  );
+  google.routes.set("PUT sheets.googleapis.com/v4/spreadsheets/s1/values/A1%3AB1", () => ({ status: 400 }));
+  expect(
+    (await run("sheets_update_values", { spreadsheetId: "s1", range: "A1:B1", rows: [["a"]] })).error,
+  ).toBeTruthy();
+});
+
+test("sheets_append_rows appends rows after the table", async () => {
+  google.routes.set("POST sheets.googleapis.com/v4/spreadsheets/s1/values/Vendas!A1:append", () => ({
+    body: { updates: { updatedRange: "Vendas!A5:B6", updatedRows: 2, updatedCells: 4 } },
+  }));
+  const result = await run("sheets_append_rows", {
+    spreadsheetId: "s1",
+    range: "Vendas!A1",
+    rows: [
+      ["Bia", 4],
+      ["Caio", 5],
+    ],
+  });
+  expect(result.data).toEqual({ updatedRange: "Vendas!A5:B6", updatedRows: 2, updatedCells: 4 });
+  const append = google.last();
+  expect(append).toMatchObject({ method: "POST", path: "/v4/spreadsheets/s1/values/Vendas!A1:append" });
+  expect(Object.fromEntries(append.query)).toEqual({
+    valueInputOption: "USER_ENTERED",
+    insertDataOption: "INSERT_ROWS",
+  });
+  expect(json(append.body)).toEqual({
+    values: [
+      ["Bia", 4],
+      ["Caio", 5],
+    ],
+  });
+  google.routes.set("POST sheets.googleapis.com/v4/spreadsheets/s1/values/Vendas!A1:append", () => ({ body: {} }));
+  expect((await run("sheets_append_rows", { spreadsheetId: "s1", range: "Vendas!A1", rows: [["x"]] })).data).toEqual({
+    updatedRange: null,
+    updatedRows: 0,
+    updatedCells: 0,
+  });
+  google.routes.set("POST sheets.googleapis.com/v4/spreadsheets/s1/values/Vendas!A1:append", () => ({ status: 400 }));
+  expect(
+    (await run("sheets_append_rows", { spreadsheetId: "s1", range: "Vendas!A1", rows: [["x"]] })).error,
+  ).toBeTruthy();
+});
+
+test("slides_read_presentation returns the text of each slide", async () => {
+  google.routes.set("GET slides.googleapis.com/v1/presentations/p1", () => ({
+    body: {
+      presentationId: "p1",
+      title: "Deck",
+      slides: [
+        {
+          objectId: "s1",
+          pageElements: [
+            { shape: { text: { textElements: [{ paragraphMarker: {} }, { textRun: { content: "Capa\n" } }] } } },
+            {
+              shape: {
+                text: {
+                  textElements: [{ textRun: { content: "Olá " } }, { textRun: {} }, { textRun: { content: "time\n" } }],
+                },
+              },
+            },
+            { shape: {} },
+            { image: {} },
+          ],
+        },
+        { objectId: "s2" },
+      ],
+    },
+  }));
+  expect((await run("slides_read_presentation", { presentationId: "p1" })).data).toEqual({
+    presentationId: "p1",
+    title: "Deck",
+    url: "https://docs.google.com/presentation/d/p1/edit",
+    slides: [
+      { objectId: "s1", text: "Capa\nOlá time" },
+      { objectId: "s2", text: "" },
+    ],
+  });
+  expect(google.last()).toMatchObject({ method: "GET", path: "/v1/presentations/p1" });
+  google.routes.set("GET slides.googleapis.com/v1/presentations/p2", () => ({ body: { presentationId: "p2" } }));
+  expect((await run("slides_read_presentation", { presentationId: "p2" })).data).toMatchObject({
+    title: null,
+    slides: [],
+  });
+  google.routes.set("GET slides.googleapis.com/v1/presentations/p2", () => ({ status: 404 }));
+  expect((await run("slides_read_presentation", { presentationId: "p2" })).error?.code).toBe("TOOL_FAILED");
+});
+
+test("slides_add_slide creates a title-and-body slide with a unique id", async () => {
+  google.routes.set("POST slides.googleapis.com/v1/presentations/p1:batchUpdate", () => ({ body: {} }));
+  const result = await run("slides_add_slide", { presentationId: "p1", title: "Novo", body: "Texto", index: 1 });
+  const { slideId } = result.data as { slideId: string };
+  expect(slideId).toMatch(/^runelay_[0-9a-f]{32}$/);
+  expect(result.data).toEqual({ presentationId: "p1", slideId, url: "https://docs.google.com/presentation/d/p1/edit" });
+  const update = google.last();
+  expect(update).toMatchObject({ method: "POST", path: "/v1/presentations/p1:batchUpdate" });
+  expect(json(update.body)).toEqual({
+    requests: [
+      {
+        createSlide: {
+          objectId: slideId,
+          insertionIndex: 1,
+          slideLayoutReference: { predefinedLayout: "TITLE_AND_BODY" },
+          placeholderIdMappings: [
+            { layoutPlaceholder: { type: "TITLE", index: 0 }, objectId: `${slideId}_title` },
+            { layoutPlaceholder: { type: "BODY", index: 0 }, objectId: `${slideId}_body` },
+          ],
+        },
+      },
+      { insertText: { objectId: `${slideId}_title`, text: "Novo" } },
+      { insertText: { objectId: `${slideId}_body`, text: "Texto" } },
+    ],
+  });
+  const appended = await run("slides_add_slide", { presentationId: "p1", title: "Fim" });
+  const next = (appended.data as { slideId: string }).slideId;
+  expect(next).not.toBe(slideId);
+  const { requests } = json(google.last().body) as { requests: { createSlide?: Record<string, unknown> }[] };
+  expect(requests).toHaveLength(2);
+  expect(requests[0]?.createSlide).not.toHaveProperty("insertionIndex");
+  google.routes.set("POST slides.googleapis.com/v1/presentations/p1:batchUpdate", () => ({ status: 400 }));
+  expect((await run("slides_add_slide", { presentationId: "p1", title: "x" })).error?.code).toBe("TOOL_FAILED");
 });
 
 test("drive_create_file uploads a multipart body", async () => {

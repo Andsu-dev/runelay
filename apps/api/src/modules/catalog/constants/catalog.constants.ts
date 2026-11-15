@@ -32,7 +32,7 @@ export const CATALOG: CatalogSection[] = [
       {
         id: "google_calendar",
         name: "Google Agenda",
-        description: "Eventos, agendas e horários livres.",
+        description: "Eventos e agendas da sua conta.",
         url: "https://calendarmcp.googleapis.com/mcp/v1",
         icon: "googlecalendar",
         auth: "oauth",

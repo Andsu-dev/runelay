@@ -1,6 +1,3 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
-import { z } from "zod";
 import { env } from "@/config/env";
 import { googleTransport } from "@/modules/google/utils/google-fetch";
 import { guardedFetch } from "@/modules/sources/utils/guarded-fetch";
@@ -33,21 +30,6 @@ export interface FakeGoogle {
   install: () => () => void;
   stop: () => void;
 }
-
-const mcpResponse = async (request: Request, host: string) => {
-  const server = new McpServer({ name: host, version: "1.0.0" });
-  server.registerTool(
-    "list_events",
-    { description: `List from ${host}`, inputSchema: { text: z.string() } },
-    async ({ text }) => ({ content: [{ type: "text", text: `${host}:${text}` }] }),
-  );
-  const transport = new WebStandardStreamableHTTPServerTransport({
-    sessionIdGenerator: undefined,
-    enableJsonResponse: true,
-  });
-  await server.connect(transport);
-  return transport.handleRequest(request);
-};
 
 const reply = ({ status = 200, body = {}, text }: FakeReply) =>
   text === undefined ? Response.json(body, { status }) : new Response(text, { status });
@@ -91,18 +73,6 @@ export const startFakeGoogle = (): FakeGoogle => {
       const [, host = "", ...rest] = url.pathname.split("/");
       const path = `/${rest.join("/")}`;
       if (fake.failingHosts.has(host)) return new Response("down", { status: 500 });
-      if (/^[a-z]+mcp\.googleapis\.com$/.test(host)) {
-        fake.requests.push({
-          method: request.method,
-          host,
-          path,
-          query: url.searchParams,
-          authorization: request.headers.get("authorization"),
-          contentType: request.headers.get("content-type"),
-          body: "",
-        });
-        return mcpResponse(request, host);
-      }
       const recorded: RecordedRequest = {
         method: request.method,
         host,

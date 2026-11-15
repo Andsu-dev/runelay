@@ -125,7 +125,7 @@ test("api keys see the Google config as is", async () => {
   expect((await body<SourceView>(response)).data.config).toEqual({ kind: "google", services: ["calendar"] });
 });
 
-test("a failed MCP fetch inside the transport surfaces as a warning", async () => {
+test("switching to Sheets loads its REST tools without calling Google", async () => {
   const spy = spyOn(googleTransport, "fetch").mockImplementation(() => Promise.reject(new Error("offline")));
   try {
     await call("/v1/sources/google", {
@@ -133,7 +133,8 @@ test("a failed MCP fetch inside the transport surfaces as a warning", async () =
       cookie: account.cookie,
       json: { config: { kind: "google", services: ["sheets"] } },
     });
-    expect((await view())?.error).toStartWith("Não foi possível carregar: Planilhas");
+    expect(await view()).toMatchObject({ status: "ok", error: null, toolCount: 5 });
+    expect(spy).not.toHaveBeenCalled();
   } finally {
     spy.mockRestore();
   }
