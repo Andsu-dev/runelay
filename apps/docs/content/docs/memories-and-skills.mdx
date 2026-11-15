@@ -1,0 +1,30 @@
+---
+title: Memories & skills
+description: Shared context that every agent reads and writes.
+icon: Brain
+---
+
+## Memories
+
+A memory is a note your agents share. What one agent learns, all of them know.
+
+- Notes link to each other with `[[slug]]`.
+- Every change is versioned.
+- Health checks flag memories worth reviewing.
+- **Pinned** memories go into every agent's instructions. Only the panel can pin, never an agent.
+
+Agents read memories with `read_memory` and save new facts with `write_memory`. The brief written by `runelay pull` tells them to do so, so memory flows back to runelay instead of local files.
+
+## Skills
+
+Your `SKILL.md` folders, searchable and served on demand. Agents read a skill with `read_skill` and its extra files with `read_skill_file`.
+
+`runelay pull` writes enabled skills you do not have locally to `~/.claude/skills/<slug>/` with a `.runelay` marker. A folder without the marker is yours and is never overwritten.
+
+## Search
+
+`search_context` runs a full-text search across memories and skills. Agents use it before acting on a topic, then open what matters.
+
+## Bring what you have
+
+`runelay push` imports memories, skills and global instructions from Claude Code, Codex, Cursor, Grok, Gemini and OpenCode. See [CLI](/cli#push) for the exact folders.

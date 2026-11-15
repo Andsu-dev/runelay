@@ -1,0 +1,27 @@
+---
+title: Gemini
+description: What runelay migrate brings from Gemini CLI.
+icon: Bot
+---
+
+## What comes along
+
+| | Read from |
+|---|---|
+| MCP servers | `mcpServers` in `~/.gemini/settings.json` (`url` or `httpUrl`) |
+| Global instructions | `~/.gemini/GEMINI.md`, as the pinned memory `instrucoes-globais-gemini` |
+| Skills | `~/.gemini/skills` |
+
+Servers that authenticate with headers arrive connected.
+
+## What stays behind
+
+- **Logins.** runelay does not read Gemini's OAuth tokens. OAuth accounts arrive as connections that ask for login in `/connectors/reconnect`.
+- Memories: runelay does not read a memory folder from Gemini.
+- Servers with a `command` (stdio) stay in Gemini.
+
+## Wiring runelay in
+
+`runelay migrate` and `runelay connect` do not register runelay in Gemini. Add it yourself as a remote MCP server pointing at `<url>/v1/mcp` with the header `Authorization: Bearer rnl_…`. Create the key in **API keys** in the panel.
+
+With `--replace`, the migrated servers are removed from `settings.json`.

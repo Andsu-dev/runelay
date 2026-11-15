@@ -1,0 +1,32 @@
+---
+title: GitHub
+description: Repositories, issues and pull requests.
+icon: Plug
+---
+
+GitHub is in the runelay catalog under **Popular**. Once it is connected, every agent that uses runelay can call its tools.
+
+| | |
+|---|---|
+| **Auth** | Personal token |
+| **MCP URL** | `https://api.githubcopilot.com/mcp/` |
+| **Connection name** | `github` |
+| **Tool prefix** | `github.` |
+
+## Add it
+
+1. Open **Connectors → Catalog** in the runelay panel.
+2. Press **+** next to GitHub.
+3. Paste a GitHub token in the dialog and press **Connect**. The dialog links to [https://github.com/settings/personal-access-tokens/new](https://github.com/settings/personal-access-tokens/new) to create one.
+
+runelay sends the token as an `Authorization: Bearer` header. It is encrypted on the server and agents never see it. If GitHub rejects the token, runelay opens the connection page so you can fix it.
+
+## Use it
+
+Agents find GitHub's tools with `search_tools` and run them with `call_tool` or `execute`. Tool names start with `github.`. See [MCP tools](/mcp-tools).
+
+The tools come from GitHub's MCP server and can change on their side, so this page does not list them. The connection page in the panel shows how many tools it exposes right now.
+
+## Without the catalog
+
+The catalog entry is a remote MCP connection to `https://api.githubcopilot.com/mcp/`. You can add the same URL as a [custom connection](/connections#remote-mcp) under another name.
