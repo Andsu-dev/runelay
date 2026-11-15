@@ -27,6 +27,7 @@
       "main.js",
       "preload.cjs",
       "chooser/**/*",
+      "build/icon.png",
       "package.json"
     ],
     "mac": {
