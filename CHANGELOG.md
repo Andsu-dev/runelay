@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.6.1
+
+### Connections
+
+- Google Calendar, Docs, Sheets and Slides now use Google's REST APIs with runelay's own tools. Google's MCP servers for those services require enrollment in the Google Workspace Developer Preview Program.
+- Google Calendar: `calendar_list_calendars`, `calendar_list_events`, `calendar_create_event` and `calendar_delete_event`.
+- Google Docs: `docs_read_document` and `docs_append_text`, next to `docs_create_document`.
+- Google Sheets: `sheets_get_values`, `sheets_update_values` and `sheets_append_rows`, next to `sheets_create_spreadsheet`.
+- Google Slides: `slides_read_presentation` and `slides_add_slide`, next to `slides_create_presentation`.
+- The first sign-in of each Google connector asks only for that service's scopes.
+
+### Fixes
+
+- The panel no longer crashes on unknown Google services.
+
 ## v0.6.0
 
 ### Connections
