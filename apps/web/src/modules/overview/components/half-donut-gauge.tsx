@@ -23,13 +23,13 @@ const pointOnArc = (fraction: number) => {
 };
 
 export function HalfDonutGauge({ segments, label, children }: HalfDonutGaugeProps) {
-  const placed = segments.reduce<
-    { key: string; color: string; tooltip: ReactNode; start: number; length: number }[]
-  >((list, segment) => {
-    const previous = list.at(-1);
-    const start = previous ? previous.start + previous.length + GAP : 0;
-    return [...list, { ...segment, start, length: Math.max(segment.share - GAP, 0) }];
-  }, []);
+  let offset = 0;
+  const placed = segments.map((segment) => {
+    const start = offset;
+    const length = Math.max(segment.share - GAP, 0);
+    offset = start + length + GAP;
+    return { ...segment, start, length };
+  });
   const [active, setActive] = useState<number | null>(null);
   const [shown, setShown] = useState(0);
   const shownSegment = placed[shown];

@@ -41,5 +41,10 @@ export function RollingText({ value, className }: RollingTextProps) {
     [value],
   );
 
-  return <span ref={roll} aria-label={value} className={cn("inline-block tabular-nums", className)} />;
+  return (
+    <span className={cn("inline-block tabular-nums", className)}>
+      <span className="sr-only">{value}</span>
+      <span ref={roll} aria-hidden />
+    </span>
+  );
 }

@@ -37,14 +37,11 @@ export const createGatewayServer = (caller: GatewayCaller) => {
     return response;
   };
 
-  server.registerTool(
-    "list_connections",
-    { description: TOOL_DESCRIPTIONS.listConnections, inputSchema: {} },
-    () =>
-      track(RESERVED_SOURCES.runelay, "list_connections", () => {
-        const views = listSourceViews(organizationId);
-        return toToolResponse(views.error ? views : ok(views.data.map(redactView)));
-      }),
+  server.registerTool("list_connections", { description: TOOL_DESCRIPTIONS.listConnections, inputSchema: {} }, () =>
+    track(RESERVED_SOURCES.runelay, "list_connections", () => {
+      const views = listSourceViews(organizationId);
+      return toToolResponse(views.error ? views : ok(views.data.map(redactView)));
+    }),
   );
 
   server.registerTool(
@@ -109,8 +106,7 @@ export const createGatewayServer = (caller: GatewayCaller) => {
         type: memoryTypeSchema.optional(),
       },
     },
-    (input) =>
-      track(RESERVED_SOURCES.memories, input.slug, () => toToolResponse(writeMemory(organizationId, input))),
+    (input) => track(RESERVED_SOURCES.memories, input.slug, () => toToolResponse(writeMemory(organizationId, input))),
   );
 
   server.registerTool(

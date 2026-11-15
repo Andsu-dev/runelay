@@ -21,11 +21,7 @@ export function CallsWidget({ summary }: CallsWidgetProps) {
         }
       />
       <div className="mt-auto">
-        <AreaSparkline
-          values={summary.daily.map((day) => day.calls)}
-          color="var(--chart-1)"
-          label="Chamadas por dia"
-        />
+        <AreaSparkline values={summary.daily.map((day) => day.calls)} color="var(--chart-1)" label="Chamadas por dia" />
       </div>
     </WidgetCard>
   );

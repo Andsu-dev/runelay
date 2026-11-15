@@ -4,4 +4,3 @@ export const USAGE_KINDS: Record<string, { label: string; color: string }> = {
   memories: { label: "Memórias", color: "var(--chart-3)" },
   search: { label: "Busca", color: "var(--chart-4)" },
 };
-
