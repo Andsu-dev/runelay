@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Connections can be renamed from their detail page. The login, the config and the call history move to the new name; agents see the tools under the new prefix.
+
 ## v0.4.2
 
 ### Panel
