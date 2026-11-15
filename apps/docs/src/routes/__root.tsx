@@ -10,6 +10,11 @@ export const Route = createRootRoute({
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "runelay docs" },
       { name: "description", content: "Documentation for runelay, the self-hosted MCP gateway for all your agents." },
+      { property: "og:site_name", content: "runelay docs" },
+      { property: "og:type", content: "website" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
