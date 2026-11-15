@@ -72,6 +72,19 @@ afterEach(() => {
   mock.restore();
 });
 
+describe("root", () => {
+  test("redirects GET to the runelay homepage", async () => {
+    const response = await get("/");
+    expect(response.status).toBe(301);
+    expect(response.headers.get("location")).toBe("https://runelay.com/");
+  });
+
+  test("answers 404 for other methods", async () => {
+    const response = await handleRequest(new Request(`${ORIGIN}/`, { method: "POST" }), ENV);
+    expect(response.status).toBe(404);
+  });
+});
+
 describe("health", () => {
   test("answers ok", async () => {
     const response = await get("/health");
@@ -542,7 +555,6 @@ describe("rate limiting", () => {
 describe("routing", () => {
   test("answers 404 for unknown providers, actions and paths", async () => {
     const paths = [
-      "/",
       "/github/callback",
       "/constructor/callback",
       "/google/other",
