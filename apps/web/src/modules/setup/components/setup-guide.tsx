@@ -8,6 +8,7 @@ import { CommandBlock } from "@/components/ui/display/command-block";
 import { useT } from "@/lib/i18n";
 import { CreateApiKeyDialog } from "@/modules/api-keys/components/create-api-key-dialog";
 import { meQuery } from "@/modules/auth/api/session.api";
+import { StartupCard } from "@/modules/settings/components/startup-card";
 import { contextCommands } from "@/modules/setup/constants/setup.constants";
 import { useSetupKey } from "@/modules/setup/hooks/use-setup-key";
 import { useSetupProgress } from "@/modules/setup/hooks/use-setup-progress";
@@ -22,13 +23,17 @@ export function SetupGuide() {
   const { data: me } = useSuspenseQuery(meQuery);
   const [creating, setCreating] = useState(false);
   const { key: apiKey, latest } = useSetupKey();
-  const { steps, activeId, markDone, toggle, completed, total } = useSetupProgress(me.organization.id, {
+  const { steps, activeId, markDone, toggle, keepOpen, completed, total } = useSetupProgress(me.organization.id, {
     api_key: apiKey !== null,
   });
   const key = apiKey ?? t("setup.keyPlaceholder");
   const commands = contextCommands(window.location.origin, key);
+  const bridge = window.runelayDesktop;
 
   const content: Record<SetupStepId, { body?: ReactNode; action?: ReactNode }> = {
+    desktop: {
+      body: bridge && <StartupCard bridge={bridge} onToggle={() => keepOpen("desktop")} />,
+    },
     source: {
       action: (
         <Link to="/connectors" search={{ tab: "catalog" }} className={buttonVariants({ variant: "glass", size: "sm" })}>

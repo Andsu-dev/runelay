@@ -1,6 +1,6 @@
 import type { MessageKey } from "@/lib/i18n";
 
-export type SetupStepId = "source" | "api_key" | "agent" | "import" | "sync";
+export type SetupStepId = "desktop" | "source" | "api_key" | "agent" | "import" | "sync";
 
 export interface SetupStepDefinition {
   id: SetupStepId;
