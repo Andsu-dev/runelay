@@ -65,6 +65,9 @@ const KIMI = `{
   }
 }`;
 
+const AGENTES_CHAT = `Server URL   ${ENDPOINT}
+API key      rnl_...`;
+
 const agentLogo = (file, fill = "currentColor") =>
   `<span class="brow-icon logo">${readFileSync(`public/logos/${file}.svg`, "utf8").replace(/\s?fill="[^"]*"/, "").replace("<svg ", `<svg width="20" height="20" fill="${fill}" aria-hidden="true" `)}</span>`;
 const LOGOS = {
@@ -79,6 +82,7 @@ const LOGOS = {
   OpenCode: '<span class="brow-icon logo"><img src="/logos/opencode.png" width="20" height="20" alt="" loading="lazy" decoding="async" /></span>',
   OpenBot: '<span class="brow-icon logo"><img src="/logos/openbot.png" width="20" height="20" alt="" loading="lazy" decoding="async" /></span>',
   "Kimi Code": '<span class="brow-icon logo"><img src="/logos/kimi.png" width="20" height="20" alt="" loading="lazy" decoding="async" /></span>',
+  "agentes.chat": '<span class="brow-icon logo"><img src="/logos/agentes-chat.png" width="20" height="20" alt="" loading="lazy" decoding="async" /></span>',
 };
 
 const INSTALL = "curl -fsSL runelay.com/install | sh";
@@ -413,11 +417,32 @@ const kimi = agentGuide({
   faqPt: [["Dá para deixar a chave fora do mcp.json?", "Sim. O Kimi Code aceita bearerTokenEnvVar no lugar do header Authorization: indique uma variável de ambiente que guarda a sua chave rnl_."]],
 });
 
+const agentesChat = agentGuide({
+  slug: "guides/agentes-chat",
+  agent: "agentes.chat",
+  configEn: "Add it under the <strong>MCPs</strong> section of <strong>Settings</strong>",
+  configPt: "Adicione em a seção <strong>MCPs</strong> das <strong>Configurações</strong>",
+  whereEn: "Add a server by URL and paste your <code>rnl_</code> key in the API key field; agentes.chat sends it as a bearer token. It accepts only a public <code>https://</code> address: a private IP or a Tailscale-only name is refused. If Runelay runs only on your tailnet, turn on Tailscale Funnel (<code>tailscale funnel --bg http://127.0.0.1:4312</code>) or give it a domain. ",
+  wherePt: "Adicione um servidor por URL e cole a sua chave <code>rnl_</code> no campo de chave de API; o agentes.chat manda como bearer token. Ele só aceita endereço <code>https://</code> público: IP privado ou nome só do Tailscale é recusado. Se o Runelay roda só no seu tailnet, ligue o Tailscale Funnel (<code>tailscale funnel --bg http://127.0.0.1:4312</code>) ou dê um domínio a ele. ",
+  snippet: AGENTES_CHAT,
+  cliEn: noCliEn("agentes.chat"),
+  cliPt: noCliPt("agentes.chat"),
+  restartEn: ["Check the connector", "agentes.chat tests the server when you add it and lists its tools. Runelay shows as <strong>Active</strong> with 9 tools, and every agent in the workspace can use it; sensitive tools still ask a person for approval. No restart."],
+  restartPt: ["Confira o conector", "O agentes.chat testa o servidor ao adicionar e lista as ferramentas. O Runelay aparece como <strong>Ativo</strong> com 9 ferramentas, e todos os agentes do workspace podem usar; ferramentas sensíveis continuam pedindo aprovação de uma pessoa. Sem reiniciar."],
+  migrateEn: noMigrateEn("agentes.chat"),
+  migratePt: noMigratePt("agentes.chat"),
+  pushEn: noPushEn("agentes.chat"),
+  pushPt: noPushPt("agentes.chat"),
+  faqEn: [["Why does it need a public address?", "agentes.chat refuses connector addresses on private networks to block SSRF, with no switch for it. A public https address with the rnl_ key in front is enough."]],
+  faqPt: [["Por que precisa de endereço público?", "O agentes.chat recusa endereços de conector em rede privada para bloquear SSRF, sem opção para liberar. Um endereço https público com a chave rnl_ na frente basta."]],
+});
+
 export const AGENT_LINKS = {
   en: [
     ["/guides/claude-code/", LOGOS["Claude Code"], "Claude Code", "One claude mcp add command."],
     ["/guides/cursor/", LOGOS["Cursor"], "Cursor", "One block in ~/.cursor/mcp.json."],
     ["/guides/codex/", LOGOS["Codex"], "Codex", "One block in ~/.codex/config.toml."],
+    ["/guides/agentes-chat/", LOGOS["agentes.chat"], "agentes.chat", "One MCP by URL in Settings, on a public https address."],
     ["/guides/antigravity/", LOGOS["Antigravity"], "Antigravity", "One block in mcp_config.json, added by hand."],
     ["/guides/grokbot/", LOGOS["Grokbot"], "Grokbot", "One block in ~/.grok/config.toml."],
     ["/guides/hermes-agent/", LOGOS["Hermes Agent"], "Hermes Agent", "One block in ~/.hermes/config.yaml."],
@@ -431,6 +456,7 @@ export const AGENT_LINKS = {
     ["/guides/claude-code/", LOGOS["Claude Code"], "Claude Code", "Um comando claude mcp add."],
     ["/guides/cursor/", LOGOS["Cursor"], "Cursor", "Um bloco no ~/.cursor/mcp.json."],
     ["/guides/codex/", LOGOS["Codex"], "Codex", "Um bloco no ~/.codex/config.toml."],
+    ["/guides/agentes-chat/", LOGOS["agentes.chat"], "agentes.chat", "Um MCP por URL nas Configurações, em endereço https público."],
     ["/guides/antigravity/", LOGOS["Antigravity"], "Antigravity", "Um bloco no mcp_config.json, adicionado à mão."],
     ["/guides/grokbot/", LOGOS["Grokbot"], "Grokbot", "Um bloco no ~/.grok/config.toml."],
     ["/guides/hermes-agent/", LOGOS["Hermes Agent"], "Hermes Agent", "Um bloco no ~/.hermes/config.yaml."],
@@ -445,7 +471,7 @@ export const AGENT_LINKS = {
 const share = {
   slug: "guides/share-mcp-across-agents",
   icon: "hub",
-  related: ["guides/claude-code", "guides/cursor", "guides/codex", "guides/antigravity", "guides/grokbot", "guides/hermes-agent", "guides/openclaw", "guides/mausbot", "guides/opencode", "guides/openbot", "guides/kimi-code", "docs/migrate"],
+  related: ["guides/claude-code", "guides/cursor", "guides/codex", "guides/antigravity", "guides/grokbot", "guides/hermes-agent", "guides/openclaw", "guides/mausbot", "guides/opencode", "guides/openbot", "guides/kimi-code", "guides/agentes-chat", "docs/migrate"],
   en: {
     title: "Share MCP servers across Claude Code, Cursor and Codex · Runelay",
     description: "How to share one MCP setup between Claude Code, Cursor and Codex with Runelay, an open source MCP gateway: one login per account, one endpoint, the same tools, skills and memories.",
@@ -952,7 +978,7 @@ const runlayer = {
   },
 };
 
-export const PAGES = [claudeCode, cursor, codex, antigravity, grokbot, hermes, openclaw, mausbot, opencode, openbot, kimi, share, migrate, executor, runlayer];
+export const PAGES = [claudeCode, cursor, codex, agentesChat, antigravity, grokbot, hermes, openclaw, mausbot, opencode, openbot, kimi, share, migrate, executor, runlayer];
 
 export const EXISTING = {
   "self-hosted-mcp-gateway": { icon: "server", en: ["Self-hosted MCP gateway guide", "What it does, why self-host it and how to run one in a minute."], pt: ["Guia de MCP gateway self-hosted", "O que faz, por que hospedar e como rodar um em um minuto."] },

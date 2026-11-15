@@ -39,6 +39,7 @@
 - [OpenCode](https://runelay.com/guides/opencode/): add the runelay endpoint under `mcp` in `~/.config/opencode/opencode.json` as `type: "remote"` with `oauth: false` and an `Authorization` header.
 - [OpenBot](https://runelay.com/guides/openbot/): add the runelay endpoint in MCP servers → Connect a custom MCP, with an `Authorization` header.
 - [Kimi Code](https://runelay.com/guides/kimi-code/): add the runelay endpoint under `mcpServers` in `~/.kimi-code/mcp.json` with `url` and an `Authorization` header, then open a new session.
+- [agentes.chat](https://runelay.com/guides/agentes-chat/): add the runelay endpoint as an MCP by URL in the MCPs section of Settings with the `rnl_` key; it needs a public https address (Tailscale Funnel or a domain).
 - [runelay migrate](https://runelay.com/docs/migrate/): what the command imports, which accounts arrive connected and the related CLI commands.
 
 ## Integrations
