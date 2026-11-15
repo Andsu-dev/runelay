@@ -40,8 +40,8 @@ export const buildGoogleAuthorizationUrl = (key: SourceKey, config: GoogleConfig
   url.searchParams.set("code_challenge", pkceChallenge(verifier));
   url.searchParams.set("code_challenge_method", "S256");
   url.searchParams.set("access_type", "offline");
-  url.searchParams.set("include_granted_scopes", "true");
   if (firstConnect) url.searchParams.set("prompt", "consent");
+  else url.searchParams.set("include_granted_scopes", "true");
   return { url: url.toString(), verifier, scopes };
 };
 
