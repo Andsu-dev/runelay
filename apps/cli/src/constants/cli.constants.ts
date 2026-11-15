@@ -27,6 +27,7 @@ Uso: runelay <comando>
                 (--yes pula a confirmação, --replace deixa só o runelay nos agentes)
   login [url]   entra no servidor pelo navegador e guarda a chave deste computador
   status        mostra o servidor, a organização e o que está guardado nela
+  open          abre o painel do runelay no navegador
   push          envia memórias, habilidades e instruções dos agentes locais
   pull          traz o resumo para CLAUDE.md e AGENTS.md e as habilidades novas
   sync          push e depois pull
