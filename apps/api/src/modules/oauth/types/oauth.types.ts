@@ -1,4 +1,4 @@
-export type OAuthBrokerProvider = "google";
+export type OAuthBrokerProvider = "google" | "github";
 
 export interface OAuthBroker {
   provider: OAuthBrokerProvider;

@@ -22,7 +22,7 @@ const unwrapToolResult = (result: CallToolResult): Result<unknown> => {
   }
 };
 
-const loadConnection = async (client: Client, source: string): Promise<Result<Connection>> =>
+export const loadConnection = async (client: Client, source: string): Promise<Result<Connection>> =>
   attempt(async () => {
     const tools: Tool[] = [];
     let cursor: string | undefined;

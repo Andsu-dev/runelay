@@ -10,7 +10,8 @@ import {
   type SourceView,
 } from "@runelay/shared";
 import { db } from "@/db/connection";
-import { CATALOG_BY_URL_HASH } from "@/modules/catalog/constants/catalog.constants";
+import { CATALOG_BY_URL_HASH, googleSourceUrl } from "@/modules/catalog/constants/catalog.constants";
+import { grantedServices } from "@/modules/google/utils/google-scopes";
 import type {
   InstalledSourceRow,
   OAuthState,
@@ -27,15 +28,28 @@ import { seal, unseal } from "@/shared/crypto";
 const COLUMNS =
   "organization_id AS organizationId, name, config, oauth, status, error, tool_count AS toolCount, enabled, updated_at AS updatedAt";
 
-const VIEW_SELECT = `SELECT s.name, s.config, s.status, s.error, s.tool_count AS toolCount, s.enabled,
+const VIEW_SELECT = `SELECT s.name, s.config, s.oauth, s.status, s.error, s.tool_count AS toolCount, s.enabled,
     s.connected_at AS connectedAt, s.updated_at AS updatedAt, json_extract(catalog.value, '$.icon') AS icon,
     json_extract(catalog.value, '$.auth') AS auth, json_extract(catalog.value, '$.tokenUrl') AS tokenUrl
   FROM sources s LEFT JOIN json_each(?) catalog ON catalog.key = s.url_hash`;
 
-const decryptView = (row: SourceViewRow): Result<SourceView> => {
+const decryptView = ({ oauth: sealedOAuth, ...row }: SourceViewRow): Result<SourceView> => {
   const config = unseal<SourceConfig>(row.config);
   if (config.error) return config;
-  return ok({ ...row, config: config.data, enabled: row.enabled === 1 });
+  const view = { ...row, config: config.data, enabled: row.enabled === 1 };
+  if (config.data.kind !== "google") return ok(view);
+  const oauth = unseal<OAuthState>(sealedOAuth);
+  if (oauth.error) return oauth;
+  const granted = oauth.data.google?.scopes ?? [];
+  return ok({
+    ...view,
+    google: { email: oauth.data.google?.email ?? null, grantedServices: grantedServices(granted) },
+  });
+};
+
+const urlHashOf = (config: SourceConfig) => {
+  if (config.kind === "mcp") return hashUrl(config.url);
+  return config.kind === "google" ? hashUrl(googleSourceUrl(config.services)) : null;
 };
 
 const decrypt = (row: SourceRow): Result<Source> => {
@@ -141,7 +155,7 @@ export const upsertSources = (organizationId: string, inputs: CreateSourceInput[
     db.transaction(() => {
       const statement = db.query(UPSERT_SQL);
       for (const { name, config } of inputs) {
-        statement.run(organizationId, name, seal(config), seal({}), config.kind === "mcp" ? hashUrl(config.url) : null);
+        statement.run(organizationId, name, seal(config), seal({}), urlHashOf(config));
       }
     }),
   );

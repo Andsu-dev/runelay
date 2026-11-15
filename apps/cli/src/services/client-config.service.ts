@@ -16,7 +16,9 @@ export const identityOf = ({ config }: CreateSourceInput) =>
     ? normalizeMcpUrl(config.url)
     : config.kind === "stdio"
       ? `stdio:${config.command} ${config.args.join(" ")}`
-      : `openapi:${config.spec}`;
+      : config.kind === "openapi"
+        ? `openapi:${config.spec}`
+        : `google:${config.services.join(",")}`;
 
 export const scanClientConfigs = (): ClientScan => {
   const sources: ClientSource[] = [];

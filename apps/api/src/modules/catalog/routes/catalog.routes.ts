@@ -18,7 +18,7 @@ export const catalogRoutes = new Hono<AppEnv>()
         c.var.organizationId,
         c.req.valid("json").id,
         { authMethod: c.var.authMethod, role: c.var.role },
-        c.req.valid("json").token,
+        { token: c.req.valid("json").token, services: c.req.valid("json").services },
       ),
       201,
     ),

@@ -1,5 +1,6 @@
-import { type CatalogView, fail, ok, type Result, type SourceView } from "@runelay/shared";
+import { type CatalogView, fail, ok, type Result, type SourceConfig, type SourceView } from "@runelay/shared";
 import { CATALOG } from "@/modules/catalog/constants/catalog.constants";
+import type { CatalogEntry, CatalogInstallOptions } from "@/modules/catalog/types/catalog.types";
 import { listInstalledByUrlHash } from "@/modules/sources/repositories/source.repository";
 import { createSource } from "@/modules/sources/services/source.service";
 import type { SourceActor } from "@/modules/sources/types/source-policy.types";
@@ -41,21 +42,23 @@ export const listCatalog = (organizationId: string, query?: string): Result<Cata
   });
 };
 
+const configOf = (item: CatalogEntry, { token, services }: CatalogInstallOptions): SourceConfig =>
+  item.googleService
+    ? { kind: "google", services: [...new Set(services ?? [item.googleService])] }
+    : { kind: "mcp", url: item.url, headers: token ? { Authorization: `Bearer ${token}` } : {} };
+
 export const installCatalogItem = async (
   organizationId: string,
   id: string,
   actor: SourceActor,
-  token?: string,
+  options: CatalogInstallOptions = {},
 ): Promise<Result<SourceView>> => {
   const item = CATALOG.flatMap((section) => section.items).find((candidate) => candidate.id === id);
   if (!item) return fail("CATALOG_ITEM_NOT_FOUND");
   return createSource(
     organizationId,
-    {
-      name: item.id,
-      config: { kind: "mcp", url: item.url, headers: token ? { Authorization: `Bearer ${token}` } : {} },
-    },
+    { name: item.id, config: configOf(item, options) },
     actor,
-    item.broker && { broker: item.broker },
+    item.broker && !options.token ? { broker: item.broker } : undefined,
   );
 };

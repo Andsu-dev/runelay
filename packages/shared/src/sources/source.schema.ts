@@ -27,10 +27,20 @@ export const openApiConfigSchema = z.object({
   query: stringMap,
 });
 
+export const googleServiceSchema = z.enum(["calendar", "docs", "sheets", "slides", "drive", "gmail", "forms", "meet"]);
+
+export const googleServicesSchema = z.array(googleServiceSchema).min(1, "Escolha pelo menos um serviço do Google");
+
+export const googleConfigSchema = z.object({
+  kind: z.literal("google"),
+  services: googleServicesSchema,
+});
+
 export const sourceConfigSchema = z.discriminatedUnion("kind", [
   mcpRemoteConfigSchema,
   stdioConfigSchema,
   openApiConfigSchema,
+  googleConfigSchema,
 ]);
 
 export const sourceNameSchema = z

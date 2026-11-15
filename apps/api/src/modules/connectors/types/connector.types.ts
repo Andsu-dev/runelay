@@ -17,6 +17,7 @@ export interface Tool {
 export interface Connection {
   tools: Tool[];
   close: () => Promise<void>;
+  warning?: string;
 }
 
 export type HttpVerb = "get" | "post" | "put" | "patch" | "delete";

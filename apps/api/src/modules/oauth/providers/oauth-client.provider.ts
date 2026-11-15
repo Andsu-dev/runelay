@@ -28,7 +28,7 @@ export const createOAuthProvider = (key: SourceKey, onRedirect?: (url: URL) => v
     updateOAuth(key, patch);
   };
   const broker = oauth()?.broker;
-  const callbackUrl = broker ? brokerCallbackUrl(broker) : redirectUrl;
+  const callbackUrl = broker ? brokerCallbackUrl(broker.provider) : redirectUrl;
   return {
     redirectUrl: callbackUrl,
     clientMetadata: {
@@ -45,7 +45,8 @@ export const createOAuthProvider = (key: SourceKey, onRedirect?: (url: URL) => v
     },
     tokens: () => oauth()?.tokens,
     saveTokens: (tokens) => {
-      save({ tokens });
+      const previous = oauth()?.tokens?.refresh_token;
+      save({ tokens: tokens.refresh_token || !previous ? tokens : { ...tokens, refresh_token: previous } });
       markConnected(key);
     },
     redirectToAuthorization: (url) => onRedirect?.(broker ? brokerAuthorizationUrl(url, broker) : url),

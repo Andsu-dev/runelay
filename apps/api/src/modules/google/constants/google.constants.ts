@@ -1,0 +1,80 @@
+import type { GoogleService } from "@runelay/shared";
+
+const scope = (name: string) => `https://www.googleapis.com/auth/${name}`;
+
+export const GOOGLE_SOURCE_URL = "https://www.googleapis.com";
+
+export const GOOGLE_AUTHORIZATION_URL = "https://accounts.google.com/o/oauth2/v2/auth";
+
+export const GOOGLE_SERVICES: GoogleService[] = [
+  "calendar",
+  "docs",
+  "sheets",
+  "slides",
+  "drive",
+  "gmail",
+  "forms",
+  "meet",
+];
+
+export const GOOGLE_BASE_SCOPES = ["openid", scope("userinfo.email"), scope("userinfo.profile")];
+
+export const GOOGLE_SERVICE_SCOPES: Record<GoogleService, string[]> = {
+  calendar: [scope("calendar"), scope("calendar.events")],
+  docs: [scope("documents"), scope("drive.file")],
+  sheets: [scope("spreadsheets"), scope("drive.file")],
+  slides: [scope("presentations"), scope("drive.file")],
+  drive: [scope("drive.file")],
+  gmail: [scope("gmail.send")],
+  forms: [scope("forms.body"), scope("drive.file")],
+  meet: [scope("meetings.space.created")],
+};
+
+export const GOOGLE_REGISTERED_SCOPES = [
+  "openid",
+  scope("userinfo.email"),
+  scope("userinfo.profile"),
+  scope("calendar"),
+  scope("calendar.events"),
+  scope("drive.file"),
+  scope("documents"),
+  scope("spreadsheets"),
+  scope("presentations"),
+  scope("forms.body"),
+  scope("gmail.send"),
+  scope("meetings.space.created"),
+];
+
+export const GOOGLE_SERVICE_LABELS: Record<GoogleService, string> = {
+  calendar: "Agenda",
+  docs: "Docs",
+  sheets: "Planilhas",
+  slides: "Apresentações",
+  drive: "Drive",
+  gmail: "Gmail",
+  forms: "Formulários",
+  meet: "Meet",
+};
+
+export const GOOGLE_MCP_URLS: Partial<Record<GoogleService, string>> = {
+  calendar: "https://calendarmcp.googleapis.com/mcp/v1",
+  docs: "https://docsmcp.googleapis.com/mcp/v1",
+  sheets: "https://sheetsmcp.googleapis.com/mcp/v1",
+  slides: "https://slidesmcp.googleapis.com/mcp/v1",
+};
+
+export const GOOGLE_API = {
+  userinfo: "https://openidconnect.googleapis.com/v1/userinfo",
+  docs: "https://docs.googleapis.com/v1/documents",
+  sheets: "https://sheets.googleapis.com/v4/spreadsheets",
+  slides: "https://slides.googleapis.com/v1/presentations",
+  driveFiles: "https://www.googleapis.com/drive/v3/files",
+  driveUpload: "https://www.googleapis.com/upload/drive/v3/files",
+  gmailSend: "https://gmail.googleapis.com/gmail/v1/users/me/messages/send",
+  forms: "https://forms.googleapis.com/v1/forms",
+  meetSpaces: "https://meet.googleapis.com/v2/spaces",
+};
+
+export const GOOGLE_REFRESH_MARGIN_MS = 60_000;
+
+export const GOOGLE_ERROR_PREVIEW = 500;

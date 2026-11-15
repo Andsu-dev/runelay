@@ -21,11 +21,17 @@ import {
 const BROKER: OAuthBroker = {
   provider: "google",
   clientId: "broker-client.apps.googleusercontent.com",
-  scopes: ["https://scope.test/a", "https://scope.test/b"],
+  scopes: [
+    "https://www.googleapis.com/auth/calendar.events",
+    "https://www.googleapis.com/auth/calendar.calendarlist.readonly",
+  ],
 };
+
+const GITHUB_BROKER: OAuthBroker = { provider: "github", clientId: "Ov23-test", scopes: ["repo", "read:user"] };
 
 let account: TestAccount;
 let server: FakeMcpServer;
+let githubServer: FakeMcpServer;
 let broker: FakeBroker;
 const restores: (() => void)[] = [];
 
@@ -44,6 +50,20 @@ beforeAll(async () => {
     },
     protectedResource: { scopes_supported: ["https://scope.test/a", "https://scope.test/everything"] },
   });
+  githubServer = startFakeMcp({
+    requireToken: true,
+    rejectRegistration: true,
+    authorizationServer: {
+      token_endpoint: "https://github.com/login/oauth/access_token",
+      registration_endpoint: undefined,
+    },
+  });
+  await createSource(
+    account.organizationId,
+    { name: "github", config: { kind: "mcp", url: githubServer.mcpUrl, headers: {} } },
+    { authMethod: "session", role: "owner" },
+    { broker: GITHUB_BROKER },
+  );
   await createSource(
     account.organizationId,
     { name: "calendar", config: { kind: "mcp", url: server.mcpUrl, headers: {} } },
@@ -55,6 +75,7 @@ beforeAll(async () => {
 afterAll(() => {
   for (const restore of restores.reverse()) restore();
   server.stop();
+  githubServer.stop();
   broker.stop();
 });
 
@@ -78,7 +99,7 @@ test("start sends the user to the provider through the broker callback", async (
   expect(url.origin + url.pathname).toBe(`${server.base}/authorize`);
   expect(url.searchParams.get("client_id")).toBe(BROKER.clientId);
   expect(url.searchParams.get("redirect_uri")).toBe(`${broker.base}/google/callback`);
-  expect(url.searchParams.get("scope")).toBe("https://scope.test/a https://scope.test/b");
+  expect(url.searchParams.get("scope")).toBe("https://www.googleapis.com/auth/calendar.events");
   expect(url.searchParams.get("access_type")).toBe("offline");
   expect(url.searchParams.get("prompt")).toBe("consent");
   expect(url.searchParams.has("resource")).toBe(false);
@@ -137,4 +158,59 @@ test("callback keeps plain and foreign states as the source name", async () => {
   const foreign = Buffer.from(JSON.stringify({ r: "https://x.test" })).toString("base64url");
   const response = await callback(`state=${foreign}&error=access_denied`);
   expect(response.headers.get("location")).toBe(`/connectors/${foreign}?oauth=done&oauth_error=access_denied`);
+});
+
+const githubKey = () => ({ organizationId: account.organizationId, name: "github" });
+
+test("GitHub login goes through the broker with the GitHub client and no Google parameters", async () => {
+  const response = await call("/v1/sources/github/oauth", { method: "POST", cookie: account.cookie });
+  const url = new URL((await body<OAuthStartView>(response)).data.authorizationUrl ?? "");
+  expect(url.origin + url.pathname).toBe(`${githubServer.base}/authorize`);
+  expect(url.searchParams.get("client_id")).toBe(GITHUB_BROKER.clientId);
+  expect(url.searchParams.get("redirect_uri")).toBe(`${broker.base}/github/callback`);
+  expect(url.searchParams.get("scope")).toBe("repo read:user");
+  expect(url.searchParams.has("access_type")).toBe(false);
+  expect(url.searchParams.has("prompt")).toBe(false);
+  expect(url.searchParams.has("resource")).toBe(false);
+  expect(url.searchParams.get("code_challenge")).toBeTruthy();
+  expect(githubServer.requests).not.toContain("POST /register");
+});
+
+test("GitHub code exchange goes to the broker GitHub token route", async () => {
+  const response = await callback(`state=${encodeBrokerState("github")}&code=${GOOD_CODE}`);
+  expect(response.headers.get("location")).toBe("/connectors/github?oauth=done");
+  expect(broker.paths.at(-1)).toBe("/github/token");
+  expect(lastForm()).toMatchObject({
+    grant_type: "authorization_code",
+    client_id: GITHUB_BROKER.clientId,
+    redirect_uri: `${broker.base}/github/callback`,
+  });
+  expect(lastForm().code_verifier).toBeTruthy();
+  expect(findSourceView(githubKey()).data?.status).toBe("ok");
+});
+
+test("GitHub refresh stores a rotated refresh token and keeps it when omitted", async () => {
+  const stale = () => {
+    const tokens = findSource(githubKey()).data?.oauth.tokens;
+    if (!tokens) throw new Error("missing tokens");
+    updateOAuth(githubKey(), { tokens: { ...tokens, access_token: "stale" } });
+  };
+  stale();
+  broker.options.refreshToken = "rotated-refresh";
+  expect((await connectSource(githubKey())).error).toBeNull();
+  expect(broker.paths.at(-1)).toBe("/github/token");
+  expect(findSource(githubKey()).data?.oauth.tokens?.refresh_token).toBe("rotated-refresh");
+  stale();
+  broker.options.omitRefreshToken = true;
+  expect((await connectSource(githubKey())).error).toBeNull();
+  expect(lastForm()).toMatchObject({ grant_type: "refresh_token", refresh_token: "rotated-refresh" });
+  expect(findSource(githubKey()).data?.oauth.tokens?.refresh_token).toBe("rotated-refresh");
+  broker.options.omitRefreshToken = false;
+  broker.options.refreshToken = GOOD_REFRESH_TOKEN;
+});
+
+test("saving tokens without a refresh token keeps the stored one", async () => {
+  updateOAuth(githubKey(), { tokens: { access_token: "a", token_type: "Bearer", refresh_token: "keep-me" } });
+  await createOAuthProvider(githubKey()).saveTokens({ access_token: "b", token_type: "Bearer" });
+  expect(findSource(githubKey()).data?.oauth.tokens).toMatchObject({ access_token: "b", refresh_token: "keep-me" });
 });
