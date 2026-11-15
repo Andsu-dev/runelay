@@ -1,7 +1,15 @@
-import { createSourceSchema, importSourcesSchema, listSourcesSchema, ok, updateSourceSchema } from "@runelay/shared";
+import {
+  createSourceSchema,
+  detectSourceAuthSchema,
+  importSourcesSchema,
+  listSourcesSchema,
+  ok,
+  updateSourceSchema,
+} from "@runelay/shared";
 import { Hono } from "hono";
 import { requireOrganization } from "@/modules/auth/middlewares/authenticate";
 import { startLogin } from "@/modules/oauth/services/oauth.service";
+import { detectSourceAuth } from "@/modules/sources/services/auth-detection.service";
 import {
   createSource,
   findSourceView,
@@ -31,6 +39,9 @@ export const sourcesRoutes = new Hono<AppEnv>()
   .get("/summary", (c) => respond(c, summarizeSources(c.var.organizationId)))
   .post("/import", validate("json", importSourcesSchema), async (c) =>
     respond(c, await importSources(c.var.organizationId, c.req.valid("json"), actorOf(c.var))),
+  )
+  .post("/detect-auth", validate("json", detectSourceAuthSchema), async (c) =>
+    respond(c, await detectSourceAuth(c.req.valid("json").url)),
   )
   .get("/:name", (c) => {
     const view = findSourceView({ organizationId: c.var.organizationId, name: c.req.param("name") });
