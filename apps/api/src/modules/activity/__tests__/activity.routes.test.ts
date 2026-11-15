@@ -1,7 +1,11 @@
 import { beforeAll, describe, expect, test } from "bun:test";
-import type { ActivitySummaryView, OnboardingView } from "@runelay/shared";
+import type { ActivityCallView, ActivitySummaryView, OnboardingView, Page } from "@runelay/shared";
 import { db } from "@/db/connection";
-import { recordToolCall, summarizeActivity } from "@/modules/activity/repositories/activity.repository";
+import {
+  listActivityCalls,
+  recordToolCall,
+  summarizeActivity,
+} from "@/modules/activity/repositories/activity.repository";
 import { describeOnboarding } from "@/modules/activity/services/activity.service";
 import { withQueryFault } from "../../../../test/db-fault-helpers";
 import { body, call, createApiKey, resetDatabase, signUp, type TestAccount } from "../../../../test/helpers";
@@ -210,5 +214,59 @@ describe("tools", () => {
   test("works with an api key", async () => {
     const key = await createApiKey(empty, "tools-key");
     expect((await call("/v1/tools", { bearer: key.key })).status).toBe(200);
+  });
+});
+
+describe("activity calls", () => {
+  const calls = async (query = "") =>
+    body<Page<ActivityCallView>>(await call(`/v1/activity/calls${query}`, { cookie: account.cookie }));
+
+  test("lists calls newest first with the agent key name and pages them", async () => {
+    const key = await createApiKey(account, "Claude Code");
+    recordToolCall({
+      organizationId: account.organizationId,
+      apiKeyId: key.id,
+      source: "linear",
+      tool: "save_issue",
+      ok: true,
+      durationMs: 42,
+    });
+    const first = await calls("?limit=2");
+    expect(first.data.total).toBe(8);
+    expect(first.data.items[0]).toMatchObject({
+      source: "linear",
+      tool: "save_issue",
+      ok: true,
+      durationMs: 42,
+      keyName: "Claude Code",
+    });
+    expect(first.data.items[0]?.keyId).toBe(key.id);
+    expect(first.data.nextCursor).toBe(2);
+    const last = await calls("?cursor=6&limit=5");
+    expect(last.data.items).toHaveLength(2);
+    expect(last.data.nextCursor).toBeNull();
+  });
+
+  test("filters by agent, connector, status and search on the server", async () => {
+    const keys = await body<{ id: string; name: string }[]>(await call("/v1/api-keys", { cookie: account.cookie }));
+    const keyId = keys.data.find((key) => key.name === "Claude Code")?.id ?? "";
+    expect((await calls(`?keyId=${keyId}`)).data.total).toBe(1);
+    expect((await calls("?source=github")).data.total).toBe(3);
+    expect((await calls("?status=error")).data.items.map((item) => item.tool)).toEqual(["list_issues"]);
+    expect((await calls("?status=ok&source=github")).data.total).toBe(2);
+    expect((await calls("?query=ISSUE")).data.total).toBe(4);
+    expect((await calls("?query=50%25_")).data.total).toBe(0);
+    expect((await calls("?status=maybe")).error?.code).toBe("INVALID_INPUT");
+  });
+
+  test("keeps other organizations out and reports storage failures", async () => {
+    expect(
+      (await body<Page<ActivityCallView>>(await call("/v1/activity/calls", { cookie: empty.cookie }))).data.total,
+    ).toBe(0);
+    const failing = withQueryFault(
+      (sql) => sql.includes("FROM tool_calls t"),
+      () => listActivityCalls(account.organizationId, { cursor: 0, limit: 10 }),
+    );
+    expect(failing.error?.code).toBe("STORAGE_FAILED");
   });
 });

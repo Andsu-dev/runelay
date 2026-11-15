@@ -1,6 +1,6 @@
-import { activityRangeSchema, toolSearchSchema } from "@runelay/shared";
+import { activityCallsSchema, activityRangeSchema, toolSearchSchema } from "@runelay/shared";
 import { Hono } from "hono";
-import { describeOnboarding, summarizeActivity } from "@/modules/activity/services/activity.service";
+import { describeOnboarding, listActivityCalls, summarizeActivity } from "@/modules/activity/services/activity.service";
 import { requireOrganization } from "@/modules/auth/middlewares/authenticate";
 import { searchTools } from "@/modules/gateway/services/search.service";
 import { respond } from "@/shared/http";
@@ -11,6 +11,9 @@ export const activityRoutes = new Hono<AppEnv>()
   .use(requireOrganization)
   .get("/summary", validate("query", activityRangeSchema), (c) =>
     respond(c, summarizeActivity(c.var.organizationId, c.req.valid("query").days)),
+  )
+  .get("/calls", validate("query", activityCallsSchema), (c) =>
+    respond(c, listActivityCalls(c.var.organizationId, c.req.valid("query"))),
   );
 
 export const onboardingRoutes = new Hono<AppEnv>()

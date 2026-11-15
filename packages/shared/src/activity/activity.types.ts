@@ -1,8 +1,20 @@
 import type { z } from "zod";
-import type { activityRangeSchema, toolSearchSchema } from "./activity.schema";
+import type { activityCallsSchema, activityRangeSchema, toolSearchSchema } from "./activity.schema";
 
 export type ActivityRangeInput = z.infer<typeof activityRangeSchema>;
 export type ToolSearchInput = z.infer<typeof toolSearchSchema>;
+export type ActivityCallsInput = z.infer<typeof activityCallsSchema>;
+
+export interface ActivityCallView {
+  id: number;
+  source: string;
+  tool: string;
+  ok: boolean;
+  durationMs: number;
+  createdAt: string;
+  keyId: string | null;
+  keyName: string | null;
+}
 
 export interface DailyCallsView {
   day: string;

@@ -1,7 +1,11 @@
 import {
+  type ActivityCallsInput,
+  type ActivityCallView,
   type ActivitySummaryView,
   attemptSync,
   type DailyCallsView,
+  ok,
+  type Page,
   type RankedCountView,
   type RecentUsageView,
   type Result,
@@ -115,3 +119,45 @@ export const findOnboardingProgress = (organizationId: string): Result<Onboardin
         .get(organizationId),
     "STORAGE_FAILED",
   );
+
+const CALLS_FILTER = `FROM tool_calls t LEFT JOIN apikey k ON k.id = t.api_key_id
+  WHERE t.organization_id = $organizationId
+    AND ($keyId IS NULL OR t.api_key_id = $keyId)
+    AND ($source IS NULL OR t.source = $source)
+    AND ($status IS NULL OR t.ok = $status)
+    AND ($query IS NULL OR t.tool LIKE $query ESCAPE '\\' OR t.source LIKE $query ESCAPE '\\')`;
+
+const likePattern = (query: string) => `%${query.replace(/[\\%_]/g, (match) => `\\${match}`)}%`;
+
+export const listActivityCalls = (
+  organizationId: string,
+  { cursor, limit, keyId, source, status, query }: ActivityCallsInput,
+): Result<Page<ActivityCallView>> => {
+  const result = attemptSync(() => {
+    const params = {
+      organizationId,
+      keyId: keyId ?? null,
+      source: source ?? null,
+      status: status === undefined ? null : status === "ok" ? 1 : 0,
+      query: query ? likePattern(query) : null,
+    };
+    const total =
+      db.query<{ total: number }, typeof params>(`SELECT COUNT(*) AS total ${CALLS_FILTER}`).get(params)?.total ?? 0;
+    const rows = db
+      .query<Omit<ActivityCallView, "ok"> & { ok: 0 | 1 }, typeof params & { limit: number; cursor: number }>(
+        `SELECT t.id, t.source, t.tool, t.ok, t.duration_ms AS durationMs, t.created_at AS createdAt,
+           t.api_key_id AS keyId, k.name AS keyName
+         ${CALLS_FILTER} ORDER BY t.created_at DESC, t.id DESC LIMIT $limit OFFSET $cursor`,
+      )
+      .all({ ...params, limit, cursor });
+    return { total, rows };
+  }, "STORAGE_FAILED");
+  if (result.error) return result;
+  const { total, rows } = result.data;
+  const next = cursor + rows.length;
+  return ok({
+    items: rows.map((row) => ({ ...row, ok: row.ok === 1 })),
+    total,
+    nextCursor: next < total ? next : null,
+  });
+};

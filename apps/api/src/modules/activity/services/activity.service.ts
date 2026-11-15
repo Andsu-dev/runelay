@@ -2,7 +2,7 @@ import { type OnboardingView, ok, type Result } from "@runelay/shared";
 import { ONBOARDING_STEPS } from "@/modules/activity/constants/activity.constants";
 import { findOnboardingProgress } from "@/modules/activity/repositories/activity.repository";
 
-export { summarizeActivity } from "@/modules/activity/repositories/activity.repository";
+export { listActivityCalls, summarizeActivity } from "@/modules/activity/repositories/activity.repository";
 
 export const describeOnboarding = (organizationId: string): Result<OnboardingView> => {
   const progress = findOnboardingProgress(organizationId);
