@@ -22,6 +22,9 @@ await writeFile(
   "dist/client/sitemap.xml",
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((url) => `  <url><loc>${url}</loc></url>`).join("\n")}\n</urlset>\n`,
 );
+const missing = await server.fetch(new Request("http://localhost/__not-found__"));
+if (missing.status !== 404) throw new Error(`the not found page answered ${missing.status}`);
+await writeFile("dist/client/404.html", await missing.text());
 await writeFile("dist/client/robots.txt", `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n`);
 
-console.log(`postbuild: ${slugs.length} share images, sitemap and robots.txt`);
+console.log(`postbuild: ${slugs.length} share images, sitemap, robots.txt and 404.html`);
