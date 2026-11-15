@@ -35,7 +35,9 @@ export function PanelUserRow({ user }: PanelUserRowProps) {
         trigger={
           <Button variant="ghost" size="icon-sm" className="relative" aria-label={t("layout.account.options")}>
             <HugeiconsIcon icon={MoreHorizontalIcon} size={17} strokeWidth={1.6} />
-            {!contributeSeen && <span aria-hidden className="absolute top-1 right-1 size-1.5 rounded-full bg-chart-1" />}
+            {!contributeSeen && (
+              <span aria-hidden className="absolute top-1 right-1 size-1.5 rounded-full bg-chart-1" />
+            )}
           </Button>
         }
       >

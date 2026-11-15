@@ -178,7 +178,9 @@
   [role="checkbox"],
   [role="radio"],
   label[for],
-  label:has(input:not([type="text"], [type="number"], [type="email"], [type="password"], [type="search"], [type="url"])),
+  label:has(
+    input:not([type="text"], [type="number"], [type="email"], [type="password"], [type="search"], [type="url"])
+  ),
   select,
   summary {
     cursor: pointer;

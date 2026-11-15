@@ -42,7 +42,10 @@ export function RailUserMenu({ user }: RailUserMenuProps) {
           >
             <UserAvatar name={user.name} seed={user.id} image={user.image} />
             {!contributeSeen && (
-              <span aria-hidden className="absolute top-1.5 right-1.5 size-2 rounded-full bg-chart-1 ring-2 ring-rail" />
+              <span
+                aria-hidden
+                className="absolute top-1.5 right-1.5 size-2 rounded-full bg-chart-1 ring-2 ring-rail"
+              />
             )}
           </Button>
         }
