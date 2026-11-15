@@ -8,3 +8,9 @@ export const CONNECTOR_TITLE: Record<ConnectorTab, MessageKey> = {
 };
 
 export const SIMPLE_ICONS_URL = "https://cdn.simpleicons.org";
+
+export const FULL_BLEED_ICONS = new Set(["/logos/conty.png"]);
+
+export const FEATURED_PITCH: Partial<Record<string, MessageKey>> = {
+  conty: "catalog.featured.conty",
+};
