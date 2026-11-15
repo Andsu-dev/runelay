@@ -22,7 +22,8 @@
   <a href="#-quick-start"><b>Quick start</b></a> ·
   <a href="#-connect-your-agents"><b>Connect agents</b></a> ·
   <a href="#-reference"><b>Reference</b></a> ·
-  <a href="https://x.com/andersonbrdev"><b>Follow the build</b></a>
+  <a href="https://x.com/andersonbrdev"><b>Follow the build</b></a> ·
+  <a href="https://runelay.com/contribute/"><b>☕ Support</b></a>
 </p>
 
 <br />
@@ -407,6 +408,10 @@ packages/
 - Organization members and invites
 - Activity log per API key
 - Menu bar app for macOS (reconnect alerts)
+
+## ☕ Support runelay
+
+runelay is free, MIT licensed and built by one person. If it saves you time, a one-time contribution by Pix or card keeps it alive: [runelay.com/contribute](https://runelay.com/contribute/).
 
 <br />
 
