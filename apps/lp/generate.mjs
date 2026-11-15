@@ -2,7 +2,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { card, checks, code, escape, icon, jsonLd, links, plain, prose, steps } from "./blocks.mjs";
-import { AGENT_LINKS, EXISTING, INTEGRATION_PAGES, INTEGRATIONS_EN, PAGES } from "./content.mjs";
+import { AGENT_LINKS, EXISTING, INTEGRATION_EXTRAS, INTEGRATION_PAGES, INTEGRATIONS_EN, PAGES } from "./content.mjs";
 import { FEATURES } from "./features.mjs";
 
 const ORIGIN = "https://runelay.com";
@@ -160,6 +160,8 @@ const AUTH = {
 
 const integration = (item) => {
   const { name, url, auth, tokenUrl } = item;
+  const extras = INTEGRATION_EXTRAS[item.id];
+  const art = extras?.feminine ? { o: "a", O: "A", do: "da", no: "na", dele: "dela" } : { o: "o", O: "O", do: "do", no: "no", dele: "dele" };
   const connect = {
     en: {
       oauth: [
@@ -180,7 +182,7 @@ const integration = (item) => {
     pt: {
       oauth: [
         ["Abra os conectores no painel", `Escolha ${name} no catálogo.`],
-        ["Faça login uma vez", `Uma aba do navegador abre no ${name}. Aprove o acesso e feche.`],
+        ["Faça login uma vez", `Uma aba do navegador abre ${art.no} ${name}. Aprove o acesso e feche.`],
         ["Pronto", "O token fica criptografado no seu servidor e é renovado pelo Runelay. Todo agente com uma chave do Runelay pode usar a conexão."],
       ],
       api_key: [
@@ -190,7 +192,7 @@ const integration = (item) => {
       ],
       none: [
         ["Abra os conectores no painel", `Escolha ${name} no catálogo.`],
-        ["Pronto", `O ${name} não pede login. Todo agente com uma chave do Runelay pode usar a conexão.`],
+        ["Pronto", `${art.O} ${name} não pede login. Todo agente com uma chave do Runelay pode usar a conexão.`],
       ],
     },
   };
@@ -201,6 +203,21 @@ const integration = (item) => {
         return [`/${slug}/`, entry.icon, ...entry[lang]];
       }),
     );
+  const showcase = (lang) => {
+    const extra = extras?.[lang];
+    if (!extra) return [];
+    return [
+      card("spark", extra.aboutTitle, prose(...extra.about)),
+      card("hub", extra.groupsTitle, checks(extra.groups.map(([title, text]) => `<strong>${title}.</strong> ${text}`))),
+      card("terminal", extra.promptsTitle, checks(extra.prompts.map((prompt) => `“${prompt}”`), "arrow")),
+    ];
+  };
+  const callToAction = (lang) => {
+    const extra = extras?.[lang];
+    if (!extra) return [];
+    return [card("arrow", extra.ctaTitle, prose(extra.cta, `<a class="button-solid small" href="${extras.site}" rel="noopener">${extra.ctaLabel}</a>`))];
+  };
+  const pick = (lang, key, fallback) => extras?.[lang]?.[key] ?? fallback;
   return {
     slug: `integrations/${item.slug}`,
     icon: item.logo(18),
@@ -208,13 +225,14 @@ const integration = (item) => {
     related: ["integrations", "guides/share-mcp-across-agents", "docs/migrate"],
     en: {
       title: `${name} MCP for Claude Code, Cursor and Codex · Runelay`,
-      description: `Connect ${name} once to Runelay, an open source MCP gateway, and use it from Claude Code, Cursor, Codex and Grok. ${AUTH.en[auth]}, credentials stay on your server.`,
+      description: pick("en", "description", `Connect ${name} once to Runelay, an open source MCP gateway, and use it from Claude Code, Cursor, Codex and Grok. ${AUTH.en[auth]}, credentials stay on your server.`),
       eyebrow: `Integration · ${AUTH.en[auth]}`,
       h1: `${name} on Runelay, an open source MCP gateway`,
-      lead: `Connect ${name} once. Claude Code, Cursor, Codex and Grok all use that connection, and the credential never leaves your server.`,
+      lead: pick("en", "lead", `Connect ${name} once. Claude Code, Cursor, Codex and Grok all use that connection, and the credential never leaves your server.`),
       cardTitle: `${name}`,
       cardText: item.en,
       body: [
+        ...showcase("en"),
         card(
           "plug",
           "What this connection does",
@@ -225,6 +243,7 @@ const integration = (item) => {
         ),
         card("shield", `Connect ${name}`, steps(connect.en[auth]), false),
         card("terminal", `Use ${name} in your agents`, prose(`Agents do not need a ${name} entry of their own. Point each one at Runelay and ${name} is there.`) + agents("en")),
+        ...callToAction("en"),
       ],
       faq: [
         [`Does my ${name} credential reach the agent?`, auth === "none" ? `${name} needs no credential. Agents only hold their Runelay key.` : `No. It stays on your Runelay server, encrypted with AES-256-GCM using your RUNELAY_SECRET. Agents only hold their Runelay key.`],
@@ -233,29 +252,31 @@ const integration = (item) => {
       ],
     },
     pt: {
-      title: `MCP do ${name} para Claude Code, Cursor e Codex · Runelay`,
-      description: `Conecte o ${name} uma vez ao Runelay, gateway MCP open source, e use no Claude Code, Cursor, Codex e Grok. ${AUTH.pt[auth]}, credenciais no seu servidor.`,
+      title: `MCP ${art.do} ${name} para Claude Code, Cursor e Codex · Runelay`,
+      description: pick("pt", "description", `Conecte ${art.o} ${name} uma vez ao Runelay, gateway MCP open source, e use no Claude Code, Cursor, Codex e Grok. ${AUTH.pt[auth]}, credenciais no seu servidor.`),
       eyebrow: `Integração · ${AUTH.pt[auth]}`,
       h1: `${name} no Runelay, gateway MCP open source`,
-      lead: `Conecte o ${name} uma vez. Claude Code, Cursor, Codex e Grok usam essa mesma conexão, e a credencial não sai do seu servidor.`,
+      lead: pick("pt", "lead", `Conecte ${art.o} ${name} uma vez. Claude Code, Cursor, Codex e Grok usam essa mesma conexão, e a credencial não sai do seu servidor.`),
       cardTitle: `${name}`,
       cardText: item.pt,
       body: [
+        ...showcase("pt"),
         card(
           "plug",
           "O que essa conexão faz",
           prose(
-            `${item.pt} O Runelay se conecta ao servidor MCP remoto do ${name} em <code>${url}</code> e coloca as tools dele atrás do seu endpoint.`,
-            `Os agentes encontram as tools com <code>search_tools</code> e executam com <code>call_tool</code>, então a lista de tools do ${name} só entra no contexto quando é necessária.`,
+            `${item.pt} O Runelay se conecta ao servidor MCP remoto ${art.do} ${name} em <code>${url}</code> e coloca as tools ${art.dele} atrás do seu endpoint.`,
+            `Os agentes encontram as tools com <code>search_tools</code> e executam com <code>call_tool</code>, então a lista de tools ${art.do} ${name} só entra no contexto quando é necessária.`,
           ),
         ),
-        card("shield", `Conectar o ${name}`, steps(connect.pt[auth]), false),
-        card("terminal", `Usar o ${name} nos agentes`, prose(`Os agentes não precisam de uma entrada própria do ${name}. Aponte cada um para o Runelay e o ${name} aparece.`) + agents("pt")),
+        card("shield", `Conectar ${art.o} ${name}`, steps(connect.pt[auth]), false),
+        card("terminal", `Usar ${art.o} ${name} nos agentes`, prose(`Os agentes não precisam de uma entrada própria ${art.do} ${name}. Aponte cada um para o Runelay e ${art.o} ${name} aparece.`) + agents("pt")),
+        ...callToAction("pt"),
       ],
       faq: [
-        [`A credencial do ${name} chega ao agente?`, auth === "none" ? `O ${name} não usa credencial. Os agentes guardam só a chave do Runelay.` : `Não. Ela fica no seu servidor Runelay, criptografada com AES-256-GCM usando o seu RUNELAY_SECRET. Os agentes guardam só a chave do Runelay.`],
-        [`Preciso conectar o ${name} em cada agente?`, `Não. Você conecta uma vez no Runelay, e todo agente que aponta para o seu endpoint usa a mesma conexão.`],
-        [`Já tenho o ${name} configurado num agente. Dá para trazer?`, `Sim. O runelay migrate lê os servidores MCP que os agentes já têm. Se a CLI consegue ler o token, a conta chega conectada; senão, espera na fila de reconexão do painel.`],
+        [`A credencial ${art.do} ${name} chega ao agente?`, auth === "none" ? `${art.O} ${name} não usa credencial. Os agentes guardam só a chave do Runelay.` : `Não. Ela fica no seu servidor Runelay, criptografada com AES-256-GCM usando o seu RUNELAY_SECRET. Os agentes guardam só a chave do Runelay.`],
+        [`Preciso conectar ${art.o} ${name} em cada agente?`, `Não. Você conecta uma vez no Runelay, e todo agente que aponta para o seu endpoint usa a mesma conexão.`],
+        [`Já tenho ${art.o} ${name} configurad${art.o} num agente. Dá para trazer?`, `Sim. O runelay migrate lê os servidores MCP que os agentes já têm. Se a CLI consegue ler o token, a conta chega conectada; senão, espera na fila de reconexão do painel.`],
       ],
     },
   };

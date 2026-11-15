@@ -988,11 +988,85 @@ export const EXISTING = {
   download: { icon: "import", en: ["Download Runelay", "Desktop app for Mac, Windows and Linux."], pt: ["Baixar o Runelay", "App desktop para Mac, Windows e Linux."] },
 };
 
-export const INTEGRATION_PAGES = ["linear", "github", "notion"];
+export const INTEGRATION_PAGES = ["conty", "linear", "github", "notion"];
+
+export const INTEGRATION_EXTRAS = {
+  conty: {
+    site: "https://appconty.com",
+    feminine: true,
+    en: {
+      description: "Connect Conty to Runelay once and run your creator marketing from Claude Code, Cursor, Codex and Grok: briefs, invites, video approvals, coupons and sales. OAuth login, credentials stay on your server.",
+      aboutTitle: "What Conty is",
+      lead: "Conty is a Brazilian creator marketing platform for brands and agencies. Connect it once to Runelay and your agent can brief creators, invite them, review their videos and follow the sales, all from a chat.",
+      about: [
+        "Conty runs creator campaigns end to end: the brief, the creators, the content they deliver, the coupons and links that measure sales, and the payouts. Its MCP server puts that same work in your agent's hands.",
+        "You ask in plain language. The agent finds the right Conty tools through Runelay, and every action still runs under your Conty account and its permissions.",
+      ],
+      groupsTitle: "What your agent can do in Conty",
+      groups: [
+        ["Campaigns", "Turn a brief into a campaign, with objective, deliveries per network, scopes and briefings. Save it as a draft for review, edit it, pause or reactivate it, renew deadlines and upload the cover and briefing files."],
+        ["Creators", "Search creators the way the panel does, resolve @handles, open a profile with its social numbers, read Conty's AI analysis of a creator's content (brand fit, brand safety, what to avoid), check their history in Conty and keep creator lists."],
+        ["Invites and applications", "Invite one creator or hundreds in a single call, and approve or reject applications."],
+        ["Content review", "List deliveries, approve videos with a rating and a posting date, request changes or reject, and approve pending covers, captions and scripts in bulk."],
+        ["Sales and coupons", "Give each creator a coupon, manage coupon banks and the commission budget, read the coupon sales report and see store orders from a connected Shopify or Nuvemshop."],
+        ["Tracking", "Create tracking links and short links per creator, read the campaign traffic funnel from click to visit, event and download, and use the analytics connectors for PostHog, Google Analytics and App Store Connect."],
+        ["Communities", "Manage communities, channels and announcements, share campaigns with the community, and read its analytics and pending reviews."],
+        ["Chat and notifications", "Read and send direct messages to creators and check notifications."],
+        ["Wallet", "Check the balance and statement, follow creator payouts and generate a PIX deposit charge. Money only moves when the brand pays it."],
+        ["Brand overview", "Follow videos, views and likes for the brand over time."],
+      ],
+      promptsTitle: "Try asking",
+      prompts: [
+        "Create a campaign for the X launch with 20 beauty creators on TikTok.",
+        "Approve the videos under review in campaign Y with a rating of 5.",
+        "How much did the creators' coupons sell this week?",
+        "Invite the creators in my skincare list to campaign Y.",
+        "Which deliveries in campaign Y are past their deadline?",
+      ],
+      ctaTitle: "New to Conty?",
+      cta: "Conty is where brands and agencies in Brazil run their creator campaigns. Create your account, then connect it here.",
+      ctaLabel: "Visit appconty.com",
+    },
+    pt: {
+      description: "Conecte a Conty ao Runelay uma vez e rode seu marketing com creators pelo Claude Code, Cursor, Codex e Grok: briefing, convites, aprovação de vídeos, cupons e vendas. Login OAuth, credenciais no seu servidor.",
+      aboutTitle: "O que é a Conty",
+      lead: "A Conty é a plataforma brasileira de marketing com creators para marcas e agências. Conecte uma vez ao Runelay e o seu agente faz o briefing, convida creators, revisa os vídeos e acompanha as vendas, tudo pelo chat.",
+      about: [
+        "A Conty cuida da campanha com creators de ponta a ponta: o briefing, os creators, o conteúdo que eles entregam, os cupons e links que medem as vendas e os repasses. O servidor MCP da Conty coloca esse mesmo trabalho nas mãos do seu agente.",
+        "Você pede em linguagem natural. O agente encontra as tools certas da Conty pelo Runelay, e cada ação continua rodando na sua conta da Conty, com as permissões dela.",
+      ],
+      groupsTitle: "O que o seu agente faz na Conty",
+      groups: [
+        ["Campanhas", "Transforma um briefing em acordo, com objetivo, entregas por rede, escopos e briefings. Salva como rascunho para revisão, edita, pausa ou reativa, renova prazos e sobe a capa e os arquivos do briefing."],
+        ["Creators", "Busca creators como na aba Creators do painel, acha o perfil pelo @ com os números das redes, lê a análise de IA da Conty sobre o conteúdo do creator (fit com a marca, brand safety, o que evitar), consulta o histórico dele na Conty e mantém listas de creators."],
+        ["Convites e candidaturas", "Convida um creator ou centenas numa chamada só, e aprova ou recusa candidaturas."],
+        ["Revisão de conteúdo", "Lista as entregas, aprova vídeos com nota e data de postagem, pede alteração ou recusa, e aprova em lote capas, legendas e roteiros pendentes."],
+        ["Vendas e cupons", "Dá um cupom para cada creator, cuida dos bancos de cupons e do orçamento de comissão, lê o relatório de vendas por cupom e vê os pedidos da loja Shopify ou Nuvemshop conectada."],
+        ["Rastreamento", "Cria links de rastreio e links curtos por creator, lê o funil de tráfego da campanha (clique, visita, evento e download) e usa os conectores de analytics do PostHog, Google Analytics e App Store Connect."],
+        ["Comunidades", "Cuida das comunidades, canais e avisos, compartilha campanhas com a comunidade e lê as métricas e as revisões pendentes dela."],
+        ["Chat e notificações", "Lê e manda mensagens diretas para creators e confere as notificações."],
+        ["Carteira", "Consulta saldo e extrato, acompanha os repasses aos creators e gera a cobrança PIX de um depósito. O dinheiro só se move quando a marca paga."],
+        ["Visão da marca", "Acompanha vídeos, visualizações e curtidas da marca ao longo do tempo."],
+      ],
+      promptsTitle: "Peça assim",
+      prompts: [
+        "Crie um acordo para o lançamento X com 20 creators de beleza no TikTok.",
+        "Aprove os vídeos em análise da campanha Y com nota 5.",
+        "Quanto o cupom dos creators vendeu esta semana?",
+        "Convide os creators da minha lista de skincare para a campanha Y.",
+        "Quais entregas da campanha Y estão com o prazo vencido?",
+      ],
+      ctaTitle: "Ainda não usa a Conty?",
+      cta: "A Conty é onde marcas e agências rodam as campanhas com creators no Brasil. Crie sua conta e depois conecte aqui.",
+      ctaLabel: "Conhecer a Conty",
+    },
+  },
+};
 
 export const INTEGRATIONS_EN = {
   sections: { popular: "Popular", dev: "For development", work: "Work and content" },
   descriptions: {
+    conty: "Creator campaigns, from the brief to the sales report.",
     linear: "Issues, projects and cycles for your team.",
     github: "Repositories, issues and pull requests.",
     notion: "Pages, databases and workspace search.",
@@ -1009,6 +1083,7 @@ export const INTEGRATIONS_EN = {
     prisma: "Prisma Postgres databases and migrations.",
     deepwiki: "Ask about any public repository.",
     context7: "Up-to-date library documentation.",
+    firecrawl: "Web search, scraping and site crawling.",
     huggingface: "Models, datasets and Spaces.",
     google_calendar: "Events, calendars and free time.",
     google_docs: "Read, create and edit documents.",
