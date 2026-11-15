@@ -17,8 +17,6 @@ export const SKILLS_TARGET_DIR = join(cliEnv.RUNELAY_HOME, ".claude", "skills");
 
 export const SKILL_PAGE_SIZE = 100;
 
-export const SKILL_FETCH_CONCURRENCY = 4;
-
 export const SPINNER_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 
 export const HELP_TEXT = `runelay: suas memórias, habilidades e conexões iguais em todos os agentes.

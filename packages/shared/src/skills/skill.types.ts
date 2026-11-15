@@ -1,6 +1,7 @@
 import type { z } from "zod";
 import type {
   createSkillSchema,
+  exportSkillsSchema,
   importSkillsSchema,
   listSkillsSchema,
   skillFileSchema,
@@ -11,6 +12,7 @@ export type CreateSkillInput = z.infer<typeof createSkillSchema>;
 export type UpdateSkillInput = z.infer<typeof updateSkillSchema>;
 export type ListSkillsInput = z.infer<typeof listSkillsSchema>;
 export type ImportSkillsInput = z.infer<typeof importSkillsSchema>;
+export type ExportSkillsInput = z.infer<typeof exportSkillsSchema>;
 export type SkillFileInput = z.infer<typeof skillFileSchema>;
 
 export interface SkillListItemView {
@@ -36,4 +38,8 @@ export interface SkillView extends SkillListItemView {
 export interface SkillFileView {
   path: string;
   content: string;
+}
+
+export interface SkillExportView extends Omit<SkillView, "files"> {
+  files: SkillFileView[];
 }

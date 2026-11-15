@@ -13,9 +13,8 @@ import {
   ok,
   type Page,
   type Result,
-  type SkillFileView,
+  type SkillExportView,
   type SkillListItemView,
-  type SkillView,
   type SourceStatus,
   type SourceView,
 } from "@runelay/shared";
@@ -96,15 +95,8 @@ export const listEnabledSkills = async (connection: Connection): Promise<Result<
   return ok(skills);
 };
 
-export const fetchSkill = (connection: Connection, slug: string) =>
-  authed<SkillView>(connection, "GET", `/skills/${encodeURIComponent(slug)}`);
-
-export const fetchSkillFile = (connection: Connection, slug: string, path: string) =>
-  authed<SkillFileView>(
-    connection,
-    "GET",
-    `/skills/${encodeURIComponent(slug)}/files?path=${encodeURIComponent(path)}`,
-  );
+export const exportSkills = (connection: Connection, slugs: string[]) =>
+  authed<SkillExportView[]>(connection, "POST", "/skills/export", { slugs });
 
 export const listSourcesByStatus = (connection: Connection, status: SourceStatus) =>
   authed<SourceView[]>(connection, "GET", `/sources?status=${status}`);

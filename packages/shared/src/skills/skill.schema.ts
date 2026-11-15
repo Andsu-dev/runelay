@@ -47,6 +47,12 @@ export const listSkillsSchema = paginationSchema.extend({
     .optional(),
 });
 
+export const SKILL_EXPORT_LIMIT = 50;
+
+export const exportSkillsSchema = z.object({
+  slugs: z.array(skillSlugSchema).min(1).max(SKILL_EXPORT_LIMIT),
+});
+
 export const importSkillsSchema = z.object({
   skills: z.array(createSkillSchema).max(500),
 });

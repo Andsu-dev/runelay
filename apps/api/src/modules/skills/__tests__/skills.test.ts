@@ -1,8 +1,9 @@
 import { afterEach, beforeAll, describe, expect, mock, spyOn, test } from "bun:test";
-import type { Page, SkillFileView, SkillListItemView, SkillView } from "@runelay/shared";
+import type { Page, SkillExportView, SkillFileView, SkillListItemView, SkillView } from "@runelay/shared";
 import { db } from "@/db/connection";
 import {
   deleteSkillRow,
+  exportSkills,
   findSkill,
   findSkillFile,
   insertSkill,
@@ -87,6 +88,33 @@ describe("skills routes", () => {
     const unknown = await call("/v1/skills/ghost", { cookie: owner.cookie });
     expect(unknown.status).toBe(404);
     expect((await body(unknown)).error?.code).toBe("SKILL_NOT_FOUND");
+  });
+
+  test("exports several skills with file contents in one call", async () => {
+    const response = await call("/v1/skills/export", {
+      method: "POST",
+      bearer: ownerKey,
+      json: { slugs: ["deploy:prod", "bare", "missing"] },
+    });
+    const { data } = await body<SkillExportView[]>(response);
+    expect(data.map((skill) => skill.slug)).toEqual(["bare", "deploy:prod"]);
+    expect(data[1]?.files).toEqual([
+      { path: "README.md", content: "readme" },
+      { path: "scripts/run.sh", content: "echo ã" },
+    ]);
+    expect(data[0]?.files).toEqual([]);
+    const foreign = await call("/v1/skills/export", {
+      method: "POST",
+      cookie: stranger.cookie,
+      json: { slugs: ["deploy:prod"] },
+    });
+    expect((await body<SkillExportView[]>(foreign)).data).toEqual([]);
+    const tooMany = await call("/v1/skills/export", {
+      method: "POST",
+      bearer: ownerKey,
+      json: { slugs: Array.from({ length: 51 }, (_, index) => `s${index}`) },
+    });
+    expect(tooMany.status).toBe(400);
   });
 
   test("updates fields and replaces files only when sent", async () => {
@@ -185,6 +213,7 @@ describe("storage failures", () => {
       listSkills(org, { cursor: 0, limit: 10 }),
       findSkill(org, "bare"),
       findSkillFile(org, "bare", "a.md"),
+      exportSkills(org, ["bare"]),
       insertSkill(org, input),
       updateSkillRow(org, "bare", { name: "b" }),
       deleteSkillRow(org, "bare"),

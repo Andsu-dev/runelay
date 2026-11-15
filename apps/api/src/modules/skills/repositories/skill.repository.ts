@@ -7,6 +7,7 @@ import {
   ok,
   type Page,
   type Result,
+  type SkillExportView,
   type SkillFileInput,
   type SkillFileRefView,
   type SkillFileView,
@@ -98,6 +99,28 @@ export const findSkill = (organizationId: string, slug: string): Result<SkillVie
     "STORAGE_FAILED",
   );
 };
+
+export const exportSkills = (organizationId: string, slugs: string[]): Result<SkillExportView[]> =>
+  attemptSync(() => {
+    const placeholders = slugs.map(() => "?").join(", ");
+    const rows = db
+      .query<Omit<SkillDetailRow, "files">, SQLQueryBindings[]>(
+        `SELECT ${SKILL_LIST_COLUMNS}, s.body, s.created_at AS createdAt
+         FROM skills s WHERE s.organization_id = ? AND s.slug IN (${placeholders}) ORDER BY s.slug`,
+      )
+      .all(organizationId, ...slugs);
+    const files = db
+      .query<SkillFileView & { slug: string }, SQLQueryBindings[]>(
+        `SELECT skill_slug AS slug, path, content FROM skill_files
+         WHERE organization_id = ? AND skill_slug IN (${placeholders}) ORDER BY path`,
+      )
+      .all(organizationId, ...slugs);
+    return rows.map(({ enabled, ...rest }) => ({
+      ...rest,
+      enabled: enabled === 1,
+      files: files.filter((file) => file.slug === rest.slug).map(({ path, content }) => ({ path, content })),
+    }));
+  }, "STORAGE_FAILED");
 
 export const findSkillFile = (organizationId: string, slug: string, path: string): Result<SkillFileView> => {
   const row = attemptSync(

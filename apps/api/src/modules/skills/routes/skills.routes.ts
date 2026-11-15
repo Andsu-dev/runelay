@@ -1,10 +1,17 @@
-import { createSkillSchema, importSkillsSchema, listSkillsSchema, updateSkillSchema } from "@runelay/shared";
+import {
+  createSkillSchema,
+  exportSkillsSchema,
+  importSkillsSchema,
+  listSkillsSchema,
+  updateSkillSchema,
+} from "@runelay/shared";
 import { Hono } from "hono";
 import { z } from "zod";
 import { requireOrganization } from "@/modules/auth/middlewares/authenticate";
 import {
   createSkill,
   deleteSkill,
+  exportSkills,
   findSkill,
   findSkillFile,
   importSkills,
@@ -24,6 +31,9 @@ export const skillsRoutes = new Hono<AppEnv>()
   )
   .post("/", validate("json", createSkillSchema), (c) =>
     respond(c, createSkill(c.var.organizationId, c.req.valid("json")), 201),
+  )
+  .post("/export", validate("json", exportSkillsSchema), (c) =>
+    respond(c, exportSkills(c.var.organizationId, c.req.valid("json").slugs)),
   )
   .post("/import", validate("json", importSkillsSchema), (c) =>
     respond(c, importSkills(c.var.organizationId, c.req.valid("json"))),

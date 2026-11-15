@@ -10,6 +10,7 @@ import { findSkill, insertSkill, updateSkillRow, upsertSkills } from "@/modules/
 
 export {
   deleteSkillRow as deleteSkill,
+  exportSkills,
   findSkill,
   findSkillFile,
   listSkills,
