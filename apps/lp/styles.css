@@ -417,14 +417,44 @@ details[data-state="open"] .chevron { transform: rotate(180deg); }
   .brow-unit { display: none; }
   .bnotes { grid-template-columns: 1fr; }
 }
-.guide section { margin-top: 80px; }
-.guide .hero { margin-top: 0; }
-.guide section > p { text-align: left; color: var(--muted-foreground); }
-.guide section > p strong { color: var(--foreground); }
-.guide section > p a, .guide .callout a, .guide .todo a { color: var(--ink); text-underline-offset: 3px; }
-.related { display: grid; gap: 6px; margin-top: 28px; text-align: left; font-size: 14px; }
-.related span { font-size: 12.5px; color: var(--muted-foreground); }
-.related a { color: var(--ink); text-underline-offset: 3px; font-weight: 500; }
+.guide .bcard { padding: 18px 20px; }
+.guide .bcard-title svg { color: var(--ink); }
+.bcard-body { display: grid; gap: 10px; margin-top: 10px; font-size: 15px; line-height: 1.6; color: var(--muted-foreground); }
+.bcard-body p { margin: 0; }
+.ctx-caption { margin: 18px 0 0; font-size: 12.5px; color: var(--muted-foreground); }
+.ctx-caption a, .guide .callout a, .guide .checks a { color: var(--ink); text-underline-offset: 3px; }
+.feats { list-style: none; margin: 16px 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; }
+.feats li { display: flex; gap: 12px; align-items: flex-start; }
+.feats .brow-icon, .guide-card .brow-icon { flex: none; color: var(--ink); background: color-mix(in oklch, var(--ink) 13%, transparent); }
+.feats strong { display: block; font-size: 14px; letter-spacing: -0.01em; }
+.feats small { display: block; margin-top: 2px; font-size: 13px; line-height: 1.45; color: var(--muted-foreground); }
+.checks { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 10px; font-size: 14px; line-height: 1.5; }
+.checks li { display: flex; gap: 10px; align-items: flex-start; }
+.checks svg { flex: none; margin-top: 2px; color: var(--success); }
+.checks svg:has(path[d="M8.5 12h7"]) { color: var(--muted-foreground); }
+.duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.guide .compare { width: 100%; margin: 12px 0 0; background: none; border-radius: 10px; }
+.guide .steps { margin-top: 18px; }
+.guide .steps li { padding-bottom: 24px; }
+.guide .step-number { background: color-mix(in oklch, var(--foreground) 8%, transparent); }
+.guide .callout { margin: 0; align-items: center; background: color-mix(in oklch, var(--ink) 9%, transparent); }
+.guide .callout-icon { display: grid; color: var(--ink); }
+.faq-card .faq { margin-top: 12px; justify-items: stretch; }
+.faq-card details { width: 100%; background: color-mix(in oklch, var(--foreground) 4%, transparent); }
+.guides { margin-top: 8px; }
+.guide-list { display: grid; gap: 8px; margin-top: 12px; text-align: left; }
+.guide-card { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 14px; background: var(--muted); color: var(--foreground); text-decoration: none; transition: background 0.2s; }
+.guide-card:hover { background: color-mix(in oklch, var(--foreground) 7%, var(--muted)); }
+.guide-text { display: grid; gap: 2px; min-width: 0; }
+.guide-text strong { font-size: 14.5px; letter-spacing: -0.01em; }
+.guide-text small { font-size: 13px; color: var(--muted-foreground); }
+.guide-arrow { display: grid; margin-left: auto; color: var(--muted-foreground); transition: transform 0.25s var(--ease-out), color 0.2s; }
+.guide-card:hover .guide-arrow { transform: translateX(3px); color: var(--ink); }
+.home-guides { margin-top: 24px; }
+@media (max-width: 760px) {
+  .feats, .duo { grid-template-columns: 1fr; }
+  .guide .bcard { padding: 16px; }
+}
 .bench-link { margin-top: 14px; font-size: 14px; }
 .bench-link a { color: var(--ink); text-underline-offset: 3px; font-weight: 500; }
 
