@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
 import { defineConfig } from "vite";
+import { jsonLd, plain } from "./blocks.mjs";
 
 const ORIGIN = "https://runelay.com";
 const REPO = "https://github.com/Andsu-dev/runelay";
@@ -71,14 +72,12 @@ const footer = (route) => {
     </footer>`;
 };
 
-const jsonLd = (data) => `<script type="application/ld+json">${JSON.stringify(data)}</script>`;
-
 const structuredData = (route, html) => {
   if (!route.endsWith("/")) return "";
   const pt = route.startsWith("/pt-br/");
   const home = localized("/", pt);
   if (route === home) return jsonLd({ "@context": "https://schema.org", "@type": "WebSite", name: "Runelay", alternateName: ["runelay", "runelay.com"], url: `${ORIGIN}${home}`, inLanguage: pt ? "pt-BR" : "en" });
-  const name = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)?.[1].replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+  const name = plain(html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)?.[1] ?? "").replace(/\s+/g, " ").trim();
   return jsonLd({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",

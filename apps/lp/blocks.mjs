@@ -20,6 +20,18 @@ export const icon = (name, size = 15) =>
 
 export const escape = (text) => text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 
+export const plain = (html) => {
+  let text = html;
+  let previous;
+  do {
+    previous = text;
+    text = text.replace(/<[^>]+>/g, "");
+  } while (text !== previous);
+  return text;
+};
+
+export const jsonLd = (data) => `<script type="application/ld+json">${JSON.stringify(data).replaceAll("<", "\\u003c")}</script>`;
+
 export const card = (name, title, body, reveal = true) => `<div class="bcard"${reveal ? " data-reveal" : ""}><h2 class="bcard-title">${icon(name)}${title}</h2>${body}</div>`;
 
 export const prose = (...paragraphs) => `<div class="bcard-body">${paragraphs.map((text) => `<p>${text}</p>`).join("")}</div>`;

@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { card, checks, code, escape, icon, links, prose, steps } from "./blocks.mjs";
+import { card, checks, code, escape, icon, jsonLd, links, plain, prose, steps } from "./blocks.mjs";
 import { EXISTING, INTEGRATION_PAGES, INTEGRATIONS_EN, PAGES } from "./content.mjs";
 
 const ORIGIN = "https://runelay.com";
@@ -25,8 +25,6 @@ const chrome = Object.fromEntries(
   ]),
 );
 
-const plain = (html) => html.replace(/<[^>]+>/g, "");
-
 const faqCard = (items, lang) =>
   card(
     "help",
@@ -40,11 +38,11 @@ const faqCard = (items, lang) =>
   ).replace('class="bcard"', 'class="bcard faq-card"');
 
 const faqSchema = (items) =>
-  `<script type="application/ld+json">${JSON.stringify({
+  jsonLd({
     "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: items.map(([question, answer]) => ({ "@type": "Question", name: plain(question), acceptedAnswer: { "@type": "Answer", text: plain(answer) } })),
-  })}</script>`;
+  });
 
 const registry = new Map();
 
