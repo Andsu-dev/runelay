@@ -298,7 +298,7 @@ const hub = () => {
   return {
     slug: "integrations",
     icon: "plug",
-    related: ["guides/share-mcp-across-agents", "docs/migrate", "self-hosted-mcp-gateway"],
+    related: ["custom-connectors", "guides/share-mcp-across-agents", "docs/migrate"],
     en: {
       title: "Runelay integrations: MCP servers for Claude Code, Cursor and Codex",
       description: `The ${count} MCP integrations in the catalog of Runelay, an open source MCP gateway, plus how to add any remote MCP, local MCP or OpenAPI spec.`,
@@ -313,7 +313,8 @@ const hub = () => {
           "hub",
           "Not on the list?",
           checks(["Any remote MCP server, by URL.", "Any local MCP server that runs as a command.", "Any API described by an OpenAPI spec."]) +
-            prose("The catalog is a shortcut, not a limit. Whatever you add shows up for every agent through the same endpoint."),
+            prose("The catalog is a shortcut, not a limit. Whatever you add shows up for every agent through the same endpoint.") +
+            links([["/custom-connectors/", "plug", "Not in the catalog? Add a custom connector", "Remote MCP, local command or OpenAPI spec, with your own OAuth client if needed."]]),
         ),
       ],
       faq: [
@@ -336,7 +337,8 @@ const hub = () => {
           "hub",
           "Não está na lista?",
           checks(["Qualquer servidor MCP remoto, pela URL.", "Qualquer servidor MCP local que roda como comando.", "Qualquer API descrita por uma spec OpenAPI."]) +
-            prose("O catálogo é um atalho, não um limite. O que você adicionar aparece para todos os agentes pelo mesmo endpoint."),
+            prose("O catálogo é um atalho, não um limite. O que você adicionar aparece para todos os agentes pelo mesmo endpoint.") +
+            links([["/custom-connectors/", "plug", "Não está no catálogo? Adicione um conector personalizado", "MCP remoto, comando local ou spec OpenAPI, com o seu próprio cliente OAuth se precisar."]]),
         ),
       ],
       faq: [

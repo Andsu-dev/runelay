@@ -722,6 +722,126 @@ const migrate = {
   },
 };
 
+const DOCS_CUSTOM = "https://docs.runelay.com/custom-connectors";
+
+const customConnectors = {
+  slug: "custom-connectors",
+  icon: "hub",
+  related: ["integrations", "features/connections", "docs/migrate"],
+  en: {
+    title: "Custom MCP connectors: connect any MCP server or API · Runelay",
+    description: "Add any remote MCP server, local MCP command or OpenAPI spec to Runelay, an open source MCP gateway. One login, encrypted on your server, shared by Claude Code, Cursor, Codex and every other agent.",
+    eyebrow: "Connections · Custom",
+    h1: "Connect any MCP server or API",
+    lead: "The catalog is a shortcut, not a limit. Add a remote MCP server, a local command or an OpenAPI spec to Runelay, an open source MCP gateway, and every agent gets its tools through the same endpoint.",
+    cardTitle: "Custom connectors",
+    cardText: "Add any MCP server or API that isn't in the catalog.",
+    body: [
+      card(
+        "plug",
+        "Three ways in",
+        table(
+          ["What you give", "Good for"],
+          [
+            ["Remote MCP", "The server URL", "Public or internal MCP servers over HTTP"],
+            ["Local command", "A command, arguments and env vars", "MCP servers that run as a process, like <code>npx</code> packages"],
+            ["OpenAPI", "A spec in JSON or YAML", "Your own REST API, with no MCP server to write. Each operation becomes a tool."],
+          ],
+        ),
+      ),
+      card(
+        "shield",
+        "Sign-in that just works",
+        checks([
+          "Paste a remote MCP URL and Runelay detects whether it wants OAuth, a key in a header or nothing at all.",
+          "OAuth runs when you save. Tokens are stored encrypted and refreshed by Runelay.",
+          "Provider without automatic client registration, like Google? Use your own OAuth client: register <code>PUBLIC_URL/v1/oauth/callback</code> as the redirect URL and paste the Client ID and secret.",
+          "Headers, env vars and secrets are encrypted at rest with AES-256-GCM. Agents never see them.",
+        ]),
+      ),
+      card(
+        "hub",
+        "One login, every agent",
+        prose(
+          "The connection name becomes the tool prefix, so a connection named <code>billing</code> exposes tools like <code>billing.list_invoices</code>. Claude Code, Cursor, Codex and every other agent with a Runelay key find them with <code>search_tools</code> and run them with <code>call_tool</code>.",
+          "Already configured in an agent? <code>runelay import</code> turns the MCP servers in your agent configs into connections, or paste the config file in the panel.",
+        ),
+      ),
+      card(
+        "terminal",
+        "Add one",
+        steps([
+          ["Open the connectors in the panel", "Add a custom connection and pick the type: Remote MCP, Local command or OpenAPI."],
+          ["Name it and fill the fields", "URL, command or spec, plus headers or env vars if it needs a key."],
+          ["Save", "Runelay connects, signs in if needed and lists the tools. The full reference is in the <a href=\"" + DOCS_CUSTOM + "\" rel=\"noopener\">custom connectors docs</a>."],
+        ]),
+        false,
+      ),
+    ],
+    faq: [
+      ["Can Runelay reach a server on my private network?", "Yes, if you allow it. Requests to private, loopback and link-local addresses are blocked by default. Set RUNELAY_ALLOW_PRIVATE_URLS=true on the Runelay server to reach internal servers."],
+      ["Can I run a local MCP server with npx?", "Yes. The desktop app runs local commands with the tools installed on your computer. On a server they are off by default: set RUNELAY_ENABLE_STDIO=true, and only an owner or admin can create them. The Docker image ships without Node."],
+      ["Do my API keys reach the agents?", "No. Headers, env values and OAuth tokens stay on your server, encrypted with your RUNELAY_SECRET. Agents only hold their Runelay key."],
+    ],
+  },
+  pt: {
+    title: "Conector MCP personalizado: conecte qualquer servidor MCP ou API · Runelay",
+    description: "Adicione qualquer servidor MCP remoto, comando MCP local ou spec OpenAPI ao Runelay, gateway MCP open source. Um login, criptografado no seu servidor, compartilhado pelo Claude Code, Cursor, Codex e todos os outros agentes.",
+    eyebrow: "Conexões · Personalizado",
+    h1: "Conecte qualquer servidor MCP ou API",
+    lead: "O catálogo é um atalho, não um limite. Adicione um servidor MCP remoto, um comando local ou uma spec OpenAPI ao Runelay, gateway MCP open source, e todos os agentes recebem as tools pelo mesmo endpoint.",
+    cardTitle: "Conectores personalizados",
+    cardText: "Adicione qualquer servidor MCP ou API que não está no catálogo.",
+    body: [
+      card(
+        "plug",
+        "Três jeitos de conectar",
+        table(
+          ["O que você informa", "Serve para"],
+          [
+            ["MCP remoto", "A URL do servidor", "Servidores MCP públicos ou internos via HTTP"],
+            ["Comando local", "Um comando, argumentos e variáveis de ambiente", "Servidores MCP que rodam como processo, como pacotes <code>npx</code>"],
+            ["OpenAPI", "Uma spec em JSON ou YAML", "A sua própria API REST, sem escrever servidor MCP. Cada operação vira uma tool."],
+          ],
+        ),
+      ),
+      card(
+        "shield",
+        "Login sem complicação",
+        checks([
+          "Cole a URL de um MCP remoto e o Runelay detecta se ele pede OAuth, uma chave no header ou nada.",
+          "O OAuth roda quando você salva. Os tokens ficam criptografados e são renovados pelo Runelay.",
+          "Provedor sem registro automático de cliente, como o Google? Use o seu próprio cliente OAuth: cadastre <code>PUBLIC_URL/v1/oauth/callback</code> como URL de redirecionamento e cole o Client ID e o secret.",
+          "Headers, variáveis de ambiente e secrets ficam criptografados com AES-256-GCM. Os agentes nunca veem.",
+        ]),
+      ),
+      card(
+        "hub",
+        "Um login, todos os agentes",
+        prose(
+          "O nome da conexão vira o prefixo das tools, então uma conexão chamada <code>billing</code> expõe tools como <code>billing.list_invoices</code>. Claude Code, Cursor, Codex e qualquer outro agente com uma chave do Runelay encontram as tools com <code>search_tools</code> e executam com <code>call_tool</code>.",
+          "Já está configurado num agente? <code>runelay import</code> transforma em conexões os servidores MCP das configurações dos agentes, ou cole o arquivo de configuração no painel.",
+        ),
+      ),
+      card(
+        "terminal",
+        "Como adicionar",
+        steps([
+          ["Abra os conectores no painel", "Adicione uma conexão personalizada e escolha o tipo: MCP remoto, Comando local ou OpenAPI."],
+          ["Dê um nome e preencha os campos", "URL, comando ou spec, e headers ou variáveis de ambiente se ele pedir uma chave."],
+          ["Salve", "O Runelay conecta, faz login se precisar e lista as tools. A referência completa está na <a href=\"" + DOCS_CUSTOM + "\" rel=\"noopener\">documentação de conectores personalizados</a>."],
+        ]),
+        false,
+      ),
+    ],
+    faq: [
+      ["O Runelay alcança um servidor na minha rede privada?", "Sim, se você liberar. Requisições para endereços privados, de loopback e link-local são bloqueadas por padrão. Defina RUNELAY_ALLOW_PRIVATE_URLS=true no servidor do Runelay para alcançar servidores internos."],
+      ["Dá para rodar um servidor MCP local com npx?", "Sim. O app desktop roda comandos locais com as ferramentas instaladas no seu computador. Num servidor eles vêm desligados: defina RUNELAY_ENABLE_STDIO=true, e só um owner ou admin consegue criar. A imagem Docker não traz Node."],
+      ["As minhas chaves de API chegam aos agentes?", "Não. Headers, variáveis de ambiente e tokens OAuth ficam no seu servidor, criptografados com o seu RUNELAY_SECRET. Os agentes guardam só a chave do Runelay."],
+    ],
+  },
+};
+
 const UNKNOWN_EN = `Not found on the pages read on ${READ}`;
 const UNKNOWN_PT = "Não encontrado nas páginas lidas em 15 nov 2026";
 
@@ -978,7 +1098,7 @@ const runlayer = {
   },
 };
 
-export const PAGES = [claudeCode, cursor, codex, agentesChat, antigravity, grokbot, hermes, openclaw, mausbot, opencode, openbot, kimi, share, migrate, executor, runlayer];
+export const PAGES = [claudeCode, cursor, codex, agentesChat, antigravity, grokbot, hermes, openclaw, mausbot, opencode, openbot, kimi, share, migrate, customConnectors, executor, runlayer];
 
 export const EXISTING = {
   "self-hosted-mcp-gateway": { icon: "server", en: ["Self-hosted MCP gateway guide", "What it does, why self-host it and how to run one in a minute."], pt: ["Guia de MCP gateway self-hosted", "O que faz, por que hospedar e como rodar um em um minuto."] },

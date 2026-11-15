@@ -45,6 +45,7 @@
 ## Integrations
 
 - [Integrations catalog](https://runelay.com/integrations/): the MCP servers in the catalog with their auth mode, plus any remote MCP, local MCP or OpenAPI spec.
+- [Custom connectors](https://runelay.com/custom-connectors/): add any MCP server or API that isn't in the catalog by remote MCP URL, local command or OpenAPI spec, with auth detection and your own OAuth client for providers without dynamic client registration.
 - Each catalog entry has its own page at `https://runelay.com/integrations/<name>/` (for example [Linear](https://runelay.com/integrations/linear/), [GitHub](https://runelay.com/integrations/github/), [Gmail](https://runelay.com/integrations/gmail/)): connect once, use from every agent.
 
 ## Compare
