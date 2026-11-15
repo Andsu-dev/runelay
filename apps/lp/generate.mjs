@@ -2,7 +2,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { card, checks, code, escape, icon, jsonLd, links, plain, prose, steps } from "./blocks.mjs";
-import { AGENT_LINKS, EXISTING, INTEGRATION_EXTRAS, INTEGRATION_PAGES, INTEGRATIONS_EN, PAGES } from "./content.mjs";
+import { AGENT_LINKS, EXISTING, INTEGRATION_EXTRAS, INTEGRATIONS_EN, PAGES } from "./content.mjs";
 import { FEATURES } from "./features.mjs";
 
 const ORIGIN = "https://runelay.com";
@@ -289,7 +289,7 @@ const hub = () => {
         card(
           "plug",
           lang === "en" ? (INTEGRATIONS_EN.sections[section.id] ?? section.title) : section.title,
-          links(catalog.filter((item) => item.section === section.id).map((item) => [INTEGRATION_PAGES.includes(item.id) ? `/integrations/${item.slug}/` : null, item.logo(18), `${item.name} · ${AUTH[lang][item.auth]}`, item[lang]])),
+          links(catalog.filter((item) => item.section === section.id).map((item) => [`/integrations/${item.slug}/`, item.logo(18), `${item.name} · ${AUTH[lang][item.auth]}`, item[lang]])),
           false,
         ),
       )
@@ -451,7 +451,7 @@ const guidesHub = () => {
   };
 };
 
-const generated = [...PAGES, ...FEATURES, hub(), guidesHub(), ...catalog.filter((item) => INTEGRATION_PAGES.includes(item.id)).map(integration), changelog()];
+const generated = [...PAGES, ...FEATURES, hub(), guidesHub(), ...catalog.map(integration), changelog()];
 for (const page of generated) registry.set(page.slug, { icon: page.icon, en: [page.en.cardTitle, page.en.cardText], pt: [page.pt.cardTitle, page.pt.cardText] });
 
 for (const page of generated) for (const lang of ["en", "pt"]) document(page.slug, lang, page[lang], page.related, page.mark);

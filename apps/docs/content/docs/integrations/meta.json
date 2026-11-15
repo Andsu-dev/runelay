@@ -15,6 +15,7 @@
     "vercel",
     "supabase",
     "sentry",
+    "cloudflare",
     "cloudflare-docs",
     "neon",
     "posthog",
@@ -30,6 +31,7 @@
     "hubspot",
     "monday",
     "resend",
+    "buffer",
     "webflow",
     "box",
     "paypal"

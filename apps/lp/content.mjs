@@ -988,8 +988,6 @@ export const EXISTING = {
   download: { icon: "import", en: ["Download Runelay", "Desktop app for Mac, Windows and Linux."], pt: ["Baixar o Runelay", "App desktop para Mac, Windows e Linux."] },
 };
 
-export const INTEGRATION_PAGES = ["conty", "linear", "github", "notion"];
-
 export const INTEGRATION_EXTRAS = {
   conty: {
     site: "https://appconty.com",
