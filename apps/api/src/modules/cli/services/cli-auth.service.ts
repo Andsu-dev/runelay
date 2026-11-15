@@ -1,4 +1,4 @@
-import { createHash, randomBytes } from "node:crypto";
+import { createHash, randomBytes, randomInt } from "node:crypto";
 import {
   type CliAuthPollView,
   type CliAuthRequestView,
@@ -33,8 +33,9 @@ export { findCliStatus as describeCliStatus } from "@/modules/cli/repositories/c
 const hashToken = (token: string) => createHash("sha256").update(token).digest("hex");
 
 export const generateCliAuthCode = () => {
-  const characters = [...randomBytes(CLI_AUTH_CODE_LENGTH)].map(
-    (byte) => CLI_AUTH_CODE_ALPHABET[byte % CLI_AUTH_CODE_ALPHABET.length],
+  const characters = Array.from(
+    { length: CLI_AUTH_CODE_LENGTH },
+    () => CLI_AUTH_CODE_ALPHABET[randomInt(CLI_AUTH_CODE_ALPHABET.length)],
   );
   const half = CLI_AUTH_CODE_LENGTH / 2;
   return `${characters.slice(0, half).join("")}-${characters.slice(half).join("")}`;
