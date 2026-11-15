@@ -28,3 +28,5 @@ export const sourceDraftSchema = z
   .pipe(sourceConfigSchema);
 
 export type SourceDraft = z.input<typeof sourceDraftSchema>;
+
+export type DraftKind = SourceDraft["kind"];

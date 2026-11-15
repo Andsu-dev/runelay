@@ -92,31 +92,38 @@ export const GOOD_REFRESH_TOKEN = "good-refresh-token";
 export type FakeBroker = {
   base: string;
   forms: Record<string, string>[];
+  paths: string[];
+  options: { omitRefreshToken: boolean; refreshToken: string };
   stop: () => void;
 };
 
 export const startFakeBroker = (): FakeBroker => {
   const forms: Record<string, string>[] = [];
+  const paths: string[] = [];
+  const options = { omitRefreshToken: false, refreshToken: GOOD_REFRESH_TOKEN };
   const server = Bun.serve({
     port: 0,
     hostname: "127.0.0.1",
     fetch: async (request) => {
-      if (new URL(request.url).pathname !== "/google/token") return new Response("not found", { status: 404 });
+      const { pathname } = new URL(request.url);
+      if (!/^\/(google|github)\/token$/.test(pathname)) return new Response("not found", { status: 404 });
+      paths.push(pathname);
       const form = Object.fromEntries(new URLSearchParams(await request.text()));
       forms.push(form);
       const granted =
         (form.grant_type === "authorization_code" && form.code === GOOD_CODE) ||
-        (form.grant_type === "refresh_token" && form.refresh_token === GOOD_REFRESH_TOKEN);
+        (form.grant_type === "refresh_token" &&
+          (form.refresh_token === GOOD_REFRESH_TOKEN || form.refresh_token === options.refreshToken));
       if (!granted) return Response.json({ error: "invalid_grant" }, { status: 400 });
       return Response.json({
         access_token: FAKE_ACCESS_TOKEN,
         token_type: "Bearer",
         expires_in: 3600,
-        refresh_token: GOOD_REFRESH_TOKEN,
+        ...(options.omitRefreshToken ? {} : { refresh_token: options.refreshToken }),
       });
     },
   });
-  return { base: `http://127.0.0.1:${server.port}`, forms, stop: () => server.stop(true) };
+  return { base: `http://127.0.0.1:${server.port}`, forms, paths, options, stop: () => server.stop(true) };
 };
 
 export const closedUrl = () => {

@@ -115,7 +115,7 @@ const callbackPost = async (request: Request) => {
   return redirectToInstance(state, form);
 };
 
-const tokenParams = (form: URLSearchParams) => {
+const tokenParams = (form: URLSearchParams, provider: BrokerProvider) => {
   const grantType = form.get("grant_type") ?? "";
   if (grantType === "authorization_code") {
     const code = form.get("code");
@@ -127,8 +127,10 @@ const tokenParams = (form: URLSearchParams) => {
     const refreshToken = form.get("refresh_token");
     if (!refreshToken) return { error: "refresh_token is required." };
     const params = new URLSearchParams({ grant_type: grantType, refresh_token: refreshToken });
-    const scope = form.get("scope");
-    if (scope) params.set("scope", scope);
+    for (const name of provider.refreshParams) {
+      const value = form.get(name);
+      if (value) params.set(name, value);
+    }
     return { params, redirect: false };
   }
   return null;
@@ -142,7 +144,7 @@ const token = async (
   fetchFn: BrokerFetch,
 ) => {
   if (!isForm(request)) return jsonError(415, "invalid_request", `Content type must be ${FORM_TYPE}.`);
-  const parsed = tokenParams(await readForm(request));
+  const parsed = tokenParams(await readForm(request), provider);
   if (!parsed) {
     return jsonError(400, "unsupported_grant_type", "Only authorization_code and refresh_token are supported.");
   }

@@ -1,5 +1,5 @@
-import type { OAuthClientInput, SourceConfig, SourceKind, SourceView } from "@runelay/shared";
-import type { SourceDraft } from "@/modules/sources/schemas/source-draft.schema";
+import type { GoogleConfig, OAuthClientInput, SourceConfig, SourceView } from "@runelay/shared";
+import type { DraftKind, SourceDraft } from "@/modules/sources/schemas/source-draft.schema";
 import { formatKeyValueLines } from "@/modules/sources/utils/key-value-lines";
 
 const EMPTY_DRAFT: SourceDraft = {
@@ -14,9 +14,9 @@ const EMPTY_DRAFT: SourceDraft = {
   oauthClientSecret: "",
 };
 
-export const emptyDraft = (kind: SourceKind = "mcp"): SourceDraft => ({ ...EMPTY_DRAFT, kind });
+export const emptyDraft = (kind: DraftKind = "mcp"): SourceDraft => ({ ...EMPTY_DRAFT, kind });
 
-export const draftFromConfig = (config: SourceConfig): SourceDraft => {
+export const draftFromConfig = (config: Exclude<SourceConfig, GoogleConfig>): SourceDraft => {
   if (config.kind === "stdio") {
     return {
       ...EMPTY_DRAFT,
@@ -37,8 +37,8 @@ export const draftFromConfig = (config: SourceConfig): SourceDraft => {
   return { ...EMPTY_DRAFT, url: config.url, headers: formatKeyValueLines(config.headers, ": ") };
 };
 
-export const draftFromSource = (source: SourceView): SourceDraft => ({
-  ...draftFromConfig(source.config),
+export const draftFromSource = (source: SourceView, config: Exclude<SourceConfig, GoogleConfig>): SourceDraft => ({
+  ...draftFromConfig(config),
   oauthClientId: source.oauthClientId ?? "",
 });
 

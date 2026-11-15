@@ -10,7 +10,8 @@ import {
   type SourceView,
 } from "@runelay/shared";
 import { db } from "@/db/connection";
-import { CATALOG_BY_URL_HASH } from "@/modules/catalog/constants/catalog.constants";
+import { CATALOG_BY_URL_HASH, googleSourceUrl } from "@/modules/catalog/constants/catalog.constants";
+import { grantedServices } from "@/modules/google/utils/google-scopes";
 import type {
   InstalledSourceRow,
   OAuthState,
@@ -37,12 +38,23 @@ const decryptView = ({ oauth: sealedOAuth, ...row }: SourceViewRow): Result<Sour
   if (config.error) return config;
   const oauth = unseal<OAuthState>(sealedOAuth);
   if (oauth.error) return oauth;
-  return ok({
+  const view = {
     ...row,
     config: config.data,
     enabled: row.enabled === 1,
     oauthClientId: oauth.data.customClient?.clientId ?? null,
+  };
+  if (config.data.kind !== "google") return ok(view);
+  const granted = oauth.data.google?.scopes ?? [];
+  return ok({
+    ...view,
+    google: { email: oauth.data.google?.email ?? null, grantedServices: grantedServices(granted) },
   });
+};
+
+const urlHashOf = (config: SourceConfig) => {
+  if (config.kind === "mcp") return hashUrl(config.url);
+  return config.kind === "google" ? hashUrl(googleSourceUrl(config.services)) : null;
 };
 
 const decrypt = (row: SourceRow): Result<Source> => {
@@ -148,7 +160,7 @@ export const upsertSources = (organizationId: string, inputs: CreateSourceInput[
     db.transaction(() => {
       const statement = db.query(UPSERT_SQL);
       for (const { name, config } of inputs) {
-        statement.run(organizationId, name, seal(config), seal({}), config.kind === "mcp" ? hashUrl(config.url) : null);
+        statement.run(organizationId, name, seal(config), seal({}), urlHashOf(config));
       }
     }),
   );

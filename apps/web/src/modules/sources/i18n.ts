@@ -13,6 +13,7 @@ export const sourcesMessages = defineMessages(
       mcp: "MCP remoto",
       stdio: "Comando local",
       openapi: "OpenAPI",
+      google: "Google",
     },
     kindHint: {
       mcp: "URL de um servidor MCP. Se pedir login, o OAuth abre em seguida.",
@@ -91,6 +92,21 @@ export const sourcesMessages = defineMessages(
       nothing: "Nada para importar nesse arquivo.",
       skipped: "{name} ficou de fora: {reason}",
     },
+    google: {
+      service: "Serviço",
+      account: "Conta",
+      notConnected: "Ainda sem login",
+      services: {
+        calendar: "Google Agenda",
+        docs: "Google Docs",
+        sheets: "Google Sheets",
+        slides: "Google Slides",
+        drive: "Google Drive",
+        gmail: "Gmail",
+        forms: "Google Forms",
+        meet: "Google Meet",
+      },
+    },
     token: {
       title: "Conectar {name}",
       description: "O {name} entra com um token seu. Ele fica cifrado no servidor e os agentes nunca veem.",
@@ -120,6 +136,7 @@ export const sourcesMessages = defineMessages(
       mcp: "Remote MCP",
       stdio: "Local command",
       openapi: "OpenAPI",
+      google: "Google",
     },
     kindHint: {
       mcp: "URL of an MCP server. If it asks for sign-in, OAuth opens next.",
@@ -197,6 +214,21 @@ export const sourcesMessages = defineMessages(
       imported: { one: "{count} connection imported.", other: "{count} connections imported." },
       nothing: "Nothing to import in this file.",
       skipped: "{name} was left out: {reason}",
+    },
+    google: {
+      service: "Service",
+      account: "Account",
+      notConnected: "Not signed in yet",
+      services: {
+        calendar: "Google Calendar",
+        docs: "Google Docs",
+        sheets: "Google Sheets",
+        slides: "Google Slides",
+        drive: "Google Drive",
+        gmail: "Gmail",
+        forms: "Google Forms",
+        meet: "Google Meet",
+      },
     },
     token: {
       title: "Connect {name}",

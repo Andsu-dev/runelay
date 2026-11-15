@@ -55,7 +55,7 @@ const printSummary = (organizationName: string, plan: MigrationPlan, context: Co
 };
 
 const headersOf = ({ source }: MigrationPlan["sources"][number]) =>
-  source.config.kind === "stdio" ? {} : source.config.headers;
+  source.config.kind === "stdio" || source.config.kind === "google" ? {} : source.config.headers;
 
 const askToProceed = async (organizationName: string, yes: boolean, replaceFlag: boolean) => {
   if (yes) return { proceed: true, replace: replaceFlag };

@@ -1,6 +1,6 @@
 import type { HttpVerb } from "@/modules/connectors/types/connector.types";
 
-export const CLIENT_INFO = { name: "runelay", version: "0.5.0" };
+export const CLIENT_INFO = { name: "runelay", version: "0.6.0" };
 
 export const OPENAPI_VERBS: HttpVerb[] = ["get", "post", "put", "patch", "delete"];
 

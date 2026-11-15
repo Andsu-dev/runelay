@@ -66,7 +66,8 @@ export const updateSource = async (
     const saved = upsertSource(target.organizationId, { name: target.name, config: input.config });
     if (saved.error) return saved;
   }
-  if (input.oauthClient !== undefined) {
+  const kind = (input.config ?? current.data.config).kind;
+  if (input.oauthClient !== undefined && kind === "mcp") {
     const stored = updateOAuth(target, { ...CLEARED_LOGIN, customClient: input.oauthClient ?? undefined });
     if (stored.error) return stored;
   }

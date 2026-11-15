@@ -1,4 +1,4 @@
-import type { SourceView } from "@runelay/shared";
+import type { GoogleConfig, SourceConfig, SourceView } from "@runelay/shared";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { type FormEvent, useState } from "react";
 import { Button } from "@/components/ui/action/button";
@@ -12,12 +12,13 @@ import { SourceConfigFields } from "./source-config-fields";
 
 interface SourceEditorProps {
   source: SourceView;
+  config: Exclude<SourceConfig, GoogleConfig>;
 }
 
-export function SourceEditor({ source }: SourceEditorProps) {
+export function SourceEditor({ source, config }: SourceEditorProps) {
   const t = useT();
   const queryClient = useQueryClient();
-  const [draft, setDraft] = useState(() => draftFromSource(source));
+  const [draft, setDraft] = useState(() => draftFromSource(source, config));
   const [submitted, setSubmitted] = useState(false);
   const parsed = sourceDraftSchema.safeParse(draft);
 

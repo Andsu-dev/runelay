@@ -2,6 +2,7 @@ import { fail, ok, type Result } from "@runelay/shared";
 import { connectMcpRemote, connectStdio } from "@/modules/connectors/clients/mcp.client";
 import { connectOpenApi } from "@/modules/connectors/clients/openapi.client";
 import type { Connection, Tool } from "@/modules/connectors/types/connector.types";
+import { connectGoogle } from "@/modules/google/clients/google.client";
 import { findSource, listSources, updateStatus } from "@/modules/sources/repositories/source.repository";
 import type { Source, SourceKey } from "@/modules/sources/types/source.types";
 
@@ -12,6 +13,7 @@ const liveKey = ({ organizationId, name }: SourceKey) => `${organizationId}/${na
 const open = (source: Source): Promise<Result<Connection>> => {
   if (source.config.kind === "openapi") return connectOpenApi(source, source.config);
   if (source.config.kind === "stdio") return connectStdio(source, source.config);
+  if (source.config.kind === "google") return connectGoogle(source, source.config);
   return connectMcpRemote(source, source.config);
 };
 
@@ -34,7 +36,7 @@ export const connectSource = async (key: SourceKey): Promise<Result<Connection>>
     return connection;
   }
   live.set(liveKey(key), connection.data);
-  updateStatus(key, { status: "ok", error: null, toolCount: connection.data.tools.length });
+  updateStatus(key, { status: "ok", error: connection.data.warning ?? null, toolCount: connection.data.tools.length });
   return connection;
 };
 

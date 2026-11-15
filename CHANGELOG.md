@@ -1,10 +1,35 @@
 # Changelog
 
-## Unreleased
+## v0.6.0
+
+### Connections
+
+- Google is one connector per service, each a one-click login through the hosted OAuth broker (`auth.runelay.com`) that asks only for its own scopes plus `openid`, `email` and `profile`.
+- Google Calendar (`calendar`, `calendar.events`): list calendars and events, create, update and delete events, suggest times.
+- Gmail (`gmail.send`): send an email with to, subject, body and cc. It can't read mail.
+- Google Drive (`drive.file`): create a text file and list the files runelay created.
+- Google Docs (`documents`, `drive.file`): create a doc, read and edit docs.
+- Google Sheets (`spreadsheets`, `drive.file`): create a spreadsheet with rows, read and edit values.
+- Google Slides (`presentations`, `drive.file`): create a deck with slides of text, read and edit decks.
+- Google Forms (`forms.body`, `drive.file`): create a form and add text, paragraph, choice and scale questions.
+- Google Meet (`meetings.space.created`): create a meeting space and return its link.
+- Agents call them as `<connection>.<service>_<tool>` (for example `gmail.gmail_send_email`), plus `account_whoami` on each. Restricted scopes, such as reading Gmail or full Drive access, are not requested.
+- GitHub signs in with one click through the broker (scopes `repo` and `read:user`). Its tokens expire and are refreshed automatically. Pasting a token still works.
 
 ### Panel
 
 - Remote MCP connections can use your own OAuth client: paste a Client ID and, if the service gives one, a Client secret when adding or editing a connection. This is the way in for services without automatic client registration, such as Google. The secret is stored encrypted and never sent back to the panel.
+
+### Broker
+
+- The broker supports GitHub at `/github/callback` and `/github/token`.
+- `auth.runelay.com/` redirects to runelay.com.
+- Self-hosters running their own broker set `RUNELAY_GITHUB_CLIENT_ID` next to `RUNELAY_OAUTH_BROKER_URL` and `RUNELAY_GOOGLE_CLIENT_ID`.
+
+### Fixes
+
+- runelay's Google client ID is the default. v0.5.0 shipped a placeholder, so Google login failed unless `RUNELAY_GOOGLE_CLIENT_ID` was set.
+- Google Calendar no longer asks for `calendar.calendarlist.readonly`.
 
 ## v0.5.0
 

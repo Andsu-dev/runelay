@@ -1,10 +1,12 @@
 # runelay OAuth broker
 
-A tiny Cloudflare Worker that lets self-hosted runelay instances connect Google's remote MCP servers (Calendar, Docs, Sheets) with one click.
+A tiny Cloudflare Worker that lets self-hosted runelay instances connect Google's remote MCP servers (Calendar, Docs, Sheets) and GitHub with one click.
 
 ## Why it exists
 
-runelay is self-hosted, so every install has its own `PUBLIC_URL`. Google's authorization server (`https://accounts.google.com/`) has no dynamic client registration, and a Google OAuth client only accepts redirect URIs registered ahead of time. One Google app cannot list every instance's callback URL.
+runelay is self-hosted, so every install has its own `PUBLIC_URL`. Google's authorization server (`https://accounts.google.com/`) and GitHub's (`https://github.com/login/oauth`) have no dynamic client registration, and their OAuth apps only accept redirect URIs registered ahead of time. One app cannot list every instance's callback URL.
+
+The examples below use Google; GitHub works the same way under `/github/...`.
 
 The broker gives the Google app a single redirect URI (`https://auth.runelay.com/google/callback`) and holds the client secret, so instances never need one:
 
@@ -40,7 +42,8 @@ Loopback instances (`localhost`, `127.0.0.1`, `[::1]`) skip the page: the code g
 
 - Only `application/x-www-form-urlencoded` bodies are accepted (415 otherwise), up to 8 KB (413 otherwise; the callback form post has the same limit).
 - PKCE is mandatory: `authorization_code` needs `code` and `code_verifier`, and `refresh_token` needs `refresh_token`, or the broker answers 400 `invalid_request` without calling Google.
-- Only an allowlist is forwarded: `grant_type`, `code`, `code_verifier`, `refresh_token`, and `scope` on refreshes, plus the broker's own `client_id`, `client_secret` and `redirect_uri`. Anything else the caller sends (`resource`, a spoofed `client_id`, `redirect_uri`, extra Google parameters) is dropped.
+- Only an allowlist is forwarded: `grant_type`, `code`, `code_verifier`, `refresh_token`, and the provider's `refreshParams` on refreshes (`scope` for Google, nothing for GitHub), plus the broker's own `client_id`, `client_secret` and `redirect_uri`. Anything else the caller sends (`resource`, a spoofed `client_id`, `redirect_uri`, extra provider parameters) is dropped.
+- Every request to the provider carries `Accept: application/json`, so GitHub answers JSON instead of a form-encoded body. The provider's status and body pass through untouched, including GitHub's errors that come back as HTTP 200 with an `error` field.
 
 ### Rate limits
 
@@ -61,7 +64,19 @@ Two [Workers Rate Limiting](https://developers.cloudflare.com/workers/runtime-ap
 
 Wrong methods on these routes return 405 with an `Allow` header; any other path is 404.
 
-Providers live in `src/providers.ts`. Today only `google` exists; adding `github` is one more entry with its token URL and secret names.
+## Providers
+
+| Provider | Callback URL | Token URL | Worker secrets | Extra params on refresh |
+|---|---|---|---|---|
+| `google` | `https://auth.runelay.com/google/callback` | `https://oauth2.googleapis.com/token` | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | `scope` |
+| `github` | `https://auth.runelay.com/github/callback` | `https://github.com/login/oauth/access_token` | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | none |
+
+### Adding a provider
+
+1. Add an entry to `PROVIDERS` in `src/providers.ts` with its `tokenUrl`, the names of its two secrets (also added to `BrokerSecrets`) and `refreshParams`, the extra form fields it accepts on `refresh_token` (keep it empty unless the provider needs one). The map key becomes the route prefix.
+2. The provider must accept PKCE, `Accept: application/json` and a form-encoded token request with `client_id` and `client_secret` in the body. Every security rule above applies to every provider; anything a provider needs differently goes in its entry, never in a branch in `src/broker.ts`.
+3. Register `https://auth.runelay.com/<name>/callback` in the provider's OAuth app, then set the two secrets with `bunx wrangler secret put` and deploy.
+4. Cover the new entry in `src/__tests__/broker.test.ts`: callback (loopback and remote), code exchange, refresh and missing secrets.
 
 ## Deploy
 
@@ -69,6 +84,8 @@ Providers live in `src/providers.ts`. Today only `google` exists; adding `github
 cd apps/oauth-broker
 bunx wrangler secret put GOOGLE_CLIENT_ID
 bunx wrangler secret put GOOGLE_CLIENT_SECRET
+bunx wrangler secret put GITHUB_CLIENT_ID
+bunx wrangler secret put GITHUB_CLIENT_SECRET
 bun run deploy
 ```
 
@@ -88,17 +105,24 @@ bun run deploy
 
 1. Create an OAuth client of type **Web application**.
 2. Add the authorized redirect URI `https://auth.runelay.com/google/callback` (or your broker's origin).
-3. Enable the Google Calendar API, Google Docs API and Google Sheets API in the same project.
-4. On the OAuth consent screen, add the scopes runelay asks for: `calendar.events`, `calendar.calendarlist.readonly`, `documents` and `spreadsheets`.
+3. Enable these APIs in the same project: Google Calendar, Gmail, Google Drive, Google Docs, Google Sheets, Google Slides, Google Forms and Google Meet REST.
+4. On the OAuth consent screen, add the scopes runelay asks for: `openid`, `userinfo.email`, `userinfo.profile`, `calendar`, `calendar.events`, `gmail.send`, `drive.file`, `documents`, `spreadsheets`, `presentations`, `forms.body` and `meetings.space.created`. Each runelay connector asks only for its own service's scopes.
 5. Publish the app to **Production**. While it stays in Testing, Google expires refresh tokens after 7 days and users have to log in again.
+
+## GitHub setup
+
+1. Create an **OAuth App** (not a GitHub App) with the authorization callback URL `https://auth.runelay.com/github/callback`.
+2. Turn on **expiring user tokens**, so GitHub returns a `refresh_token` and accepts `grant_type=refresh_token`.
+3. Generate a client secret and set `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` as Worker secrets. Rotate it the same way as the Google one.
 
 ## Running your own broker
 
-If you would rather not depend on `auth.runelay.com`, deploy this Worker with your own Google app and point your instance at it:
+If you would rather not depend on `auth.runelay.com`, deploy this Worker with your own Google and GitHub apps and point your instance at it:
 
 ```sh
 RUNELAY_OAUTH_BROKER_URL=https://auth.example.com
 RUNELAY_GOOGLE_CLIENT_ID=1234567890-abc.apps.googleusercontent.com
+RUNELAY_GITHUB_CLIENT_ID=Ov23liAbCdEfGhIjKlMn
 ```
 
-The client ID is public; the client secret stays only in your broker's Worker secrets. Sources connected before the change keep the client ID they were created with, so reinstall them from the catalog after switching.
+The client IDs are public; the client secrets stay only in your broker's Worker secrets. Sources connected before the change keep the client ID they were created with, so reinstall them from the catalog after switching.

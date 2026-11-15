@@ -1,9 +1,11 @@
+import type { GoogleService } from "@runelay/shared";
 import { env } from "@/config/env";
-import type { CatalogSection } from "@/modules/catalog/types/catalog.types";
-import { GOOGLE_BROKER_CLIENT_ID } from "@/modules/oauth/constants/oauth.constants";
+import type { CatalogEntry, CatalogSection } from "@/modules/catalog/types/catalog.types";
+import { GOOGLE_SOURCE_URL } from "@/modules/google/constants/google.constants";
+import { GITHUB_BROKER_CLIENT_ID } from "@/modules/oauth/constants/oauth.constants";
 import { hashUrl } from "@/modules/sources/utils/url-hash";
 
-const GOOGLE_CLIENT_ID = env.RUNELAY_GOOGLE_CLIENT_ID || GOOGLE_BROKER_CLIENT_ID;
+const GITHUB_CLIENT_ID = env.RUNELAY_GITHUB_CLIENT_ID || GITHUB_BROKER_CLIENT_ID;
 
 export const CATALOG: CatalogSection[] = [
   {
@@ -24,8 +26,26 @@ export const CATALOG: CatalogSection[] = [
         description: "Repositórios, issues e pull requests.",
         url: "https://api.githubcopilot.com/mcp/",
         icon: "github",
-        auth: "api_key",
-        tokenUrl: "https://github.com/settings/personal-access-tokens/new",
+        auth: "oauth",
+        broker: { provider: "github", clientId: GITHUB_CLIENT_ID, scopes: ["repo", "read:user"] },
+      },
+      {
+        id: "google_calendar",
+        name: "Google Agenda",
+        description: "Eventos, agendas e horários livres.",
+        url: "https://calendarmcp.googleapis.com/mcp/v1",
+        icon: "googlecalendar",
+        auth: "oauth",
+        googleService: "calendar",
+      },
+      {
+        id: "gmail",
+        name: "Gmail",
+        description: "Envie e-mails pela sua conta.",
+        url: "https://gmail.googleapis.com",
+        icon: "gmail",
+        auth: "oauth",
+        googleService: "gmail",
       },
       {
         id: "notion",
@@ -168,46 +188,58 @@ export const CATALOG: CatalogSection[] = [
     title: "Trabalho e conteúdo",
     items: [
       {
-        id: "google_calendar",
-        name: "Google Agenda",
-        description: "Eventos, agendas e horários livres.",
-        url: "https://calendarmcp.googleapis.com/mcp/v1",
-        icon: "googlecalendar",
+        id: "google_drive",
+        name: "Google Drive",
+        description: "Arquivos criados pelo runelay no seu Drive.",
+        url: "https://www.googleapis.com/drive/v3",
+        icon: "googledrive",
         auth: "oauth",
-        broker: {
-          provider: "google",
-          clientId: GOOGLE_CLIENT_ID,
-          scopes: [
-            "https://www.googleapis.com/auth/calendar.events",
-            "https://www.googleapis.com/auth/calendar.calendarlist.readonly",
-          ],
-        },
+        googleService: "drive",
       },
       {
         id: "google_docs",
         name: "Google Docs",
-        description: "Leia, crie e edite documentos.",
+        description: "Crie, leia e edite documentos.",
         url: "https://docsmcp.googleapis.com/mcp/v1",
         icon: "googledocs",
         auth: "oauth",
-        broker: {
-          provider: "google",
-          clientId: GOOGLE_CLIENT_ID,
-          scopes: ["https://www.googleapis.com/auth/documents"],
-        },
+        googleService: "docs",
       },
       {
         id: "google_sheets",
         name: "Google Sheets",
-        description: "Planilhas, abas e células.",
+        description: "Crie planilhas e edite células.",
         url: "https://sheetsmcp.googleapis.com/mcp/v1",
         icon: "googlesheets",
         auth: "oauth",
-        broker: {
-          provider: "google",
-          clientId: GOOGLE_CLIENT_ID,
-          scopes: ["https://www.googleapis.com/auth/spreadsheets"],
-        },
+        googleService: "sheets",
+      },
+      {
+        id: "google_slides",
+        name: "Google Slides",
+        description: "Crie apresentações e slides.",
+        url: "https://slidesmcp.googleapis.com/mcp/v1",
+        icon: "googleslides",
+        auth: "oauth",
+        googleService: "slides",
+      },
+      {
+        id: "google_forms",
+        name: "Google Forms",
+        description: "Crie formulários e perguntas.",
+        url: "https://forms.googleapis.com",
+        icon: "googleforms",
+        auth: "oauth",
+        googleService: "forms",
+      },
+      {
+        id: "google_meet",
+        name: "Google Meet",
+        description: "Crie salas de reunião com link.",
+        url: "https://meet.googleapis.com",
+        icon: "googlemeet",
+        auth: "oauth",
+        googleService: "meet",
       },
       {
         id: "asana",
@@ -278,9 +310,26 @@ export const CATALOG: CatalogSection[] = [
   },
 ];
 
+const CATALOG_ITEMS = CATALOG.flatMap((section) => section.items);
+
+const GOOGLE_CATALOG_URLS: Partial<Record<GoogleService, string>> = Object.fromEntries(
+  CATALOG_ITEMS.flatMap((item) => (item.googleService ? [[item.googleService, item.url]] : [])),
+);
+
+export const googleSourceUrl = (services: GoogleService[]) => {
+  const [only, ...rest] = services;
+  return (only && rest.length === 0 && GOOGLE_CATALOG_URLS[only]) || GOOGLE_SOURCE_URL;
+};
+
+const MULTI_SERVICE_GOOGLE: Pick<CatalogEntry, "url" | "icon" | "auth" | "tokenUrl"> = {
+  url: GOOGLE_SOURCE_URL,
+  icon: "google",
+  auth: "oauth",
+};
+
 export const CATALOG_BY_URL_HASH = JSON.stringify(
   Object.fromEntries(
-    CATALOG.flatMap((section) => section.items).map((item) => [
+    [MULTI_SERVICE_GOOGLE, ...CATALOG_ITEMS].map((item) => [
       hashUrl(item.url),
       { icon: item.icon, auth: item.auth, tokenUrl: item.tokenUrl ?? null },
     ]),

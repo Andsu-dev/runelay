@@ -10,6 +10,7 @@ import { ConnectorIcon } from "@/modules/catalog/components/connector-icon";
 import { KIND_LABEL, STATUS_LABEL } from "@/modules/sources/constants/source.constants";
 import { useSourceActions } from "@/modules/sources/hooks/use-source-actions";
 import { sourceTarget } from "@/modules/sources/utils/source-target";
+import { GoogleSourceSummary } from "./google-source-summary";
 import { SourceConnectButton } from "./source-connect-button";
 import { SourceStatusDot } from "./source-status-dot";
 
@@ -43,7 +44,7 @@ export function SourceCard({ source }: SourceCardProps) {
           </div>
           <span className="truncate text-xs text-muted-foreground">
             {enabled ? t(STATUS_LABEL[status]) : t("sources.status.paused")} · {t.plural("sources.tools", toolCount)} ·{" "}
-            {sourceTarget(config)}
+            {config.kind === "google" ? <GoogleSourceSummary source={source} config={config} /> : sourceTarget(config)}
           </span>
         </div>
 

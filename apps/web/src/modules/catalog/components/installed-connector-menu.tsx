@@ -34,6 +34,7 @@ export function InstalledConnectorMenu({ connector, actions }: InstalledConnecto
           if (!keepFocusRef.current) return;
           keepFocusRef.current = false;
           event.preventDefault();
+          setConfirming(true);
         }}
         trigger={
           <Button
@@ -64,7 +65,6 @@ export function InstalledConnectorMenu({ connector, actions }: InstalledConnecto
           onSelect={() => {
             keepFocusRef.current = true;
             setOpen(false);
-            setConfirming(true);
           }}
         >
           {t("catalog.remove")}
