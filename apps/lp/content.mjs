@@ -848,7 +848,7 @@ const UNKNOWN_PT = "Não encontrado nas páginas lidas em 15 nov 2026";
 const executor = {
   slug: "executor-alternative",
   icon: "columns",
-  related: ["benchmark", "composio-alternative", "self-hosted-mcp-gateway"],
+  related: ["benchmark", "composio-alternative", "docker-mcp-gateway-alternative", "obot-alternative", "self-hosted-mcp-gateway"],
   en: {
     title: "Executor alternative: open source, self-hosted MCP gateway · Runelay",
     description: "Runelay, an open source MCP gateway, compared with Executor: where each runs, official pricing, shared memory, importing your agent setup and the numbers we measured.",
@@ -1098,7 +1098,660 @@ const runlayer = {
   },
 };
 
-export const PAGES = [claudeCode, cursor, codex, agentesChat, antigravity, grokbot, hermes, openclaw, mausbot, opencode, openbot, kimi, share, migrate, customConnectors, executor, runlayer];
+const DOCKER_SOURCES_EN = `<p class="ctx-caption">Docker column from <a href="https://docs.docker.com/ai/mcp-catalog-and-toolkit/mcp-gateway/" rel="noopener">docs.docker.com MCP Gateway</a>, <a href="https://docs.docker.com/ai/mcp-catalog-and-toolkit/toolkit/" rel="noopener">MCP Toolkit</a>, <a href="https://github.com/docker/mcp-gateway" rel="noopener">github.com/docker/mcp-gateway</a> and <a href="https://docs.docker.com/subscription/desktop-license/" rel="noopener">Docker Desktop license</a>, read on ${READ}.</p>`;
+const DOCKER_SOURCES_PT = `<p class="ctx-caption">Coluna do Docker tirada de <a href="https://docs.docker.com/ai/mcp-catalog-and-toolkit/mcp-gateway/" rel="noopener">docs.docker.com MCP Gateway</a>, <a href="https://docs.docker.com/ai/mcp-catalog-and-toolkit/toolkit/" rel="noopener">MCP Toolkit</a>, <a href="https://github.com/docker/mcp-gateway" rel="noopener">github.com/docker/mcp-gateway</a> e <a href="https://docs.docker.com/subscription/desktop-license/" rel="noopener">licença do Docker Desktop</a>, lidas em 15 nov 2026.</p>`;
+
+const dockerGateway = {
+  slug: "docker-mcp-gateway-alternative",
+  icon: "columns",
+  related: ["obot-alternative", "mcphub-alternative", "agentgateway-alternative", "self-hosted-mcp-gateway"],
+  en: {
+    title: "Docker MCP Gateway alternative without Docker Desktop · Runelay",
+    description: "Runelay, an open source MCP gateway, compared with Docker MCP Gateway and the MCP Toolkit: where each runs, Docker Desktop, licensing, OAuth, shared memory and skills, with sources.",
+    eyebrow: `Compare · ${READ}`,
+    vs: ["Docker MCP Gateway", "/logos/docker.png"],
+    h1: "A Docker MCP Gateway alternative without Docker Desktop",
+    lead: "Runelay, an open source MCP gateway, and Docker MCP Gateway both put many MCP servers behind one endpoint. Docker's is built around Docker Desktop and containers; Runelay runs as a desktop app or one container. This page lists what differs, with sources.",
+    cardTitle: "Docker MCP Gateway alternative",
+    cardText: "Runelay and Docker MCP Gateway side by side: Docker Desktop, servers, OAuth and memory.",
+    body: [
+      card(
+        "columns",
+        "Runelay vs Docker MCP Gateway at a glance",
+        table(
+          ["Runelay", "Docker MCP Gateway"],
+          [
+            ["Runs on", "Your computer or server", "Docker Desktop with the MCP Toolkit, or as a Docker CLI plugin"],
+            ["Needs Docker Desktop", "No: desktop app, or one container on a server with Docker", "The MCP Toolkit does; the gateway plugin can be installed without it"],
+            ["How MCP servers run", "Remote MCP URL, local command or OpenAPI spec", "Each local server in its own container"],
+            ["OAuth", "One-click OAuth from the catalog, Google and GitHub through the Runelay broker", "Built-in OAuth flows, GitHub, Notion and Linear named as examples"],
+            ["Open source", "Yes, MIT", "Yes, MIT (the gateway plugin)"],
+            ["Price", "Free", "Gateway free; Docker Desktop is free for small businesses and paid for larger organizations"],
+            ["Skills for agents", YES, UNKNOWN_EN],
+            ["Memory across agents", YES, UNKNOWN_EN],
+            ["Imports your agent setup", YES, UNKNOWN_EN],
+          ],
+        ) + DOCKER_SOURCES_EN,
+      ),
+      duo(
+        card(
+          "check",
+          "Runelay fits when",
+          checks([
+            "You want an MCP gateway without installing Docker Desktop.",
+            "Your agents should share accounts, skills and memory, not only tools.",
+            "You already have MCP servers in your agents and want to import them with <code>runelay migrate</code>.",
+            "You want a desktop app on your computer or a single container on your server.",
+          ]),
+        ),
+        card(
+          "info",
+          "Docker MCP Gateway fits when",
+          checks(
+            [
+              "Your team already runs Docker Desktop and wants MCP inside it.",
+              "Each local MCP server should run in its own container, with limited CPU, memory and file access.",
+              "You want servers grouped into profiles that can be shared through OCI registries.",
+              "Your company wants Docker's AI Governance offering, which is invite-only through Docker Sales.",
+            ],
+            "dash",
+          ),
+        ),
+      ),
+    ],
+    faq: [
+      ["Can I use an MCP gateway without Docker Desktop?", "Yes. The Runelay desktop app runs on Mac, Windows and Linux with no Docker at all. On a server, Runelay is one container on any machine with Docker. Docker's own gateway plugin can also be installed by hand, but its docs center on Docker Desktop with the MCP Toolkit."],
+      ["Does Runelay run MCP servers in containers?", "No. Runelay connects remote MCP URLs, local commands and OpenAPI specs, and keeps their credentials encrypted on your machine. If container isolation per server is a hard requirement, Docker MCP Gateway is built for that."],
+      ["Can I move from Docker MCP Gateway to Runelay?", "Runelay accepts any remote MCP URL, local command or OpenAPI spec, so you can add the servers you use one by one. runelay migrate imports what is configured in your agents, not Docker profiles."],
+    ],
+  },
+  pt: {
+    title: "Alternativa ao Docker MCP Gateway sem Docker Desktop · Runelay",
+    description: "O Runelay, gateway MCP open source, comparado com o Docker MCP Gateway e o MCP Toolkit: onde cada um roda, Docker Desktop, licença, OAuth, memória e skills compartilhadas, com as fontes.",
+    eyebrow: "Comparativo · 15 nov 2026",
+    vs: ["Docker MCP Gateway", "/logos/docker.png"],
+    h1: "Uma alternativa ao Docker MCP Gateway sem Docker Desktop",
+    lead: "O Runelay, gateway MCP open source, e o Docker MCP Gateway colocam vários servidores MCP atrás de um endpoint. O do Docker gira em torno do Docker Desktop e de containers; o Runelay roda como app desktop ou como um container. Esta página lista o que muda, com as fontes.",
+    cardTitle: "Alternativa ao Docker MCP Gateway",
+    cardText: "Runelay e Docker MCP Gateway lado a lado: Docker Desktop, servidores, OAuth e memória.",
+    body: [
+      card(
+        "columns",
+        "Runelay vs Docker MCP Gateway em resumo",
+        table(
+          ["Runelay", "Docker MCP Gateway"],
+          [
+            ["Onde roda", "No seu computador ou servidor", "No Docker Desktop com o MCP Toolkit, ou como plugin da CLI do Docker"],
+            ["Precisa do Docker Desktop", "Não: app desktop, ou um container num servidor com Docker", "O MCP Toolkit precisa; o plugin do gateway instala sem ele"],
+            ["Como rodam os servidores MCP", "URL de MCP remoto, comando local ou spec OpenAPI", "Cada servidor local no próprio container"],
+            ["OAuth", "OAuth em um clique pelo catálogo, Google e GitHub pelo broker do Runelay", "Fluxos de OAuth embutidos, com GitHub, Notion e Linear como exemplos"],
+            ["Open source", "Sim, MIT", "Sim, MIT (o plugin do gateway)"],
+            ["Preço", "Gratuito", "Gateway gratuito; o Docker Desktop é grátis para pequenas empresas e pago para organizações maiores"],
+            ["Skills para agentes", YES, UNKNOWN_PT],
+            ["Memória entre agentes", YES, UNKNOWN_PT],
+            ["Importa a configuração dos agentes", YES, UNKNOWN_PT],
+          ],
+        ) + DOCKER_SOURCES_PT,
+      ),
+      duo(
+        card(
+          "check",
+          "O Runelay serve quando",
+          checks([
+            "Você quer um gateway MCP sem instalar o Docker Desktop.",
+            "Os seus agentes devem dividir contas, skills e memória, não só tools.",
+            "Você já tem servidores MCP nos agentes e quer importar com <code>runelay migrate</code>.",
+            "Você quer um app desktop no computador ou um único container no servidor.",
+          ]),
+        ),
+        card(
+          "info",
+          "O Docker MCP Gateway serve quando",
+          checks(
+            [
+              "O seu time já usa o Docker Desktop e quer o MCP dentro dele.",
+              "Cada servidor MCP local deve rodar no próprio container, com CPU, memória e acesso a arquivos limitados.",
+              "Você quer servidores agrupados em perfis que podem ser compartilhados por registries OCI.",
+              "A sua empresa quer a oferta de AI Governance do Docker, que é só por convite pelo time de vendas.",
+            ],
+            "dash",
+          ),
+        ),
+      ),
+    ],
+    faq: [
+      ["Dá para usar um gateway MCP sem o Docker Desktop?", "Sim. O app desktop do Runelay roda no Mac, Windows e Linux sem Docker nenhum. No servidor, o Runelay é um container em qualquer máquina com Docker. O plugin do gateway do Docker também instala à mão, mas a documentação dele parte do Docker Desktop com o MCP Toolkit."],
+      ["O Runelay roda os servidores MCP em containers?", "Não. O Runelay conecta URLs de MCP remoto, comandos locais e specs OpenAPI, e guarda as credenciais criptografadas na sua máquina. Se isolar cada servidor num container é obrigatório, o Docker MCP Gateway foi feito para isso."],
+      ["Dá para sair do Docker MCP Gateway para o Runelay?", "O Runelay aceita qualquer URL de MCP remoto, comando local ou spec OpenAPI, então você adiciona os servidores que usa um a um. O runelay migrate importa o que está configurado nos seus agentes, não os perfis do Docker."],
+    ],
+  },
+};
+
+const OBOT_SOURCES_EN = `<p class="ctx-caption">Obot column from <a href="https://github.com/obot-platform/obot" rel="noopener">github.com/obot-platform/obot</a>, <a href="https://docs.obot.ai/" rel="noopener">docs.obot.ai</a>, <a href="https://docs.obot.ai/enterprise/overview/" rel="noopener">Editions and licensing</a> and <a href="https://docs.obot.ai/configuration/auth-providers/" rel="noopener">Auth providers</a>, read on ${READ}.</p>`;
+const OBOT_SOURCES_PT = `<p class="ctx-caption">Coluna do Obot tirada de <a href="https://github.com/obot-platform/obot" rel="noopener">github.com/obot-platform/obot</a>, <a href="https://docs.obot.ai/" rel="noopener">docs.obot.ai</a>, <a href="https://docs.obot.ai/enterprise/overview/" rel="noopener">Editions and licensing</a> e <a href="https://docs.obot.ai/configuration/auth-providers/" rel="noopener">Auth providers</a>, lidas em 15 nov 2026.</p>`;
+
+const obot = {
+  slug: "obot-alternative",
+  icon: "columns",
+  related: ["docker-mcp-gateway-alternative", "contextforge-alternative", "mcphub-alternative", "self-hosted-mcp-gateway"],
+  en: {
+    title: "Obot alternative: lightweight self-hosted MCP gateway · Runelay",
+    description: "Runelay, an open source MCP gateway, compared with Obot: where each runs, Kubernetes, editions and pricing, sign-in, skills and shared memory, with sources.",
+    eyebrow: `Compare · ${READ}`,
+    vs: ["Obot", "/logos/obot.png"],
+    h1: "A lightweight Obot alternative",
+    lead: "Runelay, an open source MCP gateway, and Obot both put MCP servers behind one governed endpoint. Obot is a platform for organizations, with Kubernetes in production; Runelay is for one person's agents, as a desktop app or one container. This page lists what differs, with sources.",
+    cardTitle: "Obot alternative",
+    cardText: "Runelay and Obot side by side: hosting, editions, sign-in, skills and memory.",
+    body: [
+      card(
+        "columns",
+        "Runelay vs Obot at a glance",
+        table(
+          ["Runelay", "Obot"],
+          [
+            ["Made for", "One person’s own agents", "Organizations that govern AI use"],
+            ["Runs on", "Your computer or server", "Docker for evaluation, Kubernetes (Helm) for production, or Obot Cloud"],
+            ["Open source", "Yes, MIT", "Yes, MIT, same code in every edition"],
+            ["Price", "Free", "Community free up to 100 users and 100 devices; Enterprise via sales; Cloud paid after a trial"],
+            ["How MCP servers run", "Remote MCP URL, local command or OpenAPI spec", "npx, uvx and container servers as Docker or Kubernetes workloads, plus OpenAPI to MCP"],
+            ["Sign-in", "Owner account on your instance", "Local, GitHub, Google; Entra, Okta, OneLogin, JumpCloud, Keycloak and Auth0 with free registration"],
+            ["LLM gateway", "No", YES],
+            ["Skills for agents", YES, YES],
+            ["Memory across agents", YES, UNKNOWN_EN],
+            ["Imports your agent setup", YES, UNKNOWN_EN],
+          ],
+        ) + OBOT_SOURCES_EN,
+      ),
+      duo(
+        card(
+          "check",
+          "Runelay fits when",
+          checks([
+            "It is your own agents, not a whole company, that need one MCP endpoint.",
+            "You want a desktop app or a single container, not a Kubernetes cluster.",
+            "Your agents should share memory as well as accounts and skills.",
+            "You already have MCP servers in your agents and want to import them with <code>runelay migrate</code>.",
+          ]),
+        ),
+        card(
+          "info",
+          "Obot fits when",
+          checks(
+            [
+              "Many users need governed access by person or identity-provider group.",
+              "You need SSO with Entra, Okta or another enterprise provider, and SCIM provisioning.",
+              "You want an LLM gateway and an MCP gateway in the same platform.",
+              "You run Kubernetes and want hosted MCP servers as workloads there, or a hosted Obot Cloud.",
+            ],
+            "dash",
+          ),
+        ),
+      ),
+    ],
+    faq: [
+      ["Is Runelay a fork of Obot?", "No. Runelay is a separate MIT project written with Bun, Hono, SQLite and React."],
+      ["Do I need Kubernetes to self-host an MCP gateway?", "Not with Runelay: the desktop app runs on your computer, and on a server it is one container on any machine with Docker. Obot also runs with Docker for evaluation and recommends Kubernetes for production and multi-tenant use."],
+      ["Can I move from Obot to Runelay?", "Runelay accepts any remote MCP URL, local command or OpenAPI spec, so you can add the servers you use one by one. runelay migrate imports what is configured in your agents, not what is stored inside Obot."],
+    ],
+  },
+  pt: {
+    title: "Alternativa ao Obot: gateway MCP self-hosted e leve · Runelay",
+    description: "O Runelay, gateway MCP open source, comparado com o Obot: onde cada um roda, Kubernetes, edições e preço, login, skills e memória compartilhada, com as fontes.",
+    eyebrow: "Comparativo · 15 nov 2026",
+    vs: ["Obot", "/logos/obot.png"],
+    h1: "Uma alternativa leve ao Obot",
+    lead: "O Runelay, gateway MCP open source, e o Obot colocam servidores MCP atrás de um endpoint controlado. O Obot é uma plataforma para organizações, com Kubernetes em produção; o Runelay é para os agentes de uma pessoa, como app desktop ou um container. Esta página lista o que muda, com as fontes.",
+    cardTitle: "Alternativa ao Obot",
+    cardText: "Runelay e Obot lado a lado: hospedagem, edições, login, skills e memória.",
+    body: [
+      card(
+        "columns",
+        "Runelay vs Obot em resumo",
+        table(
+          ["Runelay", "Obot"],
+          [
+            ["Feito para", "Os agentes de uma pessoa", "Organizações que controlam o uso de IA"],
+            ["Onde roda", "No seu computador ou servidor", "Docker para avaliação, Kubernetes (Helm) em produção, ou Obot Cloud"],
+            ["Open source", "Sim, MIT", "Sim, MIT, o mesmo código em todas as edições"],
+            ["Preço", "Gratuito", "Community grátis até 100 usuários e 100 dispositivos; Enterprise via vendas; Cloud pago depois do trial"],
+            ["Como rodam os servidores MCP", "URL de MCP remoto, comando local ou spec OpenAPI", "Servidores npx, uvx e de container como workloads no Docker ou Kubernetes, e OpenAPI virando MCP"],
+            ["Login", "Conta de dono na sua instância", "Local, GitHub, Google; Entra, Okta, OneLogin, JumpCloud, Keycloak e Auth0 com registro gratuito"],
+            ["Gateway de LLM", "Não", YES],
+            ["Skills para agentes", YES, YES],
+            ["Memória entre agentes", YES, UNKNOWN_PT],
+            ["Importa a configuração dos agentes", YES, UNKNOWN_PT],
+          ],
+        ) + OBOT_SOURCES_PT,
+      ),
+      duo(
+        card(
+          "check",
+          "O Runelay serve quando",
+          checks([
+            "São os seus agentes, não a empresa inteira, que precisam de um endpoint MCP.",
+            "Você quer um app desktop ou um único container, não um cluster Kubernetes.",
+            "Os seus agentes devem dividir memória, além de contas e skills.",
+            "Você já tem servidores MCP nos agentes e quer importar com <code>runelay migrate</code>.",
+          ]),
+        ),
+        card(
+          "info",
+          "O Obot serve quando",
+          checks(
+            [
+              "Muitos usuários precisam de acesso controlado por pessoa ou por grupo do provedor de identidade.",
+              "Você precisa de SSO com Entra, Okta ou outro provedor corporativo, e provisionamento por SCIM.",
+              "Você quer gateway de LLM e gateway MCP na mesma plataforma.",
+              "Você roda Kubernetes e quer os servidores MCP como workloads ali, ou o Obot Cloud hospedado.",
+            ],
+            "dash",
+          ),
+        ),
+      ),
+    ],
+    faq: [
+      ["O Runelay é um fork do Obot?", "Não. O Runelay é um projeto MIT separado, escrito com Bun, Hono, SQLite e React."],
+      ["Preciso de Kubernetes para hospedar um gateway MCP?", "Com o Runelay, não: o app desktop roda no seu computador e, no servidor, é um container em qualquer máquina com Docker. O Obot também roda com Docker para avaliação e recomenda Kubernetes em produção e em instalações multi-tenant."],
+      ["Dá para sair do Obot para o Runelay?", "O Runelay aceita qualquer URL de MCP remoto, comando local ou spec OpenAPI, então você adiciona os servidores que usa um a um. O runelay migrate importa o que está configurado nos seus agentes, não o que está guardado dentro do Obot."],
+    ],
+  },
+};
+
+const MCPHUB_SOURCES_EN = `<p class="ctx-caption">MCPHub column from <a href="https://github.com/samanhappy/mcphub" rel="noopener">github.com/samanhappy/mcphub</a>, <a href="https://docs.mcphub.app/" rel="noopener">docs.mcphub.app</a>, <a href="https://docs.mcphub.app/features/authentication" rel="noopener">Authentication</a>, <a href="https://docs.mcphub.app/features/smart-routing" rel="noopener">Smart Routing</a> and <a href="https://www.mcphub.app/pricing" rel="noopener">mcphub.app/pricing</a>, read on ${READ}.</p>`;
+const MCPHUB_SOURCES_PT = `<p class="ctx-caption">Coluna do MCPHub tirada de <a href="https://github.com/samanhappy/mcphub" rel="noopener">github.com/samanhappy/mcphub</a>, <a href="https://docs.mcphub.app/" rel="noopener">docs.mcphub.app</a>, <a href="https://docs.mcphub.app/features/authentication" rel="noopener">Authentication</a>, <a href="https://docs.mcphub.app/features/smart-routing" rel="noopener">Smart Routing</a> e <a href="https://www.mcphub.app/pricing" rel="noopener">mcphub.app/pricing</a>, lidas em 15 nov 2026.</p>`;
+
+const mcphub = {
+  slug: "mcphub-alternative",
+  icon: "columns",
+  related: ["contextforge-alternative", "obot-alternative", "self-hosted-mcp-gateway"],
+  en: {
+    title: "MCPHub alternative: MCP gateway with shared memory · Runelay",
+    description: "Runelay, an open source MCP gateway, compared with MCPHub: where each runs, license and pricing, how servers connect, sign-in, OAuth, skills and shared memory, with sources.",
+    eyebrow: `Compare · ${READ}`,
+    vs: ["MCPHub", "/logos/mcphub.png"],
+    h1: "An MCPHub alternative for your own agents",
+    lead: "Runelay, an open source MCP gateway, and MCPHub both put many MCP servers behind one endpoint. MCPHub is a hub with a web dashboard, groups and users, usually run with Docker; Runelay runs as a desktop app or one container and also shares skills and memory across agents. This page lists what differs, with sources.",
+    cardTitle: "MCPHub alternative",
+    cardText: "Runelay and MCPHub side by side: hosting, servers, sign-in, skills and memory.",
+    body: [
+      card(
+        "columns",
+        "Runelay vs MCPHub at a glance",
+        table(
+          ["Runelay", "MCPHub"],
+          [
+            ["Runs on", "Your computer or server", "Docker (recommended), or from source with Node.js 22; one-click deploys on Railway and RepoCloud"],
+            ["Open source", "Yes, MIT", "Yes, Apache 2.0"],
+            ["Price", "Free", "Self-hosted free; paid production support priced per pilot"],
+            ["How MCP servers connect", "Remote MCP URL, local command or OpenAPI spec", "stdio, SSE and Streamable HTTP servers, set in mcp_settings.json or the dashboard"],
+            ["Endpoints", "One endpoint for your agents", "One for all servers, one per group, one per server, and a Smart Routing endpoint"],
+            ["Sign-in", "Owner account on your instance", "Local accounts with JWT, GitHub and Google login, generic OIDC; each user is admin or regular"],
+            ["OAuth to services", "One-click OAuth from the catalog, Google and GitHub through the Runelay broker", "OAuth 2.0 in client and server modes, with per-user credentials"],
+            ["Turns an OpenAPI spec into tools", YES, UNKNOWN_EN],
+            ["Skills for agents", YES, UNKNOWN_EN],
+            ["Memory across agents", YES, UNKNOWN_EN],
+            ["Imports your agent setup", YES, UNKNOWN_EN],
+          ],
+        ) + MCPHUB_SOURCES_EN,
+      ),
+      duo(
+        card(
+          "check",
+          "Runelay fits when",
+          checks([
+            "It is your own agents that need one MCP endpoint, and you want a desktop app with no Docker.",
+            "Your agents should share accounts, skills and memory, not only tools.",
+            "You want to add an API from its OpenAPI spec, or connect Google and GitHub with one click.",
+            "You already have MCP servers in your agents and want to import them with <code>runelay migrate</code>.",
+          ]),
+        ),
+        card(
+          "info",
+          "MCPHub fits when",
+          checks(
+            [
+              "You want a web dashboard to add, start and watch MCP servers, with logs, latency and health checks.",
+              "Different teams or projects should get their own group of servers and tools at their own endpoint.",
+              "Agents should find tools by meaning through Smart Routing, with PostgreSQL, pgvector and an OpenAI-compatible embedding API.",
+              "Several people sign in with GitHub, Google or your OIDC provider, each with their own credentials.",
+            ],
+            "dash",
+          ),
+        ),
+      ),
+    ],
+    faq: [
+      ["Is Runelay a fork of MCPHub?", "No. Runelay is a separate MIT project written with Bun, Hono, SQLite and React. MCPHub is an Apache 2.0 project written in TypeScript."],
+      ["Do I need Docker to run an MCP hub?", "Not with Runelay: the desktop app runs on Mac, Windows and Linux, and on a server it is one container. MCPHub recommends Docker and can also run from source with Node.js 22."],
+      ["Can I move from MCPHub to Runelay?", "Runelay accepts any remote MCP URL, local command or OpenAPI spec, so you can add the servers you use one by one. runelay migrate imports what is configured in your agents, not the mcp_settings.json file of MCPHub."],
+    ],
+  },
+  pt: {
+    title: "Alternativa ao MCPHub: gateway MCP com memória compartilhada · Runelay",
+    description: "O Runelay, gateway MCP open source, comparado com o MCPHub: onde cada um roda, licença e preço, como os servidores conectam, login, OAuth, skills e memória compartilhada, com as fontes.",
+    eyebrow: "Comparativo · 15 nov 2026",
+    vs: ["MCPHub", "/logos/mcphub.png"],
+    h1: "Uma alternativa ao MCPHub para os seus agentes",
+    lead: "O Runelay, gateway MCP open source, e o MCPHub colocam vários servidores MCP atrás de um endpoint. O MCPHub é um hub com painel web, grupos e usuários, que costuma rodar no Docker; o Runelay roda como app desktop ou um container e também divide skills e memória entre os agentes. Esta página lista o que muda, com as fontes.",
+    cardTitle: "Alternativa ao MCPHub",
+    cardText: "Runelay e MCPHub lado a lado: hospedagem, servidores, login, skills e memória.",
+    body: [
+      card(
+        "columns",
+        "Runelay vs MCPHub em resumo",
+        table(
+          ["Runelay", "MCPHub"],
+          [
+            ["Onde roda", "No seu computador ou servidor", "Docker (o recomendado), ou do código-fonte com Node.js 22; deploy em um clique no Railway e no RepoCloud"],
+            ["Open source", "Sim, MIT", "Sim, Apache 2.0"],
+            ["Preço", "Gratuito", "Self-hosted grátis; suporte para produção pago, com preço por piloto"],
+            ["Como os servidores MCP conectam", "URL de MCP remoto, comando local ou spec OpenAPI", "Servidores stdio, SSE e Streamable HTTP, configurados no mcp_settings.json ou no painel"],
+            ["Endpoints", "Um endpoint para os seus agentes", "Um para todos os servidores, um por grupo, um por servidor e um de Smart Routing"],
+            ["Login", "Conta de dono na sua instância", "Contas locais com JWT, login com GitHub e Google, OIDC genérico; cada usuário é admin ou comum"],
+            ["OAuth com os serviços", "OAuth em um clique pelo catálogo, Google e GitHub pelo broker do Runelay", "OAuth 2.0 nos modos cliente e servidor, com credenciais por usuário"],
+            ["Transforma spec OpenAPI em tools", YES, UNKNOWN_PT],
+            ["Skills para agentes", YES, UNKNOWN_PT],
+            ["Memória entre agentes", YES, UNKNOWN_PT],
+            ["Importa a configuração dos agentes", YES, UNKNOWN_PT],
+          ],
+        ) + MCPHUB_SOURCES_PT,
+      ),
+      duo(
+        card(
+          "check",
+          "O Runelay serve quando",
+          checks([
+            "São os seus agentes que precisam de um endpoint MCP, e você quer um app desktop sem Docker.",
+            "Os seus agentes devem dividir contas, skills e memória, não só tools.",
+            "Você quer adicionar uma API pela spec OpenAPI, ou conectar Google e GitHub em um clique.",
+            "Você já tem servidores MCP nos agentes e quer importar com <code>runelay migrate</code>.",
+          ]),
+        ),
+        card(
+          "info",
+          "O MCPHub serve quando",
+          checks(
+            [
+              "Você quer um painel web para adicionar, ligar e acompanhar servidores MCP, com logs, latência e health check.",
+              "Times ou projetos diferentes devem ter o próprio grupo de servidores e tools, cada um no seu endpoint.",
+              "Os agentes devem achar tools pelo significado com o Smart Routing, usando PostgreSQL, pgvector e uma API de embeddings compatível com a OpenAI.",
+              "Várias pessoas entram com GitHub, Google ou o seu provedor OIDC, cada uma com as próprias credenciais.",
+            ],
+            "dash",
+          ),
+        ),
+      ),
+    ],
+    faq: [
+      ["O Runelay é um fork do MCPHub?", "Não. O Runelay é um projeto MIT separado, escrito com Bun, Hono, SQLite e React. O MCPHub é um projeto Apache 2.0 escrito em TypeScript."],
+      ["Preciso de Docker para rodar um hub MCP?", "Com o Runelay, não: o app desktop roda no Mac, Windows e Linux e, no servidor, é um container. O MCPHub recomenda Docker e também roda do código-fonte com Node.js 22."],
+      ["Dá para sair do MCPHub para o Runelay?", "O Runelay aceita qualquer URL de MCP remoto, comando local ou spec OpenAPI, então você adiciona os servidores que usa um a um. O runelay migrate importa o que está configurado nos seus agentes, não o mcp_settings.json do MCPHub."],
+    ],
+  },
+};
+
+const CONTEXTFORGE_SOURCES_EN = `<p class="ctx-caption">ContextForge column from <a href="https://github.com/IBM/mcp-context-forge" rel="noopener">github.com/IBM/mcp-context-forge</a>, <a href="https://ibm.github.io/mcp-context-forge/latest/" rel="noopener">ContextForge docs</a> and <a href="https://ibm.github.io/mcp-context-forge/latest/architecture/multitenancy/" rel="noopener">Multitenancy</a>, read on ${READ}.</p>`;
+const CONTEXTFORGE_SOURCES_PT = `<p class="ctx-caption">Coluna do ContextForge tirada de <a href="https://github.com/IBM/mcp-context-forge" rel="noopener">github.com/IBM/mcp-context-forge</a>, <a href="https://ibm.github.io/mcp-context-forge/latest/" rel="noopener">documentação do ContextForge</a> e <a href="https://ibm.github.io/mcp-context-forge/latest/architecture/multitenancy/" rel="noopener">Multitenancy</a>, lidas em 15 nov 2026.</p>`;
+
+const contextforge = {
+  slug: "contextforge-alternative",
+  icon: "columns",
+  related: ["agentgateway-alternative", "obot-alternative", "self-hosted-mcp-gateway"],
+  en: {
+    title: "IBM ContextForge alternative: lightweight MCP gateway · Runelay",
+    description: "Runelay, an open source MCP gateway, compared with IBM ContextForge (MCP Gateway): where each runs, license, how servers connect, sign-in, teams, skills and shared memory, with sources.",
+    eyebrow: `Compare · ${READ}`,
+    vs: ["ContextForge", "/logos/contextforge.png"],
+    h1: "A lightweight IBM ContextForge alternative",
+    lead: "Runelay, an open source MCP gateway, and IBM ContextForge both put MCP servers behind one endpoint. ContextForge is a gateway and registry for organizations that federates MCP, A2A and REST or gRPC APIs; Runelay is for one person's agents, as a desktop app or one container. This page lists what differs, with sources.",
+    cardTitle: "ContextForge alternative",
+    cardText: "Runelay and IBM ContextForge side by side: hosting, protocols, sign-in, skills and memory.",
+    body: [
+      card(
+        "columns",
+        "Runelay vs ContextForge at a glance",
+        table(
+          ["Runelay", "ContextForge"],
+          [
+            ["Made for", "One person’s own agents", "Organizations that federate MCP, A2A and REST or gRPC APIs behind one gateway"],
+            ["Runs on", "Your computer or server", "PyPI or uvx, a container with Docker or Podman, Compose with PostgreSQL and Redis, or Kubernetes with Helm"],
+            ["Open source", "Yes, MIT", "Yes, Apache 2.0"],
+            ["Price", "Free", "No price found on the pages read"],
+            ["How MCP servers connect", "Remote MCP URL, local command or OpenAPI spec", "MCP over stdio, SSE, Streamable HTTP and WebSocket; REST and gRPC services wrapped as MCP tools"],
+            ["Sign-in", "Owner account on your instance", "Basic or JWT; SSO with GitHub, Google, Entra ID, Okta, Keycloak, IBM Security Verify or generic OIDC"],
+            ["Skills for agents", YES, UNKNOWN_EN],
+            ["Memory across agents", YES, UNKNOWN_EN],
+            ["Imports your agent setup", YES, UNKNOWN_EN],
+          ],
+        ) + CONTEXTFORGE_SOURCES_EN,
+      ),
+      duo(
+        card(
+          "check",
+          "Runelay fits when",
+          checks([
+            "It is your own agents, not a whole company, that need one MCP endpoint.",
+            "You want a desktop app or a single container, without PostgreSQL, Redis or a Helm chart.",
+            "Your agents should share memory as well as accounts and skills.",
+            "You already have MCP servers in your agents and want to import them with <code>runelay migrate</code>.",
+          ]),
+        ),
+        card(
+          "info",
+          "ContextForge fits when",
+          checks(
+            [
+              "You want virtual servers that bundle chosen tools, and REST or gRPC services exposed as MCP.",
+              "Many users work in teams, with RBAC and SSO through Entra ID, Okta, Keycloak or another OIDC provider.",
+              "You need OpenTelemetry tracing, Prometheus metrics and an admin UI with a live log viewer.",
+              "You want plugins and guardrails, A2A agents in the same gateway, and multi-cluster federation on Kubernetes.",
+            ],
+            "dash",
+          ),
+        ),
+      ),
+    ],
+    faq: [
+      ["Is Runelay related to IBM ContextForge?", "No. Runelay is a separate MIT project written with Bun, Hono, SQLite and React. ContextForge is an Apache 2.0 Python project under the IBM GitHub organization."],
+      ["Do I need PostgreSQL and Redis to self-host an MCP gateway?", "Not with Runelay: the desktop app runs on your computer, and on a server it is one container. ContextForge runs with SQLite in development and documents PostgreSQL and Redis for production."],
+      ["Can I move from ContextForge to Runelay?", "Runelay accepts any remote MCP URL, local command or OpenAPI spec, so you can add the servers you use one by one. runelay migrate imports what is configured in your agents, not the servers registered in ContextForge."],
+    ],
+  },
+  pt: {
+    title: "Alternativa ao IBM ContextForge: gateway MCP leve · Runelay",
+    description: "O Runelay, gateway MCP open source, comparado com o IBM ContextForge (MCP Gateway): onde cada um roda, licença, como os servidores conectam, login, times, skills e memória compartilhada, com as fontes.",
+    eyebrow: "Comparativo · 15 nov 2026",
+    vs: ["ContextForge", "/logos/contextforge.png"],
+    h1: "Uma alternativa leve ao IBM ContextForge",
+    lead: "O Runelay, gateway MCP open source, e o IBM ContextForge colocam servidores MCP atrás de um endpoint. O ContextForge é um gateway e registro para organizações, que junta MCP, A2A e APIs REST ou gRPC; o Runelay é para os agentes de uma pessoa, como app desktop ou um container. Esta página lista o que muda, com as fontes.",
+    cardTitle: "Alternativa ao ContextForge",
+    cardText: "Runelay e IBM ContextForge lado a lado: hospedagem, protocolos, login, skills e memória.",
+    body: [
+      card(
+        "columns",
+        "Runelay vs ContextForge em resumo",
+        table(
+          ["Runelay", "ContextForge"],
+          [
+            ["Feito para", "Os agentes de uma pessoa", "Organizações que juntam MCP, A2A e APIs REST ou gRPC atrás de um gateway"],
+            ["Onde roda", "No seu computador ou servidor", "PyPI ou uvx, container com Docker ou Podman, Compose com PostgreSQL e Redis, ou Kubernetes com Helm"],
+            ["Open source", "Sim, MIT", "Sim, Apache 2.0"],
+            ["Preço", "Gratuito", "Nenhum preço encontrado nas páginas lidas"],
+            ["Como os servidores MCP conectam", "URL de MCP remoto, comando local ou spec OpenAPI", "MCP por stdio, SSE, Streamable HTTP e WebSocket; serviços REST e gRPC viram tools MCP"],
+            ["Login", "Conta de dono na sua instância", "Basic ou JWT; SSO com GitHub, Google, Entra ID, Okta, Keycloak, IBM Security Verify ou OIDC genérico"],
+            ["Skills para agentes", YES, UNKNOWN_PT],
+            ["Memória entre agentes", YES, UNKNOWN_PT],
+            ["Importa a configuração dos agentes", YES, UNKNOWN_PT],
+          ],
+        ) + CONTEXTFORGE_SOURCES_PT,
+      ),
+      duo(
+        card(
+          "check",
+          "O Runelay serve quando",
+          checks([
+            "São os seus agentes, não a empresa inteira, que precisam de um endpoint MCP.",
+            "Você quer um app desktop ou um único container, sem PostgreSQL, Redis ou chart do Helm.",
+            "Os seus agentes devem dividir memória, além de contas e skills.",
+            "Você já tem servidores MCP nos agentes e quer importar com <code>runelay migrate</code>.",
+          ]),
+        ),
+        card(
+          "info",
+          "O ContextForge serve quando",
+          checks(
+            [
+              "Você quer servidores virtuais que agrupam as tools escolhidas, e serviços REST ou gRPC expostos como MCP.",
+              "Muitos usuários trabalham em times, com RBAC e SSO pelo Entra ID, Okta, Keycloak ou outro provedor OIDC.",
+              "Você precisa de tracing com OpenTelemetry, métricas no Prometheus e um painel de admin com logs ao vivo.",
+              "Você quer plugins e guardrails, agentes A2A no mesmo gateway e federação entre clusters no Kubernetes.",
+            ],
+            "dash",
+          ),
+        ),
+      ),
+    ],
+    faq: [
+      ["O Runelay tem relação com o IBM ContextForge?", "Não. O Runelay é um projeto MIT separado, escrito com Bun, Hono, SQLite e React. O ContextForge é um projeto Python com licença Apache 2.0 na organização da IBM no GitHub."],
+      ["Preciso de PostgreSQL e Redis para hospedar um gateway MCP?", "Com o Runelay, não: o app desktop roda no seu computador e, no servidor, é um container. O ContextForge roda com SQLite em desenvolvimento e documenta PostgreSQL e Redis para produção."],
+      ["Dá para sair do ContextForge para o Runelay?", "O Runelay aceita qualquer URL de MCP remoto, comando local ou spec OpenAPI, então você adiciona os servidores que usa um a um. O runelay migrate importa o que está configurado nos seus agentes, não os servidores cadastrados no ContextForge."],
+    ],
+  },
+};
+
+const AGENTGATEWAY_SOURCES_EN = `<p class="ctx-caption">agentgateway column from <a href="https://github.com/agentgateway/agentgateway" rel="noopener">github.com/agentgateway/agentgateway</a>, <a href="https://agentgateway.dev/docs/" rel="noopener">agentgateway.dev/docs</a> and <a href="https://agentgateway.dev/docs/standalone/latest/" rel="noopener">Standalone docs</a>, read on ${READ}.</p>`;
+const AGENTGATEWAY_SOURCES_PT = `<p class="ctx-caption">Coluna do agentgateway tirada de <a href="https://github.com/agentgateway/agentgateway" rel="noopener">github.com/agentgateway/agentgateway</a>, <a href="https://agentgateway.dev/docs/" rel="noopener">agentgateway.dev/docs</a> e <a href="https://agentgateway.dev/docs/standalone/latest/" rel="noopener">documentação standalone</a>, lidas em 15 nov 2026.</p>`;
+
+const agentgateway = {
+  slug: "agentgateway-alternative",
+  icon: "columns",
+  related: ["contextforge-alternative", "docker-mcp-gateway-alternative", "self-hosted-mcp-gateway"],
+  en: {
+    title: "agentgateway alternative: MCP gateway for your agents · Runelay",
+    description: "Runelay, an open source MCP gateway, compared with agentgateway: where each runs, license, how servers connect, auth and policies, skills and shared memory, with sources.",
+    eyebrow: `Compare · ${READ}`,
+    vs: ["agentgateway", "/logos/agentgateway.png"],
+    h1: "An agentgateway alternative for your own agents",
+    lead: "Runelay, an open source MCP gateway, and agentgateway both put MCP servers behind one endpoint. agentgateway is a proxy written in Rust for MCP, A2A and LLM traffic, set up with a config file or on Kubernetes; Runelay is an app for one person's agents, with a catalog, skills and memory. This page lists what differs, with sources.",
+    cardTitle: "agentgateway alternative",
+    cardText: "Runelay and agentgateway side by side: hosting, protocols, auth, skills and memory.",
+    body: [
+      card(
+        "columns",
+        "Runelay vs agentgateway at a glance",
+        table(
+          ["Runelay", "agentgateway"],
+          [
+            ["Made for", "One person’s own agents", "Securing and observing agent traffic to tools, other agents and LLMs"],
+            ["Runs on", "Your computer or server", "Standalone binary or Docker with a YAML config, or Kubernetes with its Gateway API control plane"],
+            ["Open source", "Yes, MIT", "Yes, Apache 2.0, a Linux Foundation project"],
+            ["Price", "Free", "No price found on the pages read"],
+            ["How MCP servers connect", "Remote MCP URL, local command or OpenAPI spec", "MCP over stdio, SSE and Streamable HTTP, plus REST APIs exposed as MCP tools through OpenAPI"],
+            ["Auth and policies", "Owner account on your instance", "JWT, API keys, basic auth and MCP auth with OAuth providers such as Auth0 and Keycloak; RBAC with CEL policies"],
+            ["OAuth to services", "One-click OAuth from the catalog, Google and GitHub through the Runelay broker", UNKNOWN_EN],
+            ["Skills for agents", YES, UNKNOWN_EN],
+            ["Memory across agents", YES, UNKNOWN_EN],
+            ["Imports your agent setup", YES, UNKNOWN_EN],
+          ],
+        ) + AGENTGATEWAY_SOURCES_EN,
+      ),
+      duo(
+        card(
+          "check",
+          "Runelay fits when",
+          checks([
+            "You want an app with a catalog and one-click sign-in to your accounts, not a proxy to configure.",
+            "Your agents should share accounts, skills and memory, not only tools.",
+            "You want a desktop app on your computer or a single container on your server.",
+            "You already have MCP servers in your agents and want to import them with <code>runelay migrate</code>.",
+          ]),
+        ),
+        card(
+          "info",
+          "agentgateway fits when",
+          checks(
+            [
+              "You want one proxy written in Rust for MCP, A2A and LLM traffic, with an OpenAI-compatible API across providers.",
+              "Access must follow fine-grained policies: JWT, API keys, RBAC with CEL, rate limiting, CORS and TLS.",
+              "You run Kubernetes and want to configure it through the Gateway API, with OpenTelemetry metrics, logs and tracing.",
+              "You need guardrails and LLM spend controls, or routing to self-hosted models by GPU and KV cache use.",
+            ],
+            "dash",
+          ),
+        ),
+      ),
+    ],
+    faq: [
+      ["Is Runelay built on agentgateway?", "No. Runelay is a separate MIT project written with Bun, Hono, SQLite and React. agentgateway is an Apache 2.0 project written in Rust and hosted by the Linux Foundation."],
+      ["Do I need Kubernetes to run an MCP gateway?", "Not with Runelay: the desktop app runs on your computer, and on a server it is one container. agentgateway also runs as a standalone binary or in Docker, and has a Kubernetes mode with the Gateway API."],
+      ["Can I move from agentgateway to Runelay?", "Runelay accepts any remote MCP URL, local command or OpenAPI spec, so you can add the servers you use one by one. runelay migrate imports what is configured in your agents, not an agentgateway config file."],
+    ],
+  },
+  pt: {
+    title: "Alternativa ao agentgateway: gateway MCP para os seus agentes · Runelay",
+    description: "O Runelay, gateway MCP open source, comparado com o agentgateway: onde cada um roda, licença, como os servidores conectam, autenticação e políticas, skills e memória compartilhada, com as fontes.",
+    eyebrow: "Comparativo · 15 nov 2026",
+    vs: ["agentgateway", "/logos/agentgateway.png"],
+    h1: "Uma alternativa ao agentgateway para os seus agentes",
+    lead: "O Runelay, gateway MCP open source, e o agentgateway colocam servidores MCP atrás de um endpoint. O agentgateway é um proxy escrito em Rust para tráfego MCP, A2A e de LLM, configurado por arquivo ou no Kubernetes; o Runelay é um app para os agentes de uma pessoa, com catálogo, skills e memória. Esta página lista o que muda, com as fontes.",
+    cardTitle: "Alternativa ao agentgateway",
+    cardText: "Runelay e agentgateway lado a lado: hospedagem, protocolos, autenticação, skills e memória.",
+    body: [
+      card(
+        "columns",
+        "Runelay vs agentgateway em resumo",
+        table(
+          ["Runelay", "agentgateway"],
+          [
+            ["Feito para", "Os agentes de uma pessoa", "Proteger e observar o tráfego dos agentes para tools, outros agentes e LLMs"],
+            ["Onde roda", "No seu computador ou servidor", "Binário standalone ou Docker com config em YAML, ou Kubernetes com o control plane pelo Gateway API"],
+            ["Open source", "Sim, MIT", "Sim, Apache 2.0, projeto da Linux Foundation"],
+            ["Preço", "Gratuito", "Nenhum preço encontrado nas páginas lidas"],
+            ["Como os servidores MCP conectam", "URL de MCP remoto, comando local ou spec OpenAPI", "MCP por stdio, SSE e Streamable HTTP, e APIs REST expostas como tools MCP via OpenAPI"],
+            ["Autenticação e políticas", "Conta de dono na sua instância", "JWT, chaves de API, basic auth e MCP auth com provedores OAuth como Auth0 e Keycloak; RBAC com políticas em CEL"],
+            ["OAuth com os serviços", "OAuth em um clique pelo catálogo, Google e GitHub pelo broker do Runelay", UNKNOWN_PT],
+            ["Skills para agentes", YES, UNKNOWN_PT],
+            ["Memória entre agentes", YES, UNKNOWN_PT],
+            ["Importa a configuração dos agentes", YES, UNKNOWN_PT],
+          ],
+        ) + AGENTGATEWAY_SOURCES_PT,
+      ),
+      duo(
+        card(
+          "check",
+          "O Runelay serve quando",
+          checks([
+            "Você quer um app com catálogo e login nas suas contas em um clique, não um proxy para configurar.",
+            "Os seus agentes devem dividir contas, skills e memória, não só tools.",
+            "Você quer um app desktop no computador ou um único container no servidor.",
+            "Você já tem servidores MCP nos agentes e quer importar com <code>runelay migrate</code>.",
+          ]),
+        ),
+        card(
+          "info",
+          "O agentgateway serve quando",
+          checks(
+            [
+              "Você quer um proxy só, escrito em Rust, para tráfego MCP, A2A e de LLM, com API compatível com a OpenAI entre provedores.",
+              "O acesso precisa seguir políticas finas: JWT, chaves de API, RBAC com CEL, rate limit, CORS e TLS.",
+              "Você roda Kubernetes e quer configurar pelo Gateway API, com métricas, logs e tracing no OpenTelemetry.",
+              "Você precisa de guardrails e controle de gasto com LLM, ou de roteamento para modelos próprios por uso de GPU e KV cache.",
+            ],
+            "dash",
+          ),
+        ),
+      ),
+    ],
+    faq: [
+      ["O Runelay é feito em cima do agentgateway?", "Não. O Runelay é um projeto MIT separado, escrito com Bun, Hono, SQLite e React. O agentgateway é um projeto Apache 2.0 escrito em Rust e mantido na Linux Foundation."],
+      ["Preciso de Kubernetes para rodar um gateway MCP?", "Com o Runelay, não: o app desktop roda no seu computador e, no servidor, é um container. O agentgateway também roda como binário standalone ou no Docker, e tem um modo Kubernetes com o Gateway API."],
+      ["Dá para sair do agentgateway para o Runelay?", "O Runelay aceita qualquer URL de MCP remoto, comando local ou spec OpenAPI, então você adiciona os servidores que usa um a um. O runelay migrate importa o que está configurado nos seus agentes, não um arquivo de config do agentgateway."],
+    ],
+  },
+};
+
+export const PAGES = [claudeCode, cursor, codex, agentesChat, antigravity, grokbot, hermes, openclaw, mausbot, opencode, openbot, kimi, share, migrate, customConnectors, executor, dockerGateway, obot, mcphub, contextforge, agentgateway, runlayer];
 
 export const EXISTING = {
   "self-hosted-mcp-gateway": { icon: "server", en: ["Self-hosted MCP gateway guide", "What it does, why self-host it and how to run one in a minute."], pt: ["Guia de MCP gateway self-hosted", "O que faz, por que hospedar e como rodar um em um minuto."] },

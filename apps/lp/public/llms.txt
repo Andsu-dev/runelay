@@ -51,6 +51,11 @@
 ## Compare
 
 - [Executor alternative](https://runelay.com/executor-alternative/): runelay vs Executor on hosting, official pricing, memory and measured numbers (runelay 0.3.2 vs Executor 2.0.0-beta.51).
+- [Docker MCP Gateway alternative](https://runelay.com/docker-mcp-gateway-alternative/): runelay vs Docker MCP Gateway and the MCP Toolkit for people who want an MCP gateway without Docker Desktop: where each runs, how servers run, OAuth, license and memory.
+- [Obot alternative](https://runelay.com/obot-alternative/): runelay vs Obot on hosting (desktop app or one container vs Kubernetes), editions and pricing, sign-in, skills and memory.
+- [MCPHub alternative](https://runelay.com/mcphub-alternative/): runelay vs MCPHub on hosting (desktop app or one container vs a Docker hub with a web dashboard), license and pricing, how servers connect, sign-in, skills and memory.
+- [ContextForge alternative](https://runelay.com/contextforge-alternative/): runelay vs IBM ContextForge (MCP Gateway) on hosting, license, protocols (MCP, A2A, REST and gRPC), sign-in and SSO, skills and memory.
+- [agentgateway alternative](https://runelay.com/agentgateway-alternative/): runelay vs agentgateway, the Linux Foundation proxy for MCP, A2A and LLM traffic: where each runs, license, auth and policies, skills and memory.
 - [Runelay vs Runlayer](https://runelay.com/vs/runlayer/): runelay is an open-source MCP gateway by Anderson Medeiros and is not related to Runlayer, an enterprise AI governance platform.
 
 ## Docs

@@ -4,6 +4,11 @@
 /vs/
 /changelog/
 /executor-alternative/
+/docker-mcp-gateway-alternative/
+/obot-alternative/
+/mcphub-alternative/
+/contextforge-alternative/
+/agentgateway-alternative/
 /custom-connectors/
 /pt-br/guides/
 /pt-br/integrations/
@@ -11,6 +16,11 @@
 /pt-br/vs/
 /pt-br/changelog/
 /pt-br/executor-alternative/
+/pt-br/docker-mcp-gateway-alternative/
+/pt-br/obot-alternative/
+/pt-br/mcphub-alternative/
+/pt-br/contextforge-alternative/
+/pt-br/agentgateway-alternative/
 /pt-br/custom-connectors/
 /features/
 /pt-br/features/
