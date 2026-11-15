@@ -28,6 +28,13 @@
 
 <br />
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/assets/dark-overview.webp" />
+    <img src=".github/assets/light-overview.webp" alt="runelay dashboard: connected accounts, tool calls per agent and recent activity" width="960" />
+  </picture>
+</p>
+
 ## ✨ Why
 
 Every agent lives on its own island. You log into Linear four times, copy the same skill to four folders, and teach Claude a rule that Codex never hears about.
