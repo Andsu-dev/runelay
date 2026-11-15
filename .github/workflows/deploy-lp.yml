@@ -1,6 +1,9 @@
 name: deploy-lp
 
 on:
+  push:
+    branches: [main]
+    paths: ["apps/lp/**"]
   workflow_dispatch:
 
 permissions:
