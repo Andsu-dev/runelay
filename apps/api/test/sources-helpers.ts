@@ -10,6 +10,7 @@ export type FakeMcpServer = {
   base: string;
   mcpUrl: string;
   requests: string[];
+  tokenRequests: { authorization: string | null; form: Record<string, string> }[];
   stop: () => void;
 };
 
@@ -35,6 +36,7 @@ export const startFakeMcp = ({
   protectedResource = {} as Record<string, unknown>,
 } = {}): FakeMcpServer => {
   const requests: string[] = [];
+  const tokenRequests: FakeMcpServer["tokenRequests"] = [];
   const server: Bun.Server<undefined> = Bun.serve({
     port: 0,
     hostname: "127.0.0.1",
@@ -65,6 +67,7 @@ export const startFakeMcp = ({
       }
       if (url.pathname === "/token") {
         const form = new URLSearchParams(await request.text());
+        tokenRequests.push({ authorization: request.headers.get("authorization"), form: Object.fromEntries(form) });
         if (form.get("code") !== GOOD_CODE) return Response.json({ error: "invalid_grant" }, { status: 400 });
         return Response.json({ access_token: FAKE_ACCESS_TOKEN, token_type: "Bearer" });
       }
@@ -81,7 +84,7 @@ export const startFakeMcp = ({
     },
   });
   const base = `http://127.0.0.1:${server.port}`;
-  return { base, mcpUrl: `${base}/mcp`, requests, stop: () => server.stop(true) };
+  return { base, mcpUrl: `${base}/mcp`, requests, tokenRequests, stop: () => server.stop(true) };
 };
 
 export const GOOD_REFRESH_TOKEN = "good-refresh-token";

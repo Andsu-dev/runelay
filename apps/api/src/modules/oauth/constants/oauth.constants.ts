@@ -15,3 +15,7 @@ export const BROKER_TOKEN_URLS: Record<OAuthBrokerProvider, string> = {
 export const BROKER_AUTHORIZATION_PARAMS: Record<OAuthBrokerProvider, Record<string, string>> = {
   google: { access_type: "offline", prompt: "consent" },
 };
+
+export const AUTHORIZATION_PARAMS_BY_HOST: Record<string, Record<string, string>> = {
+  "accounts.google.com": BROKER_AUTHORIZATION_PARAMS.google,
+};

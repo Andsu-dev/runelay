@@ -1,6 +1,10 @@
 import type { OAuthClientProvider } from "@modelcontextprotocol/sdk/client/auth.js";
 import { env } from "@/config/env";
-import { OAUTH_CALLBACK_PATH, OAUTH_CLIENT_NAME } from "@/modules/oauth/constants/oauth.constants";
+import {
+  AUTHORIZATION_PARAMS_BY_HOST,
+  OAUTH_CALLBACK_PATH,
+  OAUTH_CLIENT_NAME,
+} from "@/modules/oauth/constants/oauth.constants";
 import {
   brokerAuthorizationUrl,
   brokerCallbackUrl,
@@ -18,6 +22,20 @@ const CLEARED_BY_SCOPE: Record<"all" | "client" | "tokens" | "verifier" | "disco
   tokens: { tokens: undefined },
   verifier: { verifier: undefined },
   discovery: {},
+};
+
+const customClientInformation = (oauth: OAuthState | undefined) =>
+  oauth?.customClient && {
+    client_id: oauth.customClient.clientId,
+    ...(oauth.customClient.clientSecret ? { client_secret: oauth.customClient.clientSecret } : {}),
+  };
+
+const withProviderParams = (url: URL) => {
+  const rewritten = new URL(url);
+  for (const [name, value] of Object.entries(AUTHORIZATION_PARAMS_BY_HOST[url.hostname] ?? {})) {
+    rewritten.searchParams.set(name, value);
+  }
+  return rewritten;
 };
 
 export const createOAuthFetch = (key: SourceKey) => brokerFetch(findSource(key).data?.oauth.broker);
@@ -39,16 +57,18 @@ export const createOAuthProvider = (key: SourceKey, onRedirect?: (url: URL) => v
       token_endpoint_auth_method: "none",
     },
     state: () => (broker ? encodeBrokerState(key.name) : key.name),
-    clientInformation: () => (broker ? { client_id: broker.clientId } : oauth()?.client),
+    clientInformation: () =>
+      broker ? { client_id: broker.clientId } : (customClientInformation(oauth()) ?? oauth()?.client),
     saveClientInformation: (client) => {
-      if (!broker) save({ client });
+      if (!broker && !oauth()?.customClient) save({ client });
     },
     tokens: () => oauth()?.tokens,
     saveTokens: (tokens) => {
       save({ tokens });
       markConnected(key);
     },
-    redirectToAuthorization: (url) => onRedirect?.(broker ? brokerAuthorizationUrl(url, broker) : url),
+    redirectToAuthorization: (url) =>
+      onRedirect?.(broker ? brokerAuthorizationUrl(url, broker) : withProviderParams(url)),
     saveCodeVerifier: (verifier) => save({ verifier }),
     codeVerifier: () => oauth()?.verifier ?? "",
     invalidateCredentials: (scope) => save(CLEARED_BY_SCOPE[scope]),

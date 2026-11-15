@@ -28,6 +28,8 @@ import type { SourceActor } from "@/modules/sources/types/source-policy.types";
 
 export { findSourceView, listSourceViews, summarizeSources } from "@/modules/sources/repositories/source.repository";
 
+const CLEARED_LOGIN: Partial<OAuthState> = { client: undefined, tokens: undefined, verifier: undefined };
+
 export const createSource = async (
   organizationId: string,
   input: CreateSourceInput,
@@ -39,6 +41,9 @@ export const createSource = async (
   const saved = upsertSource(organizationId, input);
   if (saved.error) return saved;
   if (oauth) updateOAuth({ organizationId, name: input.name }, oauth);
+  if (input.oauthClient && input.config.kind === "mcp") {
+    updateOAuth({ organizationId, name: input.name }, { ...CLEARED_LOGIN, customClient: input.oauthClient });
+  }
   await connectSource({ organizationId, name: input.name });
   return findSourceView({ organizationId, name: input.name });
 };
@@ -61,11 +66,15 @@ export const updateSource = async (
     const saved = upsertSource(target.organizationId, { name: target.name, config: input.config });
     if (saved.error) return saved;
   }
+  if (input.oauthClient !== undefined) {
+    const stored = updateOAuth(target, { ...CLEARED_LOGIN, customClient: input.oauthClient ?? undefined });
+    if (stored.error) return stored;
+  }
   if (input.enabled !== undefined) {
     const toggled = updateEnabled(target, input.enabled);
     if (toggled.error) return toggled;
   }
-  const renameOnly = input.config === undefined && input.enabled === undefined;
+  const renameOnly = input.config === undefined && input.enabled === undefined && input.oauthClient === undefined;
   if (input.enabled === false) await disconnectSource(target);
   else if (!renameOnly || current.data.enabled) await connectSource(target);
   return findSourceView(target);

@@ -62,6 +62,10 @@ export const sourcesMessages = defineMessages(
       authOAuth: "Login por OAuth: a janela de login abre ao salvar",
       authHeader: "Esse servidor pede uma chave no header",
       addHeaders: "Adicionar headers",
+      addOAuthClient: "Usar meu próprio cliente OAuth",
+      oauthClientHint:
+        "Para serviços sem registro automático, como o Google. Crie o cliente OAuth no serviço com esta URL de redirecionamento:",
+      oauthClientSecretHint: "Fica cifrado. Deixe em branco para manter o atual ou se o cliente não tiver secret.",
     },
     add: {
       title: "Nova conexão",
@@ -165,6 +169,10 @@ export const sourcesMessages = defineMessages(
       authOAuth: "OAuth sign-in: the login window opens when you save",
       authHeader: "This server asks for a key in a header",
       addHeaders: "Add headers",
+      addOAuthClient: "Use my own OAuth client",
+      oauthClientHint:
+        "For services without automatic registration, such as Google. Create the OAuth client there with this redirect URL:",
+      oauthClientSecretHint: "Stored encrypted. Leave blank to keep the current one or if the client has no secret.",
     },
     add: {
       title: "New connection",

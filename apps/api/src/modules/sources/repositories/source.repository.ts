@@ -27,15 +27,22 @@ import { seal, unseal } from "@/shared/crypto";
 const COLUMNS =
   "organization_id AS organizationId, name, config, oauth, status, error, tool_count AS toolCount, enabled, updated_at AS updatedAt";
 
-const VIEW_SELECT = `SELECT s.name, s.config, s.status, s.error, s.tool_count AS toolCount, s.enabled,
+const VIEW_SELECT = `SELECT s.name, s.config, s.oauth, s.status, s.error, s.tool_count AS toolCount, s.enabled,
     s.connected_at AS connectedAt, s.updated_at AS updatedAt, json_extract(catalog.value, '$.icon') AS icon,
     json_extract(catalog.value, '$.auth') AS auth, json_extract(catalog.value, '$.tokenUrl') AS tokenUrl
   FROM sources s LEFT JOIN json_each(?) catalog ON catalog.key = s.url_hash`;
 
-const decryptView = (row: SourceViewRow): Result<SourceView> => {
+const decryptView = ({ oauth: sealedOAuth, ...row }: SourceViewRow): Result<SourceView> => {
   const config = unseal<SourceConfig>(row.config);
   if (config.error) return config;
-  return ok({ ...row, config: config.data, enabled: row.enabled === 1 });
+  const oauth = unseal<OAuthState>(sealedOAuth);
+  if (oauth.error) return oauth;
+  return ok({
+    ...row,
+    config: config.data,
+    enabled: row.enabled === 1,
+    oauthClientId: oauth.data.customClient?.clientId ?? null,
+  });
 };
 
 const decrypt = (row: SourceRow): Result<Source> => {
