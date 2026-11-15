@@ -19,7 +19,6 @@ import {
   Store01Icon,
   UserGroupIcon,
   UserIcon,
-  Wrench01Icon,
 } from "@hugeicons/core-free-icons";
 import { linkOptions } from "@tanstack/react-router";
 import type { NavCategory } from "./nav.types";
@@ -31,13 +30,13 @@ export const HOME_CATEGORY = {
   label: "layout.nav.home",
   icon: Home01Icon,
   link: linkOptions({ to: "/overview" }),
-  paths: ["/overview"],
+  paths: ["/overview", "/activity"],
   sections: [
     {
       label: "layout.nav.home",
       items: [
         { label: "layout.nav.overview", icon: DashboardSquare01Icon, link: linkOptions({ to: "/overview" }) },
-        { label: "layout.nav.activity", icon: Activity01Icon, soon: true },
+        { label: "layout.nav.activity", icon: Activity01Icon, link: linkOptions({ to: "/activity" }) },
       ],
     },
   ],
@@ -66,7 +65,6 @@ export const NAV_CATEGORIES: NavCategory[] = [
             icon: CheckmarkCircle02Icon,
             link: linkOptions({ to: "/connectors", search: { tab: "installed" } }),
           },
-          { label: "layout.nav.tools", icon: Wrench01Icon, soon: true },
         ],
       },
     ],
@@ -140,10 +138,7 @@ export const NAV_CATEGORIES: NavCategory[] = [
       },
       {
         label: "layout.nav.organization",
-        items: [
-          { label: "layout.nav.members", icon: UserGroupIcon, soon: true },
-          { label: "layout.nav.settings", icon: Settings01Icon, soon: true },
-        ],
+        items: [{ label: "layout.nav.members", icon: UserGroupIcon, soon: true }],
       },
     ],
   },
