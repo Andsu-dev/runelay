@@ -1010,7 +1010,7 @@ export const INTEGRATIONS_EN = {
     deepwiki: "Ask about any public repository.",
     context7: "Up-to-date library documentation.",
     huggingface: "Models, datasets and Spaces.",
-    google_calendar: "Events, calendars and free time.",
+    google_calendar: "Events and calendars in your account.",
     google_docs: "Read, create and edit documents.",
     google_sheets: "Spreadsheets, tabs and cells.",
     gmail: "Send email from your agent.",
