@@ -75,6 +75,7 @@ const document = (slug, lang, page, relatedSlugs, mark) => {
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>${escape(page.title)}</title>
     <meta name="description" content="${escape(page.description)}" />
+    ${page.noindex ? '<meta name="robots" content="noindex,follow" />' : ""}
     <meta property="og:type" content="article" />
     <meta property="og:site_name" content="Runelay" />
     <meta property="og:title" content="${escape(page.title)}" />
@@ -207,14 +208,15 @@ const integration = (item) => {
     const extra = extras?.[lang];
     if (!extra) return [];
     return [
-      card("spark", extra.aboutTitle, prose(...extra.about)),
-      card("hub", extra.groupsTitle, checks(extra.groups.map(([title, text]) => `<strong>${title}.</strong> ${text}`))),
-      card("terminal", extra.promptsTitle, checks(extra.prompts.map((prompt) => `“${prompt}”`), "arrow")),
-    ];
+      extra.about && card("spark", extra.aboutTitle, prose(...extra.about)),
+      extra.groups && card("hub", extra.groupsTitle, checks(extra.groups.map(([title, text]) => `<strong>${title}.</strong> ${text}`))),
+      extra.prompts && card("terminal", extra.promptsTitle, checks(extra.prompts.map((prompt) => `“${prompt}”`), "arrow")),
+      extra.access && card("shield", extra.accessTitle, checks(extra.access)),
+    ].filter(Boolean);
   };
   const callToAction = (lang) => {
     const extra = extras?.[lang];
-    if (!extra) return [];
+    if (!extra?.cta) return [];
     return [card("arrow", extra.ctaTitle, prose(extra.cta, `<a class="button-solid small" href="${extras.site}" rel="noopener">${extra.ctaLabel}</a>`))];
   };
   const pick = (lang, key, fallback) => extras?.[lang]?.[key] ?? fallback;
@@ -225,6 +227,7 @@ const integration = (item) => {
     related: ["integrations", "guides/share-mcp-across-agents", "docs/migrate"],
     en: {
       title: `${name} MCP for Claude Code, Cursor and Codex · Runelay`,
+      noindex: !extras,
       description: pick("en", "description", `Connect ${name} once to Runelay, an open source MCP gateway, and use it from Claude Code, Cursor, Codex and Grok. ${AUTH.en[auth]}, credentials stay on your server.`),
       eyebrow: `Integration · ${AUTH.en[auth]}`,
       h1: `${name} on Runelay, an open source MCP gateway`,
@@ -236,7 +239,7 @@ const integration = (item) => {
         card(
           "plug",
           "What this connection does",
-          prose(
+          extras?.en?.connection ? prose(...extras.en.connection) : prose(
             `${item.en} Runelay connects to the ${name} remote MCP server at <code>${url}</code> and puts its tools behind your own endpoint.`,
             `Agents find them with <code>search_tools</code> and run them with <code>call_tool</code>, so the ${name} tool list is not loaded into context until it is needed.`,
           ),
@@ -245,7 +248,7 @@ const integration = (item) => {
         card("terminal", `Use ${name} in your agents`, prose(`Agents do not need a ${name} entry of their own. Point each one at Runelay and ${name} is there.`) + agents("en")),
         ...callToAction("en"),
       ],
-      faq: [
+      faq: extras?.en?.faq ?? [
         [`Does my ${name} credential reach the agent?`, auth === "none" ? `${name} needs no credential. Agents only hold their Runelay key.` : `No. It stays on your Runelay server, encrypted with AES-256-GCM using your RUNELAY_SECRET. Agents only hold their Runelay key.`],
         [`Do I connect ${name} once per agent?`, `No. You connect it once in Runelay, and every agent that points at your endpoint uses the same connection.`],
         [`I already have ${name} set up in an agent. Can I bring it?`, `Yes. runelay migrate reads the MCP servers your agents already have. If the CLI can read the token it arrives connected; otherwise it waits in the reconnect queue in the panel.`],
@@ -253,6 +256,7 @@ const integration = (item) => {
     },
     pt: {
       title: `MCP ${art.do} ${name} para Claude Code, Cursor e Codex · Runelay`,
+      noindex: !extras,
       description: pick("pt", "description", `Conecte ${art.o} ${name} uma vez ao Runelay, gateway MCP open source, e use no Claude Code, Cursor, Codex e Grok. ${AUTH.pt[auth]}, credenciais no seu servidor.`),
       eyebrow: `Integração · ${AUTH.pt[auth]}`,
       h1: `${name} no Runelay, gateway MCP open source`,
@@ -264,7 +268,7 @@ const integration = (item) => {
         card(
           "plug",
           "O que essa conexão faz",
-          prose(
+          extras?.pt?.connection ? prose(...extras.pt.connection) : prose(
             `${item.pt} O Runelay se conecta ao servidor MCP remoto ${art.do} ${name} em <code>${url}</code> e coloca as tools ${art.dele} atrás do seu endpoint.`,
             `Os agentes encontram as tools com <code>search_tools</code> e executam com <code>call_tool</code>, então a lista de tools ${art.do} ${name} só entra no contexto quando é necessária.`,
           ),
@@ -273,7 +277,7 @@ const integration = (item) => {
         card("terminal", `Usar ${art.o} ${name} nos agentes`, prose(`Os agentes não precisam de uma entrada própria ${art.do} ${name}. Aponte cada um para o Runelay e ${art.o} ${name} aparece.`) + agents("pt")),
         ...callToAction("pt"),
       ],
-      faq: [
+      faq: extras?.pt?.faq ?? [
         [`A credencial ${art.do} ${name} chega ao agente?`, auth === "none" ? `${art.O} ${name} não usa credencial. Os agentes guardam só a chave do Runelay.` : `Não. Ela fica no seu servidor Runelay, criptografada com AES-256-GCM usando o seu RUNELAY_SECRET. Os agentes guardam só a chave do Runelay.`],
         [`Preciso conectar ${art.o} ${name} em cada agente?`, `Não. Você conecta uma vez no Runelay, e todo agente que aponta para o seu endpoint usa a mesma conexão.`],
         [`Já tenho ${art.o} ${name} configurad${art.o} num agente. Dá para trazer?`, `Sim. O runelay migrate lê os servidores MCP que os agentes já têm. Se a CLI consegue ler o token, a conta chega conectada; senão, espera na fila de reconexão do painel.`],
