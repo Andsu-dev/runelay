@@ -4,6 +4,7 @@ import { importCommand } from "@/commands/import.command";
 import { loginCommand } from "@/commands/login.command";
 import { logoutCommand } from "@/commands/logout.command";
 import { migrateCommand } from "@/commands/migrate.command";
+import { openCommand } from "@/commands/open.command";
 import { pullCommand } from "@/commands/pull.command";
 import { pushCommand } from "@/commands/push.command";
 import { statusCommand } from "@/commands/status.command";
@@ -13,6 +14,7 @@ export const COMMANDS: Record<string, (args: string[]) => Promise<Result<null>>>
   migrate: migrateCommand,
   login: loginCommand,
   status: statusCommand,
+  open: openCommand,
   push: pushCommand,
   pull: pullCommand,
   sync: syncCommand,

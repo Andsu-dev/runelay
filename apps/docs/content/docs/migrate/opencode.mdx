@@ -1,0 +1,27 @@
+---
+title: OpenCode
+description: What runelay migrate brings from OpenCode.
+icon: Bot
+---
+
+## What comes along
+
+| | Read from |
+|---|---|
+| MCP servers | `mcp` in `~/.config/opencode/opencode.json` (servers with a `url`) |
+| Global instructions | `~/.config/opencode/AGENTS.md`, as the pinned memory `instrucoes-globais-opencode` |
+| Skills | `~/.config/opencode/skills` |
+
+Servers that authenticate with headers arrive connected. Servers with `"enabled": false` are not imported.
+
+## What stays behind
+
+- **Logins.** runelay does not read OpenCode's OAuth tokens. OAuth accounts arrive as connections that ask for login in `/connectors/reconnect`.
+- **Local servers** stay in OpenCode.
+- Memories: runelay does not read a memory folder from OpenCode.
+
+## Wiring runelay in
+
+`runelay migrate` and `runelay connect` do not register runelay in OpenCode. Add it yourself as a remote MCP server pointing at `<url>/v1/mcp` with the header `Authorization: Bearer rnl_…`. Create the key in **API keys** in the panel.
+
+With `--replace`, the migrated servers are removed from `opencode.json`.

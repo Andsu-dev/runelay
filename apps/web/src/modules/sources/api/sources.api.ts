@@ -3,6 +3,7 @@ import type {
   ImportSourcesInput,
   ImportView,
   OAuthStartView,
+  SourceAuthDetectionView,
   SourceStatus,
   SourcesSummaryView,
   SourceView,
@@ -33,6 +34,15 @@ export const sourceQuery = (name: string) =>
   queryOptions({
     queryKey: ["sources", name],
     queryFn: () => api.get<SourceView>(`/sources/${encodeURIComponent(name)}`),
+  });
+
+export const sourceAuthQuery = (url: string) =>
+  queryOptions({
+    queryKey: ["source-auth", url],
+    queryFn: () => api.post<SourceAuthDetectionView>("/sources/detect-auth", { url }),
+    enabled: URL.canParse(url) && /^https?:\/\//.test(url),
+    staleTime: Number.POSITIVE_INFINITY,
+    retry: false,
   });
 
 export const createSource = (input: CreateSourceInput) => api.post<SourceView>("/sources", input);

@@ -1,7 +1,11 @@
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { Button } from "@/components/ui/action/button";
 import { Field } from "@/components/ui/form/field";
 import { Input } from "@/components/ui/form/input";
 import { Textarea } from "@/components/ui/form/textarea";
 import { useT } from "@/lib/i18n";
+import { sourceAuthQuery } from "@/modules/sources/api/sources.api";
 import { KIND_HINT } from "@/modules/sources/constants/source.constants";
 import type { SourceDraft } from "@/modules/sources/schemas/source-draft.schema";
 import { KindSwitch } from "./kind-switch";
@@ -15,6 +19,14 @@ interface SourceConfigFieldsProps {
 export function SourceConfigFields({ draft, onChange, lockKind = false }: SourceConfigFieldsProps) {
   const t = useT();
   const set = (field: keyof SourceDraft) => (value: string) => onChange({ ...draft, [field]: value });
+  const [probedUrl, setProbedUrl] = useState(draft.url.trim());
+  const [headersOpen, setHeadersOpen] = useState(false);
+  const isMcp = draft.kind === "mcp";
+  const { data: detection } = useQuery(sourceAuthQuery(isMcp ? probedUrl : ""));
+  const auth = isMcp && draft.url.trim() === probedUrl ? detection?.auth : undefined;
+  const urlHint =
+    auth === "oauth" ? t("sources.fields.authOAuth") : auth === "header" ? t("sources.fields.authHeader") : undefined;
+  const headersCollapsed = auth === "oauth" && !headersOpen && !draft.headers.trim();
 
   return (
     <div className="flex flex-col gap-3">
@@ -22,10 +34,11 @@ export function SourceConfigFields({ draft, onChange, lockKind = false }: Source
       <p className="text-xs text-muted-foreground">{t(KIND_HINT[draft.kind])}</p>
 
       {draft.kind === "mcp" && (
-        <Field label="URL">
+        <Field label="URL" hint={urlHint}>
           <Input
             value={draft.url}
             onChange={(event) => set("url")(event.target.value)}
+            onBlur={(event) => setProbedUrl(event.target.value.trim())}
             placeholder="https://mcp.linear.app/mcp"
             required
           />
@@ -68,6 +81,10 @@ export function SourceConfigFields({ draft, onChange, lockKind = false }: Source
             className="min-h-20 font-mono text-xs"
           />
         </Field>
+      ) : headersCollapsed ? (
+        <Button type="button" variant="ghost" size="sm" className="self-start" onClick={() => setHeadersOpen(true)}>
+          {t("sources.fields.addHeaders")}
+        </Button>
       ) : (
         <Field label="Headers" hint={t("sources.fields.headersHint")}>
           <Textarea

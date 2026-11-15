@@ -18,6 +18,7 @@ const localized = (slug, pt) => (pt ? `/pt-br${slug}` : slug);
 const FOOTER = {
   en: {
     blurb: "Runelay is an open source MCP gateway. One endpoint gives every agent the same accounts, skills and memories, on your computer or your server.",
+    contribute: "Contribute",
     nav: "Footer",
     language: "Language",
     credit: "MIT license · Made by",
@@ -25,11 +26,12 @@ const FOOTER = {
       ["Product", [["Download", "/download/"], ["Setup", "/setup/"], ["Integrations", "/integrations/"], ["Changelog", "/changelog/"], ["Benchmark", "/benchmark/"]]],
       ["Guides", [["Share MCP across agents", "/guides/share-mcp-across-agents/"], ["Claude Code", "/guides/claude-code/"], ["Cursor", "/guides/cursor/"], ["Codex", "/guides/codex/"], ["runelay migrate", "/docs/migrate/"]]],
       ["Learn", [["Self-hosted MCP gateway", "/self-hosted-mcp-gateway/"], ["MCP gateway vs MCP server", "/mcp-gateway-vs-mcp-server/"], ["Composio alternative", "/composio-alternative/"], ["Executor alternative", "/executor-alternative/"], ["Runelay vs Runlayer", "/vs/runlayer/"]]],
-      ["Project", [["GitHub", REPO], ["Docs", `${REPO}#readme`], ["Releases", `${REPO}/releases`], ["llms.txt", "/llms.txt"]]],
+      ["Project", [["GitHub", REPO], ["Docs", "https://docs.runelay.com"], ["Releases", `${REPO}/releases`], ["llms.txt", "/llms.txt"]]],
     ],
   },
   pt: {
     blurb: "Runelay é um gateway MCP open source. Um endpoint dá a todos os agentes as mesmas contas, skills e memórias, no seu computador ou no seu servidor.",
+    contribute: "Contribuir",
     nav: "Rodapé",
     language: "Idioma",
     credit: "Licença MIT · Feito por",
@@ -37,7 +39,7 @@ const FOOTER = {
       ["Produto", [["Baixar", "/download/"], ["Configurar", "/setup/"], ["Integrações", "/integrations/"], ["Changelog", "/changelog/"], ["Benchmark", "/benchmark/"]]],
       ["Guias", [["Compartilhar MCP entre agentes", "/guides/share-mcp-across-agents/"], ["Claude Code", "/guides/claude-code/"], ["Cursor", "/guides/cursor/"], ["Codex", "/guides/codex/"], ["runelay migrate", "/docs/migrate/"]]],
       ["Entenda", [["MCP gateway self-hosted", "/self-hosted-mcp-gateway/"], ["MCP gateway vs MCP server", "/mcp-gateway-vs-mcp-server/"], ["Alternativa ao Composio", "/composio-alternative/"], ["Alternativa ao Executor", "/executor-alternative/"], ["Runelay vs Runlayer", "/vs/runlayer/"]]],
-      ["Projeto", [["GitHub", REPO], ["Documentação", `${REPO}#readme`], ["Releases", `${REPO}/releases`], ["llms.txt", "/llms.txt"]]],
+      ["Projeto", [["GitHub", REPO], ["Documentação", "https://docs.runelay.com"], ["Releases", `${REPO}/releases`], ["llms.txt", "/llms.txt"]]],
     ],
   },
 };
@@ -58,6 +60,7 @@ const footer = (route) => {
         <div class="footer-brand">
           <div class="footer-about"><a class="brand" href="${localized("/", pt)}"><img src="/favicon.svg" width="36" height="36" alt="" />runelay</a>
           <p>${copy.blurb}</p></div>
+          <a class="footer-contribute" href="https://github.com/sponsors/Andsu-dev" target="_blank" rel="noreferrer"><span class="cup" aria-hidden="true">☕</span>${copy.contribute}</a>
         </div>
         <nav class="footer-nav" aria-label="${copy.nav}">${copy.columns.map(column).join("")}</nav>
         <div class="footer-bottom">
