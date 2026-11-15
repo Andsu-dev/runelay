@@ -490,6 +490,9 @@ details[data-state="open"] .chevron { transform: rotate(180deg); }
 .agent-tile .brow-icon.logo { width: 32px; height: 32px; color: var(--foreground); background: none; }
 .agent-tile .brow-icon.logo :is(img, svg) { width: 28px; height: 28px; border-radius: 7px; }
 .home-guides { margin-top: 10px; }
+.agent-tile.more { color: var(--muted-foreground); }
+.agent-tile.more:hover { color: var(--foreground); }
+.agent-tile.more .brow-icon.logo svg { width: 20px; height: 20px; }
 .home-faq .faq-list { margin-top: 24px; text-align: left; }
 @media (max-width: 760px) {
   .feats, .duo { grid-template-columns: 1fr; }

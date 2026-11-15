@@ -2,7 +2,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { card, checks, code, escape, icon, jsonLd, links, plain, prose, steps } from "./blocks.mjs";
-import { EXISTING, INTEGRATION_PAGES, INTEGRATIONS_EN, PAGES } from "./content.mjs";
+import { AGENT_LINKS, EXISTING, INTEGRATION_PAGES, INTEGRATIONS_EN, PAGES } from "./content.mjs";
 import { FEATURES } from "./features.mjs";
 
 const ORIGIN = "https://runelay.com";
@@ -388,18 +388,59 @@ const changelog = () => {
 for (const [slug, entry] of Object.entries(EXISTING)) registry.set(slug, entry);
 for (const page of PAGES) registry.set(page.slug, { icon: page.icon, en: [page.en.cardTitle, page.en.cardText], pt: [page.pt.cardTitle, page.pt.cardText] });
 
-const generated = [...PAGES, ...FEATURES, hub(), ...catalog.filter((item) => INTEGRATION_PAGES.includes(item.id)).map(integration), changelog()];
+const HOME_READS = ["self-hosted-mcp-gateway", "composio-alternative", "mcp-gateway-vs-mcp-server", "guides/share-mcp-across-agents", "docs/migrate", "executor-alternative"];
+
+const agentGuides = PAGES.filter((page) => page.mark);
+
+const agentTile = (base, page) => `<a class="agent-tile" href="${base}/${page.slug}/">${page.mark[1]}<span>${page.mark[0]}</span></a>`;
+
+const HOME_AGENTS = 9;
+
+const guidesHub = () => {
+  const agents = (lang) => card("plug", lang === "pt" ? "Por agente" : "Per agent", links(AGENT_LINKS[lang]));
+  const reads = (lang) =>
+    `<nav class="guides page-section" data-reveal>${links(HOME_READS.map((slug) => [`/${slug}/`, registry.get(slug).icon, ...registry.get(slug)[lang]]))}</nav>`;
+  const count = agentGuides.length;
+  return {
+    slug: "guides",
+    icon: "book",
+    related: ["guides/share-mcp-across-agents", "docs/migrate", "integrations"],
+    en: {
+      title: "Runelay guides: connect every AI agent to one MCP gateway",
+      description: `Setup guides for ${count} agents and bots on Runelay, an open source MCP gateway, plus short reads on MCP gateways and self-hosting.`,
+      eyebrow: `Guides · ${count} agents`,
+      h1: "Guides",
+      lead: "Pick your agent to connect it to Runelay, or read how an MCP gateway fits in.",
+      cardTitle: "All guides",
+      cardText: `Setup for ${count} agents and bots, plus short reads.`,
+      body: [agents("en"), reads("en")],
+      faq: [],
+    },
+    pt: {
+      title: "Guias do Runelay: conecte todo agente de IA a um gateway MCP",
+      description: `Guias de configuração para ${count} agentes e bots no Runelay, gateway MCP open source, e leituras curtas sobre gateway MCP e self-hosting.`,
+      eyebrow: `Guias · ${count} agentes`,
+      h1: "Guias",
+      lead: "Escolha o seu agente para conectar ao Runelay, ou leia como um gateway MCP se encaixa.",
+      cardTitle: "Todos os guias",
+      cardText: `Configuração para ${count} agentes e bots, e leituras curtas.`,
+      body: [agents("pt"), reads("pt")],
+      faq: [],
+    },
+  };
+};
+
+const generated = [...PAGES, ...FEATURES, hub(), guidesHub(), ...catalog.filter((item) => INTEGRATION_PAGES.includes(item.id)).map(integration), changelog()];
 for (const page of generated) registry.set(page.slug, { icon: page.icon, en: [page.en.cardTitle, page.en.cardText], pt: [page.pt.cardTitle, page.pt.cardText] });
 
 for (const page of generated) for (const lang of ["en", "pt"]) document(page.slug, lang, page[lang], page.related, page.mark);
 
-const HOME_READS = ["self-hosted-mcp-gateway", "composio-alternative", "mcp-gateway-vs-mcp-server", "guides/share-mcp-across-agents", "docs/migrate", "executor-alternative"];
 
 const homeGuides = (lang) => {
   const base = LANGS[lang].prefix;
-  const agents = PAGES.filter((page) => page.mark)
-    .map((page) => `<a class="agent-tile" href="${base}/${page.slug}/">${page.mark[1]}<span>${page.mark[0]}</span></a>`)
-    .join("");
+  const all = lang === "pt" ? "Ver todos" : "See all";
+  const more = `<a class="agent-tile more" href="${base}/guides/"><span class="brow-icon logo">${icon("arrow", 20)}</span><span>${all} · ${agentGuides.length}</span></a>`;
+  const agents = agentGuides.slice(0, HOME_AGENTS).map((page) => agentTile(base, page)).join("") + more;
   const reads = links(HOME_READS.map((slug) => [`${base}/${slug}/`, registry.get(slug).icon, ...registry.get(slug)[lang]]));
   return `<div class="agent-tiles" data-reveal>${agents}</div><div class="guides page-section home-guides" data-reveal>${reads}</div>`;
 };

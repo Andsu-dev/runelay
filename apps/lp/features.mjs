@@ -258,6 +258,7 @@ const agentLinks = (lang) => {
     ["guides/mausbot", "MausBot"],
     ["guides/opencode", "OpenCode"],
     ["guides/openbot", "OpenBot"],
+    ["guides/kimi-code", "Kimi Code"],
   ];
   return `<p class="feature-links"><span>${label}:</span> ${items.map(([slug, name]) => `<a href="/${slug}/">${name}</a>`).join(" · ")}</p>`;
 };

@@ -56,6 +56,15 @@ const OPENCODE = `{
 const OPENBOT = `Server URL   ${ENDPOINT}
 Header       Authorization: Bearer rnl_...`;
 
+const KIMI = `{
+  "mcpServers": {
+    "runelay": {
+      "url": "${ENDPOINT}",
+      "headers": { "Authorization": "Bearer rnl_..." }
+    }
+  }
+}`;
+
 const agentLogo = (file, fill = "currentColor") =>
   `<span class="brow-icon logo">${readFileSync(`public/logos/${file}.svg`, "utf8").replace(/\s?fill="[^"]*"/, "").replace("<svg ", `<svg width="20" height="20" fill="${fill}" aria-hidden="true" `)}</span>`;
 const LOGOS = {
@@ -69,6 +78,7 @@ const LOGOS = {
   MausBot: '<span class="brow-icon logo"><img src="/logos/mausbot.png" width="20" height="20" alt="" loading="lazy" decoding="async" /></span>',
   OpenCode: '<span class="brow-icon logo"><img src="/logos/opencode.png" width="20" height="20" alt="" loading="lazy" decoding="async" /></span>',
   OpenBot: '<span class="brow-icon logo"><img src="/logos/openbot.png" width="20" height="20" alt="" loading="lazy" decoding="async" /></span>',
+  "Kimi Code": '<span class="brow-icon logo"><img src="/logos/kimi.png" width="20" height="20" alt="" loading="lazy" decoding="async" /></span>',
 };
 
 const INSTALL = "curl -fsSL runelay.com/install | sh";
@@ -383,10 +393,59 @@ const openbot = agentGuide({
   faqPt: [["O OpenBot escreve o Runelay na configuração de cada agente?", "Não. O OpenBot não escreve arquivos de configuração dos agentes. Ele passa o servidor a cada agente no início da sessão, então uma entrada vale para todos."]],
 });
 
+const kimi = agentGuide({
+  slug: "guides/kimi-code",
+  agent: "Kimi Code",
+  configEn: "Add it to <code>~/.kimi-code/mcp.json</code>",
+  configPt: "Adicione ao <code>~/.kimi-code/mcp.json</code>",
+  whereEn: "Kimi Code CLI reads user-level MCP servers from <code>~/.kimi-code/mcp.json</code>, or <code>$KIMI_CODE_HOME/mcp.json</code>. An entry with a <code>url</code> and no <code>transport</code> is an HTTP server, and <code>headers</code> is sent on every request. You can also add it from the TUI with <code>/mcp-config</code>. ",
+  wherePt: "O Kimi Code CLI lê os servidores MCP do usuário em <code>~/.kimi-code/mcp.json</code>, ou <code>$KIMI_CODE_HOME/mcp.json</code>. Uma entrada com <code>url</code> e sem <code>transport</code> é um servidor HTTP, e <code>headers</code> vai em toda requisição. Também dá para adicionar pela TUI com <code>/mcp-config</code>. ",
+  snippet: KIMI,
+  cliEn: noCliEn("Kimi Code"),
+  cliPt: noCliPt("Kimi Code"),
+  restartEn: ["Open a new session and check", "A server added in <code>mcp.json</code> joins only sessions created after the change. Open a new session and run <code>/mcp</code> to see Runelay connected."],
+  restartPt: ["Abra uma sessão nova e confira", "Um servidor adicionado no <code>mcp.json</code> só entra nas sessões criadas depois da mudança. Abra uma sessão nova e rode <code>/mcp</code> para ver o Runelay conectado."],
+  migrateEn: noMigrateEn("Kimi Code"),
+  migratePt: noMigratePt("Kimi Code"),
+  pushEn: noPushEn("Kimi Code"),
+  pushPt: noPushPt("Kimi Code"),
+  faqEn: [["Can I keep the key out of mcp.json?", "Yes. Kimi Code accepts bearerTokenEnvVar in place of the Authorization header: name an environment variable that holds your rnl_ key."]],
+  faqPt: [["Dá para deixar a chave fora do mcp.json?", "Sim. O Kimi Code aceita bearerTokenEnvVar no lugar do header Authorization: indique uma variável de ambiente que guarda a sua chave rnl_."]],
+});
+
+export const AGENT_LINKS = {
+  en: [
+    ["/guides/claude-code/", LOGOS["Claude Code"], "Claude Code", "One claude mcp add command."],
+    ["/guides/cursor/", LOGOS["Cursor"], "Cursor", "One block in ~/.cursor/mcp.json."],
+    ["/guides/codex/", LOGOS["Codex"], "Codex", "One block in ~/.codex/config.toml."],
+    ["/guides/antigravity/", LOGOS["Antigravity"], "Antigravity", "One block in mcp_config.json, added by hand."],
+    ["/guides/grokbot/", LOGOS["Grokbot"], "Grokbot", "One block in ~/.grok/config.toml."],
+    ["/guides/hermes-agent/", LOGOS["Hermes Agent"], "Hermes Agent", "One block in ~/.hermes/config.yaml."],
+    ["/guides/openclaw/", LOGOS["OpenClaw"], "OpenClaw", "One openclaw mcp set command."],
+    ["/guides/mausbot/", LOGOS["MausBot"], "MausBot", "One pasted command in Plugins."],
+    ["/guides/opencode/", LOGOS["OpenCode"], "OpenCode", "One block in opencode.json."],
+    ["/guides/openbot/", LOGOS["OpenBot"], "OpenBot", "One custom MCP in the panel."],
+    ["/guides/kimi-code/", LOGOS["Kimi Code"], "Kimi Code", "One block in ~/.kimi-code/mcp.json."],
+  ],
+  pt: [
+    ["/guides/claude-code/", LOGOS["Claude Code"], "Claude Code", "Um comando claude mcp add."],
+    ["/guides/cursor/", LOGOS["Cursor"], "Cursor", "Um bloco no ~/.cursor/mcp.json."],
+    ["/guides/codex/", LOGOS["Codex"], "Codex", "Um bloco no ~/.codex/config.toml."],
+    ["/guides/antigravity/", LOGOS["Antigravity"], "Antigravity", "Um bloco no mcp_config.json, adicionado à mão."],
+    ["/guides/grokbot/", LOGOS["Grokbot"], "Grokbot", "Um bloco no ~/.grok/config.toml."],
+    ["/guides/hermes-agent/", LOGOS["Hermes Agent"], "Hermes Agent", "Um bloco no ~/.hermes/config.yaml."],
+    ["/guides/openclaw/", LOGOS["OpenClaw"], "OpenClaw", "Um comando openclaw mcp set."],
+    ["/guides/mausbot/", LOGOS["MausBot"], "MausBot", "Um comando colado em Plugins."],
+    ["/guides/opencode/", LOGOS["OpenCode"], "OpenCode", "Um bloco no opencode.json."],
+    ["/guides/openbot/", LOGOS["OpenBot"], "OpenBot", "Um MCP custom no painel."],
+    ["/guides/kimi-code/", LOGOS["Kimi Code"], "Kimi Code", "Um bloco no ~/.kimi-code/mcp.json."],
+  ],
+};
+
 const share = {
   slug: "guides/share-mcp-across-agents",
   icon: "hub",
-  related: ["guides/claude-code", "guides/cursor", "guides/codex", "guides/antigravity", "guides/grokbot", "guides/hermes-agent", "guides/openclaw", "guides/mausbot", "guides/opencode", "guides/openbot", "docs/migrate"],
+  related: ["guides/claude-code", "guides/cursor", "guides/codex", "guides/antigravity", "guides/grokbot", "guides/hermes-agent", "guides/openclaw", "guides/mausbot", "guides/opencode", "guides/openbot", "guides/kimi-code", "docs/migrate"],
   en: {
     title: "Share MCP servers across Claude Code, Cursor and Codex · Runelay",
     description: "How to share one MCP setup between Claude Code, Cursor and Codex with Runelay, an open source MCP gateway: one login per account, one endpoint, the same tools, skills and memories.",
@@ -439,18 +498,7 @@ const share = {
       card(
         "plug",
         "Per agent",
-        links([
-          ["/guides/claude-code/", LOGOS["Claude Code"], "Claude Code", "One claude mcp add command."],
-          ["/guides/cursor/", LOGOS["Cursor"], "Cursor", "One block in ~/.cursor/mcp.json."],
-          ["/guides/codex/", LOGOS["Codex"], "Codex", "One block in ~/.codex/config.toml."],
-          ["/guides/antigravity/", LOGOS["Antigravity"], "Antigravity", "One block in mcp_config.json, added by hand."],
-          ["/guides/grokbot/", LOGOS["Grokbot"], "Grokbot", "One block in ~/.grok/config.toml."],
-          ["/guides/hermes-agent/", LOGOS["Hermes Agent"], "Hermes Agent", "One block in ~/.hermes/config.yaml."],
-          ["/guides/openclaw/", LOGOS["OpenClaw"], "OpenClaw", "One openclaw mcp set command."],
-          ["/guides/mausbot/", LOGOS["MausBot"], "MausBot", "One pasted command in Plugins."],
-          ["/guides/opencode/", LOGOS["OpenCode"], "OpenCode", "One block in opencode.json."],
-          ["/guides/openbot/", LOGOS["OpenBot"], "OpenBot", "One custom MCP in the panel."],
-        ]),
+        links(AGENT_LINKS.en),
       ),
     ],
     faq: [
@@ -512,18 +560,7 @@ const share = {
       card(
         "plug",
         "Por agente",
-        links([
-          ["/guides/claude-code/", LOGOS["Claude Code"], "Claude Code", "Um comando claude mcp add."],
-          ["/guides/cursor/", LOGOS["Cursor"], "Cursor", "Um bloco no ~/.cursor/mcp.json."],
-          ["/guides/codex/", LOGOS["Codex"], "Codex", "Um bloco no ~/.codex/config.toml."],
-          ["/guides/antigravity/", LOGOS["Antigravity"], "Antigravity", "Um bloco no mcp_config.json, adicionado à mão."],
-          ["/guides/grokbot/", LOGOS["Grokbot"], "Grokbot", "Um bloco no ~/.grok/config.toml."],
-          ["/guides/hermes-agent/", LOGOS["Hermes Agent"], "Hermes Agent", "Um bloco no ~/.hermes/config.yaml."],
-          ["/guides/openclaw/", LOGOS["OpenClaw"], "OpenClaw", "Um comando openclaw mcp set."],
-          ["/guides/mausbot/", LOGOS["MausBot"], "MausBot", "Um comando colado em Plugins."],
-          ["/guides/opencode/", LOGOS["OpenCode"], "OpenCode", "Um bloco no opencode.json."],
-          ["/guides/openbot/", LOGOS["OpenBot"], "OpenBot", "Um MCP custom no painel."],
-        ]),
+        links(AGENT_LINKS.pt),
       ),
     ],
     faq: [
@@ -915,7 +952,7 @@ const runlayer = {
   },
 };
 
-export const PAGES = [claudeCode, cursor, codex, antigravity, grokbot, hermes, openclaw, mausbot, opencode, openbot, share, migrate, executor, runlayer];
+export const PAGES = [claudeCode, cursor, codex, antigravity, grokbot, hermes, openclaw, mausbot, opencode, openbot, kimi, share, migrate, executor, runlayer];
 
 export const EXISTING = {
   "self-hosted-mcp-gateway": { icon: "server", en: ["Self-hosted MCP gateway guide", "What it does, why self-host it and how to run one in a minute."], pt: ["Guia de MCP gateway self-hosted", "O que faz, por que hospedar e como rodar um em um minuto."] },

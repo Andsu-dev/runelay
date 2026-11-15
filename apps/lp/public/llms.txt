@@ -38,6 +38,7 @@
 - [MausBot](https://runelay.com/guides/mausbot/): paste a `claude mcp add` command for the runelay endpoint in Plugins → MCP servers → Add server.
 - [OpenCode](https://runelay.com/guides/opencode/): add the runelay endpoint under `mcp` in `~/.config/opencode/opencode.json` as `type: "remote"` with `oauth: false` and an `Authorization` header.
 - [OpenBot](https://runelay.com/guides/openbot/): add the runelay endpoint in MCP servers → Connect a custom MCP, with an `Authorization` header.
+- [Kimi Code](https://runelay.com/guides/kimi-code/): add the runelay endpoint under `mcpServers` in `~/.kimi-code/mcp.json` with `url` and an `Authorization` header, then open a new session.
 - [runelay migrate](https://runelay.com/docs/migrate/): what the command imports, which accounts arrive connected and the related CLI commands.
 
 ## Integrations
