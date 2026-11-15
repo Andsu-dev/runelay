@@ -9,3 +9,5 @@ export const ONBOARDING_STEPS: Omit<OnboardingStepView, "done">[] = [
 ];
 
 export const EMPTY_TOTALS = { calls: 0, errors: 0, errorRate: 0, changePercent: null, averageMs: null };
+
+export const RESERVED_SOURCES = { skills: "skills", memories: "memories", runelay: "runelay" } as const;

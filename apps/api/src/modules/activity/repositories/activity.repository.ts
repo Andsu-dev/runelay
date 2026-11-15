@@ -3,10 +3,11 @@ import {
   attemptSync,
   type DailyCallsView,
   type RankedCountView,
+  type RecentUsageView,
   type Result,
 } from "@runelay/shared";
 import { db } from "@/db/connection";
-import { EMPTY_TOTALS, RANKING_LIMIT } from "@/modules/activity/constants/activity.constants";
+import { EMPTY_TOTALS, RANKING_LIMIT, RESERVED_SOURCES } from "@/modules/activity/constants/activity.constants";
 import type { ActivityTotalsRow, OnboardingRow, ToolCallRecord } from "@/modules/activity/types/activity.types";
 
 export const recordToolCall = ({ organizationId, apiKeyId, source, tool, ok, durationMs }: ToolCallRecord) =>
@@ -20,10 +21,22 @@ export const recordToolCall = ({ organizationId, apiKeyId, source, tool, ok, dur
     "STORAGE_FAILED",
   );
 
-const rankingSql = (nameExpression: string) =>
+const RESERVED_SQL = Object.values(RESERVED_SOURCES)
+  .map((source) => `'${source}'`)
+  .join(", ");
+
+const KIND_SQL = `CASE source
+  WHEN '${RESERVED_SOURCES.skills}' THEN 'skills'
+  WHEN '${RESERVED_SOURCES.memories}' THEN 'memories'
+  WHEN '${RESERVED_SOURCES.runelay}' THEN 'search'
+  ELSE 'connectors' END`;
+
+const CONNECTORS_ONLY = `AND source NOT IN (${RESERVED_SQL})`;
+
+const rankingSql = (nameExpression: string, filter = "") =>
   `SELECT ${nameExpression} AS name, COUNT(*) AS calls, ROUND(COUNT(*) * 1.0 / SUM(COUNT(*)) OVER (), 4) AS share
    FROM tool_calls
-   WHERE organization_id = ?1 AND created_at >= date('now', ?2)
+   WHERE organization_id = ?1 AND created_at >= date('now', ?2) ${filter}
    GROUP BY ${nameExpression}
    ORDER BY calls DESC, name
    LIMIT ${RANKING_LIMIT}`;
@@ -57,23 +70,36 @@ export const summarizeActivity = (organizationId: string, days: number): Result<
            UNION ALL SELECT date(day, '+1 day') FROM calendar WHERE day < date('now')
          ),
          counted AS (
-           SELECT date(created_at) AS day, COUNT(*) AS calls, SUM(ok = 0) AS errors
+           SELECT date(created_at) AS day, COUNT(*) AS calls,
+             SUM(source IN (${RESERVED_SQL})) AS context, SUM(ok = 0) AS errors
            FROM tool_calls
            WHERE organization_id = ?1 AND created_at >= date('now', ?2)
            GROUP BY date(created_at)
          )
-         SELECT calendar.day, COALESCE(counted.calls, 0) AS calls, COALESCE(counted.errors, 0) AS errors
+         SELECT calendar.day, COALESCE(counted.calls, 0) AS calls,
+           COALESCE(counted.context, 0) AS context, COALESCE(counted.errors, 0) AS errors
          FROM calendar LEFT JOIN counted ON counted.day = calendar.day
          ORDER BY calendar.day`,
       )
       .all(organizationId, currentStart);
     const bySource = db
-      .query<RankedCountView, [string, string]>(rankingSql("source"))
+      .query<RankedCountView, [string, string]>(rankingSql("source", CONNECTORS_ONLY))
       .all(organizationId, currentStart);
     const topTools = db
-      .query<RankedCountView, [string, string]>(rankingSql("source || '.' || tool"))
+      .query<RankedCountView, [string, string]>(rankingSql("source || '.' || tool", CONNECTORS_ONLY))
       .all(organizationId, currentStart);
-    return { days, ...(totals ?? EMPTY_TOTALS), daily, bySource, topTools };
+    const byKind = db.query<RankedCountView, [string, string]>(rankingSql(KIND_SQL)).all(organizationId, currentStart);
+    const recentQuery = db.query<RecentUsageView, [string, string, string]>(
+      `SELECT tool AS name, COUNT(*) AS calls, MAX(created_at) AS lastUsedAt
+       FROM tool_calls
+       WHERE organization_id = ?1 AND created_at >= date('now', ?2) AND source = ?3
+       GROUP BY tool
+       ORDER BY lastUsedAt DESC, name
+       LIMIT ${RANKING_LIMIT}`,
+    );
+    const recentSkills = recentQuery.all(organizationId, currentStart, RESERVED_SOURCES.skills);
+    const recentMemories = recentQuery.all(organizationId, currentStart, RESERVED_SOURCES.memories);
+    return { days, ...(totals ?? EMPTY_TOTALS), daily, bySource, topTools, byKind, recentSkills, recentMemories };
   }, "STORAGE_FAILED");
 
 export const findOnboardingProgress = (organizationId: string): Result<OnboardingRow | null> =>

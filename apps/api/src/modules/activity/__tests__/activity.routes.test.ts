@@ -58,6 +58,35 @@ describe("activity summary", () => {
     ]);
     expect(data.topTools[0]).toEqual({ name: "github.list_issues", calls: 2, share: 0.5 });
     expect(data.topTools).toHaveLength(3);
+    expect(data.byKind).toEqual([{ name: "connectors", calls: 4, share: 1 }]);
+    expect(data.recentSkills).toEqual([]);
+    expect(data.recentMemories).toEqual([]);
+  });
+
+  test("splits built-in context calls from connector rankings", async () => {
+    const mixed = await signUp("Activity Mixed");
+    seedCall(mixed.organizationId, "github", "list_issues", true, 10, 0);
+    seedCall(mixed.organizationId, "skills", "deploy", true, 10, 1);
+    seedCall(mixed.organizationId, "skills", "review", true, 10, 0);
+    seedCall(mixed.organizationId, "skills", "review", true, 10, 0);
+    seedCall(mixed.organizationId, "memories", "notes", true, 10, 0);
+    const { data } = await body<ActivitySummaryView>(
+      await call("/v1/activity/summary?days=7", { cookie: mixed.cookie }),
+    );
+    expect(data.calls).toBe(5);
+    expect(data.daily.reduce((sum, day) => sum + day.context, 0)).toBe(4);
+    expect(data.bySource).toEqual([{ name: "github", calls: 1, share: 1 }]);
+    expect(data.topTools).toEqual([{ name: "github.list_issues", calls: 1, share: 1 }]);
+    expect(data.byKind).toEqual([
+      { name: "skills", calls: 3, share: 0.6 },
+      { name: "connectors", calls: 1, share: 0.2 },
+      { name: "memories", calls: 1, share: 0.2 },
+    ]);
+    expect(data.recentSkills.map((skill) => [skill.name, skill.calls])).toEqual([
+      ["review", 2],
+      ["deploy", 1],
+    ]);
+    expect(data.recentMemories).toEqual([{ name: "notes", calls: 1, lastUsedAt: expect.any(String) }]);
   });
 
   test("defaults to 30 days", async () => {
@@ -72,9 +101,12 @@ describe("activity summary", () => {
       await call("/v1/activity/summary?days=1", { cookie: empty.cookie }),
     );
     expect(data).toMatchObject({ days: 1, calls: 0, errors: 0, errorRate: 0, changePercent: null, averageMs: null });
-    expect(data.daily).toEqual([{ day: expect.any(String), calls: 0, errors: 0 }]);
+    expect(data.daily).toEqual([{ day: expect.any(String), calls: 0, context: 0, errors: 0 }]);
     expect(data.bySource).toEqual([]);
     expect(data.topTools).toEqual([]);
+    expect(data.byKind).toEqual([]);
+    expect(data.recentSkills).toEqual([]);
+    expect(data.recentMemories).toEqual([]);
   });
 
   test("caps rankings at ten entries", async () => {

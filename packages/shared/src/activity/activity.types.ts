@@ -7,6 +7,7 @@ export type ToolSearchInput = z.infer<typeof toolSearchSchema>;
 export interface DailyCallsView {
   day: string;
   calls: number;
+  context: number;
   errors: number;
 }
 
@@ -14,6 +15,12 @@ export interface RankedCountView {
   name: string;
   calls: number;
   share: number;
+}
+
+export interface RecentUsageView {
+  name: string;
+  calls: number;
+  lastUsedAt: string;
 }
 
 export interface ActivitySummaryView {
@@ -26,6 +33,9 @@ export interface ActivitySummaryView {
   daily: DailyCallsView[];
   bySource: RankedCountView[];
   topTools: RankedCountView[];
+  byKind: RankedCountView[];
+  recentSkills: RecentUsageView[];
+  recentMemories: RecentUsageView[];
 }
 
 export interface ToolView {

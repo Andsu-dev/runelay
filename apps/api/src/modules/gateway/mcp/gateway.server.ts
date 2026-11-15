@@ -1,7 +1,10 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { contextSearchSchema, memorySlugSchema, memoryTypeSchema, ok, skillSlugSchema } from "@runelay/shared";
 import { z } from "zod";
 import { env } from "@/config/env";
+import { RESERVED_SOURCES } from "@/modules/activity/constants/activity.constants";
+import { recordToolCall } from "@/modules/activity/repositories/activity.repository";
 import { findTool } from "@/modules/connectors/services/connection.service";
 import { pinnedInstructions, searchContext } from "@/modules/context/services/context.service";
 import { GATEWAY_INFO, GATEWAY_INSTRUCTIONS, TOOL_DESCRIPTIONS } from "@/modules/gateway/constants/gateway.constants";
@@ -20,14 +23,28 @@ export const createGatewayServer = (caller: GatewayCaller) => {
   const pinned = pinnedInstructions(organizationId);
   const instructions = [GATEWAY_INSTRUCTIONS, pinned.data ?? ""].filter(Boolean).join("\n\n");
   const server = new McpServer(GATEWAY_INFO, { instructions });
+  const track = async (source: string, tool: string, run: () => CallToolResult | Promise<CallToolResult>) => {
+    const startedAt = performance.now();
+    const response = await run();
+    recordToolCall({
+      organizationId,
+      apiKeyId: caller.apiKeyId,
+      source,
+      tool,
+      ok: !response.isError,
+      durationMs: performance.now() - startedAt,
+    });
+    return response;
+  };
 
   server.registerTool(
     "list_connections",
     { description: TOOL_DESCRIPTIONS.listConnections, inputSchema: {} },
-    async () => {
-      const views = listSourceViews(organizationId);
-      return toToolResponse(views.error ? views : ok(views.data.map(redactView)));
-    },
+    () =>
+      track(RESERVED_SOURCES.runelay, "list_connections", () => {
+        const views = listSourceViews(organizationId);
+        return toToolResponse(views.error ? views : ok(views.data.map(redactView)));
+      }),
   );
 
   server.registerTool(
@@ -40,7 +57,10 @@ export const createGatewayServer = (caller: GatewayCaller) => {
         limit: z.number().int().positive().optional(),
       },
     },
-    async (input) => toToolResponse(await searchTools(organizationId, input)),
+    (input) =>
+      track(RESERVED_SOURCES.runelay, "search_tools", async () =>
+        toToolResponse(await searchTools(organizationId, input)),
+      ),
   );
 
   server.registerTool(
@@ -67,13 +87,14 @@ export const createGatewayServer = (caller: GatewayCaller) => {
   server.registerTool(
     "search_context",
     { description: TOOL_DESCRIPTIONS.searchContext, inputSchema: contextSearchSchema.shape },
-    async (input) => toToolResponse(searchContext(organizationId, input)),
+    (input) =>
+      track(RESERVED_SOURCES.runelay, "search_context", () => toToolResponse(searchContext(organizationId, input))),
   );
 
   server.registerTool(
     "read_memory",
     { description: TOOL_DESCRIPTIONS.readMemory, inputSchema: { slug: memorySlugSchema } },
-    async ({ slug }) => toToolResponse(findMemory(organizationId, slug)),
+    ({ slug }) => track(RESERVED_SOURCES.memories, slug, () => toToolResponse(findMemory(organizationId, slug))),
   );
 
   server.registerTool(
@@ -88,19 +109,21 @@ export const createGatewayServer = (caller: GatewayCaller) => {
         type: memoryTypeSchema.optional(),
       },
     },
-    async (input) => toToolResponse(writeMemory(organizationId, input)),
+    (input) =>
+      track(RESERVED_SOURCES.memories, input.slug, () => toToolResponse(writeMemory(organizationId, input))),
   );
 
   server.registerTool(
     "read_skill",
     { description: TOOL_DESCRIPTIONS.readSkill, inputSchema: { slug: skillSlugSchema } },
-    async ({ slug }) => toToolResponse(findSkill(organizationId, slug)),
+    ({ slug }) => track(RESERVED_SOURCES.skills, slug, () => toToolResponse(findSkill(organizationId, slug))),
   );
 
   server.registerTool(
     "read_skill_file",
     { description: TOOL_DESCRIPTIONS.readSkillFile, inputSchema: { slug: skillSlugSchema, path: z.string().min(1) } },
-    async ({ slug, path }) => toToolResponse(findSkillFile(organizationId, slug, path)),
+    ({ slug, path }) =>
+      track(RESERVED_SOURCES.skills, slug, () => toToolResponse(findSkillFile(organizationId, slug, path))),
   );
 
   return server;
