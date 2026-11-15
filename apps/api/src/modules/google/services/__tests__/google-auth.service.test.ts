@@ -8,6 +8,7 @@ import {
   googleClientId,
   startGoogleLogin,
 } from "@/modules/google/services/google-auth.service";
+import { googleTransport } from "@/modules/google/utils/google-fetch";
 import { scopesFor } from "@/modules/google/utils/google-scopes";
 import { GOOGLE_BROKER_CLIENT_ID } from "@/modules/oauth/constants/oauth.constants";
 import {
@@ -151,6 +152,21 @@ test("an incremental callback keeps the refresh token and unions the scopes", as
   });
   expect(stored.google?.scopes).toEqual([...GOOGLE_BASE_SCOPES, ...GOOGLE_SERVICE_SCOPES.gmail]);
   expect(stored.google?.email).toBe("ana@example.com");
+});
+
+test("a broken or unreachable userinfo still completes the login without a profile", async () => {
+  google.routes.set("GET openidconnect.googleapis.com/v1/userinfo", () => ({ text: "not json" }));
+  expect((await completeGoogleLogin(key(), GOOGLE_CODE)).error).toBeNull();
+  expect(oauth().google?.email).toBeUndefined();
+  const installed = googleTransport.fetch;
+  googleTransport.fetch = () => Promise.reject(new Error("offline"));
+  try {
+    expect((await completeGoogleLogin(key(), GOOGLE_CODE)).error).toBeNull();
+  } finally {
+    googleTransport.fetch = installed;
+  }
+  expect(oauth().tokens?.access_token).toBe(GOOGLE_ACCESS);
+  expect(oauth().google?.name).toBeUndefined();
 });
 
 test("a rejected code reports Google's message", async () => {
