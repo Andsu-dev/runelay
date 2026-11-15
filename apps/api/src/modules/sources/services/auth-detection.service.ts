@@ -34,7 +34,7 @@ const classify = async (url: URL, signal: AbortSignal): Promise<SourceAuthKind> 
     body: INITIALIZE_REQUEST,
     signal,
   });
-  await response.body?.cancel().catch(() => undefined);
+  await response.body?.cancel();
   if (response.ok) return "none";
   if (response.status !== 401 && response.status !== 403) return "unknown";
   if (challengesOAuth(response.headers.get("www-authenticate"))) return "oauth";
