@@ -45,7 +45,7 @@
 ## Integrations
 
 - [Integrations catalog](https://runelay.com/integrations/): the MCP servers in the catalog with their auth mode, plus any remote MCP, local MCP or OpenAPI spec.
-- [Linear](https://runelay.com/integrations/linear/), [GitHub](https://runelay.com/integrations/github/), [Notion](https://runelay.com/integrations/notion/): connect once, use from every agent.
+- Each catalog entry has its own page at `https://runelay.com/integrations/<name>/` (for example [Linear](https://runelay.com/integrations/linear/), [GitHub](https://runelay.com/integrations/github/), [Gmail](https://runelay.com/integrations/gmail/)): connect once, use from every agent.
 
 ## Compare
 
