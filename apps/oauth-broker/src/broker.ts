@@ -169,7 +169,10 @@ const token = async (
   }
 };
 
+const HOMEPAGE = "https://runelay.com/";
+
 const route = async (request: Request, url: URL, env: BrokerEnv, fetchFn: BrokerFetch) => {
+  if (url.pathname === "/" && request.method === "GET") return Response.redirect(HOMEPAGE, 301);
   if (url.pathname === "/health") return request.method === "GET" ? Response.json({ ok: true }) : notAllowed(["GET"]);
   const [, name = "", action = "", ...rest] = url.pathname.split("/");
   const provider = PROVIDERS.get(name);
