@@ -161,6 +161,14 @@ const writeOpenAtLogin = (enabled) => {
   writeFileSync(file, autostartEntry(), { mode: 0o644 });
 };
 
+const refreshAutostart = () => {
+  if (process.platform !== "linux") return;
+  try {
+    const file = autostartPath();
+    if (existsSync(file) && readFileSync(file, "utf8") !== autostartEntry()) writeOpenAtLogin(true);
+  } catch {}
+};
+
 const openedHidden = () =>
   process.argv.includes(HIDDEN_FLAG) || (process.platform === "darwin" && app.getLoginItemSettings().wasOpenedAtLogin);
 
@@ -743,6 +751,7 @@ const openInstaller = async (file) => {
 const checkForUpdate = async (manual = false) => {
   if (updateBusy || (!manual && !app.isPackaged)) return;
   updateBusy = true;
+  let downloading = false;
   try {
     const update = await findUpdate({ current: app.getVersion(), platform: process.platform, arch: process.arch });
     if (!update) {
@@ -760,9 +769,13 @@ const checkForUpdate = async (manual = false) => {
     });
     if (response === 2) writePrefs({ skippedUpdate: update.version });
     if (response !== 0) return;
+    downloading = true;
+    if ((!window || window.isDestroyed()) && Notification.isSupported()) {
+      new Notification({ title: `Baixando o runelay ${update.version}…`, body: "O instalador abre quando terminar." }).show();
+    }
     await openInstaller(await downloadInstaller(update));
   } catch (error) {
-    if (manual) dialog.showErrorBox("Não consegui atualizar", error instanceof Error ? error.message : String(error));
+    if (manual || downloading) dialog.showErrorBox("Não consegui atualizar", error instanceof Error ? error.message : String(error));
   } finally {
     updateBusy = false;
   }
@@ -828,6 +841,7 @@ app.whenReady().then(async () => {
   config = stored ?? (await chooseServer());
   Menu.setApplicationMenu(buildMenu());
   scheduleUpdateChecks();
+  if (app.isPackaged) refreshAutostart();
   if (activeServer().kind === "remote") return openRemote();
   return openLocal(Boolean(stored) && openedHidden());
 });
