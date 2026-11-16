@@ -13,7 +13,7 @@ export const useSetupProgress = (organizationId: string, extraDone: Partial<Reco
   const bridge = window.runelayDesktop;
   const { data: startup, isPending: startupPending } = useQuery(desktopStartupQuery(bridge));
   const startupLoaded = !bridge?.getStartup || !startupPending;
-  const visibleSteps = startup?.supported ? SETUP_STEPS : CHAINED_STEPS;
+  const visibleSteps = startup?.supported && startup.local !== false ? SETUP_STEPS : CHAINED_STEPS;
   const marked = useSetupMarks(organizationId);
   const [openId, setOpenId] = useState<SetupStepId | null>(null);
 
