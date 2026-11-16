@@ -23,17 +23,20 @@ export function StartupCard({ bridge, onToggle }: StartupCardProps) {
   const { data } = useQuery(desktopStartupQuery(bridge));
   const setStartup = useSetStartup(bridge);
   const on = Boolean(data?.openAtLogin);
+  const remote = data?.local === false;
 
   return (
     <div className="@container flex flex-col gap-3">
-      <div className="grid gap-3 @lg:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] @lg:items-center @lg:gap-5">
-        <StartupIllustration on={on} />
-        <ul className="flex flex-col gap-2.5 px-1 @lg:px-0">
-          {STARTUP_POINTS.map((point) => (
-            <StartupPoint key={point.label} icon={point.icon} label={t(point.label)} />
-          ))}
-        </ul>
-      </div>
+      {!remote && (
+        <div className="grid gap-3 @lg:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] @lg:items-center @lg:gap-5">
+          <StartupIllustration on={on} />
+          <ul className="flex flex-col gap-2.5 px-1 @lg:px-0">
+            {STARTUP_POINTS.map((point) => (
+              <StartupPoint key={point.label} icon={point.icon} label={t(point.label)} />
+            ))}
+          </ul>
+        </div>
+      )}
       <div className="flex min-h-12 items-center gap-3 rounded-lg bg-muted/60 px-3 py-2 dark:bg-muted/40">
         <span className="flex min-w-0 flex-1 flex-col">
           <span className="text-[13px] font-medium">{t("settings.startup.openAtLogin")}</span>

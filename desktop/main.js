@@ -49,7 +49,6 @@ const ERRORS = {
   renameLocal: "O servidor deste computador não pode ser renomeado.",
   removeLocal: "O servidor deste computador não pode ser removido.",
   removeActive: "Troque para outro servidor antes de remover este.",
-  startupRemote: "Abrir com o computador só vale para o servidor deste computador.",
   startupFailed: "Não consegui mudar a inicialização com o sistema.",
 };
 
@@ -253,7 +252,7 @@ const findByUrl = (url) => config?.servers.find((entry) => entry.url === url) ??
 
 const isLocalActive = () => Boolean(config) && activeServer().kind === "local";
 
-const runsInBackground = () => isLocalActive() && Boolean(tray);
+const runsInBackground = () => Boolean(config) && Boolean(tray);
 
 const isRunelayServer = async (base) => {
   const signal = AbortSignal.timeout(PROBE_TIMEOUT_MS);
@@ -436,18 +435,18 @@ const registerBridge = () => {
   );
   ipcMain.handle(
     "runelay:get-startup",
-    guard(() => ({ supported: isLocalActive(), openAtLogin: readOpenAtLogin() })),
+    guard(() => ({ supported: Boolean(config), local: isLocalActive(), openAtLogin: readOpenAtLogin() })),
   );
   ipcMain.handle(
     "runelay:set-startup",
     guard((enabled) => {
       if (typeof enabled !== "boolean") return { error: ERRORS.invalidRequest, openAtLogin: readOpenAtLogin() };
-      if (!isLocalActive()) return { error: ERRORS.startupRemote, openAtLogin: readOpenAtLogin() };
       try {
         writeOpenAtLogin(enabled);
       } catch {
         return { error: ERRORS.startupFailed, openAtLogin: readOpenAtLogin() };
       }
+      syncRemoteTray();
       return { error: null, openAtLogin: readOpenAtLogin() };
     }),
   );
@@ -687,13 +686,20 @@ const createTray = () => {
   tray.on("click", () => showWindow());
 };
 
+const syncRemoteTray = () => {
+  if (isLocalActive()) return;
+  if (readOpenAtLogin()) return createTray();
+  tray?.destroy();
+  tray = null;
+};
+
 const notifyBackground = () => {
   if (readPrefs().backgroundNoticeShown || !Notification.isSupported()) return;
   writePrefs({ backgroundNoticeShown: true });
-  new Notification({
-    title: "runelay",
-    body: `O runelay continua rodando em segundo plano para os seus agentes. Para sair de vez, use Sair no ícone ${TRAY_PLACE}.`,
-  }).show();
+  const body = isLocalActive()
+    ? `O runelay continua rodando em segundo plano para os seus agentes. Para sair de vez, use Sair no ícone ${TRAY_PLACE}.`
+    : `O runelay continua aberto no ícone ${TRAY_PLACE}. Para sair de vez, use Sair nesse ícone.`;
+  new Notification({ title: "runelay", body }).show();
 };
 
 const messageBox = (options) =>
@@ -791,9 +797,11 @@ const fail = (message) => {
   app.quit();
 };
 
-const openRemote = async () => {
+const openRemote = async (hidden) => {
   home = activeServer().url;
   activeOrigin = new URL(home).origin;
+  syncRemoteTray();
+  if (hidden && tray) return;
   await createWindow(home);
   await completeHandoff();
 };
@@ -842,8 +850,9 @@ app.whenReady().then(async () => {
   Menu.setApplicationMenu(buildMenu());
   scheduleUpdateChecks();
   if (app.isPackaged) refreshAutostart();
-  if (activeServer().kind === "remote") return openRemote();
-  return openLocal(Boolean(stored) && openedHidden());
+  const hidden = Boolean(stored) && openedHidden();
+  if (activeServer().kind === "remote") return openRemote(hidden);
+  return openLocal(hidden);
 });
 
 app.on("activate", async () => {
