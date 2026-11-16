@@ -2451,6 +2451,7 @@ export const INTEGRATIONS_EN = {
     monday: "Boards, items and updates.",
     resend: "Email sending, domains and contacts.",
     webflow: "Sites, pages and CMS collections.",
+    doop: "Design canvas where agents build screens and you approve them.",
     box: "Files and folders in the cloud.",
     paypal: "Invoices, orders and transactions.",
   },
