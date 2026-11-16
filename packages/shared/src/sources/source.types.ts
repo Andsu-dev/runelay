@@ -50,6 +50,7 @@ export interface SourceView {
   auth: CatalogAuth | null;
   tokenUrl: string | null;
   oauthClientId: string | null;
+  oauthClientScopes: string[];
   google?: GoogleAccountView;
 }
 

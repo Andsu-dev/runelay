@@ -12,6 +12,7 @@ const EMPTY_DRAFT: SourceDraft = {
   env: "",
   oauthClientId: "",
   oauthClientSecret: "",
+  oauthClientScopes: "",
 };
 
 export const emptyDraft = (kind: DraftKind = "mcp"): SourceDraft => ({ ...EMPTY_DRAFT, kind });
@@ -40,17 +41,26 @@ export const draftFromConfig = (config: Exclude<SourceConfig, GoogleConfig>): So
 export const draftFromSource = (source: SourceView, config: Exclude<SourceConfig, GoogleConfig>): SourceDraft => ({
   ...draftFromConfig(config),
   oauthClientId: source.oauthClientId ?? "",
+  oauthClientScopes: source.oauthClientScopes.join("\n"),
 });
 
 export const oauthClientFromDraft = (draft: SourceDraft): OAuthClientInput | undefined => {
   const clientId = draft.oauthClientId.trim();
   const clientSecret = draft.oauthClientSecret.trim();
+  const scopes = draft.oauthClientScopes.split(/[\s,]+/).filter(Boolean);
   if (draft.kind !== "mcp" || !clientId) return undefined;
-  return { clientId, ...(clientSecret ? { clientSecret } : {}) };
+  return { clientId, ...(clientSecret ? { clientSecret } : {}), ...(scopes.length ? { scopes } : {}) };
 };
 
-export const oauthClientChange = (draft: SourceDraft, current: string | null): OAuthClientInput | null | undefined => {
+export const oauthClientChange = (
+  draft: SourceDraft,
+  current: Pick<SourceView, "oauthClientId" | "oauthClientScopes">,
+): OAuthClientInput | null | undefined => {
   const next = oauthClientFromDraft(draft);
-  if (!next) return current ? null : undefined;
-  return next.clientId === current && !next.clientSecret ? undefined : next;
+  if (!next) return current.oauthClientId ? null : undefined;
+  const unchanged =
+    next.clientId === current.oauthClientId &&
+    !next.clientSecret &&
+    (next.scopes ?? []).join(" ") === current.oauthClientScopes.join(" ");
+  return unchanged ? undefined : next;
 };

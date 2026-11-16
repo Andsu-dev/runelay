@@ -34,7 +34,8 @@ export interface SourceRow extends Omit<Source, "config" | "oauth" | "enabled"> 
   enabled: 0 | 1;
 }
 
-export interface SourceViewRow extends Omit<SourceView, "config" | "enabled" | "google" | "oauthClientId"> {
+export interface SourceViewRow
+  extends Omit<SourceView, "config" | "enabled" | "google" | "oauthClientId" | "oauthClientScopes"> {
   config: string;
   oauth: string;
   enabled: 0 | 1;

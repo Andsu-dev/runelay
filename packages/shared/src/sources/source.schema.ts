@@ -63,6 +63,7 @@ export const sourceNameSchema = z
 export const oauthClientSchema = z.object({
   clientId: z.string().trim().min(1).max(500),
   clientSecret: z.string().trim().min(1).max(20_000).optional(),
+  scopes: z.array(z.string().trim().min(1).max(500)).max(100).optional(),
 });
 
 export const createSourceSchema = z.object({

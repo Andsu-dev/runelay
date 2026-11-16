@@ -43,6 +43,7 @@ const decryptView = ({ oauth: sealedOAuth, ...row }: SourceViewRow): Result<Sour
     config: config.data,
     enabled: row.enabled === 1,
     oauthClientId: oauth.data.customClient?.clientId ?? null,
+    oauthClientScopes: oauth.data.customClient?.scopes ?? [],
   };
   if (config.data.kind !== "google") return ok(view);
   const granted = oauth.data.google?.scopes ?? [];

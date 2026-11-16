@@ -5,6 +5,7 @@ import {
   type ImportSourceInput,
   type ImportSourcesInput,
   type ImportView,
+  type OAuthClientInput,
   ok,
   type Result,
   type SourceView,
@@ -48,6 +49,14 @@ export const createSource = async (
   return findSourceView({ organizationId, name: input.name });
 };
 
+const keepStoredSecret = (next: OAuthClientInput | null, stored: OAuthClientInput | undefined) => {
+  if (!next) return undefined;
+  const sameClient = stored?.clientId === next.clientId;
+  return !next.clientSecret && sameClient && stored.clientSecret
+    ? { ...next, clientSecret: stored.clientSecret }
+    : next;
+};
+
 export const updateSource = async (
   key: SourceKey,
   input: UpdateSourceInput,
@@ -68,7 +77,8 @@ export const updateSource = async (
   }
   const kind = (input.config ?? current.data.config).kind;
   if (input.oauthClient !== undefined && kind === "mcp") {
-    const stored = updateOAuth(target, { ...CLEARED_LOGIN, customClient: input.oauthClient ?? undefined });
+    const customClient = keepStoredSecret(input.oauthClient, current.data.oauth.customClient);
+    const stored = updateOAuth(target, { ...CLEARED_LOGIN, customClient });
     if (stored.error) return stored;
   }
   if (input.enabled !== undefined) {

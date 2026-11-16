@@ -67,6 +67,8 @@ export const sourcesMessages = defineMessages(
       oauthClientHint:
         "Para serviços sem registro automático, como o Google. Crie o cliente OAuth no serviço com esta URL de redirecionamento:",
       oauthClientSecretHint: "Fica cifrado. Deixe em branco para manter o atual ou se o cliente não tiver secret.",
+      oauthClientScopesHint:
+        "Opcional. Um scope por linha. Em branco, o login pede todos os scopes que o servidor anuncia. Mudar os scopes pede login de novo.",
     },
     add: {
       title: "Nova conexão",
@@ -190,6 +192,8 @@ export const sourcesMessages = defineMessages(
       oauthClientHint:
         "For services without automatic registration, such as Google. Create the OAuth client there with this redirect URL:",
       oauthClientSecretHint: "Stored encrypted. Leave blank to keep the current one or if the client has no secret.",
+      oauthClientScopesHint:
+        "Optional. One scope per line. Left blank, the login asks for every scope the server advertises. Changing scopes asks you to log in again.",
     },
     add: {
       title: "New connection",

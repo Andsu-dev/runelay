@@ -11,6 +11,10 @@
 - The desktop app tells you when a new version is out, also when it is pointed at a remote server. It checks on open and every six hours, downloads the installer for your system into Downloads and opens it. "Buscar atualizações…" in the app and tray menus checks on demand, and a version can be skipped.
 - "Open when the computer starts" also works when the app is pointed at a remote server. With it on, the app opens hidden in the tray and closing the window keeps it there; with it off, nothing changes for remote servers.
 
+### Panel
+
+- Connections that use your own OAuth client can list the scopes to ask for, one per line, instead of every scope the server advertises. For Gmail that means you can leave out full mailbox access and delete. Changing the scopes asks you to log in again.
+
 ## v0.6.2
 
 ### Desktop app
