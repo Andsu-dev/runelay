@@ -309,6 +309,14 @@ export const CATALOG: CatalogSection[] = [
         auth: "oauth",
       },
       {
+        id: "doop",
+        name: "Doop",
+        description: "Canvas de design onde o agente monta telas e você aprova.",
+        url: "https://doop.design/mcp",
+        icon: "/logos/doop.png",
+        auth: "oauth",
+      },
+      {
         id: "box",
         name: "Box",
         description: "Arquivos e pastas na nuvem.",

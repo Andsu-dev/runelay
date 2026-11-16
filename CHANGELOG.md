@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Catalog
+
+- Doop (OAuth) is in the catalog: a design canvas where agents build screens as real HTML and CSS and you review and approve them.
+
 ## v0.6.2
 
 ### Desktop app
