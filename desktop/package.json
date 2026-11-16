@@ -25,6 +25,7 @@
     "artifactName": "runelay-${os}-${arch}.${ext}",
     "files": [
       "main.js",
+      "update.js",
       "preload.cjs",
       "chooser/**/*",
       "build/icon.png",

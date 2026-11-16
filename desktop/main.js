@@ -1,7 +1,9 @@
 import { spawn } from "node:child_process";
 import { randomBytes, randomUUID } from "node:crypto";
-import { createWriteStream, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, createWriteStream, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { Readable } from "node:stream";
+import { pipeline } from "node:stream/promises";
 import {
   app,
   BrowserWindow,
@@ -15,6 +17,7 @@ import {
   shell,
   Tray,
 } from "electron";
+import { findUpdate } from "./update.js";
 
 const PORT = 4312;
 const ORIGIN = `http://127.0.0.1:${PORT}`;
@@ -30,6 +33,8 @@ const MAX_ID_LENGTH = 64;
 const PLAIN_HTTP_HOSTS = new Set(["localhost", "127.0.0.1"]);
 const LOCAL_SERVER = Object.freeze({ id: "local", name: "Este computador", kind: "local" });
 const HIDDEN_FLAG = "--hidden";
+const UPDATE_FIRST_CHECK_MS = 15_000;
+const UPDATE_CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000;
 const TRAY_ICON_SIZE = { darwin: 18, win32: 16, linux: 22 };
 const TRAY_PLACE = process.platform === "darwin" ? "na barra de menus" : "na bandeja do sistema";
 
@@ -57,6 +62,7 @@ let failurePromptOpen = false;
 let handoff = null;
 let tray = null;
 let pendingEntry = null;
+let updateBusy = false;
 
 const SERVER = process.platform === "win32" ? "runelay-server.exe" : "runelay-server";
 
@@ -152,6 +158,14 @@ const writeOpenAtLogin = (enabled) => {
   if (!enabled) return rmSync(file, { force: true });
   mkdirSync(dirname(file), { recursive: true });
   writeFileSync(file, autostartEntry(), { mode: 0o644 });
+};
+
+const refreshAutostart = () => {
+  if (process.platform !== "linux") return;
+  try {
+    const file = autostartPath();
+    if (existsSync(file) && readFileSync(file, "utf8") !== autostartEntry()) writeOpenAtLogin(true);
+  } catch {}
 };
 
 const openedHidden = () =>
@@ -329,6 +343,7 @@ function buildMenu() {
         label: app.name,
         submenu: [
           { role: "about" },
+          { label: "Buscar atualizações…", click: () => checkForUpdate(true) },
           { type: "separator" },
           ...servers,
           { role: "services" },
@@ -347,7 +362,15 @@ function buildMenu() {
     ]);
   }
   return Menu.buildFromTemplate([
-    { label: "Arquivo", submenu: [...servers, { role: "quit" }] },
+    {
+      label: "Arquivo",
+      submenu: [
+        ...servers,
+        { label: "Buscar atualizações…", click: () => checkForUpdate(true) },
+        { type: "separator" },
+        { role: "quit" },
+      ],
+    },
     { role: "editMenu" },
     { role: "viewMenu" },
     { role: "windowMenu" },
@@ -655,6 +678,7 @@ const createTray = () => {
   tray.setContextMenu(
     Menu.buildFromTemplate([
       { label: "Abrir runelay", click: () => showWindow() },
+      { label: "Buscar atualizações…", click: () => checkForUpdate(true) },
       { type: "separator" },
       { label: "Sair", click: () => app.quit() },
     ]),
@@ -676,6 +700,96 @@ const notifyBackground = () => {
     ? `O runelay continua rodando em segundo plano para os seus agentes. Para sair de vez, use Sair no ícone ${TRAY_PLACE}.`
     : `O runelay continua aberto no ícone ${TRAY_PLACE}. Para sair de vez, use Sair nesse ícone.`;
   new Notification({ title: "runelay", body }).show();
+};
+
+const messageBox = (options) =>
+  window && !window.isDestroyed() ? dialog.showMessageBox(window, options) : dialog.showMessageBox(options);
+
+const downloadInstaller = async ({ fileName, url }) => {
+  const target = join(app.getPath("downloads"), fileName);
+  const response = await fetch(url);
+  if (!response.ok || !response.body) throw new Error(`Download respondeu ${response.status}`);
+  const total = Number(response.headers.get("content-length")) || 0;
+  let received = 0;
+  const progress = async function* (source) {
+    for await (const chunk of source) {
+      received += chunk.length;
+      if (total && window && !window.isDestroyed()) window.setProgressBar(received / total);
+      yield chunk;
+    }
+  };
+  try {
+    await pipeline(Readable.fromWeb(response.body), progress, createWriteStream(target));
+  } catch (error) {
+    rmSync(target, { force: true });
+    throw error;
+  } finally {
+    if (window && !window.isDestroyed()) window.setProgressBar(-1);
+  }
+  return target;
+};
+
+const openInstaller = async (file) => {
+  if (process.platform === "linux") {
+    chmodSync(file, 0o755);
+    shell.showItemInFolder(file);
+    await messageBox({
+      type: "info",
+      message: "A versão nova foi baixada",
+      detail: `Feche o runelay e abra o arquivo novo:\n${file}`,
+    });
+    return;
+  }
+  const failure = await shell.openPath(file);
+  if (failure) throw new Error(failure);
+  if (process.platform === "win32") return app.quit();
+  const { response } = await messageBox({
+    type: "info",
+    message: "O instalador abriu",
+    detail: "Feche o runelay, arraste o runelay novo para Aplicativos e abra de novo.",
+    buttons: ["Fechar o runelay", "Depois"],
+    defaultId: 0,
+    cancelId: 1,
+  });
+  if (response === 0) app.quit();
+};
+
+const checkForUpdate = async (manual = false) => {
+  if (updateBusy || (!manual && !app.isPackaged)) return;
+  updateBusy = true;
+  let downloading = false;
+  try {
+    const update = await findUpdate({ current: app.getVersion(), platform: process.platform, arch: process.arch });
+    if (!update) {
+      if (manual) await messageBox({ type: "info", message: `Você já está na versão mais recente (${app.getVersion()}).` });
+      return;
+    }
+    if (!manual && readPrefs().skippedUpdate === update.version) return;
+    const { response } = await messageBox({
+      type: "info",
+      message: `runelay ${update.version} disponível`,
+      detail: `Você está na ${app.getVersion()}. O instalador vai para a pasta Downloads e abre em seguida.`,
+      buttons: ["Baixar e instalar", "Agora não", "Pular esta versão"],
+      defaultId: 0,
+      cancelId: 1,
+    });
+    if (response === 2) writePrefs({ skippedUpdate: update.version });
+    if (response !== 0) return;
+    downloading = true;
+    if ((!window || window.isDestroyed()) && Notification.isSupported()) {
+      new Notification({ title: `Baixando o runelay ${update.version}…`, body: "O instalador abre quando terminar." }).show();
+    }
+    await openInstaller(await downloadInstaller(update));
+  } catch (error) {
+    if (manual || downloading) dialog.showErrorBox("Não consegui atualizar", error instanceof Error ? error.message : String(error));
+  } finally {
+    updateBusy = false;
+  }
+};
+
+const scheduleUpdateChecks = () => {
+  setTimeout(() => checkForUpdate(), UPDATE_FIRST_CHECK_MS);
+  setInterval(() => checkForUpdate(), UPDATE_CHECK_INTERVAL_MS);
 };
 
 const fail = (message) => {
@@ -734,6 +848,8 @@ app.whenReady().then(async () => {
   const stored = readConfig();
   config = stored ?? (await chooseServer());
   Menu.setApplicationMenu(buildMenu());
+  scheduleUpdateChecks();
+  if (app.isPackaged) refreshAutostart();
   const hidden = Boolean(stored) && openedHidden();
   if (activeServer().kind === "remote") return openRemote(hidden);
   return openLocal(hidden);
