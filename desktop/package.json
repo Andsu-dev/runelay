@@ -29,6 +29,8 @@
       "preload.cjs",
       "chooser/**/*",
       "build/icon.png",
+      "build/trayTemplate.png",
+      "build/trayTemplate@2x.png",
       "package.json"
     ],
     "mac": {
