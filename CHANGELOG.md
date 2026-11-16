@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Catalog
+
+- Doop (OAuth) is in the catalog: a design canvas where agents build screens as real HTML and CSS and you review and approve them.
+
 ### Desktop app
 
 - The desktop app tells you when a new version is out, also when it is pointed at a remote server. It checks on open and every six hours, downloads the installer for your system into Downloads and opens it. "Buscar atualizações…" in the app and tray menus checks on demand, and a version can be skipped.
