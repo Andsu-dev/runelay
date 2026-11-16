@@ -6,6 +6,12 @@
 
 - Doop (OAuth) is in the catalog: a design canvas where agents build screens as real HTML and CSS and you review and approve them.
 
+## v0.6.2
+
+### Desktop app
+
+- The desktop app can open when the computer starts (hidden, straight to the tray) and keeps running in the tray when the window is closed, so agents always reach the local MCP endpoint. Toggle it in the first setup step or in Settings > Server.
+
 ## v0.6.1
 
 ### Catalog
