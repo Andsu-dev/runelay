@@ -35,7 +35,7 @@ const LOCAL_SERVER = Object.freeze({ id: "local", name: "Este computador", kind:
 const HIDDEN_FLAG = "--hidden";
 const UPDATE_FIRST_CHECK_MS = 15_000;
 const UPDATE_CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000;
-const TRAY_ICON_SIZE = { darwin: 18, win32: 16, linux: 22 };
+const TRAY_ICON_SIZE = { win32: 16, linux: 22 };
 const TRAY_PLACE = process.platform === "darwin" ? "na barra de menus" : "na bandeja do sistema";
 
 const ERRORS = {
@@ -665,11 +665,15 @@ const showWindow = async () => {
   await createWindow(entry);
 };
 
+// macOS draws a template image in the menu bar's own colour, so the mark is
+// as big as the other icons there and follows light and dark bars.
 const trayIcon = () =>
-  nativeImage.createFromPath(appFile("build", "icon.png")).resize({
-    width: TRAY_ICON_SIZE[process.platform] ?? 22,
-    height: TRAY_ICON_SIZE[process.platform] ?? 22,
-  });
+  process.platform === "darwin"
+    ? nativeImage.createFromPath(appFile("build", "trayTemplate.png"))
+    : nativeImage.createFromPath(appFile("build", "icon.png")).resize({
+        width: TRAY_ICON_SIZE[process.platform] ?? 22,
+        height: TRAY_ICON_SIZE[process.platform] ?? 22,
+      });
 
 const createTray = () => {
   if (tray) return;

@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Desktop app
+
+- On macOS the menu bar icon is the runelay mark on its own, the same size as the other icons there and readable on light and dark bars. It used to be the whole app icon shrunk to 18 points, which left the mark tiny.
+
 ## v0.6.3
 
 ### Catalog
