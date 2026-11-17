@@ -10,6 +10,7 @@ import { requireOrganization } from "@/modules/auth/middlewares/authenticate";
 import {
   createMemory,
   deleteMemory,
+  describeMemoryGraph,
   describeMemoryHealth,
   findMemory,
   importMemories,
@@ -32,6 +33,7 @@ export const memoriesRoutes = new Hono<AppEnv>()
   .get("/health", validate("query", activityRangeSchema), (c) =>
     respond(c, describeMemoryHealth(c.var.organizationId, c.req.valid("query").days)),
   )
+  .get("/graph", (c) => respond(c, describeMemoryGraph(c.var.organizationId)))
   .post("/import", validate("json", importMemoriesSchema), (c) =>
     respond(c, importMemories(c.var.organizationId, c.req.valid("json"))),
   )

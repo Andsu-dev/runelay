@@ -14,11 +14,13 @@ export const setNamesHidden = (next: boolean) => {
 
 export const maskName = (name: string) => "*".repeat(Math.min(Math.max(name.length, 4), 16));
 
-export const useNamesHidden = () =>
-  useSyncExternalStore(
-    (listener) => {
-      listeners.add(listener);
-      return () => listeners.delete(listener);
-    },
-    () => hidden,
-  );
+export const readNamesHidden = () => hidden;
+
+export const subscribeNamesHidden = (listener: () => void) => {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+};
+
+export const useNamesHidden = () => useSyncExternalStore(subscribeNamesHidden, readNamesHidden);
