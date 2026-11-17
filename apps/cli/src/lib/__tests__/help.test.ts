@@ -29,7 +29,7 @@ test("grouped help lists every registered command with its description", () => {
 });
 
 test("every command sits in exactly one group and aliases point to real commands", () => {
-  const grouped = COMMAND_GROUPS.flatMap((group) => group.commands);
+  const grouped: string[] = COMMAND_GROUPS.flatMap((group) => group.commands);
   expect(new Set(grouped).size).toBe(grouped.length);
   expect([...grouped].sort()).toEqual(Object.keys(COMMAND_GUIDE).sort());
   const registered = Object.keys(COMMANDS).filter((name) => !(name in COMMAND_ALIASES));

@@ -1,5 +1,12 @@
 import { afterEach, beforeAll, describe, expect, mock, spyOn, test } from "bun:test";
-import type { MemoryHealthView, MemoryListItemView, MemoryVersionView, MemoryView, Page } from "@runelay/shared";
+import type {
+  ImportResultView,
+  MemoryHealthView,
+  MemoryListItemView,
+  MemoryVersionView,
+  MemoryView,
+  Page,
+} from "@runelay/shared";
 import { db } from "@/db/connection";
 import {
   deleteMemoryRow,
@@ -277,7 +284,7 @@ describe("push freshness", () => {
         ],
       },
     });
-    expect((await body<{ imported: number; skipped: string[] }>(response)).data).toEqual({
+    expect((await body<ImportResultView>(response)).data).toEqual({
       imported: 1,
       written: 1,
       skipped: ["fresh-note"],

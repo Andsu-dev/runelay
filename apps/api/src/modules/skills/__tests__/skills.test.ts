@@ -1,5 +1,12 @@
 import { afterEach, beforeAll, describe, expect, mock, spyOn, test } from "bun:test";
-import type { Page, SkillExportView, SkillFileView, SkillListItemView, SkillView } from "@runelay/shared";
+import type {
+  ImportResultView,
+  Page,
+  SkillExportView,
+  SkillFileView,
+  SkillListItemView,
+  SkillView,
+} from "@runelay/shared";
 import { db } from "@/db/connection";
 import {
   deleteSkillRow,
@@ -249,7 +256,7 @@ describe("agent writes", () => {
         ],
       },
     });
-    expect((await body<{ imported: number; skipped: string[] }>(response)).data).toEqual({
+    expect((await body<ImportResultView>(response)).data).toEqual({
       imported: 1,
       written: 1,
       skipped: ["pushed-skill"],
