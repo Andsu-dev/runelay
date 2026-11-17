@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.6.6
+
+### Memory and skills
+
+- The Memories page has a graph view, like Obsidian's: each memory is a node and every `[[slug]]` link is an edge, so clusters and orphan memories show at a glance. It is built from the new `GET /v1/memories/graph` endpoint.
+
 ## v0.6.5
 
 ### Memory and skills
