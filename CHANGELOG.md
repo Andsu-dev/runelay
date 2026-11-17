@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.6.5
+
+### Memory and skills
+
+- Agents without a global rules file, such as Cursor, now save a memory with `write_memory` as soon as the user asks them to remember something, instead of only acknowledging it. The MCP tool descriptions and server instructions tell every agent to do this.
+
 ## v0.6.4
 
 ### CLI
