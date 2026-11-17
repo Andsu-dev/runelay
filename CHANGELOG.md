@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Dashboard
+
+- A connection's own page has a delete button next to Test and Reconnect, with the same confirmation as the connections list. Before, a connection could only be removed from the list.
+
 ## v0.6.6
 
 ### Memory and skills

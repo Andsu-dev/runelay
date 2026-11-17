@@ -1,9 +1,10 @@
-import { ArrowLeft02Icon, PencilEdit02Icon, RefreshIcon } from "@hugeicons/core-free-icons";
+import { ArrowLeft02Icon, Delete02Icon, PencilEdit02Icon, RefreshIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { SourceView } from "@runelay/shared";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { IconAction } from "@/components/ui/action/icon-action";
+import { ConfirmPopover } from "@/components/ui/overlay/confirm-popover";
 import { formatDate } from "@/lib/format";
 import { useT } from "@/lib/i18n";
 import { ConnectorIcon } from "@/modules/catalog/components/connector-icon";
@@ -24,8 +25,10 @@ interface SourceDetailProps {
 export function SourceDetail({ source, oauthError }: SourceDetailProps) {
   const t = useT();
   const { name, config, status, error, toolCount, enabled, connectedAt } = source;
-  const { test } = useSourceActions(name);
+  const { test, remove } = useSourceActions(name);
+  const navigate = useNavigate();
   const [renaming, setRenaming] = useState(false);
+  const [removing, setRemoving] = useState(false);
   const loginError = status === "ok" ? undefined : oauthError;
   const local = isAgentLocal(source);
 
@@ -62,6 +65,18 @@ export function SourceDetail({ source, oauthError }: SourceDetailProps) {
           onClick={() => test.mutate()}
           spinning={test.isPending}
           disabled={test.isPending}
+        />
+        <ConfirmPopover
+          open={removing}
+          onOpenChange={setRemoving}
+          trigger={<IconAction icon={Delete02Icon} label={t("sources.remove")} tone="destructive" />}
+          title={t("sources.removeTitle", { name })}
+          description={t.plural("sources.removeDescription", toolCount)}
+          confirmLabel={t("sources.remove")}
+          onConfirm={() => {
+            remove.mutate();
+            navigate({ to: "/connectors", search: { tab: "installed" } });
+          }}
         />
         <SourceConnectButton source={source} />
       </header>
