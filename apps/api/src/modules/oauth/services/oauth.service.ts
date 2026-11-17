@@ -3,8 +3,27 @@ import { attempt, fail, type McpRemoteConfig, type OAuthStartView, ok, type Resu
 import { connectSource } from "@/modules/connectors/services/connection.service";
 import { completeGoogleLogin, startGoogleLogin } from "@/modules/google/services/google-auth.service";
 import { createOAuthFetch, createOAuthProvider } from "@/modules/oauth/providers/oauth-client.provider";
+import { relayCallbackUrl } from "@/modules/oauth/utils/oauth-broker";
 import { findSource, updateOAuth } from "@/modules/sources/repositories/source.repository";
 import type { Source, SourceKey } from "@/modules/sources/types/source.types";
+
+const REDIRECT_REFUSED = /redirect[\s_-]?ur[il]/i;
+
+const runMcpLogin = async (key: SourceKey, config: McpRemoteConfig, relay: boolean) => {
+  let authorizationUrl: string | null = null;
+  const provider = createOAuthProvider(
+    key,
+    (url) => {
+      authorizationUrl = url.toString();
+    },
+    { relay },
+  );
+  const result = await attempt(
+    () => auth(provider, { serverUrl: config.url, fetchFn: createOAuthFetch(key) }),
+    "OAUTH_FAILED",
+  );
+  return result.error ? result : ok<OAuthStartView>({ authorizationUrl });
+};
 
 const startMcpLogin = async (
   key: SourceKey,
@@ -17,22 +36,22 @@ const startMcpLogin = async (
   );
   if (cleared.error) return cleared;
 
-  let authorizationUrl: string | null = null;
-  const provider = createOAuthProvider(key, (url) => {
-    authorizationUrl = url.toString();
-  });
-  const result = await attempt(
-    () => auth(provider, { serverUrl: config.url, fetchFn: createOAuthFetch(key) }),
-    "OAUTH_FAILED",
-  );
+  const direct = await runMcpLogin(key, config, false);
+  const result =
+    direct.error && REDIRECT_REFUSED.test(direct.error.message) ? await runMcpLogin(key, config, true) : direct;
+  if (result.error && REDIRECT_REFUSED.test(result.error.message)) {
+    return fail(
+      "OAUTH_FAILED",
+      `${key.name} só aceita endereços de retorno aprovados por ele e recusou este runelay. Use "Usar meu próprio cliente OAuth" com um app OAuth seu, ou peça ao provedor para aprovar ${relayCallbackUrl()}.`,
+    );
+  }
   if (result.error && /HTTP 403/.test(result.error.message)) {
     return fail(
       "OAUTH_FAILED",
       `${key.name} só libera login para apps aprovados por ele, e recusou este runelay. Use essa conta direto no agente.`,
     );
   }
-  if (result.error) return result;
-  return ok({ authorizationUrl });
+  return result;
 };
 
 export const startLogin = async (key: SourceKey): Promise<Result<OAuthStartView>> => {

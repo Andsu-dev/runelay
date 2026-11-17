@@ -4,6 +4,8 @@ import { GOOGLE_REGISTERED_SCOPES } from "@/modules/google/constants/google.cons
 import {
   BROKER_AUTHORIZATION_PARAMS,
   BROKER_TOKEN_URLS,
+  MCP_CLIENT_METADATA_PATH,
+  MCP_RELAY_CALLBACK_PATH,
   OAUTH_CALLBACK_PATH,
 } from "@/modules/oauth/constants/oauth.constants";
 import type { BrokerState, OAuthBroker, OAuthBrokerProvider } from "@/modules/oauth/types/oauth.types";
@@ -11,6 +13,10 @@ import { guardedFetch } from "@/modules/sources/utils/guarded-fetch";
 
 export const brokerCallbackUrl = (provider: OAuthBrokerProvider) =>
   `${env.RUNELAY_OAUTH_BROKER_URL}/${provider}/callback`;
+
+export const relayCallbackUrl = () => `${env.RUNELAY_OAUTH_BROKER_URL}${MCP_RELAY_CALLBACK_PATH}`;
+
+export const clientMetadataUrl = () => `${env.RUNELAY_OAUTH_BROKER_URL}${MCP_CLIENT_METADATA_PATH}`;
 
 export const brokerTokenUrl = (provider: OAuthBrokerProvider) => `${env.RUNELAY_OAUTH_BROKER_URL}/${provider}/token`;
 

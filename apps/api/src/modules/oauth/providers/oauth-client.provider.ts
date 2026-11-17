@@ -11,7 +11,9 @@ import {
   brokerAuthorizationUrl,
   brokerCallbackUrl,
   brokerFetch,
+  clientMetadataUrl,
   encodeBrokerState,
+  relayCallbackUrl,
 } from "@/modules/oauth/utils/oauth-broker";
 import { findSource, markConnected, updateOAuth } from "@/modules/sources/repositories/source.repository";
 import type { OAuthState, SourceKey } from "@/modules/sources/types/source.types";
@@ -24,6 +26,18 @@ const CLEARED_BY_SCOPE: Record<"all" | "client" | "tokens" | "verifier" | "disco
   tokens: { tokens: undefined },
   verifier: { verifier: undefined },
   discovery: {},
+};
+
+const isRelayClient = ({ client }: OAuthState = {}) =>
+  Boolean(
+    client &&
+      (client.client_id === clientMetadataUrl() ||
+        ("redirect_uris" in client && client.redirect_uris.includes(relayCallbackUrl()))),
+  );
+
+const httpsClientMetadataUrl = () => {
+  const url = clientMetadataUrl();
+  return url.startsWith("https://") ? url : undefined;
 };
 
 const customClientInformation = (oauth: OAuthState | undefined) =>
@@ -55,15 +69,21 @@ export const createOAuthFetch = (key: SourceKey): ReturnType<typeof brokerFetch>
     send(input, TOKEN_URLS_WITHOUT_RESOURCE.has(new URL(input).href) ? withoutResource(init) : init);
 };
 
-export const createOAuthProvider = (key: SourceKey, onRedirect?: (url: URL) => void): OAuthClientProvider => {
+export const createOAuthProvider = (
+  key: SourceKey,
+  onRedirect?: (url: URL) => void,
+  { relay = false } = {},
+): OAuthClientProvider => {
   const oauth = () => findSource(key).data?.oauth;
   const save = (patch: Partial<OAuthState>) => {
     updateOAuth(key, patch);
   };
   const broker = oauth()?.broker;
-  const callbackUrl = broker ? brokerCallbackUrl(broker.provider) : redirectUrl;
+  const relayed = !broker && !oauth()?.customClient && (relay || isRelayClient(oauth()));
+  const callbackUrl = broker ? brokerCallbackUrl(broker.provider) : relayed ? relayCallbackUrl() : redirectUrl;
   return {
     redirectUrl: callbackUrl,
+    clientMetadataUrl: relayed ? httpsClientMetadataUrl() : undefined,
     clientMetadata: {
       client_name: OAUTH_CLIENT_NAME,
       redirect_uris: [callbackUrl],
@@ -71,7 +91,7 @@ export const createOAuthProvider = (key: SourceKey, onRedirect?: (url: URL) => v
       response_types: ["code"],
       token_endpoint_auth_method: "none",
     },
-    state: () => (broker ? encodeBrokerState(key.name) : key.name),
+    state: () => (broker || relayed ? encodeBrokerState(key.name) : key.name),
     clientInformation: () =>
       broker ? { client_id: broker.clientId } : (customClientInformation(oauth()) ?? oauth()?.client),
     saveClientInformation: (client) => {
