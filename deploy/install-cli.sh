@@ -11,13 +11,13 @@ fail() { printf 'runelay: %s\n' "$1" >&2; exit 1; }
 case "$(uname -s)" in
   Darwin) OS="darwin" ;;
   Linux) OS="linux" ;;
-  *) fail "Sistema não suportado: $(uname -s). Use macOS ou Linux." ;;
+  *) fail "Unsupported system: $(uname -s). Use macOS or Linux." ;;
 esac
 
 case "$(uname -m)" in
   arm64 | aarch64) ARCH="arm64" ;;
   x86_64 | amd64) ARCH="x64" ;;
-  *) fail "Arquitetura não suportada: $(uname -m)." ;;
+  *) fail "Unsupported architecture: $(uname -m)." ;;
 esac
 
 if [ "$OS" = "darwin" ] && [ "$ARCH" = "x64" ] && [ "$(sysctl -n sysctl.proc_translated 2>/dev/null || echo 0)" = "1" ]; then
@@ -31,12 +31,12 @@ else
   URL="https://github.com/$REPO/releases/download/$VERSION/$ASSET"
 fi
 
-command -v curl >/dev/null 2>&1 || fail "curl não encontrado."
+command -v curl >/dev/null 2>&1 || fail "curl not found."
 
-say "Baixando $ASSET ($VERSION)"
+say "Downloading $ASSET ($VERSION)"
 mkdir -p "$INSTALL_DIR"
 TMP_FILE="$INSTALL_DIR/runelay.download"
-curl -fSL --progress-bar "$URL" -o "$TMP_FILE" || { rm -f "$TMP_FILE"; fail "Não consegui baixar $URL"; }
+curl -fSL --progress-bar "$URL" -o "$TMP_FILE" || { rm -f "$TMP_FILE"; fail "Could not download $URL"; }
 chmod +x "$TMP_FILE"
 mv "$TMP_FILE" "$INSTALL_DIR/runelay"
 
@@ -55,10 +55,28 @@ case ":$PATH:" in
     mkdir -p "$(dirname "$RC")"
     if ! grep -qs "$INSTALL_DIR" "$RC"; then
       printf '\n# runelay\n%s\n' "$LINE" >> "$RC"
-      say "Adicionei $INSTALL_DIR ao PATH em $RC. Abra um terminal novo ou rode: $LINE"
+      say "Added $INSTALL_DIR to PATH in $RC (new terminals pick it up)."
     fi
     ;;
 esac
 
-say "runelay instalado em $INSTALL_DIR/runelay"
-say "Próximo passo: runelay login"
+LINKED=""
+case ":$PATH:" in
+  *":$INSTALL_DIR:"*) LINKED="$INSTALL_DIR/runelay" ;;
+  *)
+    for DIR in "$HOME/.local/bin" "$HOME/bin" /opt/homebrew/bin /usr/local/bin; do
+      case ":$PATH:" in *":$DIR:"*) ;; *) continue ;; esac
+      [ -d "$DIR" ] && [ -w "$DIR" ] || continue
+      if [ ! -e "$DIR/runelay" ] || [ -L "$DIR/runelay" ]; then
+        ln -sf "$INSTALL_DIR/runelay" "$DIR/runelay" && LINKED="$DIR/runelay" && break
+      fi
+    done
+    ;;
+esac
+
+say "runelay installed at $INSTALL_DIR/runelay"
+if [ -n "$LINKED" ]; then
+  say "Next step: runelay setup"
+else
+  say "Next step: $INSTALL_DIR/runelay setup"
+fi
