@@ -3,6 +3,12 @@ import { checks, cmd } from "./blocks.mjs";
 const hero = (route, label) =>
   `<div class="shot-hero feature-hero"><canvas class="hero-pixels" aria-hidden="true"></canvas><div class="shot-stage"><div class="shot-frame"><div class="shot-app" data-showcase="hero" data-route="${route}" role="region" aria-label="${label}"></div></div></div></div>`;
 
+const graphHero = (prefix, alt, caption) => {
+  const set = (theme) => `/shots/memory-graph-${prefix}${theme}-1080.webp 1080w, /shots/memory-graph-${prefix}${theme}-2160.webp 2160w`;
+  const sizes = "(max-width: 560px) calc(100vw - 72px), min(calc(100vw - 160px), 1072px)";
+  return `<div class="shot-hero feature-hero"><canvas class="hero-pixels" aria-hidden="true"></canvas><div class="shot-stage"><div class="shot-frame"><picture class="shot-still"><source media="(prefers-color-scheme: dark)" srcset="${set("dark")}" sizes="${sizes}" /><img src="/shots/memory-graph-${prefix}light-2160.webp" srcset="${set("light")}" sizes="${sizes}" width="2160" height="1350" alt="${alt}" fetchpriority="high" decoding="async" /></picture></div></div></div><p class="note shot-caption">${caption}</p>`;
+};
+
 const stage = (kind, label) => `<div class="feature-media"><div class="bento-stage" data-showcase="${kind}" role="region" aria-label="${label}"></div></div>`;
 
 const orbit = () => {
@@ -191,7 +197,7 @@ const memory = {
     lead: "Notes every agent reads and writes. What one agent learns, all of them know.",
     cardTitle: "Shared memory",
     cardText: "Linked, versioned notes every agent reads and writes.",
-    hero: hero("/memory", "Interactive preview of the runelay memory"),
+    hero: graphHero("", "The runelay memory graph: 250 notes clustered around hubs, with the Golden rules hub highlighted and its linked notes labeled", "Every note and every [[link]] on one map"),
     body: [
       rows(
         row(
@@ -221,7 +227,7 @@ const memory = {
     lead: "Notas que todo agente lê e escreve. O que um agente aprende, todos sabem.",
     cardTitle: "Memória compartilhada",
     cardText: "Notas ligadas e versionadas que todo agente lê e escreve.",
-    hero: hero("/memory", "Prévia interativa da memória do runelay"),
+    hero: graphHero("pt-", "O grafo de memória do runelay: 250 notas agrupadas em torno de hubs, com o hub Golden rules destacado e as notas ligadas a ele com nome", "Cada nota e cada [[link]] num mapa só"),
     body: [
       rows(
         row(

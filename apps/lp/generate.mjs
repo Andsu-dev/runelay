@@ -97,7 +97,7 @@ const document = (slug, lang, page, relatedSlugs, mark) => {
     <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="/styles.css" />
     ${faq ? faqSchema(faq) : ""}
-    <script>document.documentElement.classList.add("js");</script>
+    <script>document.documentElement.classList.add("js");(()=>{const n=navigator,d=n.userAgentData,u=n.userAgent,p=(d&&d.platform)||u||n.platform||"";if((d&&d.mobile)||/Android|iPhone|iPad|iPod|Mobile/i.test(u)||(/Mac/i.test(p)&&n.maxTouchPoints>1))return;const os=/Mac/i.test(p)?"mac":/Win/i.test(p)?"windows":/Linux|X11/i.test(p)&&!/CrOS|Android/i.test(u)?"linux":"";if(!os)return;document.documentElement.dataset.os=os;const files={mac:["runelay-mac-arm64.dmg","runelay-mac-x64.dmg"],windows:["runelay-win-x64.exe"],linux:["runelay-linux-x86_64.AppImage","runelay-linux-arm64.AppImage"]}[os];const point=(f)=>{const go=()=>{for(const a of document.querySelectorAll("[data-os-download]"))a.href="https://github.com/Andsu-dev/runelay/releases/latest/download/"+f};document.readyState==="loading"?document.addEventListener("DOMContentLoaded",go):go()};const arm=os==="mac"||/aarch64|arm/i.test(u+n.platform);point(os==="linux"?files[arm?1:0]:files[0]);if(os!=="windows"&&d&&d.getHighEntropyValues)d.getHighEntropyValues(["architecture"]).then((v)=>{if(v.architecture==="x86")point(os==="mac"?files[1]:files[0]);else if(v.architecture==="arm")point(os==="mac"?files[0]:files[1])}).catch(()=>{})})();</script>
     <script type="module" src="/main.js"></script>
   </head>
   <body>
