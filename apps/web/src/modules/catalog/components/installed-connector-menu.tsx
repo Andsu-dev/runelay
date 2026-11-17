@@ -1,4 +1,10 @@
-import { Delete02Icon, LinkSquare01Icon, MoreHorizontalIcon, RefreshIcon } from "@hugeicons/core-free-icons";
+import {
+  Delete02Icon,
+  LinkSquare01Icon,
+  MoreHorizontalIcon,
+  RefreshIcon,
+  UserAdd01Icon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { CatalogConnectorView } from "@runelay/shared";
 import { useNavigate } from "@tanstack/react-router";
@@ -10,6 +16,7 @@ import { DropdownMenuItem } from "@/components/ui/overlay/dropdown-menu-item";
 import { DropdownMenuSeparator } from "@/components/ui/overlay/dropdown-menu-separator";
 import { useT } from "@/lib/i18n";
 import type { useCatalogActions } from "@/modules/catalog/hooks/use-catalog-actions";
+import { AddAccountDialog } from "./add-account-dialog";
 
 interface InstalledConnectorMenuProps {
   connector: CatalogConnectorView;
@@ -21,6 +28,7 @@ export function InstalledConnectorMenu({ connector, actions }: InstalledConnecto
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  const [adding, setAdding] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const keepFocusRef = useRef(false);
 
@@ -58,6 +66,11 @@ export function InstalledConnectorMenu({ connector, actions }: InstalledConnecto
             {t("catalog.reconnect")}
           </DropdownMenuItem>
         )}
+        {connector.auth === "oauth" && (
+          <DropdownMenuItem icon={UserAdd01Icon} onSelect={() => setAdding(true)}>
+            {t("catalog.addAccount.action")}
+          </DropdownMenuItem>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem
           icon={Delete02Icon}
@@ -79,6 +92,7 @@ export function InstalledConnectorMenu({ connector, actions }: InstalledConnecto
         confirmLabel={t("catalog.remove")}
         onConfirm={() => actions.remove.mutate()}
       />
+      <AddAccountDialog connector={connector} actions={actions} open={adding} onOpenChange={setAdding} />
     </div>
   );
 }

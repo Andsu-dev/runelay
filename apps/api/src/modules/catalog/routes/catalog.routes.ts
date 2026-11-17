@@ -11,15 +11,16 @@ export const catalogRoutes = new Hono<AppEnv>()
   .get("/", validate("query", catalogQuerySchema), (c) =>
     respond(c, listCatalog(c.var.organizationId, c.req.valid("query").query)),
   )
-  .post("/install", validate("json", installCatalogSchema), async (c) =>
-    respond(
+  .post("/install", validate("json", installCatalogSchema), async (c) => {
+    const { id, token, services, name } = c.req.valid("json");
+    return respond(
       c,
       await installCatalogItem(
         c.var.organizationId,
-        c.req.valid("json").id,
+        id,
         { authMethod: c.var.authMethod, role: c.var.role },
-        { token: c.req.valid("json").token, services: c.req.valid("json").services },
+        { token, services, name },
       ),
       201,
-    ),
-  );
+    );
+  });

@@ -8,4 +8,5 @@ export const catalogQuery = (query: string) =>
     queryFn: () => api.get<CatalogView>(`/catalog?${new URLSearchParams(query ? { query } : {})}`),
   });
 
-export const installConnector = (id: string, token?: string) => api.post<SourceView>("/catalog/install", { id, token });
+export const installConnector = (id: string, token?: string, name?: string) =>
+  api.post<SourceView>("/catalog/install", { id, token, name });
