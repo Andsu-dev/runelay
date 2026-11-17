@@ -1,18 +1,32 @@
-import { createApiKeySchema, paginationSchema } from "@runelay/shared";
+import { checkAgentKeySchema, createApiKeySchema, paginationSchema } from "@runelay/shared";
 import { Hono } from "hono";
 import {
+  checkAgentApiKey,
   createApiKey,
   deleteApiKey,
+  issueAgentApiKey,
   listApiKeys,
   listKeyActivity,
   revealApiKey,
 } from "@/modules/api-keys/services/api-key.service";
-import { requireSession } from "@/modules/auth/middlewares/authenticate";
-import { respond } from "@/shared/http";
-import type { SessionEnv } from "@/shared/types/app.types";
+import { requireOrganization, requireSession } from "@/modules/auth/middlewares/authenticate";
+import { respond, respondError } from "@/shared/http";
+import type { AppEnv, SessionEnv } from "@/shared/types/app.types";
 import { validate } from "@/shared/validator";
 
-export const apiKeysRoutes = new Hono<SessionEnv>()
+const agentKeyRoutes = new Hono<AppEnv>()
+  .use(requireOrganization)
+  .post("/", validate("json", createApiKeySchema), async (c) => {
+    if (!c.var.apiKeyId) return respondError(c, "API_KEY_REQUIRED");
+    return respond(c, await issueAgentApiKey(c.var.organizationId, c.req.valid("json").name), 201);
+  })
+  .post("/check", validate("json", checkAgentKeySchema), (c) => {
+    if (!c.var.apiKeyId) return respondError(c, "API_KEY_REQUIRED");
+    const { name, key } = c.req.valid("json");
+    return respond(c, checkAgentApiKey(c.var.organizationId, name, key));
+  });
+
+const sessionKeyRoutes = new Hono<SessionEnv>()
   .use(requireSession)
   .get("/", (c) => respond(c, listApiKeys(c.var.organizationId)))
   .post("/", validate("json", createApiKeySchema), async (c) =>
@@ -24,3 +38,5 @@ export const apiKeysRoutes = new Hono<SessionEnv>()
   })
   .get("/:id/secret", (c) => respond(c, revealApiKey(c.var.organizationId, c.req.param("id"))))
   .delete("/:id", (c) => respond(c, deleteApiKey(c.var.organizationId, c.req.param("id"))));
+
+export const apiKeysRoutes = new Hono().route("/agent", agentKeyRoutes).route("/", sessionKeyRoutes);
