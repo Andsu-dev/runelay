@@ -1,10 +1,35 @@
 # Changelog
 
-## Unreleased
+## v0.6.4
+
+### CLI
+
+- `runelay setup` connects every agent on the machine in one command: it logs in, registers the runelay MCP, writes the global instructions and imports native memory.
+- `runelay doctor` checks each agent's setup and says what to fix. `runelay home` opens an interactive menu, and `runelay sponsor` shows how to support the project.
+- Every agent gets its own API key, so access can be seen and revoked per agent. Servers older than this release fall back to the shared key.
+- For every agent, setup turns off native memory, installs the global instructions and approves only runelay's tools. Imported native memory files are archived.
+
+### Memory and skills
+
+- Agents write skills with `write_skill`, import many memories at once with `import_memory`, and `write_memory` points out similar memories so duplicates get updated instead of created.
+
+### Connections
+
+- OAuth goes through a relay that publishes a client ID metadata document (CIMD), so servers that only accept CIMD, such as Vercel, now connect.
+- Asana, HubSpot and Box are no longer in the catalog.
+
+### Panel
+
+- Setup is now a per-agent onboarding: a checklist, desktop or manual setup, a success screen, and the MCP endpoint ready to copy.
 
 ### Desktop app
 
+- The desktop app bundles the CLI and syncs skills locally, so connecting agents needs no terminal.
 - On macOS the menu bar icon is the runelay mark on its own, the same size as the other icons there and readable on light and dark bars. It used to be the whole app icon shrunk to 18 points, which left the mark tiny.
+
+### Site and docs
+
+- The site's setup pages and CLI previews show the new onboarding, and the agent and integration guides are updated. runelay.com/cli serves the installer from the latest release.
 
 ## v0.6.3
 
