@@ -21,6 +21,7 @@ import type {
   MemoryImportItemView,
   MemoryImportView,
   MemoryWriteView,
+  RawMemoryImportItem,
   SimilarMemoryView,
 } from "@/modules/memories/types/memory.types";
 
@@ -85,7 +86,7 @@ export const writeMemory = (
   return ok({ ...created.data, similar, hint: SIMILAR_HINT });
 };
 
-const importMemoryItem = (organizationId: string, item: { slug: string }): MemoryImportItemView => {
+const importMemoryItem = (organizationId: string, item: RawMemoryImportItem): MemoryImportItemView => {
   const parsed = memoryImportItemSchema.safeParse(item);
   if (!parsed.success) {
     return { slug: item.slug, status: "failed", error: parsed.error.issues.map((issue) => issue.message).join("; ") };
@@ -102,7 +103,7 @@ const importMemoryItem = (organizationId: string, item: { slug: string }): Memor
   return { slug: input.slug, status: existing.data ? "updated" : "created", ...(similar ? { similar } : {}) };
 };
 
-export const importMemoryItems = (organizationId: string, items: { slug: string }[]): MemoryImportView => {
+export const importMemoryItems = (organizationId: string, items: RawMemoryImportItem[]): MemoryImportView => {
   const results = items.map((item) => importMemoryItem(organizationId, item));
   const count = (status: MemoryImportItemView["status"]) => results.filter((item) => item.status === status).length;
   return {

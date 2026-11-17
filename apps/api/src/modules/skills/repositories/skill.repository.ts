@@ -48,7 +48,7 @@ const replaceFiles = (organizationId: string, slug: string, files: SkillFileInpu
 
 const fileKey = (files: SkillFileInput[]) =>
   JSON.stringify(
-    files.map(({ path, content }) => [path, content]).sort(([left], [right]) => left.localeCompare(right)),
+    [...files].sort((left, right) => left.path.localeCompare(right.path)).map(({ path, content }) => [path, content]),
   );
 
 const isSameSkill = (stored: StoredSkillRow, files: SkillFileInput[], skill: ImportedSkillInput) =>

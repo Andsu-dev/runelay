@@ -1,4 +1,4 @@
-import type { MemoryListItemView, MemoryView } from "@runelay/shared";
+import type { MemoryImportItemInput, MemoryListItemView, MemoryView } from "@runelay/shared";
 
 export interface MemoryListRow extends Omit<MemoryListItemView, "pinned"> {
   pinned: 0 | 1;
@@ -33,6 +33,8 @@ export interface MemoryWriteView extends MemoryView {
   similar?: SimilarMemoryView[];
   hint?: string;
 }
+
+export type RawMemoryImportItem = Omit<MemoryImportItemInput, "type"> & { type?: string };
 
 export type MemoryImportStatus = "created" | "updated" | "skipped" | "failed";
 
