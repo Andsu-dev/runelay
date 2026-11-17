@@ -57,6 +57,16 @@ for (const button of document.querySelectorAll("[data-copy], [data-copy-from]"))
   });
 }
 
+for (const link of document.querySelectorAll(".lang a[hreflang]")) {
+  link.addEventListener("click", () => {
+    const lang = link.hreflang.startsWith("pt") ? "pt-BR" : "en";
+    document.cookie = `runelay-lang=${lang}; path=/; max-age=31536000; samesite=lax; secure`;
+    try {
+      localStorage.setItem("runelay-lang", lang);
+    } catch {}
+  });
+}
+
 const versionSlots = document.querySelectorAll("[data-version]");
 if (versionSlots.length) {
   fetch("https://api.github.com/repos/Andsu-dev/runelay/releases/latest")
