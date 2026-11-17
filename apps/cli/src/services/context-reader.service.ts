@@ -1,8 +1,8 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { basename, join, relative } from "node:path";
 import {
-  type CreateMemoryInput,
-  type CreateSkillInput,
+  type ImportedMemoryInput,
+  type ImportedSkillInput,
   memoryTypeSchema,
   type SkillFileInput,
   skillSlugSchema,
@@ -29,6 +29,8 @@ const toSlug = (name: string) =>
     .replace(/[^a-z0-9:]+/g, "-")
     .replace(/^[-:]+|[-:]+$/g, "");
 
+const modifiedAt = (path: string) => statSync(path).mtime.toISOString();
+
 const text = (value: unknown) => (typeof value === "string" ? value.trim() : "");
 
 const pinnedStems = (directory: string) => {
@@ -43,7 +45,7 @@ const pinnedStems = (directory: string) => {
   return new Set([...section.matchAll(/\]\(([^)]+?)\.md\)/g)].map((match) => toSlug(basename(match[1] ?? ""))));
 };
 
-export const readMemories = (directory: string): CreateMemoryInput[] => {
+export const readMemories = (directory: string): ImportedMemoryInput[] => {
   if (!existsSync(directory)) return [];
   const pinned = pinnedStems(directory);
   return readdirSync(directory)
@@ -51,7 +53,8 @@ export const readMemories = (directory: string): CreateMemoryInput[] => {
     .flatMap((file) => {
       const slug = toSlug(file.replace(/\.md$/, "").replace(/:/g, "-"));
       if (!slug) return [];
-      const { meta, body } = splitFrontmatter(readFileSync(join(directory, file), "utf8"));
+      const path = join(directory, file);
+      const { meta, body } = splitFrontmatter(readFileSync(path, "utf8"));
       const metadata = (meta.metadata ?? {}) as Record<string, unknown>;
       const type = memoryTypeSchema.safeParse(metadata.type ?? meta.type);
       return [
@@ -62,6 +65,7 @@ export const readMemories = (directory: string): CreateMemoryInput[] => {
           type: type.success ? type.data : "project",
           body: body.trim().slice(0, LIMITS.memoryBody),
           pinned: pinned.has(slug),
+          updatedAt: modifiedAt(path),
         },
       ];
     });
@@ -85,7 +89,7 @@ const collectFiles = (root: string, directory: string): SkillFileInput[] =>
     return [{ path: relativePath, content: readFileSync(path, "utf8") }];
   });
 
-export const readSkills = (directory: string): CreateSkillInput[] => {
+export const readSkills = (directory: string): ImportedSkillInput[] => {
   if (!existsSync(directory)) return [];
   return readdirSync(directory).flatMap((name) => {
     const root = join(directory, name);
@@ -94,6 +98,8 @@ export const readSkills = (directory: string): CreateSkillInput[] => {
     const slug = skillSlugSchema.safeParse(toSlug(name));
     if (!slug.success) return [];
     const { meta, body } = splitFrontmatter(readFileSync(entry, "utf8"));
+    const files = collectFiles(root, root).slice(0, SKILL_FILES_MAX);
+    const updatedAt = [entry, ...files.map((file) => join(root, file.path))].map(modifiedAt).sort().at(-1);
     return [
       {
         slug: slug.data,
@@ -101,7 +107,8 @@ export const readSkills = (directory: string): CreateSkillInput[] => {
         description: text(meta.description).slice(0, LIMITS.skillDescription),
         body: body.trim().slice(0, LIMITS.skillBody),
         enabled: true,
-        files: collectFiles(root, root).slice(0, SKILL_FILES_MAX),
+        files,
+        updatedAt,
       },
     ];
   });
@@ -130,17 +137,18 @@ const stripManagedBlock = (content: string) => {
   return content.slice(0, start) + content.slice(end + CONTEXT_END_MARKER.length);
 };
 
-export const readInstructions = ({ agent, path, slug }: InstructionFile): CreateMemoryInput | null => {
+export const readInstructions = ({ agent, path, slug }: InstructionFile): ImportedMemoryInput | null => {
   if (!existsSync(path)) return null;
   const body = stripManagedBlock(readFileSync(path, "utf8")).trim();
   if (!body) return null;
   return {
     slug,
-    name: `Instruções globais do ${agent}`,
-    description: `Regras que valem em todo projeto no ${agent}, importadas de ${basename(path)}.`,
+    name: `Global instructions for ${agent}`,
+    description: `Rules that apply to every project in ${agent}, imported from ${basename(path)}.`,
     type: "feedback",
     body: body.slice(0, LIMITS.memoryBody),
     pinned: true,
+    updatedAt: modifiedAt(path),
   };
 };
 

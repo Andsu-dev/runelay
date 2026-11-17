@@ -54,7 +54,7 @@ type PullPlan = PendingSkill | SkillPullResult;
 
 const planSkill = (skill: SkillListItemView, localSlugs: Set<string>): PullPlan => {
   const target = insideOf(SKILLS_TARGET_DIR, skill.slug);
-  if (!target) return { slug: skill.slug, outcome: "failed", message: "nome de pasta inválido" };
+  if (!target) return { slug: skill.slug, outcome: "failed", message: "invalid folder name" };
   const exists = existsSync(target);
   const marker = exists ? markerOf(target) : null;
   if ((exists && marker === null) || (!exists && localSlugs.has(skill.slug)))
@@ -73,7 +73,7 @@ const writeBatch = async (connection: Connection, batch: PendingSkill[]): Promis
   const bySlug = new Map(exported.data.map((skill) => [skill.slug, skill]));
   return batch.map(({ skill, target, exists }) => {
     const full = bySlug.get(skill.slug);
-    if (!full) return { slug: skill.slug, outcome: "failed", message: "habilidade sumiu do servidor" };
+    if (!full) return { slug: skill.slug, outcome: "failed", message: "skill is no longer on the server" };
     const written = replaceFolder(target, full);
     if (written.error) return { slug: skill.slug, outcome: "failed", message: written.error.message };
     return { slug: skill.slug, outcome: exists ? "updated" : "created" };

@@ -1,4 +1,4 @@
-import type { CreateMemoryInput, CreateSkillInput } from "@runelay/shared";
+import type { ImportedMemoryInput, ImportedSkillInput } from "@runelay/shared";
 import { cliEnv } from "@/config/env";
 import {
   CLAUDE_PROJECTS_DIR,
@@ -12,7 +12,7 @@ import type { CollectedContext, CollectLine } from "@/types/collect.types";
 
 const memoryDirectories = () =>
   cliEnv.RUNELAY_MEMORY_DIR
-    ? [{ agent: "Personalizado", path: cliEnv.RUNELAY_MEMORY_DIR }]
+    ? [{ agent: "Custom", path: cliEnv.RUNELAY_MEMORY_DIR }]
     : [
         ...listMemoryDirectories(CLAUDE_PROJECTS_DIR, CURRENT_PROJECT_MEMORY_DIR).map((path) => ({
           agent: "Claude Code",
@@ -23,7 +23,7 @@ const memoryDirectories = () =>
 
 export const collectContext = (): CollectedContext => {
   const lines: CollectLine[] = [];
-  const memories = new Map<string, CreateMemoryInput>();
+  const memories = new Map<string, ImportedMemoryInput>();
   for (const { agent, path } of memoryDirectories()) {
     const found = readMemories(path);
     const fresh = found.filter((memory) => !memories.has(memory.slug));
@@ -38,7 +38,7 @@ export const collectContext = (): CollectedContext => {
       lines.push({ agent: source.agent, kind: "instructions", added: 1, found: 1, path: source.path });
     }
   }
-  const skills = new Map<string, CreateSkillInput>();
+  const skills = new Map<string, ImportedSkillInput>();
   for (const { agent, path } of SKILL_SOURCES) {
     const found = readSkills(path);
     const fresh = found.filter((skill) => !skills.has(skill.slug));
