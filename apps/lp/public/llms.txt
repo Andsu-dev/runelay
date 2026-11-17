@@ -4,9 +4,9 @@
 
 ## Get started
 
-- [Download the desktop app](https://runelay.com/download/): Mac (Apple silicon and Intel), Windows and Linux AppImage. Runs the server on `127.0.0.1:4312`, or the next free port when 4312 is taken.
-- [Set up step by step](https://runelay.com/setup/): run the desktop app or install the server with `curl -fsSL runelay.com/install | sh`, then connect each computer with one line: `curl -fsSL runelay.com/cli | sh && ~/.runelay/bin/runelay setup <your-url>`. `runelay setup` runs login, connect (one key per agent, named `<Agent> · <computer>`, and native memory off in Claude Code, Codex, Grok, Gemini CLI, Hermes Agent and OpenClaw), migrate, pull and doctor. Each step also runs on its own.
-- [Agent setup prompt](https://runelay.com/setup/): "Copy instructions for Claude Code" copies a ready prompt; paste it into Claude Code (or any agent with a terminal) and it installs and connects runelay for you.
+- [Download the desktop app](https://runelay.com/download/): Mac (Apple silicon and Intel), Windows and Linux AppImage. Runs the server on `127.0.0.1:4312`.
+- [Set up step by step](https://runelay.com/setup/): install the server with `curl -fsSL runelay.com/install | sh`, then the CLI with `curl -fsSL runelay.com/cli | sh`, then `runelay login`, `runelay migrate` and `runelay connect`.
+- [Agent setup prompt](https://runelay.com/setup/): a ready prompt that lets an agent install and connect runelay for you.
 
 ## Features
 
@@ -31,8 +31,8 @@
 - [Claude Code](https://runelay.com/guides/claude-code/): add the runelay endpoint with `claude mcp add --transport http`.
 - [Cursor](https://runelay.com/guides/cursor/): add the runelay endpoint to `~/.cursor/mcp.json`.
 - [Codex](https://runelay.com/guides/codex/): add the runelay endpoint to `~/.codex/config.toml`.
-- [Antigravity](https://runelay.com/guides/antigravity/): add the runelay endpoint to Antigravity's `mcp_config.json` with `serverUrl` and `headers`; `runelay connect` writes it to `~/.gemini/config/mcp_config.json` when Antigravity is installed.
-- [Grokbot](https://runelay.com/guides/grokbot/): two paths. Grok CLI: add the runelay endpoint to `~/.grok/config.toml`; `runelay connect` and `runelay migrate` handle it and turn Grok's native memory off. Hosted Grok Bot: runelay on a public HTTPS URL, a dedicated `rnl_` key, a remote MCP connector at `/v1/mcp` with an `Authorization: Bearer` header, and memories moved with `import_memory`.
+- [Antigravity](https://runelay.com/guides/antigravity/): add the runelay endpoint to Antigravity's `mcp_config.json` with `serverUrl` and `headers`; `runelay connect` does not wire Antigravity.
+- [Grokbot](https://runelay.com/guides/grokbot/): add the runelay endpoint to `~/.grok/config.toml`; `runelay connect` and `runelay migrate` handle it.
 - [Hermes Agent](https://runelay.com/guides/hermes-agent/): add the runelay endpoint under `mcp_servers` in `~/.hermes/config.yaml` with an `Authorization` header, then `/reload-mcp`.
 - [OpenClaw](https://runelay.com/guides/openclaw/): save the runelay endpoint with `openclaw mcp set` as a `streamable-http` server, then `openclaw gateway restart`.
 - [MausBot](https://runelay.com/guides/mausbot/): paste a `claude mcp add` command for the runelay endpoint in Plugins → MCP servers → Add server.
@@ -68,7 +68,6 @@
 
 - `list_connections`, `search_tools`, `call_tool`, `execute`: find and call tools from every connected account; `execute` chains calls in a sandboxed JavaScript runtime.
 - `search_context`, `read_memory`, `write_memory`, `read_skill`, `read_skill_file`: shared memory and skills across agents.
-- `import_memory` (up to 200 memories per call, created/updated/skipped per item), `write_skill`, `write_skill_file`: bring memories and skills in from an agent, including hosted bots. `write_memory` returns a `similar` list when a new slug looks like an existing memory.
 
 ## Legal
 

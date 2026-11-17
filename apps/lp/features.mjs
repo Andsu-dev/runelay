@@ -287,14 +287,14 @@ const agents = {
         ),
         row(
           "Set up in one command",
-          "<code>runelay migrate</code> brings the MCP servers, memories, skills and instructions your agents already have. <code>runelay connect</code> registers runelay in Claude Code, Codex, Cursor, Grok, Gemini CLI, Antigravity, OpenCode, Kimi Code, Hermes Agent, OpenClaw and MausBot.",
+          "<code>runelay migrate</code> brings the MCP servers, memories, skills and instructions your agents already have. <code>runelay connect</code> registers runelay in Claude Code, Codex, Cursor and Grok.",
           "",
           cmd("runelay migrate") + cmd("runelay connect"),
         ),
       ),
     ],
     faq: [
-      ["Which agents does it work with?", "Any MCP client. runelay connect wires Claude Code, Codex, Cursor, Grok, Gemini CLI, Antigravity, OpenCode, Kimi Code, Hermes Agent, OpenClaw and MausBot for you; the others take the endpoint and a key."],
+      ["Which agents does it work with?", "Any MCP client. runelay connect wires Claude Code, Codex, Cursor and Grok for you; the others take the endpoint and a key."],
       ["Do agents get my account credentials?", "No. They only hold their runelay key. Account tokens stay encrypted on your server."],
     ],
   },
@@ -317,14 +317,14 @@ const agents = {
         ),
         row(
           "Configura com um comando",
-          "O <code>runelay migrate</code> traz os servidores MCP, memórias, skills e instruções que os seus agentes já têm. O <code>runelay connect</code> registra o runelay no Claude Code, Codex, Cursor, Grok, Gemini CLI, Antigravity, OpenCode, Kimi Code, Hermes Agent, OpenClaw e MausBot.",
+          "O <code>runelay migrate</code> traz os servidores MCP, memórias, skills e instruções que os seus agentes já têm. O <code>runelay connect</code> registra o runelay no Claude Code, Codex, Cursor e Grok.",
           "",
           cmd("runelay migrate") + cmd("runelay connect"),
         ),
       ),
     ],
     faq: [
-      ["Com quais agentes funciona?", "Qualquer cliente MCP. O runelay connect configura Claude Code, Codex, Cursor, Grok, Gemini CLI, Antigravity, OpenCode, Kimi Code, Hermes Agent, OpenClaw e MausBot para você; os outros recebem o endpoint e uma chave."],
+      ["Com quais agentes funciona?", "Qualquer cliente MCP. O runelay connect configura Claude Code, Codex, Cursor e Grok para você; os outros recebem o endpoint e uma chave."],
       ["Os agentes recebem as credenciais das minhas contas?", "Não. Eles guardam só a chave do runelay. Os tokens das contas ficam criptografados no seu servidor."],
     ],
   },
