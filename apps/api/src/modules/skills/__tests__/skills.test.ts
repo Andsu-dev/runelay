@@ -8,10 +8,18 @@ import {
   findSkillFile,
   insertSkill,
   listSkills,
+  skillExists,
   updateSkillRow,
+  upsertSkillFile,
   upsertSkills,
 } from "@/modules/skills/repositories/skill.repository";
-import { createSkill, importSkills, updateSkill } from "@/modules/skills/services/skill.service";
+import {
+  createSkill,
+  importSkills,
+  updateSkill,
+  writeSkill,
+  writeSkillFile,
+} from "@/modules/skills/services/skill.service";
 import { body, call, createApiKey, resetDatabase, signUp, type TestAccount } from "../../../../test/helpers";
 
 let owner: TestAccount;
@@ -202,6 +210,102 @@ describe("skills routes", () => {
   });
 });
 
+describe("agent writes", () => {
+  test("writeSkill creates and updates, writeSkillFile adds files to an existing skill", () => {
+    const org = owner.organizationId;
+    const created = writeSkill(org, { slug: "agent-written", body: "v1" });
+    expect(created.data).toMatchObject({
+      slug: "agent-written",
+      name: "agent-written",
+      description: "",
+      enabled: true,
+      body: "v1",
+      files: [],
+    });
+    const file = writeSkillFile(org, "agent-written", { path: "refs/notes.md", content: "abc" });
+    expect(file.data?.files).toEqual([{ path: "refs/notes.md", size: 3 }]);
+    const replaced = writeSkillFile(org, "agent-written", { path: "refs/notes.md", content: "abcd" });
+    expect(replaced.data?.files).toEqual([{ path: "refs/notes.md", size: 4 }]);
+    expect(findSkillFile(org, "agent-written", "refs/notes.md").data?.content).toBe("abcd");
+    const updated = writeSkill(org, { slug: "agent-written", body: "v2", name: "Agent", description: "d" });
+    expect(updated.data).toMatchObject({ name: "Agent", description: "d", body: "v2" });
+    expect(updated.data?.files).toEqual([{ path: "refs/notes.md", size: 4 }]);
+    expect(skillExists(org, "agent-written").data).toBe(true);
+    expect(skillExists(stranger.organizationId, "agent-written").data).toBe(false);
+    expect(writeSkillFile(org, "no-skill-here", { path: "a.md", content: "" }).error?.code).toBe("SKILL_NOT_FOUND");
+  });
+
+  test("skips pushed skills older than the stored copy", async () => {
+    const org = owner.organizationId;
+    const base = { description: "", enabled: true, files: [] };
+    upsertSkills(org, [{ ...base, slug: "pushed-skill", name: "Server", body: "server" }]);
+    const response = await call("/v1/skills/import", {
+      method: "POST",
+      cookie: owner.cookie,
+      json: {
+        skills: [
+          { slug: "pushed-skill", name: "Stale", body: "stale", updatedAt: "2000-01-01T00:00:00Z" },
+          { slug: "pushed-fresh", name: "Fresh", body: "fresh", updatedAt: "2000-01-01T00:00:00Z" },
+        ],
+      },
+    });
+    expect((await body<{ imported: number; skipped: string[] }>(response)).data).toEqual({
+      imported: 1,
+      written: 1,
+      skipped: ["pushed-skill"],
+      unchanged: [],
+    });
+    expect(findSkill(org, "pushed-skill").data?.body).toBe("server");
+    const newer = upsertSkills(org, [
+      { ...base, slug: "pushed-skill", name: "Local", body: "local", updatedAt: "2999-01-01T00:00:00Z" },
+    ]);
+    expect(newer.data).toEqual({ imported: 1, written: 1, skipped: [], unchanged: [] });
+    expect(findSkill(org, "pushed-skill").data?.body).toBe("local");
+  });
+});
+
+describe("push comparison", () => {
+  test("reports identical skills as unchanged without writing, even when the server is newer", () => {
+    const org = owner.organizationId;
+    const files = [
+      { path: "b.md", content: "bb" },
+      { path: "a.md", content: "aa" },
+    ];
+    const skill = { slug: "same-skill", name: "Same", description: "d", body: "body", enabled: true, files };
+    upsertSkills(org, [skill]);
+    db.query("UPDATE skills SET updated_at = '2999-01-01T00:00:00.000Z' WHERE organization_id = ? AND slug = ?").run(
+      org,
+      "same-skill",
+    );
+    const identical = upsertSkills(org, [
+      { ...skill, files: [...files].reverse(), updatedAt: "2000-01-01T00:00:00Z" },
+      { ...skill, slug: "other-skill" },
+    ]);
+    expect(identical.data).toEqual({ imported: 2, written: 1, skipped: [], unchanged: ["same-skill"] });
+    expect(findSkill(org, "same-skill").data?.updatedAt).toBe("2999-01-01T00:00:00.000Z");
+    const again = upsertSkills(org, [skill, { ...skill, slug: "other-skill" }]);
+    expect(again.data).toEqual({ imported: 2, written: 0, skipped: [], unchanged: ["same-skill", "other-skill"] });
+    const variants = [
+      { ...skill, name: "Renamed" },
+      { ...skill, description: "other" },
+      { ...skill, body: "other" },
+      { ...skill, enabled: false },
+      { ...skill, files: [{ path: "a.md", content: "changed" }] },
+    ];
+    for (const variant of variants) {
+      expect(upsertSkills(org, [{ ...variant, updatedAt: "2000-01-01T00:00:00Z" }]).data).toEqual({
+        imported: 0,
+        written: 0,
+        skipped: ["same-skill"],
+        unchanged: [],
+      });
+    }
+    const changed = upsertSkills(org, [{ ...skill, body: "changed", updatedAt: "2999-06-01T00:00:00Z" }]);
+    expect(changed.data).toEqual({ imported: 1, written: 1, skipped: [], unchanged: [] });
+    expect(findSkill(org, "same-skill").data?.body).toBe("changed");
+  });
+});
+
 describe("storage failures", () => {
   test("every repository and service function returns STORAGE_FAILED", () => {
     const org = owner.organizationId;
@@ -221,6 +325,10 @@ describe("storage failures", () => {
       createSkill(org, input),
       updateSkill(org, "bare", { name: "b" }),
       importSkills(org, { skills: [input] }),
+      skillExists(org, "bare"),
+      upsertSkillFile(org, "bare", { path: "a.md", content: "" }),
+      writeSkill(org, { slug: "bare", body: "" }),
+      writeSkillFile(org, "bare", { path: "a.md", content: "" }),
     ];
     for (const result of results) expect(result.error?.code).toBe("STORAGE_FAILED");
   });

@@ -1,7 +1,7 @@
 import { afterEach, beforeAll, describe, expect, mock, spyOn, test } from "bun:test";
 import type { ContextBriefView, ContextHitView } from "@runelay/shared";
 import { db } from "@/db/connection";
-import { BRIEF_MAX_CHARS, BRIEF_TRUNCATED } from "@/modules/context/constants/context.constants";
+import { BRIEF_MAX_CHARS, BRIEF_TRUNCATED, PINNED_TRUNCATED } from "@/modules/context/constants/context.constants";
 import { buildBrief, pinnedInstructions, searchContext } from "@/modules/context/services/context.service";
 import { body, call, createApiKey, resetDatabase, signUp, type TestAccount } from "../../../../test/helpers";
 
@@ -142,12 +142,15 @@ describe("context brief", () => {
     expect(both.skillCount).toBe(80);
   });
 
-  test("pinnedInstructions renders only pinned rules", () => {
-    const rendered = pinnedInstructions(owner.organizationId);
-    expect(rendered.data).toContain("## Regras de ouro");
-    expect(rendered.data).toContain("golden-rule");
-    expect(rendered.data).not.toContain("how-to-work");
-    expect(pinnedInstructions(stranger.organizationId).data).toBe("");
+  test("pinnedInstructions renders only pinned rules, one line each without description", () => {
+    const rendered = pinnedInstructions(owner.organizationId, 2_000);
+    expect(rendered.data).toBe("## Regras de ouro\n- Golden (golden-rule)\n- Quiet (quiet-rule)");
+    expect(pinnedInstructions(stranger.organizationId, 2_000).data).toBe("");
+  });
+
+  test("pinnedInstructions ends with a pointer to search_context when rules do not fit", () => {
+    const rendered = pinnedInstructions(owner.organizationId, 30);
+    expect(rendered.data).toBe(`## Regras de ouro\n${PINNED_TRUNCATED}`);
   });
 });
 
@@ -159,6 +162,6 @@ describe("storage failures", () => {
     const org = owner.organizationId;
     expect(searchContext(org, { query: "zorbix", limit: 5 }).error?.code).toBe("STORAGE_FAILED");
     expect(buildBrief(org, "claude").error?.code).toBe("STORAGE_FAILED");
-    expect(pinnedInstructions(org).error?.code).toBe("STORAGE_FAILED");
+    expect(pinnedInstructions(org, 2_000).error?.code).toBe("STORAGE_FAILED");
   });
 });

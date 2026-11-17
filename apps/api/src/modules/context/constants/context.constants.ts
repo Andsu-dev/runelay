@@ -16,6 +16,8 @@ export const BRIEF_SKILL_TITLE = "## Habilidades";
 
 export const BRIEF_TRUNCATED = "- ... (mais itens: use search_context)";
 
+export const PINNED_TRUNCATED = "- ... more rules: call search_context or read_memory for the rest.";
+
 export const BRIEF_FOOTER = [
   "## Como usar",
   "- Antes de agir num assunto, rode `search_context` no MCP runelay e abra o que importa com `read_memory` ou `read_skill`.",

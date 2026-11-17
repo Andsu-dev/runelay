@@ -3,6 +3,8 @@ import {
   attemptSync,
   type CreateSkillInput,
   fail,
+  type ImportedSkillInput,
+  type ImportResultView,
   type ListSkillsInput,
   ok,
   type Page,
@@ -17,10 +19,11 @@ import {
 } from "@runelay/shared";
 import { db } from "@/db/connection";
 import { SKILL_LIST_COLUMNS } from "@/modules/skills/constants/skill.constants";
-import type { SkillContent, SkillDetailRow, SkillListRow } from "@/modules/skills/types/skill.types";
+import type { SkillContent, SkillDetailRow, SkillListRow, StoredSkillRow } from "@/modules/skills/types/skill.types";
 import { SQL_NOW } from "@/shared/constants/sql.constants";
 import { toFtsQuery } from "@/shared/utils/fts-query";
 import { pageOf } from "@/shared/utils/page";
+import { isStoredNewer } from "@/shared/utils/stored-newer";
 
 const syncSearch = (organizationId: string, { slug, name, description, body }: SkillContent) => {
   db.query("DELETE FROM skills_fts WHERE organization_id = ? AND slug = ?").run(organizationId, slug);
@@ -42,6 +45,18 @@ const replaceFiles = (organizationId: string, slug: string, files: SkillFileInpu
     insert.run(organizationId, slug, file.path, file.content, Buffer.byteLength(file.content));
   }
 };
+
+const fileKey = (files: SkillFileInput[]) =>
+  JSON.stringify(
+    files.map(({ path, content }) => [path, content]).sort(([left], [right]) => left.localeCompare(right)),
+  );
+
+const isSameSkill = (stored: StoredSkillRow, files: SkillFileInput[], skill: ImportedSkillInput) =>
+  stored.name === skill.name &&
+  stored.description === skill.description &&
+  stored.body === skill.body &&
+  stored.enabled === (skill.enabled ? 1 : 0) &&
+  fileKey(files) === fileKey(skill.files);
 
 export const listSkills = (
   organizationId: string,
@@ -136,6 +151,36 @@ export const findSkillFile = (organizationId: string, slug: string, path: string
   return row.data ? ok(row.data) : fail("SKILL_FILE_NOT_FOUND", `Arquivo "${path}" não encontrado em "${slug}".`);
 };
 
+export const skillExists = (organizationId: string, slug: string): Result<boolean> => {
+  const row = attemptSync(
+    () => db.query("SELECT 1 FROM skills WHERE organization_id = ? AND slug = ?").get(organizationId, slug),
+    "STORAGE_FAILED",
+  );
+  return row.error ? row : ok(row.data !== null);
+};
+
+export const upsertSkillFile = (
+  organizationId: string,
+  slug: string,
+  { path, content }: SkillFileInput,
+): Result<null> => {
+  const written = attemptSync(
+    db.transaction(() => {
+      const touched = db
+        .query(`UPDATE skills SET updated_at = ${SQL_NOW} WHERE organization_id = ? AND slug = ?`)
+        .run(organizationId, slug);
+      if (!touched.changes) return false;
+      db.query(
+        "INSERT OR REPLACE INTO skill_files (organization_id, skill_slug, path, content, size) VALUES (?, ?, ?, ?, ?)",
+      ).run(organizationId, slug, path, content, Buffer.byteLength(content));
+      return true;
+    }),
+    "STORAGE_FAILED",
+  );
+  if (written.error) return written;
+  return written.data ? ok(null) : fail("SKILL_NOT_FOUND", `Habilidade "${slug}" não encontrada.`);
+};
+
 export const insertSkill = (organizationId: string, input: CreateSkillInput): Result<null> => {
   const written = attemptSync(
     db.transaction(() => {
@@ -200,21 +245,40 @@ export const deleteSkillRow = (organizationId: string, slug: string): Result<nul
   return deleted.data ? ok(null) : fail("SKILL_NOT_FOUND", `Habilidade "${slug}" não encontrada.`);
 };
 
-export const upsertSkills = (organizationId: string, skills: CreateSkillInput[]): Result<number> =>
+export const upsertSkills = (organizationId: string, skills: ImportedSkillInput[]): Result<ImportResultView> =>
   attemptSync(
     db.transaction(() => {
+      const stored = db.query<StoredSkillRow, [string, string]>(
+        `SELECT name, description, body, enabled, updated_at AS updatedAt FROM skills
+         WHERE organization_id = ? AND slug = ?`,
+      );
+      const storedFiles = db.query<SkillFileInput, [string, string]>(
+        "SELECT path, content FROM skill_files WHERE organization_id = ? AND skill_slug = ?",
+      );
       const upsert = db.query(
         `INSERT INTO skills (organization_id, slug, name, description, body, enabled) VALUES (?, ?, ?, ?, ?, ?)
          ON CONFLICT(organization_id, slug) DO UPDATE SET
            name = excluded.name, description = excluded.description, body = excluded.body,
            enabled = excluded.enabled, updated_at = ${SQL_NOW}`,
       );
+      const skipped: string[] = [];
+      const unchanged: string[] = [];
       for (const skill of skills) {
+        const current = stored.get(organizationId, skill.slug);
+        if (current && isSameSkill(current, storedFiles.all(organizationId, skill.slug), skill)) {
+          unchanged.push(skill.slug);
+          continue;
+        }
+        if (isStoredNewer(current?.updatedAt, skill.updatedAt)) {
+          skipped.push(skill.slug);
+          continue;
+        }
         upsert.run(organizationId, skill.slug, skill.name, skill.description, skill.body, skill.enabled ? 1 : 0);
         replaceFiles(organizationId, skill.slug, skill.files);
         syncSearch(organizationId, skill);
       }
-      return skills.length;
+      const written = skills.length - skipped.length - unchanged.length;
+      return { imported: written + unchanged.length, written, skipped, unchanged };
     }),
     "STORAGE_FAILED",
   );

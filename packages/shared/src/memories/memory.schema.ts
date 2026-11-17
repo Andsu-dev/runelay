@@ -36,6 +36,22 @@ export const listMemoriesSchema = paginationSchema.extend({
   pinned: z.enum(["true", "false"]).optional(),
 });
 
+export const pushedAtSchema = z.iso.datetime({ offset: true });
+
+export const importedMemorySchema = createMemorySchema.extend({ updatedAt: pushedAtSchema.optional() });
+
 export const importMemoriesSchema = z.object({
-  memories: z.array(createMemorySchema).max(2000),
+  memories: z.array(importedMemorySchema).max(2000),
 });
+
+export const memoryWriteSchema = z.object({
+  slug: memorySlugSchema,
+  body: memoryFields.body,
+  name: memoryFields.name.optional(),
+  description: memoryFields.description.optional(),
+  type: memoryTypeSchema.optional(),
+});
+
+export const MEMORY_IMPORT_TOOL_LIMIT = 200;
+
+export const memoryImportItemSchema = memoryWriteSchema.extend({ createdAt: pushedAtSchema.optional() });

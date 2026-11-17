@@ -3,6 +3,8 @@ import {
   attemptSync,
   type CreateMemoryInput,
   fail,
+  type ImportedMemoryInput,
+  type ImportResultView,
   type ListMemoriesInput,
   type MemoryHealthView,
   type MemoryListItemView,
@@ -16,11 +18,17 @@ import {
 } from "@runelay/shared";
 import { db } from "@/db/connection";
 import { MEMORY_LIST_COLUMNS, MEMORY_REF_COLUMNS } from "@/modules/memories/constants/memory.constants";
-import type { MemoryContent, MemoryDetailRow, MemoryListRow } from "@/modules/memories/types/memory.types";
+import type {
+  MemoryContent,
+  MemoryDetailRow,
+  MemoryListRow,
+  StoredMemoryRow,
+} from "@/modules/memories/types/memory.types";
 import { parseLinks } from "@/modules/memories/utils/parse-links";
 import { SQL_NOW } from "@/shared/constants/sql.constants";
 import { toFtsQuery } from "@/shared/utils/fts-query";
 import { pageOf } from "@/shared/utils/page";
+import { isStoredNewer } from "@/shared/utils/stored-newer";
 
 const syncDerived = (organizationId: string, { slug, name, description, body }: MemoryContent) => {
   db.query("DELETE FROM memory_links WHERE organization_id = ? AND from_slug = ?").run(organizationId, slug);
@@ -37,6 +45,13 @@ const syncDerived = (organizationId: string, { slug, name, description, body }: 
     organizationId,
   );
 };
+
+const isSameMemory = (stored: StoredMemoryRow, memory: ImportedMemoryInput) =>
+  stored.name === memory.name &&
+  stored.description === memory.description &&
+  stored.type === memory.type &&
+  stored.body === memory.body &&
+  stored.pinned === (memory.pinned ? 1 : 0);
 
 const snapshotVersion = (organizationId: string, slug: string) =>
   db
@@ -134,15 +149,29 @@ export const memoryExists = (organizationId: string, slug: string): Result<boole
   return row.error ? row : ok(row.data !== null);
 };
 
-export const insertMemory = (organizationId: string, input: CreateMemoryInput): Result<null> => {
+export const insertMemory = (
+  organizationId: string,
+  input: CreateMemoryInput,
+  createdAt: string | null = null,
+): Result<null> => {
   const written = attemptSync(
     db.transaction(() => {
       const inserted = db
         .query(
-          `INSERT INTO memories (organization_id, slug, name, description, type, body, pinned) VALUES (?, ?, ?, ?, ?, ?, ?)
+          `INSERT INTO memories (organization_id, slug, name, description, type, body, pinned, created_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, COALESCE(?, ${SQL_NOW}))
            ON CONFLICT(organization_id, slug) DO NOTHING`,
         )
-        .run(organizationId, input.slug, input.name, input.description, input.type, input.body, input.pinned ? 1 : 0);
+        .run(
+          organizationId,
+          input.slug,
+          input.name,
+          input.description,
+          input.type,
+          input.body,
+          input.pinned ? 1 : 0,
+          createdAt,
+        );
       if (!inserted.changes) return false;
       syncDerived(organizationId, input);
       return true;
@@ -243,9 +272,13 @@ export const describeHealth = (organizationId: string, staleDays: number): Resul
     return { staleDays, stale, brokenLinks, isolated, total };
   }, "STORAGE_FAILED");
 
-export const upsertMemories = (organizationId: string, memories: CreateMemoryInput[]): Result<number> =>
+export const upsertMemories = (organizationId: string, memories: ImportedMemoryInput[]): Result<ImportResultView> =>
   attemptSync(
     db.transaction(() => {
+      const stored = db.query<StoredMemoryRow, [string, string]>(
+        `SELECT name, description, type, body, pinned, updated_at AS updatedAt FROM memories
+         WHERE organization_id = ? AND slug = ?`,
+      );
       const version = db.query(
         `INSERT INTO memory_versions (organization_id, slug, name, description, body)
          SELECT organization_id, slug, name, description, body FROM memories
@@ -255,11 +288,20 @@ export const upsertMemories = (organizationId: string, memories: CreateMemoryInp
         `INSERT INTO memories (organization_id, slug, name, description, type, body, pinned) VALUES (?, ?, ?, ?, ?, ?, ?)
          ON CONFLICT(organization_id, slug) DO UPDATE SET
            name = excluded.name, description = excluded.description, type = excluded.type, body = excluded.body,
-           pinned = excluded.pinned, updated_at = ${SQL_NOW}
-         WHERE memories.name <> excluded.name OR memories.description <> excluded.description
-           OR memories.type <> excluded.type OR memories.body <> excluded.body OR memories.pinned <> excluded.pinned`,
+           pinned = excluded.pinned, updated_at = ${SQL_NOW}`,
       );
+      const skipped: string[] = [];
+      const unchanged: string[] = [];
       for (const memory of memories) {
+        const current = stored.get(organizationId, memory.slug);
+        if (current && isSameMemory(current, memory)) {
+          unchanged.push(memory.slug);
+          continue;
+        }
+        if (isStoredNewer(current?.updatedAt, memory.updatedAt)) {
+          skipped.push(memory.slug);
+          continue;
+        }
         version.run(organizationId, memory.slug, memory.name, memory.description, memory.body);
         upsert.run(
           organizationId,
@@ -272,7 +314,8 @@ export const upsertMemories = (organizationId: string, memories: CreateMemoryInp
         );
         syncDerived(organizationId, memory);
       }
-      return memories.length;
+      const written = memories.length - skipped.length - unchanged.length;
+      return { imported: written + unchanged.length, written, skipped, unchanged };
     }),
     "STORAGE_FAILED",
   );

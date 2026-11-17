@@ -1,26 +1,40 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { contextSearchSchema, memorySlugSchema, memoryTypeSchema, ok, skillSlugSchema } from "@runelay/shared";
+import {
+  contextSearchSchema,
+  MEMORY_IMPORT_TOOL_LIMIT,
+  memorySlugSchema,
+  memoryWriteSchema,
+  ok,
+  skillFileSchema,
+  skillSlugSchema,
+  skillWriteSchema,
+} from "@runelay/shared";
 import { z } from "zod";
 import { env } from "@/config/env";
 import { RESERVED_SOURCES } from "@/modules/activity/constants/activity.constants";
 import { recordToolCall } from "@/modules/activity/repositories/activity.repository";
 import { findTool } from "@/modules/connectors/services/connection.service";
 import { pinnedInstructions, searchContext } from "@/modules/context/services/context.service";
-import { GATEWAY_INFO, GATEWAY_INSTRUCTIONS, TOOL_DESCRIPTIONS } from "@/modules/gateway/constants/gateway.constants";
+import {
+  GATEWAY_INFO,
+  GATEWAY_INSTRUCTIONS,
+  GATEWAY_INSTRUCTIONS_MAX_CHARS,
+  TOOL_DESCRIPTIONS,
+} from "@/modules/gateway/constants/gateway.constants";
 import { toToolResponse } from "@/modules/gateway/mcp/tool-response";
 import { runCode } from "@/modules/gateway/services/execute.service";
 import { searchTools } from "@/modules/gateway/services/search.service";
 import { callTrackedTool } from "@/modules/gateway/services/tool-call.service";
 import type { GatewayCaller } from "@/modules/gateway/types/gateway.types";
-import { findMemory, writeMemory } from "@/modules/memories/services/memory.service";
-import { findSkill, findSkillFile } from "@/modules/skills/services/skill.service";
+import { findMemory, importMemoryItems, writeMemory } from "@/modules/memories/services/memory.service";
+import { findSkill, findSkillFile, writeSkill, writeSkillFile } from "@/modules/skills/services/skill.service";
 import { listSourceViews } from "@/modules/sources/services/source.service";
 import { redactView } from "@/modules/sources/utils/redact-config";
 
 export const createGatewayServer = (caller: GatewayCaller) => {
   const { organizationId } = caller;
-  const pinned = pinnedInstructions(organizationId);
+  const pinned = pinnedInstructions(organizationId, GATEWAY_INSTRUCTIONS_MAX_CHARS - GATEWAY_INSTRUCTIONS.length - 2);
   const instructions = [GATEWAY_INSTRUCTIONS, pinned.data ?? ""].filter(Boolean).join("\n\n");
   const server = new McpServer(GATEWAY_INFO, { instructions });
   const track = async (source: string, tool: string, run: () => CallToolResult | Promise<CallToolResult>) => {
@@ -98,15 +112,35 @@ export const createGatewayServer = (caller: GatewayCaller) => {
     "write_memory",
     {
       description: TOOL_DESCRIPTIONS.writeMemory,
-      inputSchema: {
-        slug: memorySlugSchema,
-        body: z.string().max(100_000),
-        name: z.string().trim().min(1).max(200).optional(),
-        description: z.string().trim().max(400).optional(),
-        type: memoryTypeSchema.optional(),
-      },
+      inputSchema: memoryWriteSchema.shape,
     },
     (input) => track(RESERVED_SOURCES.memories, input.slug, () => toToolResponse(writeMemory(organizationId, input))),
+  );
+
+  server.registerTool(
+    "import_memory",
+    {
+      description: TOOL_DESCRIPTIONS.importMemory,
+      inputSchema: {
+        items: z
+          .array(
+            z.object({
+              slug: z.string(),
+              body: z.string(),
+              name: z.string().optional(),
+              description: z.string().optional(),
+              type: z.string().optional(),
+              createdAt: z.string().optional(),
+            }),
+          )
+          .min(1)
+          .max(MEMORY_IMPORT_TOOL_LIMIT),
+      },
+    },
+    ({ items }) =>
+      track(RESERVED_SOURCES.memories, "import_memory", () =>
+        toToolResponse(ok(importMemoryItems(organizationId, items))),
+      ),
   );
 
   server.registerTool(
@@ -120,6 +154,22 @@ export const createGatewayServer = (caller: GatewayCaller) => {
     { description: TOOL_DESCRIPTIONS.readSkillFile, inputSchema: { slug: skillSlugSchema, path: z.string().min(1) } },
     ({ slug, path }) =>
       track(RESERVED_SOURCES.skills, slug, () => toToolResponse(findSkillFile(organizationId, slug, path))),
+  );
+
+  server.registerTool(
+    "write_skill",
+    { description: TOOL_DESCRIPTIONS.writeSkill, inputSchema: skillWriteSchema.shape },
+    (input) => track(RESERVED_SOURCES.skills, input.slug, () => toToolResponse(writeSkill(organizationId, input))),
+  );
+
+  server.registerTool(
+    "write_skill_file",
+    {
+      description: TOOL_DESCRIPTIONS.writeSkillFile,
+      inputSchema: { slug: skillSlugSchema, ...skillFileSchema.shape },
+    },
+    ({ slug, ...file }) =>
+      track(RESERVED_SOURCES.skills, slug, () => toToolResponse(writeSkillFile(organizationId, slug, file))),
   );
 
   return server;

@@ -1,9 +1,12 @@
 import type { z } from "zod";
 import type {
   createMemorySchema,
+  importedMemorySchema,
   importMemoriesSchema,
   listMemoriesSchema,
+  memoryImportItemSchema,
   memoryTypeSchema,
+  memoryWriteSchema,
   updateMemorySchema,
 } from "./memory.schema";
 
@@ -12,6 +15,16 @@ export type CreateMemoryInput = z.infer<typeof createMemorySchema>;
 export type UpdateMemoryInput = z.infer<typeof updateMemorySchema>;
 export type ListMemoriesInput = z.infer<typeof listMemoriesSchema>;
 export type ImportMemoriesInput = z.infer<typeof importMemoriesSchema>;
+export type ImportedMemoryInput = z.infer<typeof importedMemorySchema>;
+export type MemoryWriteInput = z.infer<typeof memoryWriteSchema>;
+export type MemoryImportItemInput = z.infer<typeof memoryImportItemSchema>;
+
+export interface ImportResultView {
+  imported: number;
+  written: number;
+  skipped: string[];
+  unchanged: string[];
+}
 
 export interface MemoryListItemView {
   slug: string;
