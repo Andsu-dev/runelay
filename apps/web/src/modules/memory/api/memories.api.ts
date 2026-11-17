@@ -1,5 +1,6 @@
 import type {
   CreateMemoryInput,
+  MemoryGraphView,
   MemoryHealthView,
   MemoryListItemView,
   MemoryType,
@@ -53,6 +54,11 @@ export const memoryHealthQuery = (days: number) =>
     queryKey: ["memories", "health", days],
     queryFn: () => api.get<MemoryHealthView>(`/memories/health?days=${days}`),
   });
+
+export const memoryGraphQuery = queryOptions({
+  queryKey: ["memories", "graph"],
+  queryFn: () => api.get<MemoryGraphView>("/memories/graph"),
+});
 
 export const createMemory = (input: CreateMemoryInput) => api.post<MemoryView>("/memories", input);
 

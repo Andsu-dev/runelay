@@ -1,11 +1,13 @@
-import { Add01Icon } from "@hugeicons/core-free-icons";
+import { Add01Icon, ListViewIcon, NeuralNetworkIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { z } from "zod";
 import { Button } from "@/components/ui/action/button";
 import { HideNamesToggle } from "@/components/ui/action/hide-names-toggle";
 import { PageHeader } from "@/components/ui/display/page-header";
+import { SegmentedControl } from "@/components/ui/display/segmented-control";
+import { Skeleton } from "@/components/ui/display/skeleton";
 import { SearchField } from "@/components/ui/form/search-field";
 import { useT } from "@/lib/i18n";
 import type { MemoryListFilter } from "@/modules/memory/api/memories.api";
@@ -13,52 +15,80 @@ import { CreateMemoryDialog } from "@/modules/memory/components/create-memory-di
 import { MemoryHealthCard } from "@/modules/memory/components/memory-health-card";
 import { MemoryList } from "@/modules/memory/components/memory-list";
 import { MemoryTotal } from "@/modules/memory/components/memory-total";
-import { MEMORY_FILTER_TITLE, MEMORY_FILTER_VALUES } from "@/modules/memory/constants/memory.constants";
+import { MEMORY_FILTER_TITLE, MEMORY_FILTER_VALUES, MEMORY_VIEWS } from "@/modules/memory/constants/memory.constants";
+
+const MemoryGraph = lazy(() =>
+  import("@/modules/memory/components/memory-graph").then((module) => ({ default: module.MemoryGraph })),
+);
 
 export const Route = createFileRoute("/_app/memory/")({
   validateSearch: z.object({
     query: z.string().optional(),
     filter: z.enum(MEMORY_FILTER_VALUES).optional(),
+    view: z.enum(MEMORY_VIEWS).optional(),
   }),
   component: MemoryPage,
 });
 
 function MemoryPage() {
   const t = useT();
-  const { query = "", filter = "all" } = Route.useSearch();
+  const { query = "", filter = "all", view = "list" } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
   const [creating, setCreating] = useState(false);
+  const search = (value: string) =>
+    navigate({ search: (prev) => ({ ...prev, query: value || undefined }), replace: true });
   const listFilter: MemoryListFilter = {
     query,
     type: filter === "all" || filter === "pinned" ? undefined : filter,
     pinned: filter === "pinned" || undefined,
   };
 
+  const actions = (
+    <>
+      <SegmentedControl
+        label={t("memory.view.label")}
+        value={view}
+        onChange={(next) =>
+          navigate({ search: (prev) => ({ ...prev, view: next === "list" ? undefined : next }), replace: true })
+        }
+        options={[
+          { value: "list", label: t("memory.view.list"), icon: ListViewIcon },
+          { value: "graph", label: t("memory.view.graph"), icon: NeuralNetworkIcon },
+        ]}
+      />
+      <HideNamesToggle />
+      <Button onClick={() => setCreating(true)} size={view === "graph" ? "default" : "sm"}>
+        <HugeiconsIcon icon={Add01Icon} strokeWidth={1.8} />
+        {t("memory.page.create")}
+      </Button>
+    </>
+  );
+
+  if (view === "graph") {
+    return (
+      <section
+        data-full-bleed
+        className="relative h-[calc(100dvh-2.75rem)] overflow-hidden max-lg:rounded-t-xl lg:h-[calc(100dvh-1rem)] lg:rounded-xl"
+      >
+        <Suspense fallback={<Skeleton className="absolute inset-0 rounded-none bg-muted/40" />}>
+          <MemoryGraph title={t(MEMORY_FILTER_TITLE[filter])} query={query} onQueryChange={search} actions={actions} />
+        </Suspense>
+        <CreateMemoryDialog open={creating} onOpenChange={setCreating} />
+      </section>
+    );
+  }
+
   return (
     <section className="flex flex-col gap-5">
       <PageHeader
         title={t(MEMORY_FILTER_TITLE[filter])}
         description={<MemoryTotal filter={listFilter} />}
-        actions={
-          <div className="flex items-center gap-2">
-            <HideNamesToggle />
-            <Button size="sm" onClick={() => setCreating(true)}>
-              <HugeiconsIcon icon={Add01Icon} strokeWidth={1.8} />
-              {t("memory.page.create")}
-            </Button>
-          </div>
-        }
+        actions={actions}
       />
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
         <div className="order-2 flex min-w-0 flex-col gap-4 lg:order-1">
           <div className="flex flex-col gap-3">
-            <SearchField
-              value={query}
-              placeholder={t("memory.page.search")}
-              onSearch={(value) =>
-                navigate({ search: (prev) => ({ ...prev, query: value || undefined }), replace: true })
-              }
-            />
+            <SearchField value={query} placeholder={t("memory.page.search")} onSearch={search} />
           </div>
           <MemoryList filter={listFilter} />
         </div>
