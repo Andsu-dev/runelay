@@ -1,6 +1,17 @@
 import { emitKeypressEvents } from "node:readline";
 import { HIDE_CURSOR, SHOW_CURSOR } from "@/constants/terminal.constants";
-import { accent, bold, dim, glyphs, iconFor, padEnd, terminalColumns, truncate, unicode, visibleWidth } from "@/lib/terminal";
+import {
+  accent,
+  bold,
+  dim,
+  glyphs,
+  iconFor,
+  padEnd,
+  terminalColumns,
+  truncate,
+  unicode,
+  visibleWidth,
+} from "@/lib/terminal";
 
 export interface MenuItem {
   id: string;

@@ -19,7 +19,9 @@ test("grouped help lists every registered command with its description", () => {
   }
   const rows = help.split("\n").filter((line) => /^ {2}\S \S/.test(line));
   const summaries = Object.values(COMMAND_GUIDE).map((guide) => guide.summary);
-  const starts = rows.flatMap((line) => summaries.filter((summary) => line.endsWith(summary)).map(() => line.lastIndexOf("  ") + 2));
+  const starts = rows.flatMap((line) =>
+    summaries.filter((summary) => line.endsWith(summary)).map(() => line.lastIndexOf("  ") + 2),
+  );
   expect(new Set(starts).size).toBe(1);
   expect(new Set(rows.map((line) => line.length - line.trimStart().length)).size).toBe(1);
   expect(rows.length).toBeGreaterThan(10);

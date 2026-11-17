@@ -17,7 +17,8 @@ export interface AgentKeyDeps {
 
 export const hostLabel = (name = hostname()) => name.replace(/\.local$/, "") || "computer";
 
-export const agentKeyName = (agent: string, host = hostLabel()) => `${agent} · ${host}`.slice(0, AGENT_KEY_NAME_MAX).trim();
+export const agentKeyName = (agent: string, host = hostLabel()) =>
+  `${agent} · ${host}`.slice(0, AGENT_KEY_NAME_MAX).trim();
 
 export const bearerKey = (authorization: unknown) =>
   typeof authorization === "string" ? (authorization.match(/^Bearer\s+(\S+)$/)?.[1] ?? null) : null;
@@ -29,7 +30,8 @@ export const resolveAgentKey = async (
   { issue, works, host }: AgentKeyDeps,
 ): Promise<AgentKey> => {
   const keyName = agentKeyName(agent, host);
-  if (currentKey && currentKey !== connection.apiKey && (await works(keyName, currentKey))) return { apiKey: currentKey, keyName };
+  if (currentKey && currentKey !== connection.apiKey && (await works(keyName, currentKey)))
+    return { apiKey: currentKey, keyName };
   const issued = await issue(keyName);
   if (issued.error) return { apiKey: connection.apiKey, keyName: null };
   return { apiKey: issued.data.key, keyName: issued.data.name ?? keyName };

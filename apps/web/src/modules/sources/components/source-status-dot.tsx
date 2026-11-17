@@ -18,10 +18,7 @@ export function SourceStatusDot({ status, enabled, local = false }: SourceStatus
       aria-label={
         !enabled ? t("sources.status.paused") : local ? t("sources.status.agentLocal") : t(STATUS_LABEL[status])
       }
-      className={cn(
-        "size-2 shrink-0 rounded-full",
-        enabled && !local ? STATUS_DOT[status] : "bg-muted-foreground/30",
-      )}
+      className={cn("size-2 shrink-0 rounded-full", enabled && !local ? STATUS_DOT[status] : "bg-muted-foreground/30")}
     />
   );
 }

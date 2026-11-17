@@ -1,7 +1,7 @@
 import { ok, type Result } from "@runelay/shared";
 import { cliEnv } from "@/config/env";
 import { printJson, wantsJson } from "@/lib/json-output";
-import { accent, truncate, terminalColumns } from "@/lib/terminal";
+import { accent, terminalColumns, truncate } from "@/lib/terminal";
 import { formatNote, printCard, type Step, startStep, toneMark } from "@/lib/ui";
 import { buildAgentReports, toCheckReport } from "@/services/agent-report.service";
 import { runDoctor } from "@/services/doctor.service";
@@ -50,7 +50,10 @@ export const doctorCommand = async (args: string[] = []): Promise<Result<null>> 
   printCard({
     title: warnings ? "Needs attention" : "All good",
     stats: [
-      ["Checks", `${passed} ok · ${warnings} ${warnings === 1 ? "warning" : "warnings"} · ${checks.length - passed - warnings} notes`],
+      [
+        "Checks",
+        `${passed} ok · ${warnings} ${warnings === 1 ? "warning" : "warnings"} · ${checks.length - passed - warnings} notes`,
+      ],
     ],
     next: warnings ? (firstFix ?? "fix the warnings above, then run runelay doctor again") : "nothing to do",
   });

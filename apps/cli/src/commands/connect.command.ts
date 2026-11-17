@@ -11,8 +11,8 @@ import {
   TOML_HEADER_KEYS,
   TOML_RUNELAY_HEADER,
 } from "@/constants/clients.constants";
-import { getIn, isObject } from "@/lib/json";
 import { plural } from "@/lib/format";
+import { getIn, isObject } from "@/lib/json";
 import { printJson, wantsJson } from "@/lib/json-output";
 import { formatRow, printCard, type Step, startStep } from "@/lib/ui";
 import { type AgentKeyDeps, bearerKey, remoteAgentKeyDeps, resolveAgentKey } from "@/services/agent-keys.service";

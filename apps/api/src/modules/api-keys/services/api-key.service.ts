@@ -1,5 +1,12 @@
 import { timingSafeEqual } from "node:crypto";
-import { type AgentApiKeyView, type AgentKeyCheckView, attempt, type CreatedApiKeyView, ok, type Result } from "@runelay/shared";
+import {
+  type AgentApiKeyView,
+  type AgentKeyCheckView,
+  attempt,
+  type CreatedApiKeyView,
+  ok,
+  type Result,
+} from "@runelay/shared";
 import {
   deleteApiKeyRow,
   findApiKeyIdsByName,

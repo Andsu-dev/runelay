@@ -46,7 +46,9 @@ export const detectMotion = (args: string[], env: Env, isTTY: boolean) =>
 export const detectUnicode = (env: Env, platform: string) =>
   platform !== "win32"
     ? env.TERM !== "linux"
-    : Boolean(env.WT_SESSION || env.TERM_PROGRAM === "vscode" || env.TERM === "xterm-256color" || env.TERM === "alacritty");
+    : Boolean(
+        env.WT_SESSION || env.TERM_PROGRAM === "vscode" || env.TERM === "xterm-256color" || env.TERM === "alacritty",
+      );
 
 export const detectHyperlinks = (env: Env, isTTY: boolean) => {
   if (!isTTY || enabled(env.CI)) return false;

@@ -73,4 +73,13 @@ export const SHOW_CURSOR = "\x1b[?25h";
 
 export const CLEAR_LINE = "\r\x1b[2K";
 
-export const HYPERLINK_TERMINALS = ["iTerm.app", "WezTerm", "vscode", "ghostty", "Hyper", "Tabby", "rio", "WarpTerminal"];
+export const HYPERLINK_TERMINALS = [
+  "iTerm.app",
+  "WezTerm",
+  "vscode",
+  "ghostty",
+  "Hyper",
+  "Tabby",
+  "rio",
+  "WarpTerminal",
+];

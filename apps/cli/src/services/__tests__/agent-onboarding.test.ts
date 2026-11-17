@@ -2,7 +2,14 @@ import { expect, test } from "bun:test";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { type AgentApiKeyView, type ContextBriefView, type ContextClient, fail, ok, type Result } from "@runelay/shared";
+import {
+  type AgentApiKeyView,
+  type ContextBriefView,
+  type ContextClient,
+  fail,
+  ok,
+  type Result,
+} from "@runelay/shared";
 
 const home = mkdtempSync(join(tmpdir(), "runelay-onboarding-"));
 process.env.RUNELAY_HOME = home;
@@ -12,10 +19,11 @@ const { writeBriefs, withBlock } = await import("../brief-writer.service");
 const { briefLeadFor, instructionTargetsFor, RUNELAY_TOOLS, CONTEXT_START_MARKER, CONTEXT_END_MARKER } = await import(
   "../../constants/context.constants"
 );
-const { agentKeyName, bearerKey, hostLabel, remoteAgentKeyDeps, resolveAgentKey } = await import("../agent-keys.service");
-const { allowClaudeTools, allowCursorTools, codexToolApprovals, cursorToolPermissions, withCursorPermissions } = await import(
-  "../tool-approvals.service"
+const { agentKeyName, bearerKey, hostLabel, remoteAgentKeyDeps, resolveAgentKey } = await import(
+  "../agent-keys.service"
 );
+const { allowClaudeTools, allowCursorTools, codexToolApprovals, cursorToolPermissions, withCursorPermissions } =
+  await import("../tool-approvals.service");
 const { tomlAuthorization, tomlBlock, withKeyNames, withTomlBlock } = await import("../../commands/connect.command");
 const { mcpTargetsFor } = await import("../../constants/mcp-targets.constants");
 const { readMcpAuthorization } = await import("../mcp-registration.service");
@@ -93,9 +101,9 @@ test("briefs are written between the markers only, once, and only for installed 
   expect(kimi).toContain("brief for codex");
   expect(existsSync(join(root, ".openclaw", "workspace", "AGENTS.md"))).toBe(true);
   const second = await writeBriefs(fetcher, targets);
-  expect(second.filter((outcome) => outcome.status !== "skipped").every((outcome) => outcome.status === "unchanged")).toBe(
-    true,
-  );
+  expect(
+    second.filter((outcome) => outcome.status !== "skipped").every((outcome) => outcome.status === "unchanged"),
+  ).toBe(true);
   expect(readFileSync(join(root, ".kimi-code", "AGENTS.md"), "utf8").match(/runelay:start/g)).toHaveLength(1);
 });
 
@@ -154,9 +162,10 @@ test("agent keys are named per agent and host, reused when valid and issued othe
   expect(await resolveAgentKey(connection, "Cursor", null, deps(true, issued("rnl_x", "")))).toMatchObject({
     keyName: "",
   });
-  expect(
-    await resolveAgentKey(connection, "Cursor", null, deps(true, fail("NOT_FOUND", "old server"))),
-  ).toEqual({ apiKey: "computer", keyName: null });
+  expect(await resolveAgentKey(connection, "Cursor", null, deps(true, fail("NOT_FOUND", "old server")))).toEqual({
+    apiKey: "computer",
+    keyName: null,
+  });
   expect(names).toEqual(["Cursor · mac", "Cursor · mac", "Cursor · mac", "Cursor · mac"]);
 });
 
@@ -199,7 +208,8 @@ test("agent key checks and rotations authenticate with the computer key, never t
 
 test("codex approvals cover only runelay memory tools, never call_tool or execute", () => {
   const block = codexToolApprovals();
-  for (const tool of RUNELAY_TOOLS) expect(block).toContain(`[mcp_servers.runelay.tools.${tool}]\napproval_mode = "approve"`);
+  for (const tool of RUNELAY_TOOLS)
+    expect(block).toContain(`[mcp_servers.runelay.tools.${tool}]\napproval_mode = "approve"`);
   expect(block).not.toContain("call_tool");
   expect(block).not.toContain("execute");
   expect(cursorToolPermissions(["read_memory"])).toEqual(["Mcp(runelay:read_memory)"]);
@@ -279,7 +289,10 @@ test("the authorization already saved in an agent config is read back", () => {
   const targets = mcpTargetsFor(root);
   const target = (id: string) => targets.find((candidate) => candidate.id === id) ?? targets[0]!;
   expect(readMcpAuthorization(target("cursor"))).toBeNull();
-  write(join(root, ".cursor", "mcp.json"), JSON.stringify({ mcpServers: { runelay: { headers: { Authorization: "Bearer a" } } } }));
+  write(
+    join(root, ".cursor", "mcp.json"),
+    JSON.stringify({ mcpServers: { runelay: { headers: { Authorization: "Bearer a" } } } }),
+  );
   expect(readMcpAuthorization(target("cursor"))).toBe("Bearer a");
   write(join(root, ".gemini", "settings.json"), JSON.stringify({ mcpServers: { runelay: { url: "u" } } }));
   expect(readMcpAuthorization(target("gemini"))).toBeNull();

@@ -6,7 +6,7 @@ const keyLine = (key: string) => new RegExp(`^\\s*${escapeRegExp(key)}\\s*=`);
 
 const isHeader = (line: string) => /^\s*\[/.test(line);
 
-const valueOf = (line: string) =>
+const readValue = (line: string) =>
   line
     .slice(line.indexOf("=") + 1)
     .replace(/\s+#.*$/, "")
@@ -32,10 +32,10 @@ export const readTomlValue = (content: string, table: string, key: string) => {
   const section = sectionOf(lines, table);
   if (section) {
     const line = lines.slice(section.start + 1, section.end).find((entry) => keyLine(key).test(entry));
-    if (line) return valueOf(line);
+    if (line) return readValue(line);
   }
   const dotted = lines.slice(0, rootEnd(lines)).find((entry) => keyLine(`${table}.${key}`).test(entry));
-  return dotted ? valueOf(dotted) : undefined;
+  return dotted ? readValue(dotted) : undefined;
 };
 
 export const setTomlValue = (content: string, table: string, key: string, value: string) => {

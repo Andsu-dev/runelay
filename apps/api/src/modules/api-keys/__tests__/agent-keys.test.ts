@@ -144,7 +144,11 @@ test("a failed revoke removes the new key and keeps the old one", async () => {
   const first = (await body<AgentApiKeyView>(await issue("Hermes Agent · laptop"))).data;
   let faults = 0;
   const result = await withQueryFaultAsync(
-    (sql) => sql.includes("DELETE FROM api_key_secrets") && (faults += 1) === 1,
+    (sql) => {
+      if (!sql.includes("DELETE FROM api_key_secrets")) return false;
+      faults += 1;
+      return faults === 1;
+    },
     () => issueAgentApiKey(account.organizationId, "Hermes Agent · laptop"),
   );
   expect(result.error?.code).toBe("STORAGE_FAILED");

@@ -31,7 +31,9 @@ const halfBlock = (top: boolean, bottom: boolean) => (top && bottom ? "█" : to
 
 export const rasterizeLogo = () => {
   const rows = Array.from({ length: PIXEL_ROWS / 2 }, (_, row) =>
-    Array.from({ length: COLUMNS }, (_, column) => halfBlock(filled(column, row * 2), filled(column, row * 2 + 1))).join(""),
+    Array.from({ length: COLUMNS }, (_, column) =>
+      halfBlock(filled(column, row * 2), filled(column, row * 2 + 1)),
+    ).join(""),
   );
   const used = Array.from({ length: COLUMNS }, (_, column) => rows.some((row) => row[column] !== " "));
   const first = used.indexOf(true);

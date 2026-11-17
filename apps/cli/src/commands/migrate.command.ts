@@ -8,17 +8,17 @@ import { ARCHIVE_DIR } from "@/constants/agent-memory.constants";
 import { CLIENT_AGENT_LABELS, type ClientId } from "@/constants/clients.constants";
 import { CLAUDE_PROJECTS_DIR, EXTRA_MEMORY_SOURCES } from "@/constants/context.constants";
 import { openBrowser } from "@/lib/browser";
-import { printJson, wantsJson } from "@/lib/json-output";
-import { normalizeMcpUrl } from "@/lib/url";
 import { plural, shortPath } from "@/lib/format";
+import { printJson, wantsJson } from "@/lib/json-output";
 import { ask, bold, dim, fileLink, hyperlink, interactive, mark } from "@/lib/terminal";
 import { formatNote, formatRow, printCard, startStep } from "@/lib/ui";
+import { normalizeMcpUrl } from "@/lib/url";
 import { buildAgentReports, toCheckReport } from "@/services/agent-report.service";
 import { removeMigratedServers, scanClientConfigs } from "@/services/client-config.service";
 import { resolveConnection } from "@/services/config.service";
 import { collectContext } from "@/services/context-collector.service";
-import { listMemoryDirectories } from "@/services/context-reader.service";
 import { pushContext } from "@/services/context-push.service";
+import { listMemoryDirectories } from "@/services/context-reader.service";
 import {
   EMPTY_KEYCHAIN_PLAN,
   planKeychainReads,
@@ -114,7 +114,9 @@ const sendEverything = async (connection: Connection, plan: MigrationPlan, conte
   for (const name of sources.data.connected) accounts.row(formatRow({ tone: "ok", name, message: "connected" }));
   for (const skipped of sources.data.skipped)
     accounts.row(formatRow({ tone: "skip", name: skipped.name, message: `skipped, ${skipped.reason}` }));
-  accounts.done(`${plural(sources.data.imported.length, "account", "accounts")} · ${sources.data.connected.length} connected`);
+  accounts.done(
+    `${plural(sources.data.imported.length, "account", "accounts")} · ${sources.data.connected.length} connected`,
+  );
 
   const sending = startStep(
     `Sending ${plural(context.memories.length, "memory", "memories")} and ${plural(context.skills.length, "skill", "skills")}`,
@@ -157,7 +159,9 @@ const archiveLocalMemories = (context: CollectedContext, skipped: Set<string>): 
     now: new Date(),
   });
   if (archived.error) {
-    console.log(formatRow({ tone: "error", name: "Archive", message: `local memory stayed in place: ${archived.error.message}` }));
+    console.log(
+      formatRow({ tone: "error", name: "Archive", message: `local memory stayed in place: ${archived.error.message}` }),
+    );
     return NOTHING_ARCHIVED;
   }
   const { archiveDir, moved, kept } = archived.data;
@@ -228,7 +232,9 @@ export const runMigration = async (
   const context = collectContext();
   for (const error of clients.errors) scanning.row(formatNote(error));
   for (const note of [...scan.notes, ...(verbose ? scan.verboseNotes : [])]) scanning.row(formatNote(note));
-  scanning.done(`${plural(plan.sources.length, "account", "accounts")} · ${plural(context.memories.length, "memory", "memories")} · ${plural(context.skills.length, "skill", "skills")}`);
+  scanning.done(
+    `${plural(plan.sources.length, "account", "accounts")} · ${plural(context.memories.length, "memory", "memories")} · ${plural(context.skills.length, "skill", "skills")}`,
+  );
   printSummary(plan, context);
 
   const { proceed, replace } = await askToProceed(yes, replaceFlag);
@@ -247,9 +253,12 @@ export const runMigration = async (
   const connected = connectAgents ? await runConnect(connection.data) : null;
   if (replace) {
     for (const [client, removed] of removeMigratedServers(migratedNamesByClient(plan, new Set(sent.data.imported)))) {
-      if (removed.error) console.log(formatRow({ tone: "error", name: CLIENT_AGENT_LABELS[client], message: removed.error.message }));
+      if (removed.error)
+        console.log(formatRow({ tone: "error", name: CLIENT_AGENT_LABELS[client], message: removed.error.message }));
       else if (removed.data)
-        console.log(formatRow({ tone: "ok", name: CLIENT_AGENT_LABELS[client], message: `${removed.data} direct MCPs removed` }));
+        console.log(
+          formatRow({ tone: "ok", name: CLIENT_AGENT_LABELS[client], message: `${removed.data} direct MCPs removed` }),
+        );
     }
   }
 
@@ -257,7 +266,11 @@ export const runMigration = async (
     (planned) => planned.credential?.refreshToken && sent.data.imported.includes(planned.source.name),
   );
   for (const planned of rotated)
-    console.log(formatNote(`${planned.source.name}: the provider may rotate the token, and ${planned.agent} may ask for a login again.`));
+    console.log(
+      formatNote(
+        `${planned.source.name}: the provider may rotate the token, and ${planned.agent} may ask for a login again.`,
+      ),
+    );
 
   const pending = await listSourcesByStatus(connection.data, "needs_auth");
   const pendingNames = pending.data?.map((source) => source.name) ?? [];

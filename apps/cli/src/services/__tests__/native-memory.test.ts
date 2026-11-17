@@ -61,7 +61,7 @@ test("grok: turns off memory and memory_v2 and keeps the runelay server", () => 
 test("codex: turns off the memories feature and both memories switches", () => {
   mkdirSync(join(root, ".codex"));
   const file = join(root, ".codex", "config.toml");
-  writeFileSync(file, '[features]\nweb_search = true\n\n[memories]\nuse_memories = true\n');
+  writeFileSync(file, "[features]\nweb_search = true\n\n[memories]\nuse_memories = true\n");
   expect(outcomeOf("Codex")?.data).toEqual([
     "features.memories",
     "memories.generate_memories",
@@ -116,7 +116,10 @@ test("mausbot: turns off auto recall and keeps other features", () => {
   const file = join(root, ".openmausbot", "config.json");
   writeFileSync(file, JSON.stringify({ features: { browser: true }, mcpServers: {} }));
   expect(outcomeOf("MausBot")?.data).toEqual(["features.autoRecall"]);
-  expect(JSON.parse(readFileSync(file, "utf8"))).toEqual({ features: { browser: true, autoRecall: false }, mcpServers: {} });
+  expect(JSON.parse(readFileSync(file, "utf8"))).toEqual({
+    features: { browser: true, autoRecall: false },
+    mcpServers: {},
+  });
   expect(outcomeOf("MausBot")?.data).toEqual([]);
 });
 

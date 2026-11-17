@@ -33,7 +33,8 @@ export const bannerMode = ({ args, env, isTTY }: { args: string[]; env: Env; isT
   return detectMotion(args, env, isTTY) ? "animated" : "static";
 };
 
-const FULL_WIDTH = BANNER_INDENT.length + visibleWidth(LOGO_ROWS[0] ?? "") + BANNER_GAP.length + visibleWidth(WORDMARK_ROWS[0] ?? "");
+const FULL_WIDTH =
+  BANNER_INDENT.length + visibleWidth(LOGO_ROWS[0] ?? "") + BANNER_GAP.length + visibleWidth(WORDMARK_ROWS[0] ?? "");
 
 export const renderBanner = ({
   version,

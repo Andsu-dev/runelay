@@ -31,9 +31,13 @@ export const runPush = async (connection: Connection) => {
   const read = startStep("Reading your agents");
   const { memories, skills, lines } = collectContext();
   for (const agent of new Set(lines.map((line) => line.agent)))
-    read.row(formatRow({ tone: "ok", name: agent, message: describeAgent(lines.filter((line) => line.agent === agent)) }));
+    read.row(
+      formatRow({ tone: "ok", name: agent, message: describeAgent(lines.filter((line) => line.agent === agent)) }),
+    );
   const pinned = memories.filter((memory) => memory.pinned).length;
-  read.done(`${plural(memories.length, "memory", "memories")} (${pinned} pinned) · ${plural(skills.length, "skill", "skills")}`);
+  read.done(
+    `${plural(memories.length, "memory", "memories")} (${pinned} pinned) · ${plural(skills.length, "skill", "skills")}`,
+  );
 
   const send = startStep("Sending to runelay");
   const pushed = await pushContext(connection, memories, skills);

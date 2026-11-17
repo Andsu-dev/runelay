@@ -68,7 +68,9 @@ const pullSkills = async (connection: Connection) => {
 };
 
 export const describeSkillCounts = (counts: Map<SkillPullOutcome, number>) =>
-  (["created", "updated", "unchanged"] as const).map((outcome) => `${counts.get(outcome) ?? 0} ${OUTCOME_LABELS[outcome]}`).join(" · ");
+  (["created", "updated", "unchanged"] as const)
+    .map((outcome) => `${counts.get(outcome) ?? 0} ${OUTCOME_LABELS[outcome]}`)
+    .join(" · ");
 
 export const runPull = async (connection: Connection) => {
   const briefs = await writeInstructionBriefs(connection);

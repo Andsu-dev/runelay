@@ -2,8 +2,8 @@ import { ok, type Result } from "@runelay/shared";
 import { countWarnings } from "@/commands/doctor.command";
 import { COMMAND_GROUPS, COMMAND_GUIDE, type GuideName } from "@/constants/cli.constants";
 import { PRIMARY_COMMANDS } from "@/constants/commands.constants";
-import { plural, relativeTime } from "@/lib/format";
 import { printBanner } from "@/lib/banner";
+import { plural, relativeTime } from "@/lib/format";
 import { renderHelp } from "@/lib/help";
 import { type MenuItem, runMenu } from "@/lib/menu";
 import { accent, bold, dim, glyphs, green, hyperlink, mark, yellow } from "@/lib/terminal";
@@ -55,7 +55,9 @@ const stateBadge = (id: string, snapshot: HomeSnapshot) => {
       ? yellow(`${glyphs.warn} ${plural(agentsMissing, "agent", "agents")} without runelay`)
       : green(`${glyphs.ok} ${plural(agents, "agent", "agents")}`);
   if (id === "doctor")
-    return warnings ? yellow(`${glyphs.warn} ${plural(warnings, "warning", "warnings")}`) : green(`${glyphs.ok} all good`);
+    return warnings
+      ? yellow(`${glyphs.warn} ${plural(warnings, "warning", "warnings")}`)
+      : green(`${glyphs.ok} all good`);
   if (id === "push") return lastPush ? dim(relativeTime(lastPush)) : yellow(`${glyphs.warn} never pushed`);
   return "";
 };

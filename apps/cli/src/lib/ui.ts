@@ -1,5 +1,4 @@
 import type { AppError } from "@runelay/shared";
-import { ERROR_HINTS, type ErrorHint, FALLBACK_ERROR_HINT } from "@/constants/ui.constants";
 import {
   CLEAR_LINE,
   HIDE_CURSOR,
@@ -7,6 +6,7 @@ import {
   SPINNER_INTERVAL_MS,
   type SymbolSet,
 } from "@/constants/terminal.constants";
+import { ERROR_HINTS, type ErrorHint, FALLBACK_ERROR_HINT } from "@/constants/ui.constants";
 import { formatElapsed } from "@/lib/format";
 import {
   accent,

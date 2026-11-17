@@ -2,10 +2,10 @@ import { existsSync, readFileSync } from "node:fs";
 import { type CreateSourceInput, ok, type Result } from "@runelay/shared";
 import { parseClientConfig } from "@runelay/shared/importers";
 import { CLIENT_CONFIG_FILES } from "@/constants/clients.constants";
-import { resolveConnection } from "@/services/config.service";
-import { pushSources } from "@/services/runelay-api.service";
 import { hyperlink } from "@/lib/terminal";
 import { formatRow, startStep } from "@/lib/ui";
+import { resolveConnection } from "@/services/config.service";
+import { pushSources } from "@/services/runelay-api.service";
 
 export const importCommand = async (): Promise<Result<null>> => {
   const connection = resolveConnection();
@@ -19,7 +19,13 @@ export const importCommand = async (): Promise<Result<null>> => {
       read.row(formatRow({ tone: "error", name: client, message: error.message }));
       continue;
     }
-    read.row(formatRow({ tone: found.length ? "ok" : "skip", name: client, message: found.map((source) => source.name).join(", ") || "nothing" }));
+    read.row(
+      formatRow({
+        tone: found.length ? "ok" : "skip",
+        name: client,
+        message: found.map((source) => source.name).join(", ") || "nothing",
+      }),
+    );
     for (const source of found) if (!byName.has(source.name)) byName.set(source.name, source);
   }
 
@@ -31,8 +37,11 @@ export const importCommand = async (): Promise<Result<null>> => {
     return imported;
   }
   for (const name of imported.data.imported) send.row(formatRow({ tone: "ok", name, message: "imported" }));
-  for (const { name, reason } of imported.data.skipped) send.row(formatRow({ tone: "skip", name, message: `skipped, ${reason}` }));
+  for (const { name, reason } of imported.data.skipped)
+    send.row(formatRow({ tone: "skip", name, message: `skipped, ${reason}` }));
   send.done(`${imported.data.imported.length} imported`);
-  console.log(`\nOpen ${hyperlink(connection.data.url, connection.data.url)} and sign in to the ones marked "needs reconnect".`);
+  console.log(
+    `\nOpen ${hyperlink(connection.data.url, connection.data.url)} and sign in to the ones marked "needs reconnect".`,
+  );
   return ok(null);
 };

@@ -45,11 +45,8 @@ export function SourceCard({ source }: SourceCardProps) {
             </span>
           </div>
           <span className="truncate text-xs text-muted-foreground">
-            {!enabled
-              ? t("sources.status.paused")
-              : local
-                ? t("sources.status.agentLocal")
-                : t(STATUS_LABEL[status])} · {t.plural("sources.tools", toolCount)} ·{" "}
+            {!enabled ? t("sources.status.paused") : local ? t("sources.status.agentLocal") : t(STATUS_LABEL[status])} ·{" "}
+            {t.plural("sources.tools", toolCount)} ·{" "}
             {config.kind === "google" ? <GoogleSourceSummary source={source} config={config} /> : sourceTarget(config)}
           </span>
         </div>

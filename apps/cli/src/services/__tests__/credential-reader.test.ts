@@ -1,12 +1,8 @@
 import { expect, test } from "bun:test";
 import type { ClientId } from "../../constants/clients.constants";
-import {
-  planKeychainReads,
-  readKeychainCredentials,
-  wantedKeychainSources,
-} from "../credential-reader.service";
 import type { ClientSource } from "../../types/client-config.types";
 import type { LocalCredential } from "../../types/credential.types";
+import { planKeychainReads, readKeychainCredentials, wantedKeychainSources } from "../credential-reader.service";
 
 const remote = (client: ClientId, name: string, url: string): ClientSource => ({
   client,
@@ -56,9 +52,11 @@ test("nothing to read means no keychain listing and zero prompts", () => {
     throw new Error("must not list");
   });
   expect(plan).toEqual({ codexAccounts: [], claude: false, prompts: 0 });
-  expect(readKeychainCredentials(plan, () => {
-    throw new Error("must not read");
-  })).toEqual([]);
+  expect(
+    readKeychainCredentials(plan, () => {
+      throw new Error("must not read");
+    }),
+  ).toEqual([]);
 });
 
 test("each planned item is read exactly once", () => {
@@ -69,10 +67,13 @@ test("each planned item is read exactly once", () => {
     client_id: "codex-client",
     token_response: { access_token: "a", refresh_token: "r" },
   };
-  const credentials = readKeychainCredentials({ codexAccounts: ["linear|aaa"], claude: true, prompts: 2 }, (service, account) => {
-    reads.push(`${service}:${account ?? ""}`);
-    return service === "Codex MCP Credentials" ? JSON.stringify(entry) : null;
-  });
+  const credentials = readKeychainCredentials(
+    { codexAccounts: ["linear|aaa"], claude: true, prompts: 2 },
+    (service, account) => {
+      reads.push(`${service}:${account ?? ""}`);
+      return service === "Codex MCP Credentials" ? JSON.stringify(entry) : null;
+    },
+  );
   expect(reads).toEqual(["Codex MCP Credentials:linear|aaa", "Claude Code-credentials:"]);
   expect(credentials.map(({ serverName }) => serverName)).toEqual(["linear"]);
 });

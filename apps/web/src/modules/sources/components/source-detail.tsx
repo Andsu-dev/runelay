@@ -52,12 +52,8 @@ export function SourceDetail({ source, oauthError }: SourceDetailProps) {
             </span>
           </div>
           <p className="text-[13px] text-muted-foreground">
-            {!enabled
-              ? t("sources.status.paused")
-              : local
-                ? t("sources.status.agentLocal")
-                : t(STATUS_LABEL[status])} · {t.plural("sources.tools", toolCount)} ·{" "}
-            {t("sources.loginOn", { date: formatDate(connectedAt) })}
+            {!enabled ? t("sources.status.paused") : local ? t("sources.status.agentLocal") : t(STATUS_LABEL[status])} ·{" "}
+            {t.plural("sources.tools", toolCount)} · {t("sources.loginOn", { date: formatDate(connectedAt) })}
           </p>
         </div>
         <IconAction

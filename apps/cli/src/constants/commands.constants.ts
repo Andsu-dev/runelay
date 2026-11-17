@@ -1,5 +1,4 @@
 import type { Result } from "@runelay/shared";
-import { COMMAND_ALIASES, type GuideName } from "@/constants/cli.constants";
 import { connectCommand } from "@/commands/connect.command";
 import { doctorCommand } from "@/commands/doctor.command";
 import { importCommand } from "@/commands/import.command";
@@ -13,6 +12,7 @@ import { setupCommand } from "@/commands/setup.command";
 import { sponsorCommand } from "@/commands/sponsor.command";
 import { statusCommand } from "@/commands/status.command";
 import { syncCommand } from "@/commands/sync.command";
+import { COMMAND_ALIASES, type GuideName } from "@/constants/cli.constants";
 
 export type CommandRunner = (args: string[]) => Promise<Result<null>>;
 

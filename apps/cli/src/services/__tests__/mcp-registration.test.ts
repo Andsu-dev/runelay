@@ -243,7 +243,10 @@ test("report marks the new agents as supported and reads their entry", () => {
   write(join(root, ".openclaw", "openclaw.json"), JSON.stringify({ mcp: { servers: {} } }));
   write(join(root, ".hermes", "config.yaml"), "mcp_servers:\n  runelay:\n    url: u\n");
   mkdirSync(join(root, ".kimi-code"));
-  write(join(root, ".openmausbot", "config.json"), JSON.stringify({ mcpServers: { runelay: { type: "http", url: URL } } }));
+  write(
+    join(root, ".openmausbot", "config.json"),
+    JSON.stringify({ mcpServers: { runelay: { type: "http", url: URL } } }),
+  );
   const byId = Object.fromEntries(buildAgentReports({ home: root, which: noBinary }).map((agent) => [agent.id, agent]));
   expect(byId.gemini).toMatchObject({ detected: true, mcpSupported: true, mcpRegistered: true });
   expect(byId.openclaw).toMatchObject({ detected: true, mcpSupported: true, mcpRegistered: false });

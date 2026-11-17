@@ -54,8 +54,7 @@ const okCheck = (label: string): DoctorCheck => ({ status: "ok", label, details:
 const checkNativeMemory = (input: DoctorInput): DoctorCheck[] => [
   ...inspectNativeMemory(input.nativeMemory).map(({ target, result }) => {
     const { agent } = target;
-    if (result.error)
-      return warn(`${agent}: couldn't read ${target.file}`, [result.error.message], "runelay connect");
+    if (result.error) return warn(`${agent}: couldn't read ${target.file}`, [result.error.message], "runelay connect");
     return result.data.length
       ? warn(`${agent}: native memory is on`, [`${result.data.join(", ")} in ${target.file}`], "runelay connect")
       : okCheck(`${agent}: native memory is off`);
@@ -188,8 +187,7 @@ const localSkillRoots = (directories: string[]) =>
 const checkSkillsPushed = (input: DoctorInput) => {
   const roots = localSkillRoots(input.skillDirs);
   if (!roots.length) return [okCheck("No local skills to push")];
-  if (input.lastPushAt === null)
-    return [warn(`${roots.length} local skills, never pushed`, [], "runelay push")];
+  if (input.lastPushAt === null) return [warn(`${roots.length} local skills, never pushed`, [], "runelay push")];
   const lastPushAt = input.lastPushAt;
   const changed = roots.filter((root) => latestChange(root) > lastPushAt);
   return changed.length

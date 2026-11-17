@@ -16,10 +16,17 @@ import { resolveConnection } from "@/services/config.service";
 import type { Connection } from "@/types/config.types";
 import type { SetupReport } from "@/types/json-report.types";
 
-export const SETUP_PHASES = ["Signing in", "Connecting your agents", "Bringing what you already have", "Checking everything"];
+export const SETUP_PHASES = [
+  "Signing in",
+  "Connecting your agents",
+  "Bringing what you already have",
+  "Checking everything",
+];
 
 const phase = (index: number) =>
-  console.log(`\n${accent(glyphs.step)} ${dim(`${index + 1}/${SETUP_PHASES.length}`)} ${bold(SETUP_PHASES[index] ?? "")}`);
+  console.log(
+    `\n${accent(glyphs.step)} ${dim(`${index + 1}/${SETUP_PHASES.length}`)} ${bold(SETUP_PHASES[index] ?? "")}`,
+  );
 
 export const needsSignIn = (connection: Result<Connection>, urlArgument: string | undefined) =>
   Boolean(connection.error) || Boolean(urlArgument && normalizeUrl(urlArgument) !== connection.data?.url);
@@ -33,7 +40,8 @@ export const setupCommand = async (args: string[] = []): Promise<Result<null>> =
   if (signedIn) {
     const logged = await signIn(urlArgument, { browser: !args.includes(NO_BROWSER_FLAG), discover: true });
     if (logged.error) return logged;
-  } else if (existing.data) console.log(formatRow({ tone: "skip", name: "runelay", message: `already signed in to ${existing.data.url}` }));
+  } else if (existing.data)
+    console.log(formatRow({ tone: "skip", name: "runelay", message: `already signed in to ${existing.data.url}` }));
   const connection = resolveConnection();
   if (connection.error) return connection;
 

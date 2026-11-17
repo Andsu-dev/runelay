@@ -28,7 +28,8 @@ export const SETUP_STEPS: SetupStepDefinition[] = [
 
 export const DESKTOP_VARIANT_STEPS: SetupStepId[] = ["agents", "accounts"];
 
-export const SETUP_COMMAND = (origin: string) => `curl -fsSL runelay.com/cli | sh && ~/.runelay/bin/runelay setup ${origin}`;
+export const SETUP_COMMAND = (origin: string) =>
+  `curl -fsSL runelay.com/cli | sh && ~/.runelay/bin/runelay setup ${origin}`;
 
 export const AGENT_POLL_MS = 3000;
 

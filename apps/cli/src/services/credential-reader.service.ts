@@ -23,7 +23,6 @@ const fromFile = (path: string, parse: (raw: string) => LocalCredential[]) => {
   return raw ? parse(raw) : [];
 };
 
-
 const strongerOf = (current: LocalCredential | undefined, candidate: LocalCredential) => {
   if (!current) return candidate;
   if (Boolean(candidate.refreshToken) !== Boolean(current.refreshToken))

@@ -89,9 +89,7 @@ test("caps the box at the terminal width with an ellipsis", () => {
 });
 
 test("writes OSC 8 links only where supported", () => {
-  expect(hyperlink("docs", "https://runelay.com", true)).toBe(
-    "\x1b]8;;https://runelay.com\x1b\\docs\x1b]8;;\x1b\\",
-  );
+  expect(hyperlink("docs", "https://runelay.com", true)).toBe("\x1b]8;;https://runelay.com\x1b\\docs\x1b]8;;\x1b\\");
   expect(hyperlink("docs", "https://runelay.com", false)).toBe("docs (https://runelay.com)");
   expect(hyperlink("https://runelay.com", "https://runelay.com", false)).toBe("https://runelay.com");
   expect(visibleWidth(hyperlink("docs", "https://runelay.com", true))).toBe(4);

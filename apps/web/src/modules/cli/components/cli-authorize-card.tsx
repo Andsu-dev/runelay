@@ -52,7 +52,8 @@ export function CliAuthorizeCard({ request }: CliAuthorizeCardProps) {
             <div className="flex flex-col gap-1">
               <h1 className="text-xl font-semibold tracking-[-0.02em]">{t("cli.authorize.title")}</h1>
               <p className="text-[13px] text-muted-foreground">
-                {t("cli.authorize.requestFrom")} <span className="font-medium text-foreground">{deviceLabel(request.device)}</span>
+                {t("cli.authorize.requestFrom")}{" "}
+                <span className="font-medium text-foreground">{deviceLabel(request.device)}</span>
               </p>
             </div>
           </div>

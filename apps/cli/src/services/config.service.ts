@@ -16,9 +16,7 @@ export const readStoredConfig = (): Result<StoredConfig | null> => {
   const raw = attemptSync(() => JSON.parse(readFileSync(CONFIG_FILE, "utf8")) as unknown, "INVALID_INPUT");
   if (raw.error) return fail("INVALID_INPUT", `Couldn't read ${CONFIG_FILE}. Run runelay login again.`);
   const parsed = storedConfigSchema.safeParse(raw.data);
-  return parsed.success
-    ? ok(parsed.data)
-    : fail("INVALID_INPUT", `${CONFIG_FILE} is incomplete. Run runelay login.`);
+  return parsed.success ? ok(parsed.data) : fail("INVALID_INPUT", `${CONFIG_FILE} is incomplete. Run runelay login.`);
 };
 
 export const saveConfig = (config: StoredConfig): Result<null> =>

@@ -3,7 +3,7 @@ import { countWarnings } from "@/commands/doctor.command";
 import { cliEnv } from "@/config/env";
 import { CONFIG_FILE } from "@/constants/cli.constants";
 import { maskKey, plural, relativeTime, shortPath } from "@/lib/format";
-import { dim, green, hyperlink, yellow, glyphs } from "@/lib/terminal";
+import { dim, glyphs, green, hyperlink, yellow } from "@/lib/terminal";
 import { printCard, startStep } from "@/lib/ui";
 import { buildAgentReports } from "@/services/agent-report.service";
 import { resolveConnection } from "@/services/config.service";
@@ -35,11 +35,20 @@ export const statusCommand = async (): Promise<Result<null>> => {
     title: organizationName,
     stats: [
       ["Server", hyperlink(url, url)],
-      ["Key", `${maskKey(apiKey)} ${dim(`${glyphs.meta} ${fromEnv ? "from RUNELAY_API_KEY" : shortPath(CONFIG_FILE, cliEnv.RUNELAY_HOME)}`)}`],
-      ["Stored", `${plural(sources, "connection", "connections")} · ${plural(memories, "memory", "memories")} · ${plural(skills, "skill", "skills")}`],
+      [
+        "Key",
+        `${maskKey(apiKey)} ${dim(`${glyphs.meta} ${fromEnv ? "from RUNELAY_API_KEY" : shortPath(CONFIG_FILE, cliEnv.RUNELAY_HOME)}`)}`,
+      ],
+      [
+        "Stored",
+        `${plural(sources, "connection", "connections")} · ${plural(memories, "memory", "memories")} · ${plural(skills, "skill", "skills")}`,
+      ],
       ["Last push", lastPush ? relativeTime(lastPush) : "never"],
       ["Agents", `${connected} of ${agents.length} use runelay`],
-      ["Doctor", warnings ? yellow(`${glyphs.warn} ${plural(warnings, "warning", "warnings")}`) : green(`${glyphs.ok} all good`)],
+      [
+        "Doctor",
+        warnings ? yellow(`${glyphs.warn} ${plural(warnings, "warning", "warnings")}`) : green(`${glyphs.ok} all good`),
+      ],
     ],
     next,
   });

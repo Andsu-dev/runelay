@@ -11,7 +11,10 @@ import { accent, bold, dim, iconFor, padEnd } from "@/lib/terminal";
 
 export const renderHelp = () => {
   const guides: Record<string, { usage: string; summary: string; details?: string }> = COMMAND_GUIDE;
-  const column = nameColumn([...Object.values(guides).map(({ usage }) => usage), ...GLOBAL_FLAGS.map(([flag]) => flag)]);
+  const column = nameColumn([
+    ...Object.values(guides).map(({ usage }) => usage),
+    ...GLOBAL_FLAGS.map(([flag]) => flag),
+  ]);
   const entry = (icon: string, name: string, text: string, extra?: string) => [
     `  ${dim(icon)} ${padEnd(name, column)}  ${text}`,
     ...(extra ? [`    ${" ".repeat(column)}  ${dim(extra)}`] : []),

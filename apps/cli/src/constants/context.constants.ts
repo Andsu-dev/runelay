@@ -1,11 +1,6 @@
 import type { ContextClient } from "@runelay/shared";
 import { cliEnv } from "@/config/env";
-import type {
-  AgentDirectory,
-  InstructionFile,
-  InstructionTarget,
-  InstructionTargetDirs,
-} from "@/types/context.types";
+import type { AgentDirectory, InstructionFile, InstructionTarget, InstructionTargetDirs } from "@/types/context.types";
 
 const HOME = cliEnv.RUNELAY_HOME;
 
@@ -103,7 +98,13 @@ export const instructionTargetsFor = (home: string, dirs: InstructionTargetDirs 
   const configHome = dirs.configHome ?? `${home}/.config`;
   const kimi = dirs.kimiHome ?? `${home}/.kimi-code`;
   return [
-    { id: "claude", name: "Claude Code", detect: `${home}/.claude`, file: `${home}/.claude/CLAUDE.md`, client: "claude" },
+    {
+      id: "claude",
+      name: "Claude Code",
+      detect: `${home}/.claude`,
+      file: `${home}/.claude/CLAUDE.md`,
+      client: "claude",
+    },
     { id: "codex", name: "Codex", detect: `${home}/.codex`, file: `${home}/.codex/AGENTS.md`, client: "codex" },
     { id: "grok", name: "Grok", detect: `${home}/.grok`, file: `${home}/.grok/AGENTS.md`, client: "grok" },
     { id: "gemini", name: "Gemini", detect: `${home}/.gemini`, file: `${home}/.gemini/GEMINI.md`, client: "codex" },

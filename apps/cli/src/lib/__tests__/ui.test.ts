@@ -33,7 +33,14 @@ test("aligns agent rows on the name column", () => {
 });
 
 test("renders a summary card boxed in a terminal and plain otherwise", () => {
-  const card = { title: "Pushed", stats: [["Memories", "3 sent"], ["Skills", "1 sent"]] as [string, string][], next: "runelay pull" };
+  const card = {
+    title: "Pushed",
+    stats: [
+      ["Memories", "3 sent"],
+      ["Skills", "1 sent"],
+    ] as [string, string][],
+    next: "runelay pull",
+  };
   const boxed = renderCard(card, { width: 80, boxed: true });
   expect(boxed[0]?.startsWith("╭─ Pushed")).toBe(true);
   expect(boxed.at(-1)?.startsWith("╰")).toBe(true);
@@ -64,7 +71,11 @@ test("explains an error with why and fix, never a stack by default", () => {
 });
 
 test("shows the card footer only inside a terminal box", () => {
-  const card = { title: "All set", stats: [["Agents", "3"]] as [string, string][], footer: "Enjoying runelay? Sponsor: x" };
+  const card = {
+    title: "All set",
+    stats: [["Agents", "3"]] as [string, string][],
+    footer: "Enjoying runelay? Sponsor: x",
+  };
   expect(renderCard(card, { boxed: true, width: 80 }).some((line) => line.includes("Sponsor"))).toBe(true);
   expect(renderCard(card, { boxed: false }).some((line) => line.includes("Sponsor"))).toBe(false);
 });

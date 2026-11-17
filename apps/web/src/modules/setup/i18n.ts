@@ -42,7 +42,7 @@ export const setupMessages = defineMessages(
     done: {
       title: "Tudo pronto.",
       using: "Usando o runelay:",
-      tryIt: "Abra o {agent} e peça: \"o que você sabe sobre mim?\"",
+      tryIt: 'Abra o {agent} e peça: "o que você sabe sobre mim?"',
       overview: "Ir para a visão geral",
     },
     steps: {
@@ -186,20 +186,22 @@ export const setupMessages = defineMessages(
     agents: {
       commandLabel: "Paste it into Terminal (Applications › Utilities › Terminal) and press Enter",
       copyCommand: "Copy command",
-      commandCaption: "Installs runelay, opens the browser for you to approve and hooks up your agents. Takes 1 minute.",
+      commandCaption:
+        "Installs runelay, opens the browser for you to approve and hooks up your agents. Takes 1 minute.",
       waiting: "Waiting for your agents to show up…",
       waitingHint: "Open Claude Code or Cursor and send any message.",
       using: "{agent} is using runelay",
       notYet: "{agent} not yet",
       notYetHint: "Open {agent} and send any message.",
       named: "{agent}",
-      cursorRules: "Optional: paste the runelay rule into Cursor → Settings → Rules → User Rules so it always uses your memories.",
+      cursorRules:
+        "Optional: paste the runelay rule into Cursor → Settings → Rules → User Rules so it always uses your memories.",
       advanced: "Set it up by hand (advanced)",
     },
     done: {
       title: "All set.",
       using: "Using runelay:",
-      tryIt: "Open {agent} and ask: \"what do you know about me?\"",
+      tryIt: 'Open {agent} and ask: "what do you know about me?"',
       overview: "Go to overview",
     },
     steps: {
@@ -219,7 +221,8 @@ export const setupMessages = defineMessages(
       },
       accounts: {
         title: "Connect the accounts still missing",
-        description: "Start with the ones asking to sign in again. Sign-ins stay safely stored in runelay, never in the agent.",
+        description:
+          "Start with the ones asking to sign in again. Sign-ins stay safely stored in runelay, never in the agent.",
         doneSummary: "Accounts up to date.",
       },
     },

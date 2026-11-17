@@ -65,14 +65,14 @@ export const authMessages = defineMessages(
       name: "Name",
       email: "Email",
       setupToken: "Server access code",
-      setupTokenHint: "Whoever installed runelay got this code at the end of the install. You can paste the whole link.",
+      setupTokenHint:
+        "Whoever installed runelay got this code at the end of the install. You can paste the whole link.",
       password: "Password",
       passwordHint: "At least 8 characters.",
     },
     serverErrors: {
       signupClosed: "Sign-ups are closed. Ask whoever runs this runelay for access.",
-      setupTokenRequired:
-        "To create the first account, paste the server access code shown at the end of the install.",
+      setupTokenRequired: "To create the first account, paste the server access code shown at the end of the install.",
     },
   },
 );
