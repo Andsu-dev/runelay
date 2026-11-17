@@ -14,4 +14,11 @@ export interface LocalCredential {
 export interface CredentialScan {
   credentials: LocalCredential[];
   notes: string[];
+  verboseNotes: string[];
+}
+
+export interface KeychainPlan {
+  codexAccounts: string[];
+  claude: boolean;
+  prompts: number;
 }
