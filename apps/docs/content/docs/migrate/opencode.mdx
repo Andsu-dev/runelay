@@ -22,6 +22,6 @@ Servers that authenticate with headers arrive connected. Servers with `"enabled"
 
 ## Wiring runelay in
 
-`runelay migrate` and `runelay connect` do not register runelay in OpenCode. Add it yourself as a remote MCP server pointing at `<url>/v1/mcp` with the header `Authorization: Bearer rnl_…`. Create the key in **API keys** in the panel.
+`runelay migrate` and `runelay connect` register runelay in `opencode.json` as `mcp.runelay` with `"type": "remote"`, `url: <url>/v1/mcp`, `"enabled": true`, `"oauth": false` and the header `Authorization: Bearer rnl_…`. `runelay pull` writes the brief into `~/.config/opencode/AGENTS.md`.
 
 With `--replace`, the migrated servers are removed from `opencode.json`.

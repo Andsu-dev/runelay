@@ -22,6 +22,6 @@ Add runelay to OpenCode with your endpoint and an agent key (`rnl_…`). Replace
 
 Open a new session, or run `opencode mcp list` to see runelay connected. `oauth: false` matters: OpenCode tries a browser sign-in on every remote server unless it is off.
 
-No CLI shortcut yet: `runelay connect` does not write OpenCode, but `runelay migrate` and `runelay push` read it.
+`runelay connect` writes this entry, with `"enabled": true`, into `opencode.json` in `$XDG_CONFIG_HOME/opencode` (default `~/.config/opencode`). If you only have an `opencode.jsonc`, it writes there when the file is plain JSON, and asks you to add the entry by hand when it has comments. `runelay migrate` and `runelay push` read OpenCode too, and `runelay pull` writes the brief into `~/.config/opencode/AGENTS.md`.
 
 Step by step, with what OpenCode gets once connected: [runelay.com/guides/opencode](https://runelay.com/guides/opencode/).

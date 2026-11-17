@@ -20,6 +20,14 @@ mcp_servers:
 
 Run `/reload-mcp` in a Hermes session, or restart Hermes. A running `hermes gateway run` picks up the change within about a minute. The tools show up as `mcp_runelay_*`, and a `tools` block with `include` or `exclude` filters them.
 
-No CLI shortcut yet: `runelay connect` does not write Hermes.
+When Hermes runs on the same computer, `runelay connect` writes the `runelay` block above under `mcp_servers:` in `~/.hermes/config.yaml`, keeping your other servers and comments. It stops without touching the file if `mcp_servers` is written in flow style (`mcp_servers: {...}`). It also turns Hermes's built-in memory off, so Hermes saves memory only in runelay:
+
+```yaml title="~/.hermes/config.yaml"
+memory:
+  memory_enabled: false
+  user_profile_enabled: false
+```
+
+See the [native memory table](/cli#native-memory) for the other agents.
 
 Step by step, with what Hermes Agent gets once connected: [runelay.com/guides/hermes-agent](https://runelay.com/guides/hermes-agent/).

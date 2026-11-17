@@ -1,6 +1,6 @@
 ---
 title: Antigravity
-description: One block in mcp_config.json, added by hand.
+description: One block in mcp_config.json, or runelay connect.
 icon: logo:antigravity
 ---
 
@@ -19,6 +19,6 @@ Add runelay to Antigravity with your endpoint and an agent key (`rnl_…`). Repl
 
 Save the file and reopen Antigravity. To find the file, use **View raw config** under **Manage MCP Servers** in the IDE, or **Copy Config File Path** under **Customizations** in the app. `.agents/mcp_config.json` in a workspace covers one project.
 
-No CLI shortcut yet: `runelay connect` does not write Antigravity.
+`runelay connect` writes this block into `~/.gemini/config/mcp_config.json` when it finds `~/.gemini/antigravity` or `~/.gemini/config`, and also into the older `~/.gemini/antigravity/mcp_config.json` if that file exists. Other servers in the file stay. If the file is not valid JSON, `connect` leaves it alone and tells you to add the block by hand. Antigravity's Knowledge Items have no file setting, so `connect` only prints a reminder to review them in the Agent Manager. See the [native memory table](/cli#native-memory).
 
 Step by step, with what Antigravity gets once connected: [runelay.com/guides/antigravity](https://runelay.com/guides/antigravity/).
