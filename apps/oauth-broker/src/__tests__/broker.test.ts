@@ -710,3 +710,104 @@ describe("routing", () => {
     expect(spy).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("mcp relay callback", () => {
+  test("redirects a loopback instance straight back with the code and original state", async () => {
+    const response = await get(`/mcp/callback?code=abc&state=${localState}`, {});
+    expect(response.status).toBe(302);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    const target = location(response);
+    expect(target.origin + target.pathname).toBe(LOCAL);
+    expect(target.searchParams.get("code")).toBe("abc");
+    expect(target.searchParams.get("state")).toBe("google_calendar");
+  });
+
+  test("forwards provider errors to the instance", async () => {
+    const target = location(await get(`/mcp/callback?error=access_denied&error_description=No&state=${localState}`));
+    expect(target.searchParams.get("error")).toBe("access_denied");
+    expect(target.searchParams.get("error_description")).toBe("No");
+    expect(target.searchParams.get("code")).toBeNull();
+  });
+
+  test("asks a remote instance to confirm and posts back to the relay route", async () => {
+    const response = await get(`/mcp/callback?code=abc&state=${remoteState}`, {});
+    expect(response.status).toBe(200);
+    const page = await response.text();
+    expect(page).toContain('<form method="POST" action="/mcp/callback">');
+    expect(hiddenFields(page)).toEqual({ code: "abc", state: remoteState });
+    const confirmed = await post(
+      "/mcp/callback",
+      new URLSearchParams({ decision: "continue", code: "abc", state: remoteState }),
+      FORM,
+      {},
+    );
+    expect(confirmed.status).toBe(302);
+    const target = location(confirmed);
+    expect(target.origin + target.pathname).toBe(REMOTE);
+    expect(target.searchParams.get("code")).toBe("abc");
+  });
+
+  test("rejects states that would open redirect", async () => {
+    for (const bad of [
+      "",
+      `state=${encode({ r: "http://runelay.example.com/v1/oauth/callback", s: "x" })}`,
+      `state=${encode({ r: "https://evil.example.com/steal", s: "x" })}`,
+      `state=${encode({ r: "javascript:alert(1)", s: "x" })}`,
+    ]) {
+      const response = await get(`/mcp/callback?code=c&${bad}`, {});
+      expect(response.status).toBe(400);
+    }
+  });
+
+  test("never exchanges tokens and rejects unknown relay routes", async () => {
+    const { fetchFn, calls } = upstream();
+    const token = await post(
+      "/mcp/token",
+      new URLSearchParams({ grant_type: "authorization_code", code: "c", code_verifier: "v" }),
+      FORM,
+      ENV,
+      fetchFn,
+    );
+    expect(token.status).toBe(404);
+    expect(calls).toHaveLength(0);
+    expect((await get("/mcp/callback/extra")).status).toBe(404);
+    expect((await handleRequest(new Request(`${ORIGIN}/mcp/callback`, { method: "PUT" }), ENV)).status).toBe(405);
+  });
+
+  test("shares the callback rate limiter", async () => {
+    const fake = limiter(1);
+    const env: BrokerEnv = { CALLBACK_RATE_LIMITER: fake.binding };
+    const headers = { "cf-connecting-ip": "203.0.113.9" };
+    expect((await get(`/mcp/callback?code=c&state=${localState}`, env, headers)).status).toBe(302);
+    expect((await get(`/mcp/callback?code=c&state=${localState}`, env, headers)).status).toBe(429);
+    expect(fake.keys).toEqual(["callback:203.0.113.9", "callback:203.0.113.9"]);
+  });
+});
+
+describe("mcp client metadata document", () => {
+  test("serves a public CIMD whose client_id is its own URL", async () => {
+    const response = await get("/mcp/client.json", {});
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toBe("application/json; charset=utf-8");
+    expect(response.headers.get("cache-control")).toBe("public, max-age=3600");
+    expect(response.headers.get("x-content-type-options")).toBe("nosniff");
+    expect(await response.json()).toEqual({
+      client_id: `${ORIGIN}/mcp/client.json`,
+      client_name: "runelay",
+      client_uri: "https://runelay.com",
+      logo_uri: "https://runelay.com/apple-touch-icon.png",
+      redirect_uris: [`${ORIGIN}/mcp/callback`],
+      grant_types: ["authorization_code", "refresh_token"],
+      response_types: ["code"],
+      token_endpoint_auth_method: "none",
+    });
+  });
+
+  test("only answers GET on the exact path", async () => {
+    const response = await handleRequest(new Request(`${ORIGIN}/mcp/client.json`, { method: "POST" }), ENV);
+    expect(response.status).toBe(405);
+    expect(response.headers.get("allow")).toBe("GET");
+    expect((await get("/mcp/client.json/extra")).status).toBe(404);
+    expect((await get("/google/client.json")).status).toBe(404);
+  });
+});
