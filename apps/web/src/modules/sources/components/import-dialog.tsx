@@ -58,7 +58,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
           required
         />
         <p className="text-xs text-muted-foreground">
-          {t("sources.import.local")} <code className="rounded bg-muted px-1">bun run import</code>
+          {t("sources.import.local")} <code className="rounded bg-muted px-1">runelay migrate</code>
         </p>
         <div className="flex justify-end">
           <Button

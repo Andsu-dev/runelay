@@ -15,12 +15,13 @@ interface TimelineStepProps {
   open: boolean;
   last: boolean;
   onToggle: () => void;
-  onComplete: () => void;
+  onSkip: () => void;
+  summary?: string;
   body?: ReactNode;
   action?: ReactNode;
 }
 
-export function TimelineStep({ step, open, last, onToggle, onComplete, body, action }: TimelineStepProps) {
+export function TimelineStep({ step, open, last, onToggle, onSkip, summary, body, action }: TimelineStepProps) {
   const t = useT();
 
   return (
@@ -62,7 +63,11 @@ export function TimelineStep({ step, open, last, onToggle, onComplete, body, act
               )}
             />
           )}
-          {step.done && !open && <span className="ml-auto text-xs text-muted-foreground">{t(step.doneSummary)}</span>}
+          {step.done && !open && (
+            <span className="ml-auto text-right text-xs text-pretty text-muted-foreground">
+              {summary || t(step.doneSummary)}
+            </span>
+          )}
         </button>
 
         <AnimatePresence initial={false}>
@@ -86,8 +91,8 @@ export function TimelineStep({ step, open, last, onToggle, onComplete, body, act
                 <div className="flex flex-wrap items-center gap-2">
                   {action}
                   {!step.done && (
-                    <Button variant="ghost" size="sm" onClick={onComplete}>
-                      {t("setup.markDone")}
+                    <Button variant="ghost" size="sm" className="cursor-pointer" onClick={onSkip}>
+                      {t(step.skip)}
                     </Button>
                   )}
                 </div>

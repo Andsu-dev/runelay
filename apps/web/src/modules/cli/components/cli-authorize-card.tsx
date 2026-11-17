@@ -12,10 +12,14 @@ import { CliAuthorized } from "@/modules/cli/components/cli-authorized";
 
 interface CliAuthorizeCardProps {
   request: CliAuthRequestView;
-  organizationName: string;
 }
 
-export function CliAuthorizeCard({ request, organizationName }: CliAuthorizeCardProps) {
+const UNKNOWN_USER_PREFIX = "unknown@";
+
+const deviceLabel = (device: string) =>
+  device.startsWith(UNKNOWN_USER_PREFIX) ? device.slice(UNKNOWN_USER_PREFIX.length) : device;
+
+export function CliAuthorizeCard({ request }: CliAuthorizeCardProps) {
   const t = useT();
   const navigate = useNavigate();
   const approve = useMutation({
@@ -48,7 +52,7 @@ export function CliAuthorizeCard({ request, organizationName }: CliAuthorizeCard
             <div className="flex flex-col gap-1">
               <h1 className="text-xl font-semibold tracking-[-0.02em]">{t("cli.authorize.title")}</h1>
               <p className="text-[13px] text-muted-foreground">
-                {t("cli.authorize.requestFrom")} <span className="font-medium text-foreground">{request.device}</span>
+                {t("cli.authorize.requestFrom")} <span className="font-medium text-foreground">{deviceLabel(request.device)}</span>
               </p>
             </div>
           </div>
@@ -58,10 +62,7 @@ export function CliAuthorizeCard({ request, organizationName }: CliAuthorizeCard
             <p className="font-mono text-3xl font-semibold tracking-[0.14em] tabular-nums">{request.code}</p>
           </div>
 
-          <p className="text-center text-[13px] text-muted-foreground">
-            {t("cli.authorize.scopeBefore")} <span className="font-medium text-foreground">{organizationName}</span>
-            {t("cli.authorize.scopeAfter")}
-          </p>
+          <p className="text-center text-[13px] text-muted-foreground">{t("cli.authorize.scope")}</p>
 
           <div className="flex flex-col gap-2">
             <Button size="lg" loading={approve.isPending} onClick={() => approve.mutate()}>

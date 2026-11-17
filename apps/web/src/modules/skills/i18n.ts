@@ -15,7 +15,7 @@ export const skillsMessages = defineMessages(
       emptyQueryTitle: "Nenhuma habilidade com “{query}”",
       emptyTitle: "Nenhuma habilidade ainda",
       emptyQueryDescription: "Tente outro termo. A busca olha nome, descrição e conteúdo.",
-      emptyDescription: "Importe as pastas de SKILL.md com o CLI: bun run import.",
+      emptyDescription: "Importe as pastas de SKILL.md com a CLI: runelay migrate.",
     },
     detail: {
       back: "Habilidades",
@@ -53,7 +53,7 @@ export const skillsMessages = defineMessages(
       emptyQueryTitle: "No skills matching “{query}”",
       emptyTitle: "No skills yet",
       emptyQueryDescription: "Try another term. Search looks at name, description and content.",
-      emptyDescription: "Import your SKILL.md folders with the CLI: bun run import.",
+      emptyDescription: "Import your SKILL.md folders with the CLI: runelay migrate.",
     },
     detail: {
       back: "Skills",

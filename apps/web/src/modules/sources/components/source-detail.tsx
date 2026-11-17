@@ -9,6 +9,7 @@ import { useT } from "@/lib/i18n";
 import { ConnectorIcon } from "@/modules/catalog/components/connector-icon";
 import { KIND_LABEL, STATUS_LABEL } from "@/modules/sources/constants/source.constants";
 import { useSourceActions } from "@/modules/sources/hooks/use-source-actions";
+import { isAgentLocal } from "@/modules/sources/utils/agent-local";
 import { GoogleSourcePanel } from "./google-source-panel";
 import { RenameSourceDialog } from "./rename-source-dialog";
 import { SourceConnectButton } from "./source-connect-button";
@@ -26,6 +27,7 @@ export function SourceDetail({ source, oauthError }: SourceDetailProps) {
   const { test } = useSourceActions(name);
   const [renaming, setRenaming] = useState(false);
   const loginError = status === "ok" ? undefined : oauthError;
+  const local = isAgentLocal(source);
 
   return (
     <div className="flex flex-col gap-4">
@@ -41,7 +43,7 @@ export function SourceDetail({ source, oauthError }: SourceDetailProps) {
       <header className="flex items-start gap-3">
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <div className="flex items-center gap-2">
-            <SourceStatusDot status={status} enabled={enabled} />
+            <SourceStatusDot status={status} enabled={enabled} local={local} />
             <ConnectorIcon name={name} icon={source.icon} />
             <h1 className="truncate text-lg font-semibold">{name}</h1>
             <IconAction icon={PencilEdit02Icon} label={t("sources.rename.action")} onClick={() => setRenaming(true)} />
@@ -50,7 +52,11 @@ export function SourceDetail({ source, oauthError }: SourceDetailProps) {
             </span>
           </div>
           <p className="text-[13px] text-muted-foreground">
-            {enabled ? t(STATUS_LABEL[status]) : t("sources.status.paused")} · {t.plural("sources.tools", toolCount)} ·{" "}
+            {!enabled
+              ? t("sources.status.paused")
+              : local
+                ? t("sources.status.agentLocal")
+                : t(STATUS_LABEL[status])} · {t.plural("sources.tools", toolCount)} ·{" "}
             {t("sources.loginOn", { date: formatDate(connectedAt) })}
           </p>
         </div>
@@ -64,10 +70,16 @@ export function SourceDetail({ source, oauthError }: SourceDetailProps) {
         <SourceConnectButton source={source} />
       </header>
 
-      {(loginError ?? error) && (
-        <p className="rounded-lg bg-destructive/10 px-3 py-2 text-[13px] break-words text-destructive">
-          {loginError ? t("sources.loginFailed", { error: loginError }) : error}
+      {local && !loginError ? (
+        <p className="rounded-lg bg-muted px-3 py-2 text-[13px] text-pretty text-muted-foreground">
+          {t("sources.agentLocalHint")}
         </p>
+      ) : (
+        (loginError ?? error) && (
+          <p className="rounded-lg bg-destructive/10 px-3 py-2 text-[13px] break-words text-destructive">
+            {loginError ? t("sources.loginFailed", { error: loginError }) : error}
+          </p>
+        )
       )}
 
       {config.kind === "google" ? (

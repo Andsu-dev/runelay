@@ -32,6 +32,7 @@ const percentFormat = formatters(
   (locale) => new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 1 }),
 );
 const bytesFormat = formatters((locale) => new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }));
+const listFormat = formatters((locale) => new Intl.ListFormat(locale, { type: "conjunction" }));
 const relativeFormat = formatters((locale) => new Intl.RelativeTimeFormat(locale, { numeric: "auto", style: "short" }));
 
 const RELATIVE_UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
@@ -52,6 +53,8 @@ export const formatNumber = (value: number) => numberFormat().format(value);
 
 export const formatCompact = (value: number) =>
   value < 10_000 ? numberFormat().format(value) : compactFormat().format(value);
+
+export const formatList = (items: string[]) => listFormat().format(items);
 
 export const formatPercent = (fraction: number) => percentFormat().format(fraction);
 

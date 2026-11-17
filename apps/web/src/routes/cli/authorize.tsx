@@ -25,11 +25,10 @@ export const Route = createFileRoute("/cli/authorize")({
 function CliAuthorizePage() {
   const { code } = Route.useSearch();
   const { data: request } = useSuspenseQuery(cliAuthRequestQuery(code));
-  const { data: me } = useSuspenseQuery(meQuery);
   return (
     <main className="flex min-h-dvh items-center justify-center px-4 py-10">
       <div className="flex w-full max-w-sm flex-col">
-        <CliAuthorizeCard request={request} organizationName={me.organization.name} />
+        <CliAuthorizeCard request={request} />
       </div>
     </main>
   );

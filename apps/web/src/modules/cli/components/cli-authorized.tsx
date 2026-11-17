@@ -31,10 +31,7 @@ export function CliAuthorized() {
           />
         </svg>
       </motion.span>
-      <div className="flex flex-col gap-1">
-        <h1 className="text-xl font-semibold tracking-[-0.02em]">{t("cli.authorized.title")}</h1>
-        <p className="text-[13px] text-muted-foreground">{t("cli.authorized.description")}</p>
-      </div>
+      <h1 className="text-xl font-semibold tracking-[-0.02em] text-pretty">{t("cli.authorized.title")}</h1>
     </motion.div>
   );
 }

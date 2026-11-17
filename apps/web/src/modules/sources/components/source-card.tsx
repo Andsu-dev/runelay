@@ -9,6 +9,7 @@ import { useT } from "@/lib/i18n";
 import { ConnectorIcon } from "@/modules/catalog/components/connector-icon";
 import { KIND_LABEL, STATUS_LABEL } from "@/modules/sources/constants/source.constants";
 import { useSourceActions } from "@/modules/sources/hooks/use-source-actions";
+import { isAgentLocal } from "@/modules/sources/utils/agent-local";
 import { sourceTarget } from "@/modules/sources/utils/source-target";
 import { GoogleSourceSummary } from "./google-source-summary";
 import { SourceConnectButton } from "./source-connect-button";
@@ -23,11 +24,12 @@ export function SourceCard({ source }: SourceCardProps) {
   const { name, config, status, error, toolCount, enabled } = source;
   const { toggle, remove, test } = useSourceActions(name);
   const [confirming, setConfirming] = useState(false);
+  const local = isAgentLocal(source);
 
   return (
     <div className="flex flex-col gap-2 rounded-xl bg-card p-4 shadow-xs sm:p-5">
       <div className="flex items-center gap-3">
-        <SourceStatusDot status={status} enabled={enabled} />
+        <SourceStatusDot status={status} enabled={enabled} local={local} />
         <ConnectorIcon name={name} icon={source.icon} />
         <div className="flex min-w-0 flex-1 flex-col">
           <div className="flex items-center gap-2">
@@ -43,7 +45,11 @@ export function SourceCard({ source }: SourceCardProps) {
             </span>
           </div>
           <span className="truncate text-xs text-muted-foreground">
-            {enabled ? t(STATUS_LABEL[status]) : t("sources.status.paused")} · {t.plural("sources.tools", toolCount)} ·{" "}
+            {!enabled
+              ? t("sources.status.paused")
+              : local
+                ? t("sources.status.agentLocal")
+                : t(STATUS_LABEL[status])} · {t.plural("sources.tools", toolCount)} ·{" "}
             {config.kind === "google" ? <GoogleSourceSummary source={source} config={config} /> : sourceTarget(config)}
           </span>
         </div>
@@ -73,7 +79,11 @@ export function SourceCard({ source }: SourceCardProps) {
         />
       </div>
 
-      {error && enabled && <p className="text-xs break-words text-destructive">{error}</p>}
+      {local && enabled ? (
+        <p className="text-xs text-pretty text-muted-foreground">{t("sources.agentLocalHint")}</p>
+      ) : (
+        error && enabled && <p className="text-xs break-words text-destructive">{error}</p>
+      )}
 
       <SourceConnectButton source={source} className="sm:hidden" />
     </div>

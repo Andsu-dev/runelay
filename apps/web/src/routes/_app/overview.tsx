@@ -6,6 +6,7 @@ import { meQuery } from "@/modules/auth/api/session.api";
 import { activitySummaryQuery } from "@/modules/overview/api/activity.api";
 import { OverviewDashboard } from "@/modules/overview/components/overview-dashboard";
 import { OverviewSkeleton } from "@/modules/overview/components/overview-skeleton";
+import { McpEndpoint } from "@/modules/settings/components/mcp-endpoint";
 import { sourcesSummaryQuery } from "@/modules/sources/api/sources.api";
 
 const RANGE_DAYS = 30;
@@ -27,16 +28,18 @@ function OverviewPage() {
   const { data: activity } = useSuspenseQuery(activitySummaryQuery(RANGE_DAYS));
   const { data: sources } = useSuspenseQuery(sourcesSummaryQuery);
   const firstName = me.user.name.trim().split(/\s+/)[0] ?? me.user.name;
+  const firstVisit = activity.calls === 0 && activity.changePercent === null;
 
   return (
     <section className="flex flex-col gap-6">
       <header className="flex flex-col gap-0.5">
         <h1 className="text-xl font-semibold tracking-[-0.02em]">
-          {t("overview.header.welcome", { name: firstName })}
+          {t(firstVisit ? "overview.header.welcomeNew" : "overview.header.welcome", { name: firstName })}
         </h1>
         <p className="text-[13px] text-muted-foreground">
           {t("overview.header.range", { days: activity.days, organization: me.organization.name })}
         </p>
+        <McpEndpoint compact className="mt-1.5" />
       </header>
       <OverviewDashboard activity={activity} sources={sources} />
     </section>

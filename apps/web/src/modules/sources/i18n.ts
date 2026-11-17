@@ -8,7 +8,10 @@ export const sourcesMessages = defineMessages(
       needs_auth: "Precisa de login",
       idle: "Não testado",
       paused: "Pausada",
+      agentLocal: "Fica no agente",
     },
+    agentLocalHint:
+      "Este servidor roda no computador do agente, não aqui. O agente continua usando direto, sem passar pelo runelay.",
     kind: {
       mcp: "MCP remoto",
       stdio: "Comando local",
@@ -133,7 +136,10 @@ export const sourcesMessages = defineMessages(
       needs_auth: "Needs sign-in",
       idle: "Not tested",
       paused: "Paused",
+      agentLocal: "Stays in the agent",
     },
+    agentLocalHint:
+      "This server runs on the agent's computer, not here. The agent keeps using it directly, without going through runelay.",
     kind: {
       mcp: "Remote MCP",
       stdio: "Local command",

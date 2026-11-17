@@ -27,16 +27,15 @@ export const authMessages = defineMessages(
     fields: {
       name: "Nome",
       email: "E-mail",
-      setupToken: "Token de primeiro acesso",
-      setupTokenHint:
-        "Aparece no fim da instalação e no servidor em ~/runelay/.env (RUNELAY_SETUP_TOKEN). Pode colar o link inteiro.",
+      setupToken: "Código de acesso do servidor",
+      setupTokenHint: "Quem instalou o runelay recebeu este código no fim da instalação. Pode colar o link inteiro.",
       password: "Senha",
       passwordHint: "Pelo menos 8 caracteres.",
     },
     serverErrors: {
       signupClosed: "Os cadastros estão fechados. Peça acesso a quem administra este runelay.",
       setupTokenRequired:
-        "Para criar a primeira conta, use o link de primeiro acesso que aparece no log do servidor ou no fim da instalação.",
+        "Para criar a primeira conta, cole o código de acesso do servidor que apareceu no fim da instalação.",
     },
   },
   {
@@ -65,16 +64,15 @@ export const authMessages = defineMessages(
     fields: {
       name: "Name",
       email: "Email",
-      setupToken: "First access token",
-      setupTokenHint:
-        "Shown at the end of the install and on the server in ~/runelay/.env (RUNELAY_SETUP_TOKEN). You can paste the whole link.",
+      setupToken: "Server access code",
+      setupTokenHint: "Whoever installed runelay got this code at the end of the install. You can paste the whole link.",
       password: "Password",
       passwordHint: "At least 8 characters.",
     },
     serverErrors: {
       signupClosed: "Sign-ups are closed. Ask whoever runs this runelay for access.",
       setupTokenRequired:
-        "To create the first account, use the first access link shown in the server log or at the end of the install.",
+        "To create the first account, paste the server access code shown at the end of the install.",
     },
   },
 );
