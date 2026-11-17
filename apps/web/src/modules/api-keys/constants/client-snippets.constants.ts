@@ -1,3 +1,5 @@
+import { SETUP_COMMAND } from "@/modules/setup/constants/setup.constants";
+
 export const CLIENT_SNIPPETS = [
   {
     client: "Claude Code",
@@ -31,9 +33,8 @@ export const CLIENT_SNIPPETS = [
     client: "Todos de uma vez",
     labelKey: "apiKeys.snippets.allClients",
     logo: null,
-    file: "no seu computador, dentro do repo",
+    file: "no seu computador",
     fileKey: "apiKeys.snippets.allClientsFile",
-    build: (_url: string, key: string) =>
-      `RUNELAY_URL=${window.location.origin} RUNELAY_API_KEY=${key} bun run install-clients`,
+    build: (_url: string, _key: string) => SETUP_COMMAND(window.location.origin),
   },
 ] as const;

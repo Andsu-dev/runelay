@@ -37,7 +37,7 @@ export const apiKeysMessages = defineMessages(
     snippets: {
       copy: "Copiar config do {client}",
       allClients: "Todos de uma vez",
-      allClientsFile: "no seu computador, dentro do repo",
+      allClientsFile: "no seu computador",
     },
   },
   {
@@ -76,7 +76,7 @@ export const apiKeysMessages = defineMessages(
     snippets: {
       copy: "Copy {client} config",
       allClients: "All at once",
-      allClientsFile: "on your computer, inside the repo",
+      allClientsFile: "on your computer",
     },
   },
 );

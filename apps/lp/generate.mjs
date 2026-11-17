@@ -472,10 +472,28 @@ const homeGuides = (lang) => {
   return `<div class="agent-tiles" data-reveal>${agents}</div><div class="guides page-section home-guides" data-reveal>${reads}</div>`;
 };
 
+const CLI_SCENES = [
+  ["home", "runelay", "runelay"],
+  ["connect", "connect", "runelay connect"],
+  ["doctor", "doctor", "runelay doctor"],
+];
+
+const homeCli = () => {
+  const picks = CLI_SCENES.map(([id], index) => `<input class="cli-pick" type="radio" name="cli-scene" id="cli-${id}"${index ? "" : " checked"} />`).join("");
+  const tabs = CLI_SCENES.map(([id, tab]) => `<label for="cli-${id}">${tab}</label>`).join("");
+  const screens = CLI_SCENES.map(
+    ([id, , command]) =>
+      `<pre class="cli-screen" data-scene="${id}"><span class="r"><span class="prompt">$</span>${command}</span>${readFileSync(`partials/cli-${id}.html`, "utf8").trim()}</pre>`,
+  ).join("");
+  return `<div class="cli-demo" data-reveal><div class="terminal cli-term">${picks}<div class="terminal-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="cli-tabs">${tabs}</span></div><div class="cli-screens">${screens}</div></div></div>`;
+};
+
 for (const lang of ["en", "pt"]) {
   const file = LANGS[lang].home;
-  const html = readFileSync(file, "utf8");
-  writeFileSync(file, html.replace(/<!-- home-guides -->[\s\S]*?<!-- \/home-guides -->/, `<!-- home-guides -->${homeGuides(lang)}<!-- /home-guides -->`));
+  const html = readFileSync(file, "utf8")
+    .replace(/<!-- home-guides -->[\s\S]*?<!-- \/home-guides -->/, `<!-- home-guides -->${homeGuides(lang)}<!-- /home-guides -->`)
+    .replace(/<!-- home-cli -->[\s\S]*?<!-- \/home-cli -->/, `<!-- home-cli -->${homeCli()}<!-- /home-cli -->`);
+  writeFileSync(file, html);
 }
 
 console.log(`generated ${generated.length * 2} pages`);

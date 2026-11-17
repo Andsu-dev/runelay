@@ -1,4 +1,4 @@
-import type { CreateMemoryInput, CreateSkillInput } from "@runelay/shared";
+import type { ImportedMemoryInput, ImportedSkillInput } from "@runelay/shared";
 
 export interface CollectLine {
   agent: string;
@@ -9,7 +9,7 @@ export interface CollectLine {
 }
 
 export interface CollectedContext {
-  memories: CreateMemoryInput[];
-  skills: CreateSkillInput[];
+  memories: ImportedMemoryInput[];
+  skills: ImportedSkillInput[];
   lines: CollectLine[];
 }

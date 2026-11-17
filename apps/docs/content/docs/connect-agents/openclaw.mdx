@@ -16,6 +16,6 @@ openclaw mcp set runelay '{"url":"https://runelay.example.com/v1/mcp","transport
 
 Set `RUNELAY_KEY` to your `rnl_` key in the Gateway's environment, then run `openclaw gateway restart` and `openclaw mcp probe runelay` to list the tools. Set `transport` explicitly: without it OpenClaw falls back to SSE.
 
-No CLI shortcut yet: `runelay connect` does not write OpenClaw.
+When OpenClaw runs on the same computer, `runelay connect` writes `mcp.servers.runelay` into `~/.openclaw/openclaw.json` with the same `url`, `"transport": "streamable-http"` and the key itself in `headers` (not `${RUNELAY_KEY}`). It only edits a file that parses as plain JSON: with JSON5 comments or trailing commas it leaves the file alone and asks you to use the command above. It also turns OpenClaw's memory plugin off with `"plugins": { "slots": { "memory": "none" } }` in `~/.openclaw/openclaw.json`, so OpenClaw saves memory only in runelay. See the [native memory table](/cli#native-memory) for the other agents.
 
 Step by step, with what OpenClaw gets once connected: [runelay.com/guides/openclaw](https://runelay.com/guides/openclaw/).

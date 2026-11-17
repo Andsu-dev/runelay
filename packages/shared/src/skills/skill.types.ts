@@ -2,9 +2,11 @@ import type { z } from "zod";
 import type {
   createSkillSchema,
   exportSkillsSchema,
+  importedSkillSchema,
   importSkillsSchema,
   listSkillsSchema,
   skillFileSchema,
+  skillWriteSchema,
   updateSkillSchema,
 } from "./skill.schema";
 
@@ -14,6 +16,8 @@ export type ListSkillsInput = z.infer<typeof listSkillsSchema>;
 export type ImportSkillsInput = z.infer<typeof importSkillsSchema>;
 export type ExportSkillsInput = z.infer<typeof exportSkillsSchema>;
 export type SkillFileInput = z.infer<typeof skillFileSchema>;
+export type ImportedSkillInput = z.infer<typeof importedSkillSchema>;
+export type SkillWriteInput = z.infer<typeof skillWriteSchema>;
 
 export interface SkillListItemView {
   slug: string;

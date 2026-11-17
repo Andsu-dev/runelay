@@ -15,3 +15,8 @@ export interface SkillContent {
   description: string;
   body: string;
 }
+
+export interface StoredSkillRow extends Omit<SkillContent, "slug"> {
+  enabled: 0 | 1;
+  updatedAt: string;
+}

@@ -9,6 +9,7 @@ import {
   BRIEF_TITLE,
   BRIEF_TRUNCATED,
   MEMORY_TYPE_TITLES,
+  PINNED_TRUNCATED,
 } from "@/modules/context/constants/context.constants";
 import { listPinnedMemories, loadBriefSources } from "@/modules/context/repositories/context.repository";
 import type { MemoryIndexRow, PinnedMemoryRow, SkillIndexRow } from "@/modules/context/types/context.types";
@@ -27,12 +28,12 @@ const renderPinned = (pinned: PinnedMemoryRow[]) =>
         ),
       ].join("\n");
 
-const fitLines = (title: string, lines: string[], budget: number) => {
+const fitLines = (title: string, lines: string[], budget: number, truncated = BRIEF_TRUNCATED) => {
   const kept: string[] = [title];
   let used = title.length + 1;
   for (const line of lines) {
-    if (used + line.length + 1 + BRIEF_TRUNCATED.length > budget) {
-      kept.push(BRIEF_TRUNCATED);
+    if (used + line.length + 1 + truncated.length > budget) {
+      kept.push(truncated);
       break;
     }
     kept.push(line);
@@ -53,9 +54,12 @@ const skillLines = (skills: SkillIndexRow[]) =>
     return `- ${skill.name} (\`${skill.slug}\`)${summary ? `: ${summary}` : ""}`;
   });
 
-export const pinnedInstructions = (organizationId: string): Result<string> => {
+export const pinnedInstructions = (organizationId: string, budget: number): Result<string> => {
   const pinned = listPinnedMemories(organizationId);
-  return pinned.error ? pinned : ok(renderPinned(pinned.data));
+  if (pinned.error) return pinned;
+  if (pinned.data.length === 0) return ok("");
+  const lines = pinned.data.map(({ slug, name }) => `- ${name} (${slug})`);
+  return ok(fitLines(BRIEF_PINNED_TITLE, lines, budget, PINNED_TRUNCATED));
 };
 
 export const buildBrief = (organizationId: string, client: ContextClient): Result<ContextBriefView> => {

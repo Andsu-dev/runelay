@@ -13,6 +13,6 @@ claude mcp add --transport http runelay https://runelay.example.com/v1/mcp \
 
 Paste the command in **Plugins → MCP servers → Add server**. MausBot fills the address and the header, tests the server and turns it on when the tools load. Bots that use every enabled server get it on their next task; bots with their own selection need it under **Bot access**.
 
-No CLI shortcut yet: `runelay connect` does not write MausBot.
+When MausBot runs on the same computer, `runelay connect` writes `mcpServers.runelay` into `~/.openmausbot/config.json` with `"type": "http"`, the same `url` and the `Authorization` header, and sets `features.autoRecall` to `false` so memory goes only to runelay. It keeps the rest of the file and writes nothing when the entry is already there.
 
 Step by step, with what MausBot gets once connected: [runelay.com/guides/mausbot](https://runelay.com/guides/mausbot/).

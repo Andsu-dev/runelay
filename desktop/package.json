@@ -10,10 +10,11 @@
   "main": "main.js",
   "scripts": {
     "server": "node scripts/build-server.js",
+    "cli": "node scripts/build-cli.js",
     "start": "npm run server && electron .",
-    "dist:mac": "npm run server -- --all --platform=darwin && electron-builder --mac --arm64 --x64 --publish never",
-    "dist:linux": "npm run server -- --all --platform=linux && electron-builder --linux --arm64 --x64 --publish never",
-    "dist:win": "npm run server -- --all --platform=win32 && electron-builder --win --x64 --publish never"
+    "dist:mac": "npm run server -- --all --platform=darwin && npm run cli -- --all --platform=darwin && electron-builder --mac --arm64 --x64 --publish never",
+    "dist:linux": "npm run server -- --all --platform=linux && npm run cli -- --all --platform=linux && electron-builder --linux --arm64 --x64 --publish never",
+    "dist:win": "npm run server -- --all --platform=win32 && npm run cli -- --all --platform=win32 && electron-builder --win --x64 --publish never"
   },
   "devDependencies": {
     "electron": "^42.11.16",
@@ -26,6 +27,7 @@
     "files": [
       "main.js",
       "update.js",
+      "skills-sync.js",
       "preload.cjs",
       "chooser/**/*",
       "build/icon.png",
@@ -45,6 +47,10 @@
         {
           "from": "resources/${arch}/runelay-server",
           "to": "runelay-server"
+        },
+        {
+          "from": "resources/${arch}/runelay-cli",
+          "to": "runelay-cli"
         },
         {
           "from": "../apps/web/dist",
@@ -85,6 +91,10 @@
           "to": "runelay-server"
         },
         {
+          "from": "resources/${arch}/runelay-cli",
+          "to": "runelay-cli"
+        },
+        {
           "from": "../apps/web/dist",
           "to": "web"
         }
@@ -99,6 +109,10 @@
         {
           "from": "resources/${arch}/runelay-server.exe",
           "to": "runelay-server.exe"
+        },
+        {
+          "from": "resources/${arch}/runelay-cli.exe",
+          "to": "runelay-cli.exe"
         },
         {
           "from": "../apps/web/dist",

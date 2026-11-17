@@ -27,3 +27,9 @@ export const TOML_HEADER_KEYS = { codex: "http_headers", grok: "headers" } as co
 export const TOML_RUNELAY_HEADER = "[mcp_servers.runelay]";
 
 export const JSON_SERVER_KEYS = ["mcpServers", "servers", "mcp"] as const;
+
+export const CURSOR_CLI_CONFIG = `${home}/.cursor/cli-config.json`;
+
+export const CLAUDE_SETTINGS_FILE = `${home}/.claude/settings.json`;
+
+export const CURSOR_CLI_COMMAND = "cursor-agent";

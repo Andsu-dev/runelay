@@ -1,7 +1,17 @@
-import { spawn } from "node:child_process";
+import { execFile, spawn } from "node:child_process";
 import { randomBytes, randomUUID } from "node:crypto";
-import { chmodSync, createWriteStream, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import {
+  appendFileSync,
+  chmodSync,
+  createWriteStream,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
+import { createConnection, createServer } from "node:net";
+import { delimiter, dirname, join } from "node:path";
 import { Readable } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import {
@@ -17,10 +27,13 @@ import {
   shell,
   Tray,
 } from "electron";
+import { createSkillSync, skillDirectories } from "./skills-sync.js";
 import { findUpdate } from "./update.js";
 
-const PORT = 4312;
-const ORIGIN = `http://127.0.0.1:${PORT}`;
+const PREFERRED_PORT = 4312;
+const PORT_ATTEMPTS = 20;
+const PORT_PROBE_MS = 400;
+const originFor = (port) => `http://127.0.0.1:${port}`;
 const HEALTH_TIMEOUT_MS = 20_000;
 const PROBE_TIMEOUT_MS = 6_000;
 const STOP_TIMEOUT_MS = 5_000;
@@ -30,6 +43,9 @@ const FADE_STEPS = 12;
 const MAX_URL_LENGTH = 2048;
 const MAX_NAME_LENGTH = 60;
 const MAX_ID_LENGTH = 64;
+const MAX_KEY_LENGTH = 512;
+const CLI_TIMEOUT_MS = 10 * 60 * 1000;
+const SHELL_PATH_TIMEOUT_MS = 5_000;
 const PLAIN_HTTP_HOSTS = new Set(["localhost", "127.0.0.1"]);
 const LOCAL_SERVER = Object.freeze({ id: "local", name: "Este computador", kind: "local" });
 const HIDDEN_FLAG = "--hidden";
@@ -50,6 +66,9 @@ const ERRORS = {
   removeLocal: "O servidor deste computador não pode ser removido.",
   removeActive: "Troque para outro servidor antes de remover este.",
   startupFailed: "Não consegui mudar a inicialização com o sistema.",
+  missingKey: "Este computador ainda não tem uma chave para este servidor.",
+  invalidKey: "Essa chave não vale neste servidor.",
+  cliFailed: "Não consegui conferir os agentes deste computador.",
 };
 
 let server = null;
@@ -63,10 +82,18 @@ let handoff = null;
 let tray = null;
 let pendingEntry = null;
 let updateBusy = false;
+let skillSync = null;
+let skillStatus = null;
+let localPort = PREFERRED_PORT;
+let localOrigin = originFor(PREFERRED_PORT);
 
 const SERVER = process.platform === "win32" ? "runelay-server.exe" : "runelay-server";
 
+const CLI = process.platform === "win32" ? "runelay-cli.exe" : "runelay-cli";
+
 const appFile = (...parts) => join(import.meta.dirname, ...parts);
+
+const userHome = () => process.env.RUNELAY_HOME || app.getPath("home");
 
 const devIcon = () => appFile("build", "icon.png");
 
@@ -194,31 +221,45 @@ const defaultName = (url) => new URL(url).hostname.slice(0, MAX_NAME_LENGTH);
 
 const readId = (value) => (typeof value === "string" && value.length > 0 && value.length <= MAX_ID_LENGTH ? value : null);
 
+const readApiKey = (entry) => (typeof entry?.apiKey === "string" && entry.apiKey.length > 0 ? { apiKey: entry.apiKey } : {});
+
 const readRemote = (entry) => {
   if (!entry || entry.kind !== "remote" || !readId(entry.id) || entry.id === LOCAL_SERVER.id) return null;
   if (typeof entry.url !== "string") return null;
   const parsed = parseServerUrl(entry.url);
   if (parsed.error) return null;
-  return { id: entry.id, name: readName(entry.name) ?? defaultName(parsed.url), kind: "remote", url: parsed.url };
+  return {
+    id: entry.id,
+    name: readName(entry.name) ?? defaultName(parsed.url),
+    kind: "remote",
+    url: parsed.url,
+    ...readApiKey(entry),
+  };
 };
 
-const buildConfig = (remotes, active) => {
-  const servers = [LOCAL_SERVER];
+const buildConfig = (remotes, active, { local, syncSkills } = {}) => {
+  const servers = [{ ...LOCAL_SERVER, ...readApiKey(local) }];
   for (const remote of remotes) {
     if (servers.some((entry) => entry.id === remote.id || entry.url === remote.url)) continue;
     servers.push(remote);
   }
-  return { active: servers.some((entry) => entry.id === active) ? active : LOCAL_SERVER.id, servers };
+  return {
+    active: servers.some((entry) => entry.id === active) ? active : LOCAL_SERVER.id,
+    servers,
+    syncSkills: syncSkills !== false,
+  };
 };
 
 const migrateConfig = (stored) => {
-  if (stored?.mode === "local") return buildConfig([], LOCAL_SERVER.id);
+  const options = { syncSkills: stored?.syncSkills };
+  if (stored?.mode === "local") return buildConfig([], LOCAL_SERVER.id, options);
   if (stored?.mode === "remote") {
     const remote = readRemote({ id: randomUUID(), kind: "remote", url: stored.url });
-    return remote ? buildConfig([remote], remote.id) : null;
+    return remote ? buildConfig([remote], remote.id, options) : null;
   }
   if (!Array.isArray(stored?.servers)) return null;
-  return buildConfig(stored.servers.map(readRemote).filter(Boolean), stored.active);
+  const local = stored.servers.find((entry) => entry?.id === LOCAL_SERVER.id);
+  return buildConfig(stored.servers.map(readRemote).filter(Boolean), stored.active, { ...options, local });
 };
 
 const writeConfig = (next) => {
@@ -251,6 +292,239 @@ const findServer = (id) => config.servers.find((entry) => entry.id === id) ?? nu
 const findByUrl = (url) => config?.servers.find((entry) => entry.url === url) ?? null;
 
 const isLocalActive = () => Boolean(config) && activeServer().kind === "local";
+
+const logPath = () => join(app.getPath("userData"), "desktop.log");
+
+const log = (line) => {
+  try {
+    appendFileSync(logPath(), `${new Date().toISOString()} ${line}\n`, { mode: 0o600 });
+  } catch {}
+};
+
+const cliConfigPath = () =>
+  join(process.env.XDG_CONFIG_HOME || join(userHome(), ".config"), "runelay", "config.json");
+
+const serverIdentity = (raw) => {
+  try {
+    const parsed = new URL(raw);
+    const host = parsed.hostname === "localhost" ? "127.0.0.1" : parsed.hostname;
+    return `${parsed.protocol}//${host}:${parsed.port}${parsed.pathname.replace(/\/+$/, "")}`;
+  } catch {
+    return null;
+  }
+};
+
+const readCliKey = (url) => {
+  try {
+    const stored = JSON.parse(readFileSync(cliConfigPath(), "utf8"));
+    if (typeof stored?.apiKey !== "string" || !stored.apiKey) return null;
+    return serverIdentity(stored.url) === serverIdentity(url) ? stored.apiKey : null;
+  } catch {
+    return null;
+  }
+};
+
+const skillConnection = () => {
+  const active = activeServer();
+  const url = active.kind === "local" ? localOrigin : active.url;
+  const apiKey = active.apiKey ?? readCliKey(url);
+  return apiKey ? { url, apiKey } : null;
+};
+
+const activeUrl = () => {
+  const active = activeServer();
+  return active.kind === "local" ? localOrigin : active.url;
+};
+
+const checkApiKey = async (url, apiKey) => {
+  try {
+    const response = await fetch(`${url}/v1/cli/status`, {
+      headers: { authorization: `Bearer ${apiKey}` },
+      signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
+    });
+    if (response.ok) return "valid";
+    return response.status === 401 || response.status === 403 ? "invalid" : "unreachable";
+  } catch {
+    return "unreachable";
+  }
+};
+
+const agentConnection = async () => {
+  const connection = skillConnection();
+  if (!connection) return null;
+  return (await checkApiKey(connection.url, connection.apiKey)) === "invalid" ? null : connection;
+};
+
+const storeApiKey = (apiKey) => {
+  saveConfig({
+    ...config,
+    servers: config.servers.map((entry) => (entry.id === config.active ? { ...entry, apiKey } : entry)),
+  });
+  startSkillSync();
+};
+
+const cliBinary = () => resource(CLI);
+
+const cliInvocation = () => {
+  if (app.isPackaged || existsSync(cliBinary())) return { command: cliBinary(), args: [] };
+  return { command: "bun", args: [join(import.meta.dirname, "..", "apps", "cli", "src", "index.ts")] };
+};
+
+const EXTRA_PATH_DIRS = [
+  [".local", "bin"],
+  [".bun", "bin"],
+  [".claude", "local"],
+  [".npm-global", "bin"],
+  [".volta", "bin"],
+  [".cargo", "bin"],
+];
+
+const SYSTEM_PATH_DIRS = ["/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", "/bin", "/usr/sbin", "/sbin"];
+
+const PATH_MARKER = "__RUNELAY_PATH__";
+
+const loginShellPath = () =>
+  new Promise((resolve) => {
+    if (process.platform === "win32") return resolve("");
+    execFile(
+      process.env.SHELL || "/bin/sh",
+      ["-ilc", `printf '${PATH_MARKER}%s${PATH_MARKER}' "$PATH"`],
+      { timeout: SHELL_PATH_TIMEOUT_MS, encoding: "utf8" },
+      (_error, stdout) => resolve(String(stdout ?? "").split(PATH_MARKER)[1] ?? ""),
+    );
+  });
+
+let agentPathPromise = null;
+
+const agentPath = () => {
+  agentPathPromise ??= loginShellPath().then((shellPath) => {
+    const home = userHome();
+    const parts = [
+      ...shellPath.split(delimiter),
+      ...(process.env.PATH ?? "").split(delimiter),
+      ...EXTRA_PATH_DIRS.map((segments) => join(home, ...segments)),
+      ...(process.platform === "win32" ? [] : SYSTEM_PATH_DIRS),
+    ];
+    return [...new Set(parts.filter(Boolean))].join(delimiter);
+  });
+  return agentPathPromise;
+};
+
+const lastJsonLine = (output) => {
+  const lines = output.trim().split("\n").reverse();
+  for (const line of lines) {
+    try {
+      return JSON.parse(line);
+    } catch {}
+  }
+  return null;
+};
+
+const runCli = async (args, connection) => {
+  const { command, args: prefix } = cliInvocation();
+  const env = {
+    ...process.env,
+    PATH: await agentPath(),
+    RUNELAY_URL: connection.url,
+    RUNELAY_API_KEY: connection.apiKey,
+    NO_COLOR: "1",
+  };
+  return new Promise((resolve) => {
+    let stdout = "";
+    let child;
+    try {
+      child = spawn(command, [...prefix, ...args, "--json"], { env, stdio: ["ignore", "pipe", "pipe"] });
+    } catch (error) {
+      return resolve({ code: -1, report: null, error: error instanceof Error ? error.message : String(error) });
+    }
+    const timer = setTimeout(() => child.kill(), CLI_TIMEOUT_MS);
+    child.stdout.on("data", (chunk) => {
+      stdout += chunk;
+    });
+    child.stderr.on("data", (chunk) => {
+      for (const line of String(chunk).split("\n")) if (line.trim()) log(`cli ${args[0]}: ${line}`);
+    });
+    child.on("error", (error) => {
+      clearTimeout(timer);
+      resolve({ code: -1, report: null, error: error.message });
+    });
+    child.on("close", (code) => {
+      clearTimeout(timer);
+      const report = lastJsonLine(stdout);
+      resolve({ code, report, error: report?.error?.message ?? null, errorCode: report?.error?.code ?? null });
+    });
+  });
+};
+
+let openablePaths = new Set();
+
+const rememberPaths = (checks) => {
+  openablePaths = new Set((checks ?? []).flatMap((check) => check.paths ?? []));
+};
+
+const runDoctorReport = async (connection) => {
+  const { report, error, errorCode } = await runCli(["doctor"], connection);
+  if (!report || report.command !== "doctor")
+    return { error: error ?? ERRORS.cliFailed, errorCode: errorCode ?? null, agents: [], checks: [] };
+  rememberPaths(report.checks);
+  return { error: null, agents: report.agents, checks: report.checks };
+};
+
+let agentSetup = null;
+
+const setupAgents = async (emit) => {
+  const connection = await agentConnection();
+  if (!connection) return { error: ERRORS.missingKey, code: "missing_key" };
+  const step = (id, status, message = null) => emit({ type: "step", step: id, status, message });
+
+  step("detect", "running");
+  const detected = await runDoctorReport(connection);
+  if (detected.error) {
+    step("detect", "failed", detected.error);
+    return { error: detected.error, code: "cli_failed", errorCode: detected.errorCode };
+  }
+  emit({ type: "agents", agents: detected.agents });
+  step("detect", "done");
+
+  step("migrate", "running");
+  const migrated = await runCli(["migrate", "--yes"], connection);
+  const migrate = migrated.report?.command === "migrate" ? migrated.report : null;
+  step("migrate", migrate ? "done" : "failed", migrate ? null : migrated.error);
+
+  step("connect", "running");
+  const connected = await runCli(["connect"], connection);
+  const connect = connected.report?.command === "connect" ? connected.report : null;
+  if (connect) emit({ type: "agents", agents: connect.agents });
+  step("connect", connect ? "done" : "failed", connect ? null : connected.error);
+
+  step("pull", "running");
+  const pulled = await runCli(["pull"], connection);
+  step("pull", pulled.code === 0 ? "done" : "failed", pulled.code === 0 ? null : pulled.error);
+
+  if (isLocalActive() && !readOpenAtLogin()) {
+    try {
+      writeOpenAtLogin(true);
+    } catch {}
+  }
+
+  step("doctor", "running");
+  const doctor = await runDoctorReport(connection);
+  if (!doctor.error) emit({ type: "agents", agents: doctor.agents });
+  step("doctor", doctor.error ? "failed" : "done", doctor.error);
+  startSkillSync();
+
+  return {
+    error: null,
+    code: null,
+    agents: doctor.error ? (connect?.agents ?? detected.agents) : doctor.agents,
+    checks: doctor.checks,
+    imported: migrate?.imported ?? null,
+    archived: migrate?.archived ?? null,
+    pendingLogins: migrate?.pendingLogins ?? [],
+    reconnectUrl: migrate?.reconnectUrl ?? null,
+    failed: [migrate ? null : "migrate", connect ? null : "connect", pulled.code === 0 ? null : "pull"].filter(Boolean),
+  };
+};
 
 const runsInBackground = () => Boolean(config) && Boolean(tray);
 
@@ -337,6 +611,7 @@ const serverMenu = () => ({
 
 function buildMenu() {
   const servers = config ? [serverMenu(), { type: "separator" }] : [];
+  const skills = config && !tray ? [...skillMenuItems(), { type: "separator" }] : [];
   if (process.platform === "darwin") {
     return Menu.buildFromTemplate([
       {
@@ -346,6 +621,7 @@ function buildMenu() {
           { label: "Buscar atualizações…", click: () => checkForUpdate(true) },
           { type: "separator" },
           ...servers,
+          ...skills,
           { role: "services" },
           { type: "separator" },
           { role: "hide" },
@@ -387,7 +663,7 @@ const registerBridge = () => {
     "runelay:list-servers",
     guard(() => ({
       active: config.active,
-      servers: config.servers.map(({ id, name, kind, url }) => ({ id, name, kind, url: url ?? null })),
+      servers: config.servers.map(({ id, name, kind, url }) => ({ id, name, kind, url: kind === "local" ? localOrigin : (url ?? null) })),
     })),
   );
   ipcMain.handle(
@@ -436,6 +712,61 @@ const registerBridge = () => {
   ipcMain.handle(
     "runelay:get-startup",
     guard(() => ({ supported: Boolean(config), local: isLocalActive(), openAtLogin: readOpenAtLogin() })),
+  );
+  ipcMain.handle(
+    "runelay:agent-key-status",
+    guard(async () => ({ ready: Boolean(await agentConnection()) })),
+  );
+  ipcMain.handle(
+    "runelay:save-agent-key",
+    guard(async (apiKey) => {
+      if (typeof apiKey !== "string" || apiKey.length < 8 || apiKey.length > MAX_KEY_LENGTH) {
+        return { error: ERRORS.invalidRequest };
+      }
+      const status = await checkApiKey(activeUrl(), apiKey);
+      if (status !== "valid") return { error: status === "invalid" ? ERRORS.invalidKey : ERRORS.unreachable };
+      storeApiKey(apiKey);
+      return { error: null };
+    }),
+  );
+  ipcMain.handle("runelay:setup-agents", async (event) => {
+    if (!isFromMainWindow(event)) throw new Error("forbidden");
+    const sender = event.sender;
+    const emit = (payload) => {
+      if (!sender.isDestroyed()) sender.send("runelay:setup-progress", payload);
+    };
+    agentSetup ??= setupAgents(emit).finally(() => {
+      agentSetup = null;
+    });
+    return agentSetup;
+  });
+  ipcMain.handle(
+    "runelay:doctor",
+    guard(async () => {
+      const connection = await agentConnection();
+      if (!connection) return { error: ERRORS.missingKey, code: "missing_key", agents: [], checks: [] };
+      return { ...(await runDoctorReport(connection)), code: null };
+    }),
+  );
+  ipcMain.handle(
+    "runelay:skills-sync-status",
+    guard(() => skillSyncSnapshot()),
+  );
+  ipcMain.handle(
+    "runelay:set-skills-sync",
+    guard((enabled) => {
+      if (typeof enabled !== "boolean") return { error: ERRORS.invalidRequest, ...skillSyncSnapshot() };
+      setSkillSync(enabled);
+      return { error: null, ...skillSyncSnapshot() };
+    }),
+  );
+  ipcMain.handle(
+    "runelay:open-path",
+    guard(async (path) => {
+      if (typeof path !== "string" || !openablePaths.has(path)) return { error: ERRORS.invalidRequest };
+      const failure = await shell.openPath(path);
+      return { error: failure || null };
+    }),
   );
   ipcMain.handle(
     "runelay:set-startup",
@@ -522,8 +853,55 @@ const loadSecrets = () => {
   return secrets;
 };
 
+const portAnswers = (port) =>
+  new Promise((resolve) => {
+    const socket = createConnection({ port, host: "127.0.0.1" });
+    const done = (answered) => {
+      socket.destroy();
+      resolve(answered);
+    };
+    socket.setTimeout(PORT_PROBE_MS, () => done(false));
+    socket.once("connect", () => done(true));
+    socket.once("error", () => done(false));
+  });
+
+const portBindable = (port) =>
+  new Promise((resolve) => {
+    const probe = createServer();
+    probe.once("error", () => resolve(false));
+    probe.listen({ port, host: "127.0.0.1", exclusive: true }, () => probe.close(() => resolve(true)));
+  });
+
+const portFree = async (port) => !(await portAnswers(port)) && (await portBindable(port));
+
+const pickLocalPort = async () => {
+  const remembered = Number(readPrefs().localPort);
+  const range = Array.from({ length: PORT_ATTEMPTS }, (_, index) => PREFERRED_PORT + index);
+  const candidates = [...new Set([...(Number.isInteger(remembered) && remembered > 0 ? [remembered] : []), ...range])];
+  for (const port of candidates) if (await portFree(port)) return port;
+  return null;
+};
+
+const discoveryPath = () => join(userHome(), ".runelay", "desktop.json");
+
+const publishLocalUrl = () => {
+  try {
+    mkdirSync(dirname(discoveryPath()), { recursive: true });
+    writeFileSync(discoveryPath(), JSON.stringify({ url: localOrigin, pid: process.pid }, null, 2), { mode: 0o600 });
+  } catch (error) {
+    log(`não consegui gravar ${discoveryPath()}: ${error instanceof Error ? error.message : error}`);
+  }
+};
+
+const unpublishLocalUrl = () => {
+  try {
+    const stored = JSON.parse(readFileSync(discoveryPath(), "utf8"));
+    if (stored?.pid === process.pid) rmSync(discoveryPath(), { force: true });
+  } catch {}
+};
+
 const healthy = () =>
-  fetch(`${ORIGIN}/health`, { signal: AbortSignal.timeout(1000) })
+  fetch(`${localOrigin}/health`, { signal: AbortSignal.timeout(1000) })
     .then((response) => response.ok)
     .catch(() => false);
 
@@ -552,9 +930,9 @@ const startServer = (secrets) => {
       RUNELAY_DESKTOP: "true",
       RUNELAY_ENABLE_STDIO: "true",
       WEB_DIST: webDist(),
-      PUBLIC_URL: ORIGIN,
+      PUBLIC_URL: localOrigin,
       HOST: "127.0.0.1",
-      PORT: String(PORT),
+      PORT: String(localPort),
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -563,10 +941,10 @@ const startServer = (secrets) => {
 };
 
 const firstScreen = async (secrets) => {
-  const setup = await fetch(`${ORIGIN}/v1/setup`)
+  const setup = await fetch(`${localOrigin}/v1/setup`)
     .then((response) => response.json())
     .catch(() => null);
-  return setup?.data?.needsSetup ? `${ORIGIN}/login?mode=signup&token=${secrets.setupToken}` : ORIGIN;
+  return setup?.data?.needsSetup ? `${localOrigin}/login?mode=signup&token=${secrets.setupToken}` : localOrigin;
 };
 
 const isInternal = (url) => {
@@ -675,19 +1053,94 @@ const trayIcon = () =>
         height: TRAY_ICON_SIZE[process.platform] ?? 22,
       });
 
+const formatTime = (date) => date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+
+const skillSyncState = () => {
+  if (!config?.syncSkills) return "off";
+  if (skillStatus?.missingKey) return "missing_key";
+  if (skillStatus?.ok) return "synced";
+  if (skillStatus) return "failed";
+  return skillSync?.watching() ? "watching" : "no_folders";
+};
+
+const skillSyncSnapshot = () => ({
+  enabled: Boolean(config?.syncSkills),
+  state: skillSyncState(),
+  label: skillStatusLabel(),
+  at: skillStatus?.at instanceof Date ? skillStatus.at.toISOString() : null,
+  count: skillStatus?.ok ? skillStatus.count : null,
+  message: skillStatus && !skillStatus.ok && !skillStatus.missingKey ? (skillStatus.message ?? null) : null,
+});
+
+const skillMenuItems = () => [
+  {
+    label: "Sincronizar skills",
+    type: "checkbox",
+    checked: Boolean(config?.syncSkills),
+    click: (item) => setSkillSync(item.checked),
+  },
+  { label: skillStatusLabel(), enabled: false },
+];
+
+const skillStatusLabel = () => {
+  if (!config?.syncSkills) return "Sincronização de skills desligada";
+  if (skillStatus?.missingKey) return "Skills: abra o runelay e use Conectar meus agentes";
+  if (skillStatus?.ok) return `Skills sincronizadas às ${formatTime(skillStatus.at)}`;
+  if (skillStatus) return `Falha ao sincronizar skills às ${formatTime(skillStatus.at)}`;
+  return skillSync?.watching() ? "Skills: aguardando mudanças" : "Skills: nenhuma pasta encontrada";
+};
+
+const trayMenu = () =>
+  Menu.buildFromTemplate([
+    { label: "Abrir runelay", click: () => showWindow() },
+    { label: "Buscar atualizações…", click: () => checkForUpdate(true) },
+    { type: "separator" },
+    ...skillMenuItems(),
+    { type: "separator" },
+    { label: "Sair", click: () => app.quit() },
+  ]);
+
+const refreshTrayMenu = () => {
+  if (tray) return tray.setContextMenu(trayMenu());
+  if (process.platform === "darwin" && config) Menu.setApplicationMenu(buildMenu());
+};
+
 const createTray = () => {
   if (tray) return;
   tray = new Tray(trayIcon());
   tray.setToolTip("runelay");
-  tray.setContextMenu(
-    Menu.buildFromTemplate([
-      { label: "Abrir runelay", click: () => showWindow() },
-      { label: "Buscar atualizações…", click: () => checkForUpdate(true) },
-      { type: "separator" },
-      { label: "Sair", click: () => app.quit() },
-    ]),
-  );
+  tray.setContextMenu(trayMenu());
   tray.on("click", () => showWindow());
+  Menu.setApplicationMenu(buildMenu());
+};
+
+const startSkillSync = () => {
+  skillSync?.stop();
+  skillSync = null;
+  if (!config?.syncSkills) return refreshTrayMenu();
+  const connection = skillConnection();
+  if (!connection) {
+    if (!skillStatus?.missingKey) log(`skills: sem chave de API para ${activeServer().name}; sincronização parada até Conectar meus agentes.`);
+    skillStatus = { missingKey: true };
+    return refreshTrayMenu();
+  }
+  if (skillStatus?.missingKey) skillStatus = null;
+  skillSync = createSkillSync({
+    directories: skillDirectories(userHome(), process.env.RUNELAY_SKILLS_DIR),
+    connection,
+    log,
+    onStatus: (status) => {
+      skillStatus = status;
+      refreshTrayMenu();
+    },
+  });
+  skillSync.start();
+  refreshTrayMenu();
+};
+
+const setSkillSync = (enabled) => {
+  saveConfig({ ...config, syncSkills: enabled });
+  startSkillSync();
 };
 
 const syncRemoteTray = () => {
@@ -695,6 +1148,7 @@ const syncRemoteTray = () => {
   if (readOpenAtLogin()) return createTray();
   tray?.destroy();
   tray = null;
+  Menu.setApplicationMenu(buildMenu());
 };
 
 const notifyBackground = () => {
@@ -805,15 +1259,20 @@ const openRemote = async (hidden) => {
   home = activeServer().url;
   activeOrigin = new URL(home).origin;
   syncRemoteTray();
+  startSkillSync();
   if (hidden && tray) return;
   await createWindow(home);
   await completeHandoff();
 };
 
 const openLocal = async (hidden) => {
-  if (await healthy()) {
-    return fail(`Já tem um runelay rodando em ${ORIGIN}. Feche o outro (ou o container do Docker) e abra de novo.`);
+  const port = await pickLocalPort();
+  if (!port) {
+    return fail(`As portas ${PREFERRED_PORT} a ${PREFERRED_PORT + PORT_ATTEMPTS - 1} estão ocupadas. Feche o que estiver usando uma delas e abra de novo.`);
   }
+  if (port !== PREFERRED_PORT) log(`porta ${PREFERRED_PORT} ocupada; servidor local em ${port}`);
+  localPort = port;
+  localOrigin = originFor(port);
   let secrets;
   try {
     secrets = loadSecrets();
@@ -824,9 +1283,12 @@ const openLocal = async (hidden) => {
   if (!(await waitForServer())) {
     return fail(`O servidor não subiu. Veja o log em ${join(app.getPath("userData"), "server.log")}.`);
   }
-  home = ORIGIN;
-  activeOrigin = ORIGIN;
+  writePrefs({ localPort });
+  publishLocalUrl();
+  home = localOrigin;
+  activeOrigin = localOrigin;
   createTray();
+  startSkillSync();
   const entry = await firstScreen(secrets);
   if (hidden) {
     pendingEntry = entry;
@@ -869,5 +1331,7 @@ app.on("window-all-closed", () => {
 });
 
 app.on("before-quit", () => {
+  skillSync?.stop();
+  unpublishLocalUrl();
   if (server) server.kill();
 });

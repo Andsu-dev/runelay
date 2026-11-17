@@ -13,6 +13,8 @@ claude mcp add --scope user --transport http runelay https://runelay.example.com
 
 Open a new Claude Code session. `--scope user` makes runelay available in every project.
 
-`runelay connect` does this for you.
+`runelay connect` does this for you. It also turns Claude Code's native memory off by setting `autoMemoryEnabled: false` in `~/.claude/settings.json`, so Claude Code saves memory only in runelay. `runelay migrate` does the same and archives the imported memory folders into `~/.runelay/archive/<timestamp>/`. See the [native memory table](/cli#native-memory) for the other agents.
+
+Run `runelay doctor` afterwards to check that everything is in place.
 
 Step by step, with what Claude Code gets once connected: [runelay.com/guides/claude-code](https://runelay.com/guides/claude-code/).

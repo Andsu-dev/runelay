@@ -25,7 +25,7 @@ export const memoryMessages = defineMessages(
       emptyQueryTitle: "Nenhuma memória com “{query}”",
       emptyTitle: "Nenhuma memória aqui",
       emptyQueryDescription: "Tente outro termo. A busca olha nome, descrição e conteúdo.",
-      emptyDescription: "Crie uma memória ou importe o vault com o CLI: bun run import.",
+      emptyDescription: "Crie uma memória ou importe o vault com a CLI: runelay migrate.",
     },
     fields: {
       name: "Nome",
@@ -129,7 +129,7 @@ export const memoryMessages = defineMessages(
       emptyQueryTitle: "No memories matching “{query}”",
       emptyTitle: "No memories here",
       emptyQueryDescription: "Try another term. Search looks at name, description and content.",
-      emptyDescription: "Create a memory or import your vault with the CLI: bun run import.",
+      emptyDescription: "Create a memory or import your vault with the CLI: runelay migrate.",
     },
     fields: {
       name: "Name",

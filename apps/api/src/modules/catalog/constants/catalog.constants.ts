@@ -260,22 +260,6 @@ export const CATALOG: CatalogSection[] = [
         googleService: "meet",
       },
       {
-        id: "asana",
-        name: "Asana",
-        description: "Tarefas, projetos e prazos.",
-        url: "https://mcp.asana.com/v2/mcp",
-        icon: "asana",
-        auth: "oauth",
-      },
-      {
-        id: "hubspot",
-        name: "HubSpot",
-        description: "Contatos, empresas e negócios do CRM.",
-        url: "https://mcp.hubspot.com/",
-        icon: "hubspot",
-        auth: "oauth",
-      },
-      {
         id: "monday",
         name: "monday.com",
         description: "Quadros, itens e atualizações.",
@@ -314,14 +298,6 @@ export const CATALOG: CatalogSection[] = [
         description: "Canvas de design onde o agente monta telas e você aprova.",
         url: "https://doop.design/mcp",
         icon: "/logos/doop.png",
-        auth: "oauth",
-      },
-      {
-        id: "box",
-        name: "Box",
-        description: "Arquivos e pastas na nuvem.",
-        url: "https://mcp.box.com",
-        icon: "box",
         auth: "oauth",
       },
       {

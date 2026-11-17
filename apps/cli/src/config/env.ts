@@ -17,6 +17,7 @@ const cliEnvSchema = z.object({
   RUNELAY_MEMORY_DIR: optionalText,
   RUNELAY_SKILLS_DIR: optionalText,
   XDG_CONFIG_HOME: optionalText,
+  KIMI_CODE_HOME: optionalText,
   RUNELAY_SKIP_KEYCHAIN: z
     .enum(["", "0", "1", "true", "false"])
     .optional()

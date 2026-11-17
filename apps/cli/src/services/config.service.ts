@@ -14,11 +14,9 @@ const storedConfigSchema = z.object({
 export const readStoredConfig = (): Result<StoredConfig | null> => {
   if (!existsSync(CONFIG_FILE)) return ok(null);
   const raw = attemptSync(() => JSON.parse(readFileSync(CONFIG_FILE, "utf8")) as unknown, "INVALID_INPUT");
-  if (raw.error) return fail("INVALID_INPUT", `Não consegui ler ${CONFIG_FILE}. Rode runelay login de novo.`);
+  if (raw.error) return fail("INVALID_INPUT", `Couldn't read ${CONFIG_FILE}. Run runelay login again.`);
   const parsed = storedConfigSchema.safeParse(raw.data);
-  return parsed.success
-    ? ok(parsed.data)
-    : fail("INVALID_INPUT", `${CONFIG_FILE} está incompleto. Rode runelay login.`);
+  return parsed.success ? ok(parsed.data) : fail("INVALID_INPUT", `${CONFIG_FILE} is incomplete. Run runelay login.`);
 };
 
 export const saveConfig = (config: StoredConfig): Result<null> =>
@@ -40,6 +38,6 @@ export const resolveConnection = (): Result<Connection> => {
   if (stored.error) return stored;
   const url = cliEnv.RUNELAY_URL ?? stored.data?.url;
   const apiKey = cliEnv.RUNELAY_API_KEY ?? stored.data?.apiKey;
-  if (!url || !apiKey) return fail("UNAUTHORIZED", "Você ainda não entrou. Rode runelay login.");
+  if (!url || !apiKey) return fail("UNAUTHORIZED", "You're not logged in. Run runelay login first.");
   return ok({ url, apiKey, fromEnv: Boolean(cliEnv.RUNELAY_URL || cliEnv.RUNELAY_API_KEY) });
 };

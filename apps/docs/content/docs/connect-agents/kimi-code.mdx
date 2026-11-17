@@ -21,6 +21,6 @@ An entry with a `url` and no `transport` is an HTTP server. `$KIMI_CODE_HOME/mcp
 
 A server added in `mcp.json` joins only sessions created after the change. Open a new session and run `/mcp` to see runelay connected.
 
-No CLI shortcut yet: `runelay connect` does not write Kimi Code.
+`runelay connect` writes this entry, with `"transport": "http"`, into `~/.kimi-code/mcp.json` (or `$KIMI_CODE_HOME/mcp.json`) when it finds that folder or the `kimi` command. Other servers in the file stay.
 
 Step by step, with what Kimi Code gets once connected: [runelay.com/guides/kimi-code](https://runelay.com/guides/kimi-code/).

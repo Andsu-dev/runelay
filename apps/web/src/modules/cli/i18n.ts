@@ -4,18 +4,16 @@ export const cliMessages = defineMessages(
   {
     openLink: "Abra o link que o runelay login mostrou no terminal.",
     authorize: {
-      title: "Autorizar o runelay CLI",
+      title: "Liberar este computador",
       requestFrom: "Pedido de",
       checkCode: "Confira se é o mesmo código do terminal",
-      scopeBefore: "O CLI vai ler e gravar memórias, habilidades e conexões da organização",
-      scopeAfter: ".",
+      scope: "Este computador vai poder usar suas contas, memórias e habilidades.",
       approve: "Autorizar",
       cancel: "Cancelar",
       cancelled: "Login do CLI cancelado.",
     },
     authorized: {
-      title: "Pronto, pode voltar para o terminal.",
-      description: "O runelay CLI já recebeu a chave deste computador.",
+      title: "Pronto. Pode fechar esta aba e voltar ao Terminal.",
     },
     error: {
       title: "Não deu para autorizar",
@@ -25,18 +23,16 @@ export const cliMessages = defineMessages(
   {
     openLink: "Open the link that runelay login printed in the terminal.",
     authorize: {
-      title: "Authorize the runelay CLI",
+      title: "Allow this computer",
       requestFrom: "Request from",
       checkCode: "Make sure it matches the code in the terminal",
-      scopeBefore: "The CLI will read and write memories, skills and connections in the",
-      scopeAfter: " organization.",
+      scope: "This computer will be able to use your accounts, memories and skills.",
       approve: "Authorize",
       cancel: "Cancel",
       cancelled: "CLI sign-in canceled.",
     },
     authorized: {
-      title: "Done, you can go back to the terminal.",
-      description: "The runelay CLI already received this computer's key.",
+      title: "Done. You can close this tab and go back to Terminal.",
     },
     error: {
       title: "Couldn't authorize",

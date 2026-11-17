@@ -235,3 +235,28 @@ test("v0.5.0 Google sources installed as MCP still show under their item", async
   expect(catalog[hashUrl("https://docsmcp.googleapis.com/mcp/v1")]?.icon).toBe("googledocs");
   expect(catalog[hashUrl("https://sheetsmcp.googleapis.com/mcp/v1")]?.icon).toBe("googlesheets");
 });
+
+test("a source whose catalog entry was removed stays listed as a custom remote MCP", async () => {
+  offline();
+  const url = "https://mcp.asana.com/v2/mcp";
+  expect(
+    items((await body<CatalogView>(await call("/v1/catalog", { cookie: account.cookie }))).data).some(
+      (item) => item.url === url,
+    ),
+  ).toBe(false);
+  const created = await call("/v1/sources", {
+    method: "POST",
+    cookie: account.cookie,
+    json: { name: "asana", config: { kind: "mcp", url, headers: {} } },
+  });
+  expect(created.status).toBe(201);
+  const listed = await body<SourceView[]>(await call("/v1/sources", { cookie: account.cookie }));
+  expect(listed.data.find((source) => source.name === "asana")).toMatchObject({
+    config: { kind: "mcp", url },
+    icon: null,
+    auth: null,
+    tokenUrl: null,
+  });
+  const detail = await body<SourceView>(await call("/v1/sources/asana", { cookie: account.cookie }));
+  expect(detail.data).toMatchObject({ name: "asana", config: { kind: "mcp", url }, icon: null, auth: null });
+});

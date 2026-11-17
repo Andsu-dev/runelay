@@ -1,12 +1,20 @@
-import {
-  type CreateSkillInput,
-  type ImportSkillsInput,
-  ok,
-  type Result,
-  type SkillView,
-  type UpdateSkillInput,
+import type {
+  CreateSkillInput,
+  ImportSkillsInput,
+  Result,
+  SkillFileInput,
+  SkillView,
+  SkillWriteInput,
+  UpdateSkillInput,
 } from "@runelay/shared";
-import { findSkill, insertSkill, updateSkillRow, upsertSkills } from "@/modules/skills/repositories/skill.repository";
+import {
+  findSkill,
+  insertSkill,
+  skillExists,
+  updateSkillRow,
+  upsertSkillFile,
+  upsertSkills,
+} from "@/modules/skills/repositories/skill.repository";
 
 export {
   deleteSkillRow as deleteSkill,
@@ -26,7 +34,24 @@ export const updateSkill = (organizationId: string, slug: string, input: UpdateS
   return updated.error ? updated : findSkill(organizationId, slug);
 };
 
-export const importSkills = (organizationId: string, { skills }: ImportSkillsInput) => {
-  const imported = upsertSkills(organizationId, skills);
-  return imported.error ? imported : ok({ imported: imported.data });
+export const writeSkill = (organizationId: string, { slug, ...fields }: SkillWriteInput): Result<SkillView> => {
+  const exists = skillExists(organizationId, slug);
+  if (exists.error) return exists;
+  if (exists.data) return updateSkill(organizationId, slug, fields);
+  return createSkill(organizationId, {
+    slug,
+    name: fields.name ?? slug,
+    description: fields.description ?? "",
+    body: fields.body,
+    enabled: true,
+    files: [],
+  });
 };
+
+export const writeSkillFile = (organizationId: string, slug: string, file: SkillFileInput): Result<SkillView> => {
+  const written = upsertSkillFile(organizationId, slug, file);
+  return written.error ? written : findSkill(organizationId, slug);
+};
+
+export const importSkills = (organizationId: string, { skills }: ImportSkillsInput) =>
+  upsertSkills(organizationId, skills);

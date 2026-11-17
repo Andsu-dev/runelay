@@ -109,10 +109,15 @@ export const settingsMessages = defineMessages(
     },
     agents: {
       title: "Agentes",
-      endpoint: "Endpoint MCP",
-      copyEndpoint: "Copiar endpoint",
       hint: "Use esse endereço em cada agente.",
       setup: "Configurar agentes",
+    },
+    endpoint: {
+      label: "Endereço do seu runelay",
+      labelLocal: "Endereço do runelay neste computador",
+      copy: "Copiar endereço MCP",
+      hostedHint: "Agentes hospedados na nuvem não alcançam este computador e precisam de um endereço público.",
+      hostedLink: "Como fazer",
     },
   },
   {
@@ -220,10 +225,15 @@ export const settingsMessages = defineMessages(
     },
     agents: {
       title: "Agents",
-      endpoint: "MCP endpoint",
-      copyEndpoint: "Copy endpoint",
       hint: "Use this address in each agent.",
       setup: "Set up agents",
+    },
+    endpoint: {
+      label: "Your runelay address",
+      labelLocal: "runelay address on this computer",
+      copy: "Copy MCP address",
+      hostedHint: "Agents hosted in the cloud can't reach this computer and need a public address.",
+      hostedLink: "How to",
     },
   },
 );

@@ -1,5 +1,12 @@
 import { afterEach, beforeAll, describe, expect, mock, spyOn, test } from "bun:test";
-import type { MemoryHealthView, MemoryListItemView, MemoryVersionView, MemoryView, Page } from "@runelay/shared";
+import type {
+  ImportResultView,
+  MemoryHealthView,
+  MemoryListItemView,
+  MemoryVersionView,
+  MemoryView,
+  Page,
+} from "@runelay/shared";
 import { db } from "@/db/connection";
 import {
   deleteMemoryRow,
@@ -12,8 +19,9 @@ import {
   updateMemoryRow,
   upsertMemories,
 } from "@/modules/memories/repositories/memory.repository";
-import { importMemories, writeMemory } from "@/modules/memories/services/memory.service";
+import { importMemories, importMemoryItems, writeMemory } from "@/modules/memories/services/memory.service";
 import { parseLinks } from "@/modules/memories/utils/parse-links";
+import { withQueryFault } from "../../../../test/db-fault-helpers";
 import { body, call, createApiKey, resetDatabase, signUp, type TestAccount } from "../../../../test/helpers";
 
 let owner: TestAccount;
@@ -258,6 +266,148 @@ describe("writeMemory", () => {
   test("propagates storage failures", () => {
     breakQueries();
     expect(writeMemory(owner.organizationId, { slug: "written-note", body: "x" }).error?.code).toBe("STORAGE_FAILED");
+  });
+});
+
+describe("push freshness", () => {
+  test("skips pushed memories older than the stored copy and imports newer ones", async () => {
+    const org = owner.organizationId;
+    const base = { name: "Fresh", description: "", type: "project" as const, pinned: false };
+    upsertMemories(org, [{ ...base, slug: "fresh-note", body: "server" }]);
+    const response = await call("/v1/memories/import", {
+      method: "POST",
+      cookie: owner.cookie,
+      json: {
+        memories: [
+          { ...base, slug: "fresh-note", body: "stale", updatedAt: "2000-01-01T00:00:00Z" },
+          { ...base, slug: "brand-new-note", body: "new", updatedAt: "2000-01-01T00:00:00+02:00" },
+        ],
+      },
+    });
+    expect((await body<ImportResultView>(response)).data).toEqual({
+      imported: 1,
+      written: 1,
+      skipped: ["fresh-note"],
+      unchanged: [],
+    });
+    expect(findMemory(org, "fresh-note").data?.body).toBe("server");
+    expect(findMemory(org, "brand-new-note").data?.body).toBe("new");
+    const newer = upsertMemories(org, [
+      { ...base, slug: "fresh-note", body: "local", updatedAt: "2999-01-01T00:00:00Z" },
+    ]);
+    expect(newer.data).toEqual({ imported: 1, written: 1, skipped: [], unchanged: [] });
+    expect(findMemory(org, "fresh-note").data?.body).toBe("local");
+  });
+
+  test("reports identical memories as unchanged without writing, even when the server is newer", () => {
+    const org = owner.organizationId;
+    const memory = {
+      slug: "same-note",
+      name: "Same",
+      description: "d",
+      type: "project" as const,
+      body: "body",
+      pinned: false,
+    };
+    upsertMemories(org, [memory]);
+    db.query("UPDATE memories SET updated_at = '2999-01-01T00:00:00.000Z' WHERE organization_id = ? AND slug = ?").run(
+      org,
+      "same-note",
+    );
+    const identical = upsertMemories(org, [
+      { ...memory, updatedAt: "2000-01-01T00:00:00Z" },
+      { ...memory, slug: "other-note" },
+    ]);
+    expect(identical.data).toEqual({ imported: 2, written: 1, skipped: [], unchanged: ["same-note"] });
+    expect(findMemory(org, "same-note").data?.updatedAt).toBe("2999-01-01T00:00:00.000Z");
+    const again = upsertMemories(org, [memory, { ...memory, slug: "other-note" }]);
+    expect(again.data).toEqual({ imported: 2, written: 0, skipped: [], unchanged: ["same-note", "other-note"] });
+    const variants = [
+      { ...memory, name: "Renamed" },
+      { ...memory, description: "other" },
+      { ...memory, type: "user" as const },
+      { ...memory, body: "other" },
+      { ...memory, pinned: true },
+    ];
+    for (const variant of variants) {
+      expect(upsertMemories(org, [{ ...variant, updatedAt: "2000-01-01T00:00:00Z" }]).data).toEqual({
+        imported: 0,
+        written: 0,
+        skipped: ["same-note"],
+        unchanged: [],
+      });
+    }
+    const changed = upsertMemories(org, [{ ...memory, body: "changed", updatedAt: "2999-06-01T00:00:00Z" }]);
+    expect(changed.data).toEqual({ imported: 1, written: 1, skipped: [], unchanged: [] });
+    expect(findMemory(org, "same-note").data?.body).toBe("changed");
+    expect(listVersions(org, "same-note").data?.map((version) => version.body)).toEqual(["body"]);
+  });
+
+  test("rejects an invalid updatedAt", async () => {
+    const response = await call("/v1/memories/import", {
+      method: "POST",
+      cookie: owner.cookie,
+      json: { memories: [{ slug: "bad-date", name: "B", type: "user", body: "", updatedAt: "yesterday" }] },
+    });
+    expect(response.status).toBe(400);
+  });
+});
+
+describe("duplicate hints", () => {
+  test("lists similar memories only when creating a new slug", () => {
+    const org = owner.organizationId;
+    writeMemory(org, { slug: "quokka-deploy-rules", name: "Quokka deploy rules", body: "never on friday" });
+    const created = writeMemory(org, { slug: "quokka-deploy-policy", name: "Quokka deploy policy", body: "x" });
+    expect(created.data?.similar?.[0]).toEqual({ slug: "quokka-deploy-rules", name: "Quokka deploy rules" });
+    expect(created.data?.similar?.length).toBeLessThanOrEqual(3);
+    expect(created.data?.hint).toContain("write_memory");
+    const updated = writeMemory(org, { slug: "quokka-deploy-policy", body: "y" });
+    expect(updated.data?.similar).toBeUndefined();
+    const short = writeMemory(org, { slug: "tiny-words", name: "a b", body: "z" });
+    expect(short.data?.similar).toBeUndefined();
+    expect(short.data?.hint).toBeUndefined();
+  });
+});
+
+describe("importMemoryItems", () => {
+  test("creates, updates, skips and reports invalid items without aborting", () => {
+    const org = owner.organizationId;
+    const first = importMemoryItems(org, [
+      { slug: "wombat-intake", name: "Wombat intake", body: "one", createdAt: "2020-05-01T10:00:00+02:00" },
+      { slug: "wombat-intake-form", name: "Wombat intake form", body: "two" },
+      { slug: "Bad Slug", body: "x" },
+    ]);
+    expect(first).toMatchObject({ created: 2, updated: 0, skipped: 0, failed: 1 });
+    expect(first.items[0]).toMatchObject({ slug: "wombat-intake", status: "created" });
+    expect(first.items[1]?.similar?.[0]).toEqual({ slug: "wombat-intake", name: "Wombat intake" });
+    expect(first.items[2]).toMatchObject({ slug: "Bad Slug", status: "failed" });
+    expect(first.items[2]?.error).toBeTruthy();
+    expect(first.hint).toContain("write_memory");
+    expect(findMemory(org, "wombat-intake").data?.createdAt).toBe("2020-05-01T08:00:00.000Z");
+    const second = importMemoryItems(org, [
+      { slug: "wombat-intake", body: "one" },
+      { slug: "wombat-intake-form", body: "changed" },
+    ]);
+    expect(second).toMatchObject({ created: 0, updated: 1, skipped: 1, failed: 0 });
+    expect(second.items.map((item) => item.status)).toEqual(["skipped", "updated"]);
+    expect(second.hint).toBeUndefined();
+    expect(findMemory(org, "wombat-intake-form").data?.body).toBe("changed");
+    expect(listVersions(org, "wombat-intake-form").data?.map((version) => version.body)).toEqual(["two"]);
+  });
+
+  test("reports storage failures per item", () => {
+    const org = owner.organizationId;
+    const lookup = withQueryFault(
+      (sql) => sql.includes("json_group_array(to_slug)"),
+      () => importMemoryItems(org, [{ slug: "wombat-lookup", body: "x" }]),
+    );
+    expect(lookup.items[0]).toMatchObject({ slug: "wombat-lookup", status: "failed" });
+    const insert = withQueryFault(
+      (sql) => sql.startsWith("INSERT INTO memories ("),
+      () => importMemoryItems(org, [{ slug: "wombat-insert", body: "x" }]),
+    );
+    expect(insert).toMatchObject({ failed: 1, items: [{ slug: "wombat-insert", status: "failed" }] });
+    expect(memoryExists(org, "wombat-insert").data).toBe(false);
   });
 });
 

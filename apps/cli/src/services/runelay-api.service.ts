@@ -1,13 +1,16 @@
 import {
+  type AgentApiKeyView,
+  type AgentKeyCheckView,
   attempt,
   type CliAuthPollView,
   type CliAuthStartView,
   type CliStatusView,
   type ContextBriefView,
   type ContextClient,
-  type CreateMemoryInput,
-  type CreateSkillInput,
   fail,
+  type ImportedMemoryInput,
+  type ImportedSkillInput,
+  type ImportResultView,
   type ImportSourceInput,
   type ImportView,
   ok,
@@ -38,9 +41,9 @@ const requestApi = async <T>(
       }),
     "UPSTREAM_FAILED",
   );
-  if (response.error) return fail("UPSTREAM_FAILED", `Não consegui falar com ${url}: ${response.error.message}`);
+  if (response.error) return fail("UPSTREAM_FAILED", `Couldn't reach ${url}: ${response.error.message}`);
   const parsed = await attempt(() => response.data.json() as Promise<Result<T>>, "UPSTREAM_FAILED");
-  if (parsed.error) return fail("UPSTREAM_FAILED", `${url} respondeu HTTP ${response.data.status}`);
+  if (parsed.error) return fail("UPSTREAM_FAILED", `${url} returned HTTP ${response.data.status}`);
   return parsed.data;
 };
 
@@ -65,16 +68,22 @@ export const pollCliAuth = (url: string, pollToken: string) =>
 
 export const fetchStatus = (connection: Connection) => authed<CliStatusView>(connection, "GET", "/cli/status");
 
+export const checkAgentKey = async (connection: Connection, name: string, key: string) =>
+  (await authed<AgentKeyCheckView>(connection, "POST", "/api-keys/agent/check", { name, key })).data?.valid === true;
+
+export const issueAgentKey = (connection: Connection, name: string) =>
+  authed<AgentApiKeyView>(connection, "POST", "/api-keys/agent", { name });
+
 export const revokeCurrentKey = (connection: Connection) => authed<null>(connection, "DELETE", "/cli/key");
 
 export const pushSources = (connection: Connection, sources: ImportSourceInput[]) =>
   authed<ImportView>(connection, "POST", "/sources/import", { sources });
 
-export const pushMemories = (connection: Connection, memories: CreateMemoryInput[]) =>
-  authed<{ imported: number }>(connection, "POST", "/memories/import", { memories });
+export const pushMemories = (connection: Connection, memories: ImportedMemoryInput[]) =>
+  authed<Partial<ImportResultView>>(connection, "POST", "/memories/import", { memories });
 
-export const pushSkills = (connection: Connection, skills: CreateSkillInput[]) =>
-  authed<{ imported: number }>(connection, "POST", "/skills/import", { skills });
+export const pushSkills = (connection: Connection, skills: ImportedSkillInput[]) =>
+  authed<Partial<ImportResultView>>(connection, "POST", "/skills/import", { skills });
 
 export const fetchBrief = (connection: Connection, client: ContextClient) =>
   authed<ContextBriefView>(connection, "GET", `/context/brief?client=${client}`);

@@ -35,11 +35,32 @@ You can keep several servers and switch between them from **Settings → Server*
 
 **Settings → Server → Open when the computer starts** works with a remote server too. The server is already running elsewhere, so this is only about the app: it opens hidden in the tray (the menu bar on macOS) when you sign in, and closing the window keeps it there. With the option off, closing the window behaves as before.
 
+## Setup in two clicks
+
+In the desktop app, **Access → Set up agents** has two buttons instead of the step-by-step guide. You never open a terminal.
+
+1. **Connect my agents** ("Conectar meus agentes"). The app finds the agents installed on this computer (Claude Code, Codex, Cursor, Grok and the ones whose memory runelay manages, like Gemini, Hermes Agent and OpenClaw) and shows each one with a live check. Behind the scenes it runs the bundled [CLI](/cli) for you: [`migrate`](/migrate) brings in MCP servers, memories and skills, [`connect`](/connect-agents) registers runelay in every agent and turns native memory off, [`pull`](/cli#pull) writes the short brief into `CLAUDE.md`, `AGENTS.md` and `GEMINI.md`, and [`doctor`](/cli#doctor) checks the result. With the server on this computer, it also turns on **Open when the computer starts**, since agents only reach runelay while the app runs.
+2. **Connect my accounts** ("Conectar minhas contas") opens the catalog, where you sign in to Linear, GitHub, Notion and the rest once.
+
+The first click creates an API key named `runelay desktop` with your signed-in session and keeps it in the app's `config.json`, one per server. You never see or paste it. The same key powers [skill sync](#skill-sync).
+
+When something needs you, the row says so in plain words with one button: **Try again**, **Open file** for an instructions file that still tells an agent to save memory outside runelay, or **Sign in to accounts** for logins the import could not bring. On macOS, the import may ask permission to read the MCP logins Codex and Claude Code keep in the Keychain.
+
+Using an app runelay doesn't know? Under the checklist, **My agent isn't listed** ("Meu agente não aparece aqui") opens a short panel, and it is the main message when no known agent is found. Any app that accepts an MCP server works: copy the server URL (`<server>/v1/mcp`), name the agent and click **Generate key** to get an `Authorization: Bearer rnl_…` header with its own key, shown once and revocable in **API keys** without touching the desktop's key. A ready-to-paste `mcpServers` JSON block covers most clients, and **See guides per agent** opens the [guides](https://runelay.com/guides/).
+
+In a browser, the panel keeps the six-step guide.
+
 ## Updates
 
 The app checks for a new release when it opens and every six hours after that. When there is one, it offers to download the installer for your system into your Downloads folder and open it; on macOS, drag the new app to Applications. You can also skip a version, or check by hand with **Check for updates** ("Buscar atualizações…") in the app menu or the tray menu. This works the same when the app is pointed at a remote server, where the panel only knows the server's version. Your data stays.
 
 The app does not replace itself silently: you still confirm the installer. With the server on this computer, the panel also shows an update button in the rail with the release notes and a **Download** button.
+
+## Skill sync
+
+The app watches your agents' skill folders (the same ones [`runelay push`](/cli#push) reads). When you change a skill, it pushes that skill to the server, so every agent gets the new version without a manual `push`. It uses the key from [Connect my agents](#setup-in-two-clicks), or the one from `runelay login` when it points at the same server.
+
+Turn it on or off with **Sincronizar skills** in the tray menu (the menu bar on macOS).
 
 ## Desktop app or server
 

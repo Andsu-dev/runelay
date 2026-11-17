@@ -71,3 +71,28 @@ export const deleteApiKeyRow = (organizationId: string, id: string): Result<null
   if (deleted.error) return deleted;
   return deleted.data.changes ? ok(null) : fail("API_KEY_NOT_FOUND");
 };
+
+export const findApiKeyIdsByName = (organizationId: string, name: string): Result<string[]> => {
+  const rows = attemptSync(
+    () =>
+      db
+        .query<{ id: string }, [string, string]>("SELECT id FROM apikey WHERE referenceId = ? AND name = ?")
+        .all(organizationId, name),
+    "STORAGE_FAILED",
+  );
+  return rows.error ? rows : ok(rows.data.map(({ id }) => id));
+};
+
+export const findOrganizationOwner = (organizationId: string): Result<string> => {
+  const row = attemptSync(
+    () =>
+      db
+        .query<{ userId: string }, [string]>(
+          "SELECT userId FROM member WHERE organizationId = ? ORDER BY role = 'owner' DESC, createdAt LIMIT 1",
+        )
+        .get(organizationId),
+    "STORAGE_FAILED",
+  );
+  if (row.error) return row;
+  return row.data ? ok(row.data.userId) : fail("FORBIDDEN");
+};

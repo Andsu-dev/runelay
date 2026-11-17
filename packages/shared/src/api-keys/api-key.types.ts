@@ -29,3 +29,11 @@ export interface ApiKeySecretView {
 export interface CreatedApiKeyView extends ApiKeyView {
   key: string;
 }
+
+export interface AgentApiKeyView extends CreatedApiKeyView {
+  rotated: number;
+}
+
+export interface AgentKeyCheckView {
+  valid: boolean;
+}

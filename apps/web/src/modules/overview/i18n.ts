@@ -4,6 +4,7 @@ export const overviewMessages = defineMessages(
   {
     header: {
       welcome: "Bem-vindo de volta, {name}",
+      welcomeNew: "Bem-vindo, {name}",
       range: "Últimos {days} dias em {organization}.",
     },
     kinds: {
@@ -70,11 +71,16 @@ export const overviewMessages = defineMessages(
       title: "Nenhuma chamada ainda",
       description: "Crie uma chave de API e conecte seu primeiro agente. As chamadas aparecem aqui.",
       action: "Criar chave de API",
+      live: {
+        one: "{agents} já está ligado. Peça algo a ele e as chamadas aparecem aqui.",
+        other: "{agents} já estão ligados. Peça algo a eles e as chamadas aparecem aqui.",
+      },
     },
   },
   {
     header: {
       welcome: "Welcome back, {name}",
+      welcomeNew: "Welcome, {name}",
       range: "Last {days} days in {organization}.",
     },
     kinds: {
@@ -141,6 +147,10 @@ export const overviewMessages = defineMessages(
       title: "No calls yet",
       description: "Create an API key and connect your first agent. Calls show up here.",
       action: "Create API key",
+      live: {
+        one: "{agents} is already connected. Ask it something and calls will show up here.",
+        other: "{agents} are already connected. Ask them something and calls will show up here.",
+      },
     },
   },
 );

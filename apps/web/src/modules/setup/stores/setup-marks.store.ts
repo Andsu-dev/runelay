@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { readStorage, writeStorage } from "@/lib/storage";
+import { SETUP_STEPS } from "@/modules/setup/constants/setup.constants";
 import type { SetupStepId } from "@/modules/setup/types/setup.types";
 
 const listeners = new Set<() => void>();
@@ -10,13 +11,15 @@ const storageKey = (organizationId: string) => `runelay-setup:${organizationId}`
 const parse = (raw: string | null): SetupStepId[] => {
   try {
     const parsed: unknown = JSON.parse(raw ?? "[]");
-    return Array.isArray(parsed) ? parsed.filter((id): id is SetupStepId => typeof id === "string") : [];
+    return Array.isArray(parsed)
+      ? parsed.filter((id): id is SetupStepId => SETUP_STEPS.some((step) => step.id === id))
+      : [];
   } catch {
     return [];
   }
 };
 
-const readMarks = (organizationId: string) => {
+export const readSetupMarks = (organizationId: string) => {
   const cached = cache.get(organizationId);
   if (cached) return cached;
   const marks = parse(readStorage(storageKey(organizationId)));
@@ -25,7 +28,7 @@ const readMarks = (organizationId: string) => {
 };
 
 export const addSetupMark = (organizationId: string, id: SetupStepId) => {
-  const next = [...new Set([...readMarks(organizationId), id])];
+  const next = [...new Set([...readSetupMarks(organizationId), id])];
   cache.set(organizationId, next);
   writeStorage(storageKey(organizationId), JSON.stringify(next));
   for (const listener of listeners) listener();
@@ -37,5 +40,5 @@ export const useSetupMarks = (organizationId: string) =>
       listeners.add(listener);
       return () => listeners.delete(listener);
     },
-    () => readMarks(organizationId),
+    () => readSetupMarks(organizationId),
   );

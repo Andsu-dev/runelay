@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { pushedAtSchema } from "../memories/memory.schema";
 import { paginationSchema } from "../pagination/pagination.schema";
 
 export const skillSlugSchema = z
@@ -53,6 +54,15 @@ export const exportSkillsSchema = z.object({
   slugs: z.array(skillSlugSchema).min(1).max(SKILL_EXPORT_LIMIT),
 });
 
+export const importedSkillSchema = createSkillSchema.extend({ updatedAt: pushedAtSchema.optional() });
+
 export const importSkillsSchema = z.object({
-  skills: z.array(createSkillSchema).max(500),
+  skills: z.array(importedSkillSchema).max(500),
+});
+
+export const skillWriteSchema = z.object({
+  slug: skillSlugSchema,
+  body: skillFields.body,
+  name: skillFields.name.optional(),
+  description: skillFields.description.optional(),
 });

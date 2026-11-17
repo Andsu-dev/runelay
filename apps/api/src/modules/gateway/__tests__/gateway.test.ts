@@ -2,6 +2,8 @@ import { afterAll, afterEach, beforeAll, describe, expect, test } from "bun:test
 import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { env } from "@/config/env";
 import { db } from "@/db/connection";
+import { PINNED_TRUNCATED } from "@/modules/context/constants/context.constants";
+import { GATEWAY_INSTRUCTIONS_MAX_CHARS } from "@/modules/gateway/constants/gateway.constants";
 import {
   connectGateway,
   OPENAPI_BULK_COUNT,
@@ -78,10 +80,14 @@ describe("gateway route", () => {
       "search_context",
       "read_memory",
       "write_memory",
+      "import_memory",
       "read_skill",
       "read_skill_file",
+      "write_skill",
+      "write_skill_file",
     ]);
     expect(gateway.getInstructions()).toContain("runelay aggregates every account");
+    expect(gateway.getInstructions()).toContain("Write skills with write_skill");
   });
 
   test("hides execute when it is disabled", async () => {
@@ -205,10 +211,94 @@ describe("context tools", () => {
     expect(found.text).toContain("gateway-fact");
   });
 
+  test("hints at similar memories when creating a new slug", async () => {
+    const written = await callGateway("write_memory", {
+      slug: "gateway-fact-two",
+      body: "Another one.",
+      name: "Gateway fact",
+    });
+    expect(written.json()).toMatchObject({
+      slug: "gateway-fact-two",
+      similar: [{ slug: "gateway-fact", name: "Gateway fact" }],
+    });
+    expect(written.text).toContain("instead of keeping a duplicate");
+  });
+
+  test("imports memories in bulk with per item results", async () => {
+    const result = await callGateway("import_memory", {
+      items: [
+        { slug: "bulk-otter", name: "Bulk otter", body: "otter", type: "reference" },
+        { slug: "gateway-fact", body: "The gateway answers zebra questions." },
+        { slug: "NOT VALID", body: "x" },
+      ],
+    });
+    expect(result.isError).toBe(false);
+    expect(result.json()).toMatchObject({ created: 1, updated: 0, skipped: 1, failed: 1 });
+    const read = await callGateway("read_memory", { slug: "bulk-otter" });
+    expect(read.json()).toMatchObject({ type: "reference", body: "otter" });
+    const empty = await callGateway("import_memory", { items: [] });
+    expect(empty.isError).toBe(true);
+    const row = db
+      .query<{ total: number }, [string]>(
+        "SELECT COUNT(*) AS total FROM tool_calls WHERE organization_id = ? AND source = 'memories' AND tool = 'import_memory'",
+      )
+      .get(account.organizationId);
+    expect(row?.total).toBe(1);
+  });
+
+  test("writes skills and skill files", async () => {
+    const skill = await callGateway("write_skill", { slug: "gateway-skill", body: "# Steps", description: "Ship it" });
+    expect(skill.isError).toBe(false);
+    expect(skill.json()).toMatchObject({ slug: "gateway-skill", name: "gateway-skill", body: "# Steps" });
+    const file = await callGateway("write_skill_file", { slug: "gateway-skill", path: "refs/a.md", content: "hi" });
+    expect(file.json()).toMatchObject({ files: [{ path: "refs/a.md", size: 2 }] });
+    const read = await callGateway("read_skill_file", { slug: "gateway-skill", path: "refs/a.md" });
+    expect(read.json()).toEqual({ path: "refs/a.md", content: "hi" });
+    const escaped = await callGateway("write_skill_file", { slug: "gateway-skill", path: "../x.md", content: "" });
+    expect(escaped.isError).toBe(true);
+    const absolute = await callGateway("write_skill_file", { slug: "gateway-skill", path: "/etc/x", content: "" });
+    expect(absolute.isError).toBe(true);
+    const missing = await callGateway("write_skill_file", { slug: "ghost-skill", path: "a.md", content: "" });
+    expect(missing.json()).toMatchObject({ error: { code: "SKILL_NOT_FOUND" } });
+    const row = db
+      .query<{ total: number }, [string]>(
+        "SELECT COUNT(*) AS total FROM tool_calls WHERE organization_id = ? AND source = 'skills' AND tool = 'gateway-skill'",
+      )
+      .get(account.organizationId);
+    expect(row?.total).toBe(3);
+  });
+
   test("reports missing skills and skill files", async () => {
     const skill = await callGateway("read_skill", { slug: "no-such-skill" });
     expect(skill.isError).toBe(true);
     const file = await callGateway("read_skill_file", { slug: "no-such-skill", path: "a.md" });
     expect(file.isError).toBe(true);
+  });
+});
+
+describe("instructions", () => {
+  test("caps golden rules and points to search_context for the rest", async () => {
+    const response = await call("/v1/memories/import", {
+      method: "POST",
+      cookie: account.cookie,
+      json: {
+        memories: Array.from({ length: 120 }, (_, index) => ({
+          slug: `golden-${index}`,
+          name: `Golden rule number ${index}`,
+          description: "d".repeat(300),
+          type: "feedback",
+          body: "x",
+          pinned: true,
+        })),
+      },
+    });
+    expect(response.status).toBe(200);
+    const client = await connectGateway(apiKey.key);
+    const instructions = client.getInstructions() ?? "";
+    expect(instructions.length).toBeLessThanOrEqual(GATEWAY_INSTRUCTIONS_MAX_CHARS);
+    expect(instructions).toContain("- Golden rule number 0 (golden-0)");
+    expect(instructions).not.toContain("ddd");
+    expect(instructions.endsWith(PINNED_TRUNCATED)).toBe(true);
+    await client.close();
   });
 });

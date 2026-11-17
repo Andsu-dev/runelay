@@ -32,6 +32,7 @@ const handleMcp = async (request: Request) => {
 export const startFakeMcp = ({
   requireToken = false,
   rejectRegistration = false,
+  allowedRedirectUris = undefined as string[] | undefined,
   authorizationServer = {} as Record<string, unknown>,
   protectedResource = {} as Record<string, unknown>,
 } = {}): FakeMcpServer => {
@@ -63,6 +64,16 @@ export const startFakeMcp = ({
       if (url.pathname === "/register") {
         if (rejectRegistration) return new Response("Forbidden", { status: 403 });
         const metadata = (await request.json()) as Record<string, unknown>;
+        const redirects = metadata.redirect_uris as string[];
+        if (allowedRedirectUris && !redirects.every((uri) => allowedRedirectUris.includes(uri))) {
+          return Response.json(
+            {
+              error: "invalid_redirect_uri",
+              error_description: "The provided redirect URIs are not approved for use by this authorization server.",
+            },
+            { status: 400 },
+          );
+        }
         return Response.json({ ...metadata, client_id: "fake-client" }, { status: 201 });
       }
       if (url.pathname === "/token") {
