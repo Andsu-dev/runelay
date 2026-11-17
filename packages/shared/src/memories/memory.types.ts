@@ -66,3 +66,21 @@ export interface MemoryHealthView {
   isolated: MemoryRefView[];
   total: number;
 }
+
+export interface MemoryGraphNodeView {
+  slug: string;
+  name: string;
+  type: MemoryType;
+  pinned: boolean;
+  degree: number;
+}
+
+export interface MemoryGraphEdgeView {
+  source: string;
+  target: string;
+}
+
+export interface MemoryGraphView {
+  nodes: MemoryGraphNodeView[];
+  edges: MemoryGraphEdgeView[];
+}

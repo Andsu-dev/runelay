@@ -27,6 +27,7 @@ import type {
 
 export {
   deleteMemoryRow as deleteMemory,
+  describeGraph as describeMemoryGraph,
   describeHealth as describeMemoryHealth,
   findMemory,
   listMemories,

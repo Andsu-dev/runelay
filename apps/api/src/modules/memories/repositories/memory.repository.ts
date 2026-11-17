@@ -6,6 +6,8 @@ import {
   type ImportedMemoryInput,
   type ImportResultView,
   type ListMemoriesInput,
+  type MemoryGraphEdgeView,
+  type MemoryGraphView,
   type MemoryHealthView,
   type MemoryListItemView,
   type MemoryRefView,
@@ -17,10 +19,15 @@ import {
   type UpdateMemoryInput,
 } from "@runelay/shared";
 import { db } from "@/db/connection";
-import { MEMORY_LIST_COLUMNS, MEMORY_REF_COLUMNS } from "@/modules/memories/constants/memory.constants";
+import {
+  MEMORY_GRAPH_EDGES,
+  MEMORY_LIST_COLUMNS,
+  MEMORY_REF_COLUMNS,
+} from "@/modules/memories/constants/memory.constants";
 import type {
   MemoryContent,
   MemoryDetailRow,
+  MemoryGraphNodeRow,
   MemoryListRow,
   StoredMemoryRow,
 } from "@/modules/memories/types/memory.types";
@@ -270,6 +277,26 @@ export const describeHealth = (organizationId: string, staleDays: number): Resul
         .query<{ total: number }, [string]>("SELECT COUNT(*) AS total FROM memories WHERE organization_id = ?")
         .get(organizationId)?.total ?? 0;
     return { staleDays, stale, brokenLinks, isolated, total };
+  }, "STORAGE_FAILED");
+
+export const describeGraph = (organizationId: string): Result<MemoryGraphView> =>
+  attemptSync(() => {
+    const nodes = db
+      .query<MemoryGraphNodeRow, [string, string]>(
+        `WITH ${MEMORY_GRAPH_EDGES},
+         ends AS (SELECT source AS slug FROM edges UNION ALL SELECT target FROM edges),
+         degrees AS (SELECT slug, COUNT(*) AS degree FROM ends GROUP BY slug)
+         SELECT m.slug, m.name, m.type, m.pinned, COALESCE(d.degree, 0) AS degree
+         FROM memories m LEFT JOIN degrees d ON d.slug = m.slug
+         WHERE m.organization_id = ? ORDER BY m.slug`,
+      )
+      .all(organizationId, organizationId);
+    const edges = db
+      .query<MemoryGraphEdgeView, [string]>(
+        `WITH ${MEMORY_GRAPH_EDGES} SELECT source, target FROM edges ORDER BY source, target`,
+      )
+      .all(organizationId);
+    return { nodes: nodes.map((node) => ({ ...node, pinned: node.pinned === 1 })), edges };
   }, "STORAGE_FAILED");
 
 export const upsertMemories = (organizationId: string, memories: ImportedMemoryInput[]): Result<ImportResultView> =>

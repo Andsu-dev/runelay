@@ -1,6 +1,10 @@
-import type { MemoryImportItemInput, MemoryListItemView, MemoryView } from "@runelay/shared";
+import type { MemoryGraphNodeView, MemoryImportItemInput, MemoryListItemView, MemoryView } from "@runelay/shared";
 
 export interface MemoryListRow extends Omit<MemoryListItemView, "pinned"> {
+  pinned: 0 | 1;
+}
+
+export interface MemoryGraphNodeRow extends Omit<MemoryGraphNodeView, "pinned"> {
   pinned: 0 | 1;
 }
 
