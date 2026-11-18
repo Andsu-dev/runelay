@@ -1,13 +1,22 @@
-import { ArrowLeft02Icon, Delete02Icon, PencilEdit02Icon, RefreshIcon } from "@hugeicons/core-free-icons";
+import {
+  ArrowLeft02Icon,
+  Delete02Icon,
+  PencilEdit02Icon,
+  RefreshIcon,
+  UserAdd01Icon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { SourceView } from "@runelay/shared";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { Button } from "@/components/ui/action/button";
 import { IconAction } from "@/components/ui/action/icon-action";
 import { ConfirmPopover } from "@/components/ui/overlay/confirm-popover";
 import { formatDate } from "@/lib/format";
 import { useT } from "@/lib/i18n";
+import { AddAccountDialog } from "@/modules/catalog/components/add-account-dialog";
 import { ConnectorIcon } from "@/modules/catalog/components/connector-icon";
+import { addSourceAccount } from "@/modules/sources/api/sources.api";
 import { KIND_LABEL, STATUS_LABEL } from "@/modules/sources/constants/source.constants";
 import { useSourceActions } from "@/modules/sources/hooks/use-source-actions";
 import { isAgentLocal } from "@/modules/sources/utils/agent-local";
@@ -29,6 +38,12 @@ export function SourceDetail({ source, oauthError }: SourceDetailProps) {
   const navigate = useNavigate();
   const [renaming, setRenaming] = useState(false);
   const [removing, setRemoving] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const canAddAccount =
+    config.kind === "google" ||
+    (config.kind === "mcp" &&
+      Object.keys(config.headers).length === 0 &&
+      (source.auth === "oauth" || Boolean(source.oauthClientId) || status === "needs_auth"));
   const loginError = status === "ok" ? undefined : oauthError;
   const local = isAgentLocal(source);
 
@@ -43,8 +58,8 @@ export function SourceDetail({ source, oauthError }: SourceDetailProps) {
         {t("sources.back")}
       </Link>
 
-      <header className="flex items-start gap-3">
-        <div className="flex min-w-0 flex-1 flex-col gap-1">
+      <header className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start">
+        <div className="flex min-w-0 flex-col gap-1 sm:flex-1">
           <div className="flex items-center gap-2">
             <SourceStatusDot status={status} enabled={enabled} local={local} />
             <ConnectorIcon name={name} icon={source.icon} />
@@ -59,26 +74,44 @@ export function SourceDetail({ source, oauthError }: SourceDetailProps) {
             {t.plural("sources.tools", toolCount)} · {t("sources.loginOn", { date: formatDate(connectedAt) })}
           </p>
         </div>
-        <IconAction
-          icon={RefreshIcon}
-          label={t("sources.test")}
-          onClick={() => test.mutate()}
-          spinning={test.isPending}
-          disabled={test.isPending}
-        />
-        <ConfirmPopover
-          open={removing}
-          onOpenChange={setRemoving}
-          trigger={<IconAction icon={Delete02Icon} label={t("sources.remove")} tone="destructive" />}
-          title={t("sources.removeTitle", { name })}
-          description={t.plural("sources.removeDescription", toolCount)}
-          confirmLabel={t("sources.remove")}
-          onConfirm={() => {
-            remove.mutate();
-            navigate({ to: "/connectors", search: { tab: "installed" } });
-          }}
-        />
-        <SourceConnectButton source={source} />
+        <div className="flex flex-wrap items-center gap-2">
+          <IconAction
+            icon={RefreshIcon}
+            label={t("sources.test")}
+            onClick={() => test.mutate()}
+            spinning={test.isPending}
+            disabled={test.isPending}
+          />
+          <ConfirmPopover
+            open={removing}
+            onOpenChange={setRemoving}
+            trigger={<IconAction icon={Delete02Icon} label={t("sources.remove")} tone="destructive" />}
+            title={t("sources.removeTitle", { name })}
+            description={t.plural("sources.removeDescription", toolCount)}
+            confirmLabel={t("sources.remove")}
+            onConfirm={() => {
+              remove.mutate();
+              navigate({ to: "/connectors", search: { tab: "installed" } });
+            }}
+          />
+          <SourceConnectButton source={source} />
+          {canAddAccount && (
+            <AddAccountDialog
+              key={name}
+              name={name}
+              sourceName={name}
+              createAccount={(accountName) => addSourceAccount(name, accountName)}
+              open={adding}
+              onOpenChange={setAdding}
+              trigger={
+                <Button size="sm" variant="glass">
+                  <HugeiconsIcon icon={UserAdd01Icon} strokeWidth={1.6} />
+                  {t("catalog.addAccount.action")}
+                </Button>
+              }
+            />
+          )}
+        </div>
       </header>
 
       {local && !loginError ? (
