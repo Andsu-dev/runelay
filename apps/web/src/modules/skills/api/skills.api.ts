@@ -1,4 +1,11 @@
-import type { Page, SkillFileView, SkillListItemView, SkillView, UpdateSkillInput } from "@runelay/shared";
+import type {
+  GithubSkillCandidate,
+  Page,
+  SkillFileView,
+  SkillListItemView,
+  SkillView,
+  UpdateSkillInput,
+} from "@runelay/shared";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 
@@ -29,3 +36,12 @@ export const skillFileQuery = (slug: string, path: string) =>
 
 export const updateSkill = (slug: string, input: UpdateSkillInput) =>
   api.patch<SkillView>(`/skills/${encodeURIComponent(slug)}`, input);
+
+export const discoverGithubSkills = (source: string) =>
+  api.post<GithubSkillCandidate[]>("/skills/github/discover", { source });
+
+export const installGithubSkill = (source: string, skill: string) =>
+  api.post<SkillView>("/skills/github/install", { source, skill });
+
+export const uploadSkill = (filename: string, content: string) =>
+  api.post<SkillView>("/skills/upload", { filename, content });

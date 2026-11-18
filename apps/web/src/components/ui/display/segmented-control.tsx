@@ -19,6 +19,7 @@ interface SegmentedControlProps<T extends string> {
   onChange: (value: T) => void;
   label: string;
   className?: string;
+  fullWidth?: boolean;
 }
 
 export function SegmentedControl<T extends string>({
@@ -27,6 +28,7 @@ export function SegmentedControl<T extends string>({
   onChange,
   label,
   className,
+  fullWidth = false,
 }: SegmentedControlProps<T>) {
   const transition = useReducedMotion() ? UI_REDUCED_MOTION : UI_SPRING;
   const layoutId = `segmented-${useId()}`;
@@ -36,7 +38,10 @@ export function SegmentedControl<T extends string>({
       role="tablist"
       aria-label={label}
       className={cn(
-        "no-scrollbar flex min-h-11 w-fit max-w-full items-stretch gap-0.5 overflow-x-auto sm:min-h-9",
+        "min-h-11 max-w-full items-stretch gap-0.5 sm:min-h-9",
+        fullWidth
+          ? "grid w-full grid-flow-col auto-cols-fr overflow-hidden"
+          : "no-scrollbar flex w-fit overflow-x-auto",
         segmentedTrack,
         className,
       )}
@@ -53,16 +58,28 @@ export function SegmentedControl<T extends string>({
             onClick={() => onChange(option.value)}
             className={cn(
               "relative flex shrink-0 items-center whitespace-nowrap rounded-md px-3 text-[13px] font-medium outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-ring/25 focus-visible:ring-inset",
+              fullWidth && "min-w-0 justify-center",
               selected ? segmentedTextActive : segmentedTextIdle,
             )}
           >
-            {selected && (
-              <motion.span
-                layoutId={layoutId}
-                layoutDependency={value}
-                className={cn("absolute inset-0", segmentedPill)}
-                transition={transition}
+            {fullWidth ? (
+              <span
+                aria-hidden
+                className={cn(
+                  "absolute inset-0 opacity-0 transition-opacity duration-200 motion-reduce:transition-none",
+                  segmentedPill,
+                  selected && "opacity-100",
+                )}
               />
+            ) : (
+              selected && (
+                <motion.span
+                  layoutId={layoutId}
+                  layoutDependency={value}
+                  className={cn("absolute inset-0", segmentedPill)}
+                  transition={transition}
+                />
+              )
             )}
             <span className="relative flex items-center gap-1.5">
               {option.icon && <HugeiconsIcon icon={option.icon} size={15} strokeWidth={1.6} className="shrink-0" />}

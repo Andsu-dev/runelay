@@ -4,6 +4,7 @@ import { HideNamesToggle } from "@/components/ui/action/hide-names-toggle";
 import { PageHeader } from "@/components/ui/display/page-header";
 import { SearchField } from "@/components/ui/form/search-field";
 import { useT } from "@/lib/i18n";
+import { AddSkillDialog } from "@/modules/skills/components/add-skill-dialog";
 import { SkillList } from "@/modules/skills/components/skill-list";
 import { SkillsTotal } from "@/modules/skills/components/skills-total";
 
@@ -22,7 +23,12 @@ function SkillsPage() {
       <PageHeader
         title={t("skills.page.title")}
         description={<SkillsTotal query={query} />}
-        actions={<HideNamesToggle />}
+        actions={
+          <>
+            <HideNamesToggle />
+            <AddSkillDialog />
+          </>
+        }
       />
       <SearchField
         value={query}
