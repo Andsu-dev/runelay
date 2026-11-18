@@ -1,12 +1,15 @@
-import type {
-  CreateSkillInput,
-  ImportSkillsInput,
-  Result,
-  SkillFileInput,
-  SkillView,
-  SkillWriteInput,
-  UpdateSkillInput,
+import {
+  type CreateSkillInput,
+  createSkillSchema,
+  fail,
+  type ImportSkillsInput,
+  type Result,
+  type SkillFileInput,
+  type SkillView,
+  type SkillWriteInput,
+  type UpdateSkillInput,
 } from "@runelay/shared";
+import { splitFrontmatter } from "@runelay/shared/frontmatter";
 import {
   findSkill,
   insertSkill,
@@ -27,6 +30,39 @@ export {
 export const createSkill = (organizationId: string, input: CreateSkillInput): Result<SkillView> => {
   const created = insertSkill(organizationId, input);
   return created.error ? created : findSkill(organizationId, input.slug);
+};
+
+export const installSkillDocument = (
+  organizationId: string,
+  {
+    filename,
+    content,
+    slug: requestedSlug,
+    files,
+  }: {
+    filename: string;
+    content: string;
+    slug?: string;
+    files?: SkillFileInput[];
+  },
+): Result<SkillView> => {
+  const { meta, body } = splitFrontmatter(content);
+  const name = typeof meta.name === "string" && meta.name.trim() ? meta.name.trim() : filename;
+  const slug = (requestedSlug ?? name)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+  const parsed = createSkillSchema.safeParse({
+    slug,
+    name,
+    description: typeof meta.description === "string" ? meta.description : "",
+    body: body.trim(),
+    files,
+  });
+  if (!parsed.success) return fail("INVALID_INPUT", "The document does not produce a valid Runelay skill.");
+  return createSkill(organizationId, parsed.data);
 };
 
 export const updateSkill = (organizationId: string, slug: string, input: UpdateSkillInput): Result<SkillView> => {

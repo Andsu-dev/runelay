@@ -47,3 +47,8 @@ export interface SkillFileView {
 export interface SkillExportView extends Omit<SkillView, "files"> {
   files: SkillFileView[];
 }
+
+export interface GithubSkillCandidate {
+  name: string;
+  path: string;
+}
