@@ -9,6 +9,7 @@ import { openCommand } from "@/commands/open.command";
 import { pullCommand } from "@/commands/pull.command";
 import { pushCommand } from "@/commands/push.command";
 import { setupCommand } from "@/commands/setup.command";
+import { skillsCommand } from "@/commands/skills.command";
 import { sponsorCommand } from "@/commands/sponsor.command";
 import { statusCommand } from "@/commands/status.command";
 import { syncCommand } from "@/commands/sync.command";
@@ -25,6 +26,7 @@ export const PRIMARY_COMMANDS: Record<Exclude<GuideName, "help">, CommandRunner>
   push: pushCommand,
   pull: pullCommand,
   sync: syncCommand,
+  skills: skillsCommand,
   connect: connectCommand,
   import: importCommand,
   doctor: doctorCommand,

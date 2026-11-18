@@ -6,7 +6,7 @@ import { printBanner } from "@/lib/banner";
 import { plural, relativeTime } from "@/lib/format";
 import { renderHelp } from "@/lib/help";
 import { type MenuItem, runMenu } from "@/lib/menu";
-import { accent, bold, dim, glyphs, green, hyperlink, mark, yellow } from "@/lib/terminal";
+import { accent, ask, bold, dim, glyphs, green, hyperlink, mark, yellow } from "@/lib/terminal";
 import { buildAgentReports } from "@/services/agent-report.service";
 import { readStoredConfig, resolveConnection } from "@/services/config.service";
 import { runDoctor } from "@/services/doctor.service";
@@ -102,6 +102,10 @@ export const homeCommand = async (version: string): Promise<Result<null>> => {
   if (chosen.id === "help") {
     console.log(renderHelp());
     return ok(null);
+  }
+  if (chosen.id === "skills") {
+    const source = await ask("GitHub repository, skills.sh link or local file");
+    return source ? PRIMARY_COMMANDS.skills(["add", source]) : ok(null);
   }
   return PRIMARY_COMMANDS[chosen.id as Exclude<GuideName, "help">]([]);
 };
