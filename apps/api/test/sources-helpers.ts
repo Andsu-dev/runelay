@@ -10,6 +10,7 @@ export type FakeMcpServer = {
   base: string;
   mcpUrl: string;
   requests: string[];
+  mcpAuthorizations: (string | null)[];
   tokenRequests: { authorization: string | null; form: Record<string, string> }[];
   stop: () => void;
 };
@@ -31,12 +32,15 @@ const handleMcp = async (request: Request) => {
 
 export const startFakeMcp = ({
   requireToken = false,
+  tokensByCode = new Map<string, string>([[GOOD_CODE, FAKE_ACCESS_TOKEN]]),
   rejectRegistration = false,
   allowedRedirectUris = undefined as string[] | undefined,
   authorizationServer = {} as Record<string, unknown>,
   protectedResource = {} as Record<string, unknown>,
 } = {}): FakeMcpServer => {
   const requests: string[] = [];
+  const mcpAuthorizations: FakeMcpServer["mcpAuthorizations"] = [];
+  const acceptedAuthorizations = new Set(Array.from(tokensByCode.values(), (token) => `Bearer ${token}`));
   const tokenRequests: FakeMcpServer["tokenRequests"] = [];
   const server: Bun.Server<undefined> = Bun.serve({
     port: 0,
@@ -79,11 +83,14 @@ export const startFakeMcp = ({
       if (url.pathname === "/token") {
         const form = new URLSearchParams(await request.text());
         tokenRequests.push({ authorization: request.headers.get("authorization"), form: Object.fromEntries(form) });
-        if (form.get("code") !== GOOD_CODE) return Response.json({ error: "invalid_grant" }, { status: 400 });
-        return Response.json({ access_token: FAKE_ACCESS_TOKEN, token_type: "Bearer" });
+        const token = tokensByCode.get(form.get("code") ?? "");
+        if (!token) return Response.json({ error: "invalid_grant" }, { status: 400 });
+        return Response.json({ access_token: token, token_type: "Bearer" });
       }
       if (url.pathname === "/mcp") {
-        if (requireToken && request.headers.get("authorization") !== `Bearer ${FAKE_ACCESS_TOKEN}`) {
+        const authorization = request.headers.get("authorization");
+        mcpAuthorizations.push(authorization);
+        if (requireToken && !acceptedAuthorizations.has(authorization ?? "")) {
           return new Response("unauthorized", {
             status: 401,
             headers: { "www-authenticate": `Bearer resource_metadata="${base}/.well-known/oauth-protected-resource"` },
@@ -95,7 +102,7 @@ export const startFakeMcp = ({
     },
   });
   const base = `http://127.0.0.1:${server.port}`;
-  return { base, mcpUrl: `${base}/mcp`, requests, tokenRequests, stop: () => server.stop(true) };
+  return { base, mcpUrl: `${base}/mcp`, requests, mcpAuthorizations, tokenRequests, stop: () => server.stop(true) };
 };
 
 export const GOOD_REFRESH_TOKEN = "good-refresh-token";

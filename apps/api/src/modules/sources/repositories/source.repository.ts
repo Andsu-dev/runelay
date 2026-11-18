@@ -152,7 +152,21 @@ export const findSource = ({ organizationId, name }: SourceKey): Result<Source> 
   return decrypt(row.data);
 };
 
-const UPSERT_SQL = `INSERT INTO sources (organization_id, name, config, oauth, url_hash) VALUES (?, ?, ?, ?, ?)
+const INSERT_SQL = "INSERT INTO sources (organization_id, name, config, oauth, url_hash) VALUES (?, ?, ?, ?, ?)";
+
+export const insertSource = (organizationId: string, { name, config }: CreateSourceInput): Result<null> => {
+  const saved = attemptSync(
+    () =>
+      db
+        .query(`${INSERT_SQL} ON CONFLICT(organization_id, name) DO NOTHING`)
+        .run(organizationId, name, seal(config), seal({}), urlHashOf(config)),
+    "STORAGE_FAILED",
+  );
+  if (saved.error) return saved;
+  return saved.data.changes ? ok(null) : fail("ALREADY_EXISTS", `Já existe uma conexão chamada "${name}".`);
+};
+
+const UPSERT_SQL = `${INSERT_SQL}
   ON CONFLICT(organization_id, name) DO UPDATE SET config = excluded.config, url_hash = excluded.url_hash,
   updated_at = ${SQL_NOW}`;
 

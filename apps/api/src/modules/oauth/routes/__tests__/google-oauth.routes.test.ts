@@ -5,6 +5,7 @@ import { googleTransport } from "@/modules/google/utils/google-fetch";
 import { scopesFor } from "@/modules/google/utils/google-scopes";
 import { encodeBrokerState } from "@/modules/oauth/utils/oauth-broker";
 import { findSource, updateOAuth } from "@/modules/sources/repositories/source.repository";
+import { connectGateway, textOf } from "../../../../../test/gateway-helpers";
 import { type FakeGoogle, GOOGLE_ACCESS, GOOGLE_CODE, startFakeGoogle } from "../../../../../test/google-helpers";
 import { body, call, createApiKey, signUp, type TestAccount } from "../../../../../test/helpers";
 
@@ -53,7 +54,7 @@ test("a Google source with several services waits for one login", async () => {
 test("login asks Google for the selected services and the callback connects", async () => {
   const url = new URL((await start()) ?? "");
   expect(url.searchParams.get("scope")?.split(" ")).toEqual(scopesFor(["gmail", "meet"]));
-  expect(url.searchParams.get("prompt")).toBe("consent");
+  expect(url.searchParams.get("prompt")).toBe("consent select_account");
   google.grantedScope = scopesFor(["gmail", "meet"]).join(" ");
   google.routes.set("GET openidconnect.googleapis.com/v1/userinfo", () => ({ body: { email: "ana@example.com" } }));
   const response = await call(`/v1/oauth/callback?state=${encodeBrokerState("google")}&code=${GOOGLE_CODE}`, {
@@ -150,4 +151,77 @@ test("login stays unsupported for non remote sources", async () => {
   expect((await body(response)).error?.code).toBe("OAUTH_UNSUPPORTED");
   const missing = await call("/v1/sources/ghost/oauth", { method: "POST", cookie: account.cookie });
   expect((await body(missing)).error?.code).toBe("SOURCE_NOT_FOUND");
+});
+
+test.each([
+  ["gmail", "gmail"],
+  ["google_drive", "drive"],
+  ["google_meet", "meet"],
+] as const)("two %s accounts have independent OAuth and gateway tools", async (id, service) => {
+  const names = [`${id}_pessoal`, `${id}_trabalho`];
+  const apiKey = await createApiKey(account, `${id}-accounts`);
+  const gateway = await connectGateway(apiKey.key);
+  const previousProfile = google.routes.get("GET openidconnect.googleapis.com/v1/userinfo");
+  google.routes.set("GET openidconnect.googleapis.com/v1/userinfo", ({ authorization }) => ({
+    body: { email: `${authorization?.replace("Bearer ", "")}@example.com` },
+  }));
+  google.tokenReply = ({ code, code_verifier }) => ({
+    body: {
+      access_token: code,
+      refresh_token: `refresh-${code}`,
+      expires_in: 3600,
+      scope: scopesFor([service]).join(" "),
+    },
+    status: code && code_verifier ? 200 : 400,
+  });
+  try {
+    const authorizations = await Promise.all(
+      names.map(async (name) => {
+        const installed = await call("/v1/catalog/install", {
+          method: "POST",
+          cookie: account.cookie,
+          json: { id, name },
+        });
+        expect(installed.status).toBe(201);
+        const response = await call(`/v1/sources/${name}/oauth`, { method: "POST", cookie: account.cookie });
+        return new URL((await body<OAuthStartView>(response)).data.authorizationUrl ?? "");
+      }),
+    );
+    expect(new Set(authorizations.map((url) => url.searchParams.get("code_challenge"))).size).toBe(2);
+    for (const [index, url] of authorizations.entries()) {
+      const name = names[index];
+      const query = new URLSearchParams({ state: url.searchParams.get("state") ?? "", code: name ?? "" });
+      const completed = await call(`/v1/oauth/callback?${query}`, { cookie: account.cookie });
+      expect(completed.headers.get("location")).toBe(`/connectors/${name}?oauth=done`);
+    }
+    const connections = await gateway.callTool({ name: "list_connections" });
+    expect(JSON.parse(textOf(connections))).toEqual(
+      expect.arrayContaining(
+        names.map((name) =>
+          expect.objectContaining({
+            name,
+            status: "ok",
+            google: { email: `${name}@example.com`, grantedServices: [service] },
+          }),
+        ),
+      ),
+    );
+    expect(textOf(connections)).not.toContain(`refresh-${id}`);
+    for (const name of names) {
+      const tool = `${name}.account_whoami`;
+      const discovered = await gateway.callTool({ name: "search_tools", arguments: { source: name } });
+      expect(JSON.parse(textOf(discovered))).toContainEqual(expect.objectContaining({ name: tool }));
+      const called = await gateway.callTool({ name: "call_tool", arguments: { name: tool } });
+      expect(called.isError).not.toBe(true);
+      expect(JSON.parse(textOf(called))).toMatchObject({ email: `${name}@example.com` });
+      expect(findSource({ organizationId: account.organizationId, name }).data?.oauth.tokens?.refresh_token).toBe(
+        `refresh-${name}`,
+      );
+    }
+  } finally {
+    google.tokenReply = null;
+    if (previousProfile) google.routes.set("GET openidconnect.googleapis.com/v1/userinfo", previousProfile);
+    else google.routes.delete("GET openidconnect.googleapis.com/v1/userinfo");
+    await gateway.close();
+  }
 });

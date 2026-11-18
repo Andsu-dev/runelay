@@ -62,13 +62,13 @@ beforeAll(async () => {
     account.organizationId,
     { name: "github", config: { kind: "mcp", url: githubServer.mcpUrl, headers: {} } },
     { authMethod: "session", role: "owner" },
-    { broker: GITHUB_BROKER },
+    { oauth: { broker: GITHUB_BROKER } },
   );
   await createSource(
     account.organizationId,
     { name: "calendar", config: { kind: "mcp", url: server.mcpUrl, headers: {} } },
     { authMethod: "session", role: "owner" },
-    { broker: BROKER },
+    { oauth: { broker: BROKER } },
   );
 });
 

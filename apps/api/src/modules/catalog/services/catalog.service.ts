@@ -56,10 +56,8 @@ export const installCatalogItem = async (
 ): Promise<Result<SourceView>> => {
   const item = CATALOG.flatMap((section) => section.items).find((candidate) => candidate.id === id);
   if (!item) return fail("CATALOG_ITEM_NOT_FOUND");
-  return createSource(
-    organizationId,
-    { name: options.name ?? item.id, config: configOf(item, options) },
-    actor,
-    item.broker && !options.token ? { broker: item.broker } : undefined,
-  );
+  return createSource(organizationId, { name: options.name ?? item.id, config: configOf(item, options) }, actor, {
+    createOnly: options.name !== undefined,
+    oauth: item.broker && !options.token ? { broker: item.broker } : undefined,
+  });
 };
