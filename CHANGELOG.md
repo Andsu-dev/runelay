@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Catalog
+
+- "Add another account" in an installed OAuth connector's menu creates a second connection for the same service under a name you choose (for example `calendar_work`) and opens its sign-in. Before, each catalog item could only be installed once.
+
 ## v0.6.6
 
 ### Memory and skills

@@ -260,3 +260,35 @@ test("a source whose catalog entry was removed stays listed as a custom remote M
   const detail = await body<SourceView>(await call("/v1/sources/asana", { cookie: account.cookie }));
   expect(detail.data).toMatchObject({ name: "asana", config: { kind: "mcp", url }, icon: null, auth: null });
 });
+
+test("a catalog item can be installed again under another name for a second account", async () => {
+  const first = await call("/v1/catalog/install", {
+    method: "POST",
+    cookie: account.cookie,
+    json: { id: "google_calendar", name: "calendar_work" },
+  });
+  expect(first.status).toBe(201);
+  const second = await call("/v1/catalog/install", {
+    method: "POST",
+    cookie: account.cookie,
+    json: { id: "google_calendar", name: "calendar_home" },
+  });
+  expect(second.status).toBe(201);
+  const { data } = await body<SourceView>(second);
+  expect(data).toMatchObject({
+    name: "calendar_home",
+    status: "needs_auth",
+    config: { kind: "google", services: ["calendar"] },
+  });
+  expect(findSource({ organizationId: account.organizationId, name: "calendar_work" }).error).toBeNull();
+});
+
+test("a catalog install name is normalized like any connection name", async () => {
+  const response = await call("/v1/catalog/install", {
+    method: "POST",
+    cookie: account.cookie,
+    json: { id: "google_calendar", name: "Calendar Personal!" },
+  });
+  expect(response.status).toBe(201);
+  expect((await body<SourceView>(response)).data.name).toBe("calendar_personal");
+});
