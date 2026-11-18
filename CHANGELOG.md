@@ -2,13 +2,20 @@
 
 ## Unreleased
 
+## v0.6.7
+
+### Skills and memories
+
+- Add skills from public GitHub repositories, skills.sh links, or Markdown and TXT files. Use Add skill in the dashboard or `runelay skills add` in the CLI.
+- The memory search has a filter for types and pinned entries. The Context sidebar has direct links to Memories and Skills.
+
 ### Dashboard
 
 - A connection's own page has a delete button next to Test and Reconnect, with the same confirmation as the connections list. Before, a connection could only be removed from the list.
 
 ### Catalog
 
-- "Add another account" in an installed OAuth connector's menu creates a second connection for the same service under a name you choose (for example `calendar_work`) and opens its sign-in. Before, each catalog item could only be installed once.
+- "Add another account" in an installed OAuth connector's menu creates a second connection for the same service under a name you choose (for example `calendar_work`) and opens its sign-in. You can also start from an existing connection’s details. Each connection has its own OAuth credentials and tool prefix, and Google prompts you to choose an account.
 
 ## v0.6.6
 
