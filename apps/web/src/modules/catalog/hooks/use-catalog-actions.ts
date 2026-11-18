@@ -96,9 +96,27 @@ export const useCatalogActions = (connector: CatalogConnectorView) => {
     onSettled: refresh,
   });
 
+  const addAccount = useMutation({
+    mutationKey: INSTALL_MUTATION_KEY,
+    mutationFn: async ({ tab, name }: { tab: Window | null; name: string }) => {
+      const source = await installConnector(connector.id, undefined, name);
+      return redirectToLogin(source.name, tab);
+    },
+    onSuccess: (redirecting, { name }) => {
+      if (!redirecting) toast(translate("catalog.toasts.installed", { name }));
+    },
+    onError: (error, { tab }) => {
+      tab?.close();
+      toast(translateError(error), "error");
+    },
+    onSettled: refresh,
+  });
+
   const startInstall = (token?: string) =>
     install.mutate({ tab: connector.auth === "oauth" ? openPendingTab() : null, token });
   const startReconnect = () => reconnect.mutate(openPendingTab());
+  const startAddAccount = (name: string, options?: { onSuccess?: () => void }) =>
+    addAccount.mutate({ tab: openPendingTab(), name }, options);
 
-  return { sourceName, install, reconnect, remove, startInstall, startReconnect };
+  return { sourceName, install, reconnect, remove, addAccount, startInstall, startReconnect, startAddAccount };
 };

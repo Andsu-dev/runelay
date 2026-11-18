@@ -24,6 +24,14 @@ export const catalogMessages = defineMessages(
     options: "Opções de {name}",
     open: "Abrir",
     reconnect: "Reconectar",
+    addAccount: {
+      action: "Adicionar outra conta",
+      title: "Outra conta no {name}",
+      description: "Cria uma conexão nova com o nome abaixo e abre o login. A conexão atual continua como está.",
+      label: "Nome da conexão",
+      submit: "Adicionar e entrar",
+      submitting: "Adicionando…",
+    },
     remove: "Remover",
     removeTitle: "Remover {name}?",
     removeDescription: "As tools dela somem de todos os agentes da organização. O login dessa conexão é apagado.",
@@ -59,6 +67,15 @@ export const catalogMessages = defineMessages(
     options: "{name} options",
     open: "Open",
     reconnect: "Reconnect",
+    addAccount: {
+      action: "Add another account",
+      title: "Another {name} account",
+      description:
+        "Creates a new connection with the name below and opens the sign-in. The current connection stays as it is.",
+      label: "Connection name",
+      submit: "Add and sign in",
+      submitting: "Adding…",
+    },
     remove: "Remove",
     removeTitle: "Remove {name}?",
     removeDescription:

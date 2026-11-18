@@ -169,65 +169,6 @@ code { font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
 .out { color: oklch(0.62 0.006 260); }
 .out.ok { color: oklch(0.78 0.14 155); }
 
-.cli-demo { --cli-width: min(calc(100vw - 32px), 720px); margin: 28px calc((100% - var(--cli-width)) / 2) 0; }
-.cli-term {
-  --t-fg: oklch(0.92 0.003 260); --t-dim: oklch(0.6 0.006 260); --t-hi: oklch(1 0 0); --t-lo: oklch(0.71 0.015 260);
-  --t-ok: oklch(0.78 0.14 155); --t-wn: oklch(0.84 0.14 85); --t-er: oklch(0.7 0.17 25); --t-in: oklch(0.8 0.1 220); --t-ac: oklch(0.89 0.01 260);
-  --t-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-  position: relative; margin-top: 0;
-}
-.cli-pick { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
-.cli-tabs { flex: 1; display: flex; justify-content: center; gap: 4px; margin-right: 42px; min-width: 0; }
-.cli-tabs label {
-  font: 12px/1 var(--t-mono); color: var(--t-dim); padding: 6px 10px; border-radius: 6px; cursor: pointer; white-space: nowrap;
-  transition: color 0.2s, background 0.2s, transform 0.15s var(--ease-out);
-}
-.cli-tabs label:hover { color: var(--t-fg); }
-.cli-tabs label:active { transform: scale(0.96); }
-#cli-home:checked ~ .terminal-bar [for="cli-home"],
-#cli-connect:checked ~ .terminal-bar [for="cli-connect"],
-#cli-doctor:checked ~ .terminal-bar [for="cli-doctor"] { color: var(--t-fg); background: oklch(1 0 0 / 0.08); }
-#cli-home:focus-visible ~ .terminal-bar [for="cli-home"],
-#cli-connect:focus-visible ~ .terminal-bar [for="cli-connect"],
-#cli-doctor:focus-visible ~ .terminal-bar [for="cli-doctor"] { outline: 2px solid var(--t-ac); outline-offset: 1px; }
-.cli-screens { display: grid; grid-template-columns: minmax(0, 1fr); content-visibility: auto; contain-intrinsic-size: auto 540px; }
-.cli-screen {
-  grid-area: 1 / 1; align-self: start; min-width: 0; margin: 0; padding: 16px 18px 20px; overflow-x: auto; visibility: hidden;
-  font: 12.5px/1.25 var(--t-mono); letter-spacing: 0; font-variant-ligatures: none; font-kerning: none; color: var(--t-fg);
-}
-#cli-home:checked ~ .cli-screens [data-scene="home"],
-#cli-connect:checked ~ .cli-screens [data-scene="connect"],
-#cli-doctor:checked ~ .cli-screens [data-scene="doctor"] { visibility: visible; }
-.cli-screen .r { display: block; }
-.cli-screen .logo { display: block; line-height: 1; }
-.cli-screen .b { font-weight: 700; }
-.cli-screen .d { color: var(--t-dim); }
-.cli-screen .ok { color: var(--t-ok); }
-.cli-screen .wn { color: var(--t-wn); }
-.cli-screen .er { color: var(--t-er); }
-.cli-screen .in { color: var(--t-in); }
-.cli-screen .ac { color: var(--t-ac); }
-.cli-screen .g0 { color: var(--t-hi); }
-.cli-screen .g1 { color: color-mix(in oklch, var(--t-lo) 14%, var(--t-hi)); }
-.cli-screen .g2 { color: color-mix(in oklch, var(--t-lo) 29%, var(--t-hi)); }
-.cli-screen .g3 { color: color-mix(in oklch, var(--t-lo) 43%, var(--t-hi)); }
-.cli-screen .g4 { color: color-mix(in oklch, var(--t-lo) 57%, var(--t-hi)); }
-.cli-screen .g5 { color: color-mix(in oklch, var(--t-lo) 71%, var(--t-hi)); }
-.cli-screen .g6 { color: color-mix(in oklch, var(--t-lo) 86%, var(--t-hi)); }
-.cli-screen .g7 { color: var(--t-lo); }
-.cli-install { max-width: 560px; margin: 16px auto 0; text-align: left; }
-.cli-links a { color: inherit; text-underline-offset: 3px; }
-@media (prefers-reduced-motion: no-preference) {
-  #cli-home:checked ~ .cli-screens [data-scene="home"],
-  #cli-connect:checked ~ .cli-screens [data-scene="connect"],
-  #cli-doctor:checked ~ .cli-screens [data-scene="doctor"] { animation: cli-print 0.7s steps(14, end) both; }
-}
-@keyframes cli-print { from { clip-path: inset(0 0 100% 0); } }
-@media (max-width: 560px) {
-  .cli-tabs { justify-content: flex-start; margin-right: 0; }
-  .cli-screen { font-size: 10.5px; padding: 12px 14px 16px; }
-}
-
 .faq { display: grid; gap: 6px; justify-items: center; }
 details { width: min(100%, 520px); text-align: left; border-radius: var(--radius); background: var(--muted); }
 summary {
@@ -293,7 +234,6 @@ details[data-state="open"] .chevron { transform: rotate(180deg); }
 
 .cta { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
 .cta .button-solid { height: 44px; padding: 0 20px; font-size: 15px; }
-.cta-hint { flex-basis: 100%; margin: -2px 0 0; font-size: 13px; color: var(--muted-foreground); text-align: center; }
 .button-dashed {
   display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 16px 0 10px;
   font: inherit; font-size: 15px; font-weight: 500; color: var(--foreground); text-decoration: none; cursor: pointer;

@@ -58,7 +58,7 @@ export const installCatalogItem = async (
   if (!item) return fail("CATALOG_ITEM_NOT_FOUND");
   return createSource(
     organizationId,
-    { name: item.id, config: configOf(item, options) },
+    { name: options.name ?? item.id, config: configOf(item, options) },
     actor,
     item.broker && !options.token ? { broker: item.broker } : undefined,
   );

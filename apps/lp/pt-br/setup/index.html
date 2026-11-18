@@ -4,11 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Configurar o Runelay, gateway MCP open source</title>
-    <meta name="description" content="Instale o runelay e uma linha conecta este computador: curl -fsSL runelay.com/cli | sh &amp;&amp; ~/.runelay/bin/runelay setup. Passo a passo, ou deixe com o Claude Code." />
+    <meta name="description" content="Instale o runelay no seu servidor, entre pela CLI e ligue todos os agentes. Passo a passo, ou deixe com o seu agente." />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Runelay" />
     <meta property="og:title" content="Configurar o Runelay, gateway MCP open source" />
-    <meta property="og:description" content="Instale o runelay e uma linha conecta este computador: curl -fsSL runelay.com/cli | sh &amp;&amp; ~/.runelay/bin/runelay setup. Passo a passo, ou deixe com o Claude Code." />
+    <meta property="og:description" content="Instale o runelay no seu servidor, entre pela CLI e ligue todos os agentes. Passo a passo, ou deixe com o seu agente." />
     <meta property="og:url" content="https://runelay.com/pt-br/setup/" />
     <meta property="og:image" content="https://runelay.com/og-pt.png" />
     <meta property="og:image:width" content="1200" />
@@ -38,23 +38,25 @@
     <main class="page setup">
       <section class="hero">
         <h1 data-reveal>Configurar o runelay</h1>
-        <p class="lead" data-reveal>Poucos minutos do zero até todos os agentes conectados. Siga os passos ou entregue tudo para o seu agente.</p>
+        <p class="lead" data-reveal>Uns dez minutos do zero até todos os agentes conectados. Siga os passos ou entregue tudo para o seu agente.</p>
       </section>
 
       <section class="agent-prompt" data-reveal>
         <div class="prompt-card">
           <div class="prompt-head">
             <span class="stack" aria-hidden="true"><img src="/logos/claude.svg" alt="" /><img src="/logos/codex.svg" alt="" /><img src="/logos/cursor.svg" alt="" /></span>
-            <span><strong>Deixe o Claude Code fazer</strong><small>Copie as instruções, cole no Claude Code (ou Codex, Cursor, qualquer agente com terminal) e ele instala para você.</small></span>
-            <button class="button-solid small" type="button" data-copy-from="#agent-prompt" data-copied="Instruções copiadas"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 3.5v-.5a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 3v5A1.5 1.5 0 0 0 4 9.5h.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span data-label>Copiar</span></button>
+            <span><strong>Deixe o seu agente fazer</strong><small>Cole no Claude Code, Codex, Cursor ou qualquer agente com terminal.</small></span>
+            <button class="button-solid small" type="button" data-copy-from="#agent-prompt" data-copied="Prompt copiado"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 3.5v-.5a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 3v5A1.5 1.5 0 0 0 4 9.5h.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span data-label>Copiar</span></button>
           </div>
-          <template id="agent-prompt">Me ajude a configurar o runelay, para que todos os meus agentes de IA usem as mesmas contas, skills e memórias. É um gateway MCP open-source que roda no meu computador ou no meu servidor.
+          <template id="agent-prompt">Me ajude a configurar o runelay, um gateway MCP open-source que eu hospedo para que todos os meus agentes usem as mesmas contas, skills e memórias.
 
-Pergunte onde o runelay deve rodar. Neste computador: me diga para baixar o app desktop em https://runelay.com/pt-br/download/, abrir e criar minha conta, e use o endereço que ele mostra. Num servidor que eu acesso por SSH: ele precisa de Docker. Instale lá com `curl -fsSL runelay.com/install | sh`, me mostre o link de primeiro acesso que ele imprime para eu criar a conta dona no navegador, e me lembre de guardar uma cópia do `~/runelay/.env`, que tem o RUNELAY_SECRET.
+Pergunte onde o runelay deve rodar: nesta máquina ou num servidor que eu acesso por SSH. Ele precisa de Docker. Instale lá com `curl -fsSL runelay.com/install | sh` e me mostre o link de primeiro acesso que ele imprime, para eu criar a conta dona no navegador. Me lembre de guardar uma cópia do `~/runelay/.env`, que tem o RUNELAY_SECRET.
 
-No meu computador, rode `curl -fsSL runelay.com/cli | sh && ~/.runelay/bin/runelay setup &lt;url&gt;` com esse endereço. Ele entra na conta (espere enquanto eu aprovo o código no navegador), registra o runelay nos meus agentes com uma chave por agente, traz os servidores MCP, memórias, skills e instruções que eu já tenho, baixa o brief e roda o doctor. Resuma o que veio e o que ainda precisa de login na fila de reconexão do painel, e corrija o que o doctor apontar com os comandos que ele mostra.
+No meu computador, instale a CLI com `curl -fsSL runelay.com/cli | sh` e rode `runelay login`. Espere enquanto eu aprovo o código no navegador.
 
-Se o seu cliente precisar reiniciar para carregar as tools novas, me avise e espere até elas aparecerem.
+Rode `runelay migrate` para trazer os servidores MCP, memórias, skills e instruções que eu já tenho. Resuma o que veio e o que ainda precisa de login na fila de reconexão do painel.
+
+Rode `runelay connect` para registrar o runelay nos meus agentes. Se o seu cliente precisar reiniciar para carregar as tools novas, me avise e espere até elas aparecerem.
 
 Confira com uma chamada segura: liste minhas conexões com a tool `list_connections` do runelay. Nunca me peça para colar senha, token ou segredo neste chat, e pergunte antes de qualquer coisa que envie, apague ou publique.
 
@@ -64,7 +66,6 @@ Docs: https://docs.runelay.com</template>
 
       <section>
         <h2 data-reveal>Passo a passo</h2>
-        <p data-reveal>Sem terminal? <a href="/pt-br/download/">Baixe o app desktop</a> para Mac, Windows ou Linux. Depois de criar a conta, <strong>Conectar meus agentes</strong> e <strong>Conectar minhas contas</strong> fazem o resto. Os passos abaixo são para um servidor e o terminal.</p>
         <ol class="steps">
           <li data-reveal>
             <span class="step-number" aria-hidden="true">1</span>
@@ -72,7 +73,7 @@ Docs: https://docs.runelay.com</template>
             <p>Em qualquer máquina com Docker: uma VPS, um servidor em casa ou este notebook.</p>
             <div class="cmd"><code><span class="prompt">$</span>curl -fsSL runelay.com/install | sh</code><button class="copy" type="button" data-copy="curl -fsSL runelay.com/install | sh" data-copied="Copiado">Copiar</button></div>
             <p class="after">Ele cria o <code>~/runelay/.env</code> com um <code>RUNELAY_SECRET</code> novo. Guarde uma cópia: sem ele as conexões não abrem.</p>
-            <p class="after">Prefere sem Docker? <a href="/pt-br/download/">Baixe o app desktop</a>.</p>
+            <p class="after">Prefere sem Docker? <a href="/pt-br/download/">Baixe o app para Mac</a> e pule para o passo 3.</p>
           </li>
           <li data-reveal>
             <span class="step-number" aria-hidden="true">2</span>
@@ -81,14 +82,31 @@ Docs: https://docs.runelay.com</template>
           </li>
           <li data-reveal>
             <span class="step-number" aria-hidden="true">3</span>
-            <h3>Conecte este computador</h3>
-            <p>Uma linha instala a CLI e roda o <code>runelay setup</code> com o endereço do seu servidor (ou o que o app desktop mostra).</p>
-            <div class="cmd"><code><span class="prompt">$</span>curl -fsSL runelay.com/cli | sh &amp;&amp; ~/.runelay/bin/runelay setup &lt;sua-url&gt;</code><button class="copy" type="button" data-copy="curl -fsSL runelay.com/cli | sh &amp;&amp; ~/.runelay/bin/runelay setup &lt;sua-url&gt;" data-copied="Copiado">Copiar</button></div>
-            <p class="after">Ele entra na sua conta (você aprova um código no navegador, sem chave para colar), registra o runelay em todo agente que encontrar com uma chave por agente, traz os servidores MCP, memórias, skills e instruções que você já tem, escreve o brief e roda o <code>runelay doctor</code>. Reinicie os agentes para carregar as tools.</p>
-            <p class="after">Contas que já estavam logadas chegam conectadas; o resto espera na fila de reconexão do painel. Cada etapa também existe sozinha: <code>runelay login</code>, <code>connect</code>, <code>migrate</code>, <code>pull</code> e <code>doctor</code>.</p>
+            <h3>Instale a CLI no seu computador</h3>
+            <p>É pela CLI que a sua máquina e os seus agentes falam com o runelay.</p>
+            <div class="cmd"><code><span class="prompt">$</span>curl -fsSL runelay.com/cli | sh</code><button class="copy" type="button" data-copy="curl -fsSL runelay.com/cli | sh" data-copied="Copiado">Copiar</button></div>
           </li>
           <li data-reveal>
             <span class="step-number" aria-hidden="true">4</span>
+            <h3>Entre</h3>
+            <p>Acha o seu servidor ou pergunta o endereço, e você aprova um código no navegador. Sem chave para colar.</p>
+            <div class="cmd"><code><span class="prompt">$</span>runelay login</code><button class="copy" type="button" data-copy="runelay login" data-copied="Copiado">Copiar</button></div>
+          </li>
+          <li data-reveal>
+            <span class="step-number" aria-hidden="true">5</span>
+            <h3>Traga o que você já tem</h3>
+            <p>Servidores MCP, memórias, skills e instruções do Claude Code, Codex, Cursor, Grok, Gemini e OpenCode.</p>
+            <div class="cmd"><code><span class="prompt">$</span>runelay migrate</code><button class="copy" type="button" data-copy="runelay migrate" data-copied="Copiado">Copiar</button></div>
+            <p class="after">Contas que já estavam logadas chegam conectadas. O resto espera na fila de reconexão do painel.</p>
+          </li>
+          <li data-reveal>
+            <span class="step-number" aria-hidden="true">6</span>
+            <h3>Ligue os seus agentes</h3>
+            <p>Registra o runelay em todo agente que encontrar. Reinicie-os para carregar as tools.</p>
+            <div class="cmd"><code><span class="prompt">$</span>runelay connect</code><button class="copy" type="button" data-copy="runelay connect" data-copied="Copiado">Copiar</button></div>
+          </li>
+          <li data-reveal>
+            <span class="step-number" aria-hidden="true">7</span>
             <h3>Fique em dia</h3>
             <p>Quando sai uma versão nova, aparece um botão de atualizar no painel. Um clique, sem terminal.</p>
           </li>

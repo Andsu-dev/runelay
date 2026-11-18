@@ -6,6 +6,10 @@
 
 - A connection's own page has a delete button next to Test and Reconnect, with the same confirmation as the connections list. Before, a connection could only be removed from the list.
 
+### Catalog
+
+- "Add another account" in an installed OAuth connector's menu creates a second connection for the same service under a name you choose (for example `calendar_work`) and opens its sign-in. Before, each catalog item could only be installed once.
+
 ## v0.6.6
 
 ### Memory and skills

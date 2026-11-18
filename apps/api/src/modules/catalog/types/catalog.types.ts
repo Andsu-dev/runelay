@@ -18,4 +18,5 @@ export interface CatalogSection extends Omit<CatalogSectionView, "items"> {
 export interface CatalogInstallOptions {
   token?: string;
   services?: GoogleService[];
+  name?: string;
 }
