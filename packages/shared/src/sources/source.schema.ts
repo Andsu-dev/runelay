@@ -60,6 +60,8 @@ export const sourceNameSchema = z
       .refine((name) => !RESERVED_SOURCE_NAMES.includes(name), "Esse nome é reservado"),
   );
 
+export const addSourceAccountSchema = z.object({ name: sourceNameSchema });
+
 export const oauthClientSchema = z.object({
   clientId: z.string().trim().min(1).max(500),
   clientSecret: z.string().trim().min(1).max(20_000).optional(),

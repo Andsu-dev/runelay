@@ -3,7 +3,7 @@ import type { CatalogView, SourceView } from "@runelay/shared";
 import { CATALOG, CATALOG_BY_URL_HASH } from "@/modules/catalog/constants/catalog.constants";
 import { GOOGLE_SOURCE_URL } from "@/modules/google/constants/google.constants";
 import { GITHUB_BROKER_CLIENT_ID } from "@/modules/oauth/constants/oauth.constants";
-import { findSource } from "@/modules/sources/repositories/source.repository";
+import { findSource, updateOAuth } from "@/modules/sources/repositories/source.repository";
 import { hashUrl } from "@/modules/sources/utils/url-hash";
 import { body, call, signUp, type TestAccount } from "../../../../../test/helpers";
 import { withEnv } from "../../../../../test/sources-helpers";
@@ -291,4 +291,44 @@ test("a catalog install name is normalized like any connection name", async () =
   });
   expect(response.status).toBe(201);
   expect((await body<SourceView>(response)).data.name).toBe("calendar_personal");
+});
+
+test("named PostHog installs are independent and a duplicate name preserves existing credentials", async () => {
+  offline();
+  const install = (id: string, name: string) =>
+    call("/v1/catalog/install", { method: "POST", cookie: account.cookie, json: { id, name } });
+  const names = ["posthog_pessoal", "posthog_trabalho"];
+  const personal = await install("posthog", "posthog_pessoal");
+  const work = await call("/v1/sources/posthog_pessoal/accounts", {
+    method: "POST",
+    cookie: account.cookie,
+    json: { name: "posthog_trabalho" },
+  });
+  const installed = [personal, work];
+  for (const [index, response] of installed.entries()) {
+    expect(response.status).toBe(201);
+    expect((await body<SourceView>(response)).data).toMatchObject({
+      name: names[index],
+      config: { kind: "mcp", url: "https://mcp.posthog.com/mcp" },
+    });
+  }
+  const key = { organizationId: account.organizationId, name: "posthog_trabalho" };
+  updateOAuth(key, { tokens: { access_token: "work-access", token_type: "Bearer" } });
+  const before = findSource(key).data;
+  const duplicate = await install("gmail", "PostHog Trabalho");
+  expect(duplicate.status).toBe(409);
+  expect((await body(duplicate)).error?.code).toBe("ALREADY_EXISTS");
+  expect(findSource(key).data).toEqual(before);
+  expect(findSource({ ...key, name: "posthog_pessoal" }).data?.oauth.tokens).toBeUndefined();
+});
+
+test("concurrent installs with the same account name only create one connection", async () => {
+  const install = () =>
+    call("/v1/catalog/install", {
+      method: "POST",
+      cookie: account.cookie,
+      json: { id: "google_drive", name: "drive_work" },
+    });
+  const responses = await Promise.all([install(), install()]);
+  expect(responses.map(({ status }) => status).sort()).toEqual([201, 409]);
 });

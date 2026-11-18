@@ -1,7 +1,8 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import type { ImportView, OAuthStartView, SourcesSummaryView, SourceView } from "@runelay/shared";
 import { db } from "@/db/connection";
-import { findSource } from "@/modules/sources/repositories/source.repository";
+import { scopesFor } from "@/modules/google/utils/google-scopes";
+import { findSource, updateOAuth } from "@/modules/sources/repositories/source.repository";
 import { body, call, createApiKey, signUp, type TestAccount } from "../../../../../test/helpers";
 import {
   closedUrl,
@@ -386,5 +387,46 @@ describe("rename", () => {
     await call("/v1/sources/rename_taken", { method: "PATCH", cookie: account.cookie, json: { enabled: false } });
     const response = await rename("rename_taken", "rename_paused");
     expect((await body<SourceView>(response)).data).toMatchObject({ name: "rename_paused", enabled: false });
+  });
+});
+
+describe("additional accounts", () => {
+  test("copies the selected Google services without carrying over the account or tokens", async () => {
+    const config = { kind: "google", services: ["gmail", "meet"] } as const;
+    const original = await create("workspace", config);
+    expect(original.status).toBe(201);
+    const key = { organizationId: account.organizationId, name: "workspace" };
+    updateOAuth(key, {
+      google: { scopes: scopesFor(["gmail", "meet"]), email: "personal@example.test" },
+      tokens: { access_token: "personal-token", token_type: "Bearer" },
+    });
+    const added = await call("/v1/sources/workspace/accounts", {
+      method: "POST",
+      cookie: account.cookie,
+      json: { name: "workspace_work" },
+    });
+    expect(added.status).toBe(201);
+    expect((await body<SourceView>(added)).data).toMatchObject({
+      name: "workspace_work",
+      config,
+      status: "needs_auth",
+      google: { grantedServices: [], email: null },
+    });
+    expect(findSource({ ...key, name: "workspace_work" }).data?.oauth.tokens).toBeUndefined();
+    expect(findSource(key).data?.oauth.tokens?.access_token).toBe("personal-token");
+  });
+
+  test.each([
+    ["missing", 404, "SOURCE_NOT_FOUND"],
+    ["inline_api", 400, "OAUTH_UNSUPPORTED"],
+    ["open_mcp", 400, "OAUTH_UNSUPPORTED"],
+  ])("rejects adding an account to %s", async (name, status, code) => {
+    const response = await call(`/v1/sources/${name}/accounts`, {
+      method: "POST",
+      cookie: account.cookie,
+      json: { name: "another_account" },
+    });
+    expect(response.status).toBe(status);
+    expect((await body(response)).error?.code).toBe(code);
   });
 });

@@ -54,6 +54,9 @@ export const deleteSource = (name: string) => api.delete<null>(`/sources/${encod
 
 export const testSource = (name: string) => api.post<SourceView>(`/sources/${encodeURIComponent(name)}/test`);
 
+export const addSourceAccount = (source: string, name: string) =>
+  api.post<SourceView>(`/sources/${encodeURIComponent(source)}/accounts`, { name });
+
 export const startSourceOAuth = (name: string) =>
   api.post<OAuthStartView>(`/sources/${encodeURIComponent(name)}/oauth`);
 

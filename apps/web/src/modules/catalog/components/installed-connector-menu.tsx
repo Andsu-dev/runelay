@@ -15,6 +15,7 @@ import { DropdownMenu } from "@/components/ui/overlay/dropdown-menu";
 import { DropdownMenuItem } from "@/components/ui/overlay/dropdown-menu-item";
 import { DropdownMenuSeparator } from "@/components/ui/overlay/dropdown-menu-separator";
 import { useT } from "@/lib/i18n";
+import { installConnector } from "@/modules/catalog/api/catalog.api";
 import type { useCatalogActions } from "@/modules/catalog/hooks/use-catalog-actions";
 import { AddAccountDialog } from "./add-account-dialog";
 
@@ -92,7 +93,16 @@ export function InstalledConnectorMenu({ connector, actions }: InstalledConnecto
         confirmLabel={t("catalog.remove")}
         onConfirm={() => actions.remove.mutate()}
       />
-      <AddAccountDialog connector={connector} actions={actions} open={adding} onOpenChange={setAdding} />
+      {connector.auth === "oauth" && (
+        <AddAccountDialog
+          key={actions.sourceName}
+          name={connector.name}
+          sourceName={actions.sourceName}
+          createAccount={(name) => installConnector(connector.id, undefined, name)}
+          open={adding}
+          onOpenChange={setAdding}
+        />
+      )}
     </div>
   );
 }

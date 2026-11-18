@@ -3,6 +3,7 @@ import type { OAuthStartView } from "@runelay/shared";
 import { createOAuthProvider } from "@/modules/oauth/providers/oauth-client.provider";
 import { completeLogin } from "@/modules/oauth/services/oauth.service";
 import { findSource, findSourceView } from "@/modules/sources/repositories/source.repository";
+import { connectGateway, textOf } from "../../../../../test/gateway-helpers";
 import { body, call, createApiKey, signUp, type TestAccount } from "../../../../../test/helpers";
 import { type FakeMcpServer, GOOD_CODE, INLINE_SPEC, startFakeMcp, withEnv } from "../../../../../test/sources-helpers";
 
@@ -123,4 +124,59 @@ test("provider clears credentials by scope and reads defaults", async () => {
   const missing = createOAuthProvider({ organizationId: account.organizationId, name: "nope" });
   expect(await missing.clientInformation()).toBeUndefined();
   expect(await missing.tokens()).toBeUndefined();
+});
+
+test("two accounts on the same remote MCP call tools with their own tokens", async () => {
+  const tokensByCode = new Map([
+    ["remote_pessoal", "personal-token"],
+    ["remote_trabalho", "work-token"],
+  ]);
+  const upstream = startFakeMcp({ requireToken: true, tokensByCode });
+  const { key } = await createApiKey(account, "remote-accounts");
+  const gateway = await connectGateway(key);
+  try {
+    const first = await call("/v1/sources", {
+      method: "POST",
+      cookie: account.cookie,
+      json: { name: "remote_pessoal", config: { kind: "mcp", url: upstream.mcpUrl } },
+    });
+    expect(first.status).toBe(201);
+    const second = await call("/v1/sources/remote_pessoal/accounts", {
+      method: "POST",
+      cookie: account.cookie,
+      json: { name: "Remote Trabalho" },
+    });
+    expect(second.status).toBe(201);
+    expect((await body(second)).data).toMatchObject({ name: "remote_trabalho", status: "needs_auth" });
+    const authorizations = await Promise.all(
+      Array.from(tokensByCode.keys(), async (name) => {
+        const response = await call(`/v1/sources/${name}/oauth`, {
+          method: "POST",
+          cookie: account.cookie,
+        });
+        return new URL((await body<OAuthStartView>(response)).data.authorizationUrl ?? "");
+      }),
+    );
+    expect(new Set(authorizations.map((url) => url.searchParams.get("code_challenge"))).size).toBe(2);
+    for (const url of authorizations) {
+      const name = url.searchParams.get("state") ?? "";
+      const completed = await callback(new URLSearchParams({ state: name, code: name }).toString());
+      expect(completed.headers.get("location")).toBe(`/connectors/${name}?oauth=done`);
+    }
+    expect(new Set(upstream.tokenRequests.map(({ form }) => form.code_verifier)).size).toBe(2);
+    for (const [name, token] of tokensByCode) {
+      const discovered = await gateway.callTool({ name: "search_tools", arguments: { source: name } });
+      expect(JSON.parse(textOf(discovered))).toContainEqual(expect.objectContaining({ name: `${name}.echo` }));
+      const result = await gateway.callTool({
+        name: "call_tool",
+        arguments: { name: `${name}.echo`, args: { text: name } },
+      });
+      expect(result.isError).not.toBe(true);
+      expect(textOf(result)).toBe(name);
+      expect(upstream.mcpAuthorizations.at(-1)).toBe(`Bearer ${token}`);
+    }
+  } finally {
+    await gateway.close();
+    upstream.stop();
+  }
 });

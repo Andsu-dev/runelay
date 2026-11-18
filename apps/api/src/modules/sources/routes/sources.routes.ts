@@ -1,4 +1,5 @@
 import {
+  addSourceAccountSchema,
   createSourceSchema,
   detectSourceAuthSchema,
   importSourcesSchema,
@@ -11,6 +12,7 @@ import { requireOrganization } from "@/modules/auth/middlewares/authenticate";
 import { startLogin } from "@/modules/oauth/services/oauth.service";
 import { detectSourceAuth } from "@/modules/sources/services/auth-detection.service";
 import {
+  addSourceAccount,
   createSource,
   findSourceView,
   importSources,
@@ -59,6 +61,17 @@ export const sourcesRoutes = new Hono<AppEnv>()
   )
   .delete("/:name", async (c) =>
     respond(c, await removeSource({ organizationId: c.var.organizationId, name: c.req.param("name") })),
+  )
+  .post("/:name/accounts", validate("json", addSourceAccountSchema), async (c) =>
+    respond(
+      c,
+      await addSourceAccount(
+        { organizationId: c.var.organizationId, name: c.req.param("name") },
+        c.req.valid("json").name,
+        actorOf(c.var),
+      ),
+      201,
+    ),
   )
   .post("/:name/test", async (c) =>
     respond(c, await testSource({ organizationId: c.var.organizationId, name: c.req.param("name") })),

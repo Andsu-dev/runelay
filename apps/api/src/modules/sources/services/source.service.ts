@@ -17,6 +17,7 @@ import {
   deleteSource,
   findSource,
   findSourceView,
+  insertSource,
   renameSource,
   updateEnabled,
   updateOAuth,
@@ -35,11 +36,11 @@ export const createSource = async (
   organizationId: string,
   input: CreateSourceInput,
   actor: SourceActor,
-  oauth?: Partial<OAuthState>,
+  { oauth, createOnly }: { oauth?: Partial<OAuthState>; createOnly?: boolean } = {},
 ): Promise<Result<SourceView>> => {
   const allowed = await checkSourcePolicy(input.config, actor);
   if (allowed.error) return allowed;
-  const saved = upsertSource(organizationId, input);
+  const saved = createOnly ? insertSource(organizationId, input) : upsertSource(organizationId, input);
   if (saved.error) return saved;
   if (oauth) updateOAuth({ organizationId, name: input.name }, oauth);
   if (input.oauthClient && input.config.kind === "mcp") {
@@ -47,6 +48,31 @@ export const createSource = async (
   }
   await connectSource({ organizationId, name: input.name });
   return findSourceView({ organizationId, name: input.name });
+};
+
+export const addSourceAccount = async (
+  key: SourceKey,
+  name: string,
+  actor: SourceActor,
+): Promise<Result<SourceView>> => {
+  const view = findSourceView(key);
+  if (view.error) return view;
+  const { config, auth, oauthClientId, status } = view.data;
+  if (config.kind === "google") return createSource(key.organizationId, { name, config }, actor, { createOnly: true });
+  if (
+    config.kind !== "mcp" ||
+    Object.keys(config.headers).length !== 0 ||
+    (auth !== "oauth" && !oauthClientId && status !== "needs_auth")
+  )
+    return fail("OAUTH_UNSUPPORTED");
+
+  const source = findSource(key);
+  if (source.error) return source;
+  const { broker, customClient } = source.data.oauth;
+  return createSource(key.organizationId, { name, config, oauthClient: customClient }, actor, {
+    createOnly: true,
+    oauth: { broker },
+  });
 };
 
 const keepStoredSecret = (next: OAuthClientInput | null, stored: OAuthClientInput | undefined) => {

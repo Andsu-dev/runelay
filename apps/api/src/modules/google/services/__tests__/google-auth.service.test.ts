@@ -67,7 +67,7 @@ test("first connect asks for every selected scope with consent and offline acces
   expect(params.get("response_type")).toBe("code");
   expect(params.get("scope")?.split(" ")).toEqual(scopesFor(CONFIG.services));
   expect(params.get("access_type")).toBe("offline");
-  expect(params.get("prompt")).toBe("consent");
+  expect(params.get("prompt")).toBe("consent select_account");
   expect(params.has("include_granted_scopes")).toBe(false);
   expect(params.get("code_challenge_method")).toBe("S256");
   const challenge = new Bun.CryptoHasher("sha256").update(oauth().verifier ?? "").digest("base64url");
