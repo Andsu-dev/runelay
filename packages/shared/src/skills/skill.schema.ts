@@ -19,10 +19,23 @@ export const skillFileSchema = z.object({
   content: z.string().max(500_000),
 });
 
+export const SKILL_DOCUMENT_LIMIT = 200_000;
+export const skillDocumentFilenameSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(255)
+  .regex(/\.(md|markdown|txt)$/i);
+
+export const uploadSkillSchema = z.object({
+  filename: skillDocumentFilenameSchema,
+  content: z.string().trim().min(1).max(SKILL_DOCUMENT_LIMIT),
+});
+
 const skillFields = {
   name: z.string().trim().min(1).max(200),
   description: z.string().trim().max(2000),
-  body: z.string().max(200_000),
+  body: z.string().max(SKILL_DOCUMENT_LIMIT),
   enabled: z.boolean(),
   files: z.array(skillFileSchema).max(200),
 };
@@ -65,4 +78,10 @@ export const skillWriteSchema = z.object({
   body: skillFields.body,
   name: skillFields.name.optional(),
   description: skillFields.description.optional(),
+});
+
+export const githubSkillSourceSchema = z.object({ source: z.string().trim().min(1).max(500) });
+
+export const installGithubSkillSchema = githubSkillSourceSchema.extend({
+  skill: z.string().trim().min(1).max(300).optional(),
 });

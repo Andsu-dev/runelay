@@ -6,7 +6,8 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
-    "./importers": "./src/importers/parse-client-config.ts"
+    "./importers": "./src/importers/parse-client-config.ts",
+    "./frontmatter": "./src/skills/frontmatter.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

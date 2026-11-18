@@ -7,6 +7,7 @@ import {
   type SkillFileInput,
   skillSlugSchema,
 } from "@runelay/shared";
+import { splitFrontmatter } from "@runelay/shared/frontmatter";
 import { SKILL_MARKER_FILE } from "@/constants/cli.constants";
 import {
   BINARY_EXTENSIONS,
@@ -20,7 +21,6 @@ import {
   SKILL_FILES_MAX,
   SKIPPED_DIRECTORIES,
 } from "@/constants/context.constants";
-import { splitFrontmatter } from "@/lib/frontmatter";
 import type { InstructionFile } from "@/types/context.types";
 
 const toSlug = (name: string) =>

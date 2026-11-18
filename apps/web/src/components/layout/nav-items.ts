@@ -5,14 +5,10 @@ import {
   CheckmarkCircle02Icon,
   ComputerTerminal01Icon,
   DashboardSquare01Icon,
-  Folder01Icon,
   Home01Icon,
   InformationCircleIcon,
   Key01Icon,
-  Link01Icon,
   MagicWand01Icon,
-  Message01Icon,
-  PinIcon,
   PlugSocketIcon,
   ServerStack01Icon,
   Settings01Icon,
@@ -24,7 +20,7 @@ import {
 import { linkOptions } from "@tanstack/react-router";
 import type { NavCategory } from "./nav.types";
 
-export const NAV_SEARCH_DEFAULTS: Record<string, string> = { tab: "catalog", filter: "all" };
+export const NAV_SEARCH_DEFAULTS: Record<string, string> = { tab: "catalog" };
 
 export const HOME_CATEGORY = {
   id: "home",
@@ -78,48 +74,11 @@ export const NAV_CATEGORIES: NavCategory[] = [
     paths: ["/memory", "/skills"],
     sections: [
       {
-        label: "layout.nav.memory",
+        label: "layout.nav.context",
         items: [
-          {
-            label: "layout.nav.allMemories",
-            icon: Brain02Icon,
-            link: linkOptions({ to: "/memory", search: { filter: "all" } }),
-          },
-          {
-            label: "layout.nav.pinned",
-            icon: PinIcon,
-            link: linkOptions({ to: "/memory", search: { filter: "pinned" } }),
-          },
+          { label: "layout.nav.memory", icon: Brain02Icon, link: linkOptions({ to: "/memory" }) },
+          { label: "layout.nav.skills", icon: MagicWand01Icon, link: linkOptions({ to: "/skills" }) },
         ],
-      },
-      {
-        label: "layout.nav.types",
-        items: [
-          {
-            label: "layout.nav.user",
-            icon: UserIcon,
-            link: linkOptions({ to: "/memory", search: { filter: "user" } }),
-          },
-          {
-            label: "layout.nav.feedback",
-            icon: Message01Icon,
-            link: linkOptions({ to: "/memory", search: { filter: "feedback" } }),
-          },
-          {
-            label: "layout.nav.project",
-            icon: Folder01Icon,
-            link: linkOptions({ to: "/memory", search: { filter: "project" } }),
-          },
-          {
-            label: "layout.nav.reference",
-            icon: Link01Icon,
-            link: linkOptions({ to: "/memory", search: { filter: "reference" } }),
-          },
-        ],
-      },
-      {
-        label: "layout.nav.skills",
-        items: [{ label: "layout.nav.allSkills", icon: MagicWand01Icon, link: linkOptions({ to: "/skills" }) }],
       },
     ],
   },

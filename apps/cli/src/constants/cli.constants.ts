@@ -50,6 +50,11 @@ export const COMMAND_GUIDE = {
   },
   push: { usage: "push", summary: "Send memories, skills and instructions from your local agents" },
   pull: { usage: "pull", summary: "Write the runelay rule to every agent's global instructions and fetch new skills" },
+  skills: {
+    usage: "skills add <source>",
+    summary: "Add a skill from GitHub, skills.sh or a local file",
+    details: "--skill <name or path> picks a skill, --list shows what's available",
+  },
   sync: { usage: "sync", summary: "push, then pull" },
   status: { usage: "status", summary: "Show the server, your account and what is stored in it" },
   doctor: { usage: "doctor", summary: "Check that your agents use only runelay for memory and skills" },
@@ -64,7 +69,7 @@ export type GuideName = keyof typeof COMMAND_GUIDE;
 
 export const COMMAND_GROUPS: { title: string; commands: GuideName[] }[] = [
   { title: "Get started", commands: ["setup", "login", "connect", "migrate"] },
-  { title: "Daily", commands: ["push", "pull", "sync", "status", "doctor"] },
+  { title: "Daily", commands: ["push", "pull", "sync", "skills", "status", "doctor"] },
   { title: "Other", commands: ["open", "import", "logout", "sponsor", "help"] },
 ];
 

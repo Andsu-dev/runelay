@@ -12,6 +12,7 @@ import { SearchField } from "@/components/ui/form/search-field";
 import { useT } from "@/lib/i18n";
 import type { MemoryListFilter } from "@/modules/memory/api/memories.api";
 import { CreateMemoryDialog } from "@/modules/memory/components/create-memory-dialog";
+import { MemoryFilterPopover } from "@/modules/memory/components/memory-filter-popover";
 import { MemoryHealthCard } from "@/modules/memory/components/memory-health-card";
 import { MemoryList } from "@/modules/memory/components/memory-list";
 import { MemoryTotal } from "@/modules/memory/components/memory-total";
@@ -25,6 +26,7 @@ export const Route = createFileRoute("/_app/memory/")({
   validateSearch: z.object({
     query: z.string().optional(),
     filter: z.enum(MEMORY_FILTER_VALUES).optional(),
+    pinned: z.boolean().optional(),
     view: z.enum(MEMORY_VIEWS).optional(),
   }),
   component: MemoryPage,
@@ -32,16 +34,19 @@ export const Route = createFileRoute("/_app/memory/")({
 
 function MemoryPage() {
   const t = useT();
-  const { query = "", filter = "all", view = "list" } = Route.useSearch();
+  const { query = "", filter = "all", pinned, view = "list" } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
   const [creating, setCreating] = useState(false);
   const search = (value: string) =>
     navigate({ search: (prev) => ({ ...prev, query: value || undefined }), replace: true });
+  const type = filter === "pinned" ? "all" : filter;
+  const onlyPinned = filter === "pinned" || Boolean(pinned);
   const listFilter: MemoryListFilter = {
     query,
-    type: filter === "all" || filter === "pinned" ? undefined : filter,
-    pinned: filter === "pinned" || undefined,
+    type: type === "all" ? undefined : type,
+    pinned: onlyPinned || undefined,
   };
+  const title = t(MEMORY_FILTER_TITLE[type === "all" && onlyPinned ? "pinned" : type]);
 
   const actions = (
     <>
@@ -71,7 +76,7 @@ function MemoryPage() {
         className="relative h-[calc(100dvh-2.75rem)] overflow-hidden max-lg:rounded-t-xl lg:h-[calc(100dvh-1rem)] lg:rounded-xl"
       >
         <Suspense fallback={<Skeleton className="absolute inset-0 rounded-none bg-muted/40" />}>
-          <MemoryGraph title={t(MEMORY_FILTER_TITLE[filter])} query={query} onQueryChange={search} actions={actions} />
+          <MemoryGraph title={title} query={query} onQueryChange={search} actions={actions} />
         </Suspense>
         <CreateMemoryDialog open={creating} onOpenChange={setCreating} />
       </section>
@@ -80,15 +85,30 @@ function MemoryPage() {
 
   return (
     <section className="flex flex-col gap-5">
-      <PageHeader
-        title={t(MEMORY_FILTER_TITLE[filter])}
-        description={<MemoryTotal filter={listFilter} />}
-        actions={actions}
-      />
+      <PageHeader title={title} description={<MemoryTotal filter={listFilter} />} actions={actions} />
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
         <div className="order-2 flex min-w-0 flex-col gap-4 lg:order-1">
-          <div className="flex flex-col gap-3">
-            <SearchField value={query} placeholder={t("memory.page.search")} onSearch={search} />
+          <div className="flex items-center gap-2">
+            <SearchField
+              value={query}
+              placeholder={t("memory.page.search")}
+              onSearch={search}
+              className="min-w-0 flex-1"
+            />
+            <MemoryFilterPopover
+              type={type}
+              pinned={onlyPinned}
+              onChange={(nextType, nextPinned) =>
+                navigate({
+                  search: (prev) => ({
+                    ...prev,
+                    filter: nextType === "all" ? undefined : nextType,
+                    pinned: nextPinned || undefined,
+                  }),
+                  replace: true,
+                })
+              }
+            />
           </div>
           <MemoryList filter={listFilter} />
         </div>

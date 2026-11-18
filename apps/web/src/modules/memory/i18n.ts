@@ -3,7 +3,12 @@ import { defineMessages } from "@/lib/i18n/define-messages";
 export const memoryMessages = defineMessages(
   {
     types: { user: "Usuário", feedback: "Feedback", project: "Projeto", reference: "Referência" },
-    filters: { all: "Todas", pinned: "Fixadas" },
+    filters: {
+      label: "Filtrar memórias",
+      active: "Filtrar memórias (filtros ativos)",
+      all: "Todos os tipos",
+      pinned: "Só fixadas",
+    },
     titles: {
       all: "Memória",
       user: "Memórias de usuário",
@@ -123,7 +128,12 @@ export const memoryMessages = defineMessages(
   },
   {
     types: { user: "User", feedback: "Feedback", project: "Project", reference: "Reference" },
-    filters: { all: "All", pinned: "Pinned" },
+    filters: {
+      label: "Filter memories",
+      active: "Filter memories (active filters)",
+      all: "All types",
+      pinned: "Pinned only",
+    },
     titles: {
       all: "Memory",
       user: "User memories",

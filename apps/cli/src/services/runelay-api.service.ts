@@ -8,6 +8,7 @@ import {
   type ContextBriefView,
   type ContextClient,
   fail,
+  type GithubSkillCandidate,
   type ImportedMemoryInput,
   type ImportedSkillInput,
   type ImportResultView,
@@ -18,6 +19,7 @@ import {
   type Result,
   type SkillExportView,
   type SkillListItemView,
+  type SkillView,
   type SourceStatus,
   type SourceView,
 } from "@runelay/shared";
@@ -109,3 +111,12 @@ export const exportSkills = (connection: Connection, slugs: string[]) =>
 
 export const listSourcesByStatus = (connection: Connection, status: SourceStatus) =>
   authed<SourceView[]>(connection, "GET", `/sources?status=${status}`);
+
+export const discoverGithubSkills = (connection: Connection, source: string) =>
+  authed<GithubSkillCandidate[]>(connection, "POST", "/skills/github/discover", { source });
+
+export const installGithubSkill = (connection: Connection, source: string, skill?: string) =>
+  authed<SkillView>(connection, "POST", "/skills/github/install", { source, skill });
+
+export const uploadSkill = (connection: Connection, filename: string, content: string) =>
+  authed<SkillView>(connection, "POST", "/skills/upload", { filename, content });
