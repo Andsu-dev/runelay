@@ -63,3 +63,15 @@ test("splits a token scope string", () => {
   expect(splitScopes(" openid  email ")).toEqual(["openid", "email"]);
   expect(splitScopes(undefined)).toEqual([]);
 });
+
+test("full Drive access covers the drive.file scope the Drive service asks for", () => {
+  const granted = [...GOOGLE_BASE_SCOPES, auth("drive")];
+  expect(missingScopes(["drive"], granted)).toEqual([]);
+  expect(grantedServices(granted)).toContain("drive");
+  expect(missingScopes(["drive"], [...GOOGLE_BASE_SCOPES])).toEqual([auth("drive.file")]);
+});
+
+test("extra scopes are asked for after the service scopes", () => {
+  expect(scopesFor(["drive"], [auth("drive")])).toEqual([...GOOGLE_BASE_SCOPES, auth("drive.file"), auth("drive")]);
+  expect(missingScopes(["drive"], scopesFor(["drive"]), [auth("drive")])).toEqual([auth("drive")]);
+});

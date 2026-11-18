@@ -20,6 +20,7 @@ import { addSourceAccount } from "@/modules/sources/api/sources.api";
 import { KIND_LABEL, STATUS_LABEL } from "@/modules/sources/constants/source.constants";
 import { useSourceActions } from "@/modules/sources/hooks/use-source-actions";
 import { isAgentLocal } from "@/modules/sources/utils/agent-local";
+import { GoogleOAuthClientForm } from "./google-oauth-client-form";
 import { GoogleSourcePanel } from "./google-source-panel";
 import { RenameSourceDialog } from "./rename-source-dialog";
 import { SourceConnectButton } from "./source-connect-button";
@@ -127,7 +128,10 @@ export function SourceDetail({ source, oauthError }: SourceDetailProps) {
       )}
 
       {config.kind === "google" ? (
-        <GoogleSourcePanel source={source} config={config} />
+        <>
+          <GoogleSourcePanel source={source} config={config} />
+          <GoogleOAuthClientForm key={source.updatedAt} source={source} />
+        </>
       ) : (
         <SourceEditor key={source.updatedAt} source={source} config={config} />
       )}

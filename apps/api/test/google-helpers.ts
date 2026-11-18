@@ -67,7 +67,7 @@ export const startFakeGoogle = (): FakeGoogle => {
     hostname: "127.0.0.1",
     fetch: async (request) => {
       const url = new URL(request.url);
-      if (url.pathname === "/broker/google/token") {
+      if (url.pathname === "/broker/google/token" || url.pathname === "/oauth2.googleapis.com/token") {
         return reply(tokenEndpoint(Object.fromEntries(new URLSearchParams(await request.text()))));
       }
       const [, host = "", ...rest] = url.pathname.split("/");

@@ -6,11 +6,12 @@ import {
   GOOGLE_AUTHORIZATION_URL,
   GOOGLE_REFRESH_MARGIN_MS,
   GOOGLE_SERVICE_LABELS,
+  GOOGLE_TOKEN_URL,
 } from "@/modules/google/constants/google.constants";
 import type { GoogleOAuthState, GoogleTokenResponse } from "@/modules/google/types/google.types";
 import { googleFetch } from "@/modules/google/utils/google-fetch";
 import { missingScopes, scopesFor, splitScopes } from "@/modules/google/utils/google-scopes";
-import { GOOGLE_BROKER_CLIENT_ID } from "@/modules/oauth/constants/oauth.constants";
+import { GOOGLE_BROKER_CLIENT_ID, OAUTH_CALLBACK_PATH } from "@/modules/oauth/constants/oauth.constants";
 import { brokerCallbackUrl, brokerTokenUrl, encodeBrokerState } from "@/modules/oauth/utils/oauth-broker";
 import { findSource, markConnected, updateOAuth, updateStatus } from "@/modules/sources/repositories/source.repository";
 import type { OAuthState, SourceKey } from "@/modules/sources/types/source.types";
@@ -20,6 +21,27 @@ const refreshing = new Map<string, Promise<Result<string>>>();
 
 export const googleClientId = () => env.RUNELAY_GOOGLE_CLIENT_ID || GOOGLE_BROKER_CLIENT_ID;
 
+// A source with its own OAuth client talks to Google directly; the rest go through the broker,
+// which holds runelay's client secret.
+const clientOf = (oauth: OAuthState) => {
+  const custom = oauth.customClient;
+  if (!custom) {
+    return {
+      clientId: googleClientId(),
+      redirectUri: brokerCallbackUrl("google"),
+      tokenUrl: brokerTokenUrl("google"),
+      extraScopes: [] as string[],
+    };
+  }
+  return {
+    clientId: custom.clientId,
+    clientSecret: custom.clientSecret,
+    redirectUri: `${env.PUBLIC_URL}${OAUTH_CALLBACK_PATH}`,
+    tokenUrl: GOOGLE_TOKEN_URL,
+    extraScopes: custom.scopes ?? [],
+  };
+};
+
 const pkceChallenge = (verifier: string) => createHash("sha256").update(verifier).digest("base64url");
 
 export const missingServicesMessage = (config: GoogleConfig, granted: string[]) => {
@@ -28,12 +50,15 @@ export const missingServicesMessage = (config: GoogleConfig, granted: string[]) 
 };
 
 export const buildGoogleAuthorizationUrl = (key: SourceKey, config: GoogleConfig, oauth: OAuthState) => {
+  const client = clientOf(oauth);
   const firstConnect = !oauth.tokens?.refresh_token;
-  const scopes = firstConnect ? scopesFor(config.services) : missingScopes(config.services, oauth.google?.scopes ?? []);
+  const scopes = firstConnect
+    ? scopesFor(config.services, client.extraScopes)
+    : missingScopes(config.services, oauth.google?.scopes ?? [], client.extraScopes);
   const verifier = randomBytes(32).toString("base64url");
   const url = new URL(GOOGLE_AUTHORIZATION_URL);
-  url.searchParams.set("client_id", googleClientId());
-  url.searchParams.set("redirect_uri", brokerCallbackUrl("google"));
+  url.searchParams.set("client_id", client.clientId);
+  url.searchParams.set("redirect_uri", client.redirectUri);
   url.searchParams.set("response_type", "code");
   url.searchParams.set("scope", scopes.join(" "));
   url.searchParams.set("state", encodeBrokerState(key.name));
@@ -54,13 +79,19 @@ export const startGoogleLogin = (key: SourceKey, config: GoogleConfig): Result<O
   return saved.error ? saved : ok({ authorizationUrl: built.url });
 };
 
-const requestToken = async (form: Record<string, string>): Promise<Result<GoogleTokenResponse>> => {
+const requestToken = async (oauth: OAuthState, form: Record<string, string>): Promise<Result<GoogleTokenResponse>> => {
+  const client = clientOf(oauth);
+  const send = oauth.customClient ? googleFetch : guardedFetch;
   const response = await attempt(
     () =>
-      guardedFetch(brokerTokenUrl("google"), {
+      send(client.tokenUrl, {
         method: "POST",
         headers: { "content-type": "application/x-www-form-urlencoded", accept: "application/json" },
-        body: new URLSearchParams({ client_id: googleClientId(), ...form }).toString(),
+        body: new URLSearchParams({
+          client_id: client.clientId,
+          ...(client.clientSecret ? { client_secret: client.clientSecret } : {}),
+          ...form,
+        }).toString(),
       }),
     "OAUTH_FAILED",
   );
@@ -102,11 +133,11 @@ const fetchProfile = async (accessToken: string) => {
 export const completeGoogleLogin = async (key: SourceKey, code: string): Promise<Result<null>> => {
   const source = findSource(key);
   if (source.error) return source;
-  const exchanged = await requestToken({
+  const exchanged = await requestToken(source.data.oauth, {
     grant_type: "authorization_code",
     code,
     code_verifier: source.data.oauth.verifier ?? "",
-    redirect_uri: brokerCallbackUrl("google"),
+    redirect_uri: clientOf(source.data.oauth).redirectUri,
   });
   if (exchanged.error) return exchanged;
   const merged = mergeTokens(source.data.oauth, exchanged.data, Date.now());
@@ -119,7 +150,7 @@ export const completeGoogleLogin = async (key: SourceKey, code: string): Promise
 };
 
 const refreshAccessToken = async (key: SourceKey, oauth: OAuthState, refreshToken: string): Promise<Result<string>> => {
-  const refreshed = await requestToken({ grant_type: "refresh_token", refresh_token: refreshToken });
+  const refreshed = await requestToken(oauth, { grant_type: "refresh_token", refresh_token: refreshToken });
   if (refreshed.error) {
     if ((refreshed.error.details as { error?: string } | undefined)?.error !== "invalid_grant") return refreshed;
     updateOAuth(key, { tokens: undefined, google: { ...oauth.google, scopes: [], expiresAt: undefined } });
