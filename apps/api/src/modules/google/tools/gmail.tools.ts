@@ -78,17 +78,22 @@ const decodePart = (part: GmailPart) => {
   const bytes = Buffer.from(part.body?.data ?? "", "base64url");
   const charset = headerOf(part, "Content-Type")?.match(/charset="?([^";\s]+)/i)?.[1] ?? "utf-8";
   try {
-    return new TextDecoder(charset).decode(bytes);
+    return new TextDecoder(charset as ConstructorParameters<typeof TextDecoder>[0]).decode(bytes);
   } catch {
     return new TextDecoder().decode(bytes);
   }
 };
 
+const stripBlocks = (html: string): string => {
+  const stripped = html.replace(/<(style|script|head)[^>]*>[\s\S]*?<\/\1>/gi, "");
+  return stripped === html ? stripped : stripBlocks(stripped);
+};
+
 const htmlToText = (html: string) =>
-  html
-    .replace(/<(style|script|head)[^>]*>[\s\S]*?<\/\1>/gi, "")
+  stripBlocks(html)
     .replace(/<br\s*\/?>|<\/(p|div|tr|li|h[1-6]|blockquote)>/gi, "\n")
     .replace(/<[^>]+>/g, "")
+    .replace(/[<>]/g, "")
     .replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (entity, code: string) => {
       if (code[0] !== "#") return ENTITIES[code.toLowerCase()] ?? entity;
       const point = code[1]?.toLowerCase() === "x" ? Number.parseInt(code.slice(2), 16) : Number(code.slice(1));
