@@ -735,6 +735,12 @@ test("gmail message bodies fall back to HTML as text, honor the charset and get 
     body: { data: Buffer.from("ação", "latin1").toString("base64url") },
   };
   expect(messageBody(latin1).body).toBe("ação");
+  const unknownCharset = {
+    mimeType: "text/plain",
+    headers: headers({ "Content-Type": "text/plain; charset=x-unknown-charset" }),
+    body: { data: b64("olá") },
+  };
+  expect(messageBody(unknownCharset).body).toBe("olá");
   expect(messageBody({ mimeType: "text/plain", body: { data: b64("abcdef") } }, 4)).toEqual({
     body: "abcd",
     truncated: true,
