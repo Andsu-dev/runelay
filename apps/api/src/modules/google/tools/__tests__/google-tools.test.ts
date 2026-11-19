@@ -642,9 +642,10 @@ test("gmail_search_threads passes the query and summarizes the latest message of
     nextPageToken: "n2",
   });
   await run("gmail_search_threads", { includeSpamTrash: true });
-  expect(google.last().query.has("q")).toBe(false);
-  expect(google.last().query.get("maxResults")).toBe("20");
-  expect(google.last().query.get("includeSpamTrash")).toBe("true");
+  const listed = google.requests.findLast((request) => request.path.endsWith("/threads"));
+  expect(listed?.query.has("q")).toBe(false);
+  expect(listed?.query.get("maxResults")).toBe("20");
+  expect(listed?.query.get("includeSpamTrash")).toBe("true");
   expect((await run("gmail_search_threads", { maxResults: 51 })).error?.code).toBe("INVALID_INPUT");
 });
 

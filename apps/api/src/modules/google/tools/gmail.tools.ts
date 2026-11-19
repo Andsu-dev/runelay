@@ -84,16 +84,37 @@ const decodePart = (part: GmailPart) => {
   }
 };
 
-const stripBlocks = (html: string): string => {
-  const stripped = html.replace(/<(style|script|head)[^>]*>[\s\S]*?<\/\1>/gi, "");
-  return stripped === html ? stripped : stripBlocks(stripped);
+const SKIPPED_TAGS = new Set(["script", "style", "head"]);
+
+const BREAK_TAGS = new Set(["p", "div", "tr", "li", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote"]);
+
+const stripTags = (html: string) => {
+  let skipping: string | null = null;
+  return html
+    .split("<")
+    .map((chunk, index) => {
+      if (index === 0) return chunk;
+      const end = chunk.indexOf(">");
+      if (end === -1) return skipping ? "" : chunk;
+      const tag = chunk.slice(0, end).trim().toLowerCase();
+      const closing = tag.startsWith("/");
+      const [name = ""] = tag.slice(closing ? 1 : 0).split(/[\s/]/);
+      if (skipping) {
+        if (closing && name === skipping) skipping = null;
+        return "";
+      }
+      if (!closing && SKIPPED_TAGS.has(name)) {
+        skipping = name;
+        return "";
+      }
+      const rest = chunk.slice(end + 1);
+      return name === "br" || (closing && BREAK_TAGS.has(name)) ? `\n${rest}` : rest;
+    })
+    .join("");
 };
 
 const htmlToText = (html: string) =>
-  stripBlocks(html)
-    .replace(/<br\s*\/?>|<\/(p|div|tr|li|h[1-6]|blockquote)>/gi, "\n")
-    .replace(/<[^>]+>/g, "")
-    .replace(/[<>]/g, "")
+  stripTags(html)
     .replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (entity, code: string) => {
       if (code[0] !== "#") return ENTITIES[code.toLowerCase()] ?? entity;
       const point = code[1]?.toLowerCase() === "x" ? Number.parseInt(code.slice(2), 16) : Number(code.slice(1));
