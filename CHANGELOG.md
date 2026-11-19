@@ -11,6 +11,12 @@
 - New Gmail read tools: `search_threads` (Gmail search syntax, with subject, sender, date and snippet of each thread's latest message), `get_thread`, `get_message` (decoded plain-text body, HTML converted to text) and `list_labels`.
 - They need `gmail.readonly`, so they work once the connection uses its own OAuth client with that scope. The default connection still only asks for `gmail.send`.
 
+### Google Drive
+
+- New Drive tools: `drive_get_file`, `drive_read_file` (text, base64, or a Docs/Sheets/Slides export), `drive_create_folder`, `drive_update_file` (rename, move, trash, restore), `drive_upload_session` (a resumable upload URL for files of any size) and `drive_download_link` (a signed link, valid for one hour, that downloads any file with a plain GET).
+- `drive_list_files` searches by folder, sorts newest first, leaves trashed files out and returns size and parents. `drive_create_file` takes a folder and base64 content for binary files.
+- With the default `drive.file` scope these tools only reach files runelay created, as before.
+
 ## v0.6.7
 
 ### Skills and memories
