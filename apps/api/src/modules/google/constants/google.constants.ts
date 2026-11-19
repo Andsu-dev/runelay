@@ -71,10 +71,15 @@ export const GOOGLE_API = {
   slides: "https://slides.googleapis.com/v1/presentations",
   driveFiles: "https://www.googleapis.com/drive/v3/files",
   driveUpload: "https://www.googleapis.com/upload/drive/v3/files",
+  gmail: "https://gmail.googleapis.com/gmail/v1/users/me",
   gmailSend: "https://gmail.googleapis.com/gmail/v1/users/me/messages/send",
   forms: "https://forms.googleapis.com/v1/forms",
   meetSpaces: "https://meet.googleapis.com/v2/spaces",
 };
+
+export const GMAIL_BODY_LIMIT = 50_000;
+
+export const GMAIL_METADATA_CONCURRENCY = 10;
 
 export const GOOGLE_REFRESH_MARGIN_MS = 60_000;
 

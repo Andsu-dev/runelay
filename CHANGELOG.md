@@ -6,6 +6,11 @@
 
 - Google connections can use your own Google Cloud OAuth client, set on the connection's page. runelay then signs in and refreshes tokens with Google directly instead of through the broker, and asks for any extra scopes you list, such as `https://www.googleapis.com/auth/drive` for full Drive access. Google requires the client secret. Changing the client drops the old login.
 
+### Gmail
+
+- New Gmail read tools: `search_threads` (Gmail search syntax, with subject, sender, date and snippet of each thread's latest message), `get_thread`, `get_message` (decoded plain-text body, HTML converted to text) and `list_labels`.
+- They need `gmail.readonly`, so they work once the connection uses its own OAuth client with that scope. The default connection still only asks for `gmail.send`.
+
 ## v0.6.7
 
 ### Skills and memories
