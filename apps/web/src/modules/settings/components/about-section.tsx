@@ -1,4 +1,10 @@
-import { Download04Icon, GithubIcon, InformationCircleIcon, SecurityCheckIcon, StarIcon } from "@hugeicons/core-free-icons";
+import {
+  Download04Icon,
+  GithubIcon,
+  InformationCircleIcon,
+  SecurityCheckIcon,
+  StarIcon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/display/skeleton";
