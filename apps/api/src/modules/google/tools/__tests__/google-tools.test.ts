@@ -617,6 +617,8 @@ test("drive_read_file returns text, base64 or a Docs export and refuses big file
     content: "a,b",
   });
   expect(google.last().query.get("mimeType")).toBe("text/csv");
+  expect((await run("drive_read_file", { fileId: "f1", maxBytes: 2 })).error?.message).toContain("maxBytes");
+  expect((await run("drive_download_link", { fileId: "f1" })).error?.code).toBe("INVALID_INPUT");
   google.routes.set("GET www.googleapis.com/drive/v3/files/f1", meta("application/vnd.google-apps.form"));
   expect((await run("drive_read_file", { fileId: "f1" })).error?.code).toBe("INVALID_INPUT");
 });
