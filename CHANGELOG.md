@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.6.8
+
 ### Connections
 
 - Google connections can use your own Google Cloud OAuth client, set on the connection's page. runelay then signs in and refreshes tokens with Google directly instead of through the broker, and asks for any extra scopes you list, such as `https://www.googleapis.com/auth/drive` for full Drive access. Google requires the client secret. Changing the client drops the old login.
