@@ -101,6 +101,11 @@ export const sourcesMessages = defineMessages(
       service: "Serviço",
       account: "Conta",
       notConnected: "Ainda sem login",
+      ownClient:
+        "Use um cliente OAuth seu do Google Cloud para pedir scopes que o runelay não pede, como o acesso completo ao Drive (https://www.googleapis.com/auth/drive). O Google exige o client secret. Depois de salvar, conecte de novo.",
+      ownClientSave: "Salvar cliente",
+      ownClientSaving: "Salvando...",
+      ownClientSaved: "Cliente salvo. Conecte de novo para entrar com ele.",
       services: {
         calendar: "Google Agenda",
         docs: "Google Docs",
@@ -229,6 +234,11 @@ export const sourcesMessages = defineMessages(
       service: "Service",
       account: "Account",
       notConnected: "Not signed in yet",
+      ownClient:
+        "Use your own Google Cloud OAuth client to request scopes runelay does not ask for, such as full Drive access (https://www.googleapis.com/auth/drive). Google requires the client secret. Sign in again after saving.",
+      ownClientSave: "Save client",
+      ownClientSaving: "Saving...",
+      ownClientSaved: "Client saved. Sign in again to use it.",
       services: {
         calendar: "Google Calendar",
         docs: "Google Docs",

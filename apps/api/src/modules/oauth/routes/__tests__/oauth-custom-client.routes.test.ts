@@ -228,3 +228,56 @@ test("a different client id does not inherit the old secret", async () => {
   });
   expect(findSource(scoped()).data?.oauth.customClient).toEqual({ clientId: "another-client" });
 });
+
+test("a Google source keeps its own client, needs the secret and drops the old login when it changes", async () => {
+  const google = { kind: "google", services: ["drive"] };
+  const missing = await call("/v1/sources", {
+    method: "POST",
+    cookie: account.cookie,
+    json: { name: "gdrive", config: google, oauthClient: { clientId: "g.apps.test" } },
+  });
+  expect(missing.status).toBe(400);
+  const created = await call("/v1/sources", {
+    method: "POST",
+    cookie: account.cookie,
+    json: {
+      name: "gdrive",
+      config: google,
+      oauthClient: { ...CLIENT, scopes: ["https://www.googleapis.com/auth/drive"] },
+    },
+  });
+  expect(created.status).toBe(201);
+  const gkey = { organizationId: account.organizationId, name: "gdrive" };
+  expect(findSource(gkey).data?.oauth.customClient).toEqual({
+    ...CLIENT,
+    scopes: ["https://www.googleapis.com/auth/drive"],
+  });
+  const login = await call("/v1/sources/gdrive/oauth", { method: "POST", cookie: account.cookie });
+  const url = new URL((await body<OAuthStartView>(login)).data.authorizationUrl ?? "");
+  expect(url.searchParams.get("client_id")).toBe(CLIENT.clientId);
+  expect(url.searchParams.get("scope")?.split(" ")).toContain("https://www.googleapis.com/auth/drive");
+
+  const noSecret = await call("/v1/sources/gdrive", {
+    method: "PATCH",
+    cookie: account.cookie,
+    json: { name: "gdrive_renamed", oauthClient: { clientId: "another.apps.test" } },
+  });
+  expect(noSecret.status).toBe(400);
+  expect(findSource(gkey).data?.name).toBe("gdrive");
+
+  const { updateOAuth } = await import("@/modules/sources/repositories/source.repository");
+  updateOAuth(gkey, {
+    tokens: { access_token: "a", token_type: "Bearer", refresh_token: "r" },
+    google: { scopes: ["openid"], email: "ana@example.com" },
+  });
+  const changed = await call("/v1/sources/gdrive", {
+    method: "PATCH",
+    cookie: account.cookie,
+    json: { oauthClient: { clientId: CLIENT.clientId } },
+  });
+  expect(changed.status).toBe(200);
+  const stored = findSource(gkey).data?.oauth;
+  expect(stored?.customClient).toEqual({ clientId: CLIENT.clientId, clientSecret: CLIENT.clientSecret });
+  expect(stored?.tokens).toBeUndefined();
+  expect(stored?.google).toBeUndefined();
+});

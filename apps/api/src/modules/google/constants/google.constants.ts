@@ -6,6 +6,8 @@ export const GOOGLE_SOURCE_URL = "https://www.googleapis.com";
 
 export const GOOGLE_AUTHORIZATION_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 
+export const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
+
 export const GOOGLE_SERVICES: GoogleService[] = [
   "calendar",
   "docs",
@@ -28,6 +30,11 @@ export const GOOGLE_SERVICE_SCOPES: Record<GoogleService, string[]> = {
   gmail: [scope("gmail.send")],
   forms: [scope("forms.body"), scope("drive.file")],
   meet: [scope("meetings.space.created")],
+};
+
+// A broader scope Google grants also covers the narrower one runelay asks for.
+export const GOOGLE_IMPLIED_SCOPES: Record<string, string[]> = {
+  [scope("drive")]: [scope("drive.file")],
 };
 
 export const GOOGLE_REGISTERED_SCOPES = [

@@ -44,7 +44,7 @@ beforeAll(async () => {
 
 beforeEach(() => {
   upsertSource(account.organizationId, { name: "google", config: CONFIG });
-  updateOAuth(key(), { tokens: undefined, google: undefined, verifier: undefined });
+  updateOAuth(key(), { tokens: undefined, google: undefined, verifier: undefined, customClient: undefined });
   google.tokenReply = null;
   google.grantedScope = scopesFor(CONFIG.services).join(" ");
   google.routes.clear();
@@ -261,4 +261,46 @@ test("missing tokens or refresh token need a new login", async () => {
   expect((await getGoogleAccessToken({ organizationId: account.organizationId, name: "nope" })).error?.code).toBe(
     "SOURCE_NOT_FOUND",
   );
+});
+
+const OWN_CLIENT = {
+  clientId: "own.apps.googleusercontent.com",
+  clientSecret: "own-secret",
+  scopes: ["https://www.googleapis.com/auth/drive"],
+};
+
+test("a source with its own client signs in with it, asks for its extra scopes and skips the broker", async () => {
+  updateOAuth(key(), { customClient: OWN_CLIENT });
+  const params = paramsOf(startGoogleLogin(key(), CONFIG).data?.authorizationUrl);
+  expect(params.get("client_id")).toBe(OWN_CLIENT.clientId);
+  expect(params.get("redirect_uri")).toBe("http://localhost:4312/v1/oauth/callback");
+  expect(params.get("scope")?.split(" ")).toEqual([...scopesFor(CONFIG.services), ...OWN_CLIENT.scopes]);
+  const verifier = oauth().verifier;
+  google.grantedScope = [...scopesFor(CONFIG.services), ...OWN_CLIENT.scopes].join(" ");
+  expect((await completeGoogleLogin(key(), GOOGLE_CODE)).error).toBeNull();
+  expect(google.tokenForms.at(-1)).toEqual({
+    client_id: OWN_CLIENT.clientId,
+    client_secret: OWN_CLIENT.clientSecret,
+    grant_type: "authorization_code",
+    code: GOOGLE_CODE,
+    code_verifier: verifier ?? "",
+    redirect_uri: "http://localhost:4312/v1/oauth/callback",
+  });
+  expect(oauth().google?.scopes).toContain(OWN_CLIENT.scopes[0]);
+  expect(startGoogleLogin(key(), CONFIG).data).toEqual({ authorizationUrl: null });
+});
+
+test("a source with its own client refreshes straight at Google with its secret", async () => {
+  updateOAuth(key(), {
+    customClient: OWN_CLIENT,
+    tokens: { access_token: "stale", token_type: "Bearer", refresh_token: GOOGLE_REFRESH },
+    google: { scopes: [], expiresAt: 1 },
+  });
+  expect((await getGoogleAccessToken(key())).data).toBe(GOOGLE_ACCESS);
+  expect(google.tokenForms.at(-1)).toEqual({
+    client_id: OWN_CLIENT.clientId,
+    client_secret: OWN_CLIENT.clientSecret,
+    grant_type: "refresh_token",
+    refresh_token: GOOGLE_REFRESH,
+  });
 });

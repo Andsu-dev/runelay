@@ -32,6 +32,14 @@ export { findSourceView, listSourceViews, summarizeSources } from "@/modules/sou
 
 const CLEARED_LOGIN: Partial<OAuthState> = { client: undefined, tokens: undefined, verifier: undefined };
 
+const OWN_CLIENT_KINDS = new Set(["mcp", "google"]);
+
+const GOOGLE_SECRET_REQUIRED = "O Google exige o client secret do seu cliente OAuth.";
+
+// Swapping the client invalidates the old tokens and, for Google, the scopes they carried.
+const clearedLogin = (kind: string): Partial<OAuthState> =>
+  kind === "google" ? { ...CLEARED_LOGIN, google: undefined } : CLEARED_LOGIN;
+
 export const createSource = async (
   organizationId: string,
   input: CreateSourceInput,
@@ -40,11 +48,17 @@ export const createSource = async (
 ): Promise<Result<SourceView>> => {
   const allowed = await checkSourcePolicy(input.config, actor);
   if (allowed.error) return allowed;
+  if (input.config.kind === "google" && input.oauthClient && !input.oauthClient.clientSecret) {
+    return fail("INVALID_INPUT", GOOGLE_SECRET_REQUIRED);
+  }
   const saved = createOnly ? insertSource(organizationId, input) : upsertSource(organizationId, input);
   if (saved.error) return saved;
   if (oauth) updateOAuth({ organizationId, name: input.name }, oauth);
-  if (input.oauthClient && input.config.kind === "mcp") {
-    updateOAuth({ organizationId, name: input.name }, { ...CLEARED_LOGIN, customClient: input.oauthClient });
+  if (input.oauthClient && OWN_CLIENT_KINDS.has(input.config.kind)) {
+    updateOAuth(
+      { organizationId, name: input.name },
+      { ...clearedLogin(input.config.kind), customClient: input.oauthClient },
+    );
   }
   await connectSource({ organizationId, name: input.name });
   return findSourceView({ organizationId, name: input.name });
@@ -94,6 +108,14 @@ export const updateSource = async (
     const allowed = await checkSourcePolicy(input.config, actor);
     if (allowed.error) return allowed;
   }
+  const kind = (input.config ?? current.data.config).kind;
+  const ownClient = input.oauthClient !== undefined && OWN_CLIENT_KINDS.has(kind);
+  const customClient = ownClient
+    ? keepStoredSecret(input.oauthClient ?? null, current.data.oauth.customClient)
+    : undefined;
+  if (kind === "google" && customClient && !customClient.clientSecret) {
+    return fail("INVALID_INPUT", GOOGLE_SECRET_REQUIRED);
+  }
   const renamed = await renameTo(key, input.name);
   if (renamed.error) return renamed;
   const target = renamed.data;
@@ -101,10 +123,8 @@ export const updateSource = async (
     const saved = upsertSource(target.organizationId, { name: target.name, config: input.config });
     if (saved.error) return saved;
   }
-  const kind = (input.config ?? current.data.config).kind;
-  if (input.oauthClient !== undefined && kind === "mcp") {
-    const customClient = keepStoredSecret(input.oauthClient, current.data.oauth.customClient);
-    const stored = updateOAuth(target, { ...CLEARED_LOGIN, customClient });
+  if (ownClient) {
+    const stored = updateOAuth(target, { ...clearedLogin(kind), customClient });
     if (stored.error) return stored;
   }
   if (input.enabled !== undefined) {
